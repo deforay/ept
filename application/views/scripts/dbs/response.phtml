@@ -43,12 +43,12 @@ if ($this->reqFrom == "admin") {
             action="<?php echo $this->url(array("controller" => "dbs", "action" => "response"), null, true) ?>">
             <div class="box-body">
                 <input type="hidden" id="hdLastDate" name="hdLastDate"
-                    value="<?php echo $this->shipment['response_deadline']; ?>" />
+                    value="<?= $this->escape((string) ($this->shipment['response_deadline'])); ?>" />
                 <input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
                 <input type="hidden" id="participantId" name="participantId"
                     value="<?php echo $this->participantId; ?>" />
                 <input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
-                <input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
+                <input type="hidden" id="smid" name="smid" value="<?= $this->escape((string) ($this->shipment['map_id'])); ?>" />
                 <input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 
                 <?php
@@ -210,7 +210,7 @@ if ($this->reqFrom == "admin") {
                                 <td>
                                     <input type="text" id="qcDoneBy" name="qcDoneBy"
                                         class="form-control <?php echo $isRquired; ?>" title="<?= $this->htmlTranslate("Please enter QC done by name"); ?>"
-                                        value="<?php echo $this->shipment["qc_done_by"]; ?>" />
+                                        value="<?= $this->escape((string) ($this->shipment["qc_done_by"])); ?>" />
                                 </td>
                             </tr>
                         <?php } ?>
@@ -464,7 +464,7 @@ if ($this->reqFrom == "admin") {
                             <th scope="col"><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
                                 <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>
-                                    value="<?php echo $this->shipment['participant_supervisor']; ?>"
+                                    value="<?= $this->escape((string) ($this->shipment['participant_supervisor'])); ?>"
                                     class="form-control" />
                             </td>
 
@@ -474,7 +474,7 @@ if ($this->reqFrom == "admin") {
                             <th scope="col"><?= $this->translate->_("Comments"); ?> </th>
                             <td colspan="3">
                                 <textarea class="form-control" name="userComments" id="userComments" type="text"
-                                    size="120" maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
+                                    size="120" maxlength="40"><?= $this->escape((string) ($this->shipment['user_comment'] ?? '')); ?></textarea>
                             </td>
                         </tr>
 
@@ -511,7 +511,7 @@ if ($this->reqFrom == "admin") {
                                         class="form-label" for="shipmentScore"><?= $this->translate->_("Shipment Score"); ?>
                                         <span class="mandatory">*</span></label></td>
                                 <td style="vertical-align: middle">
-                                    <input type="text" value="<?php echo $this->shipment['shipment_score']; ?>"
+                                    <input type="text" value="<?= $this->escape((string) ($this->shipment['shipment_score'])); ?>"
                                         name="shipmentScore" id="shipmentScore" class="form-control"
                                         placeholder="<?= $this->htmlTranslate("Enter the shipment score"); ?>" title="<?= $this->htmlTranslate("Please enter the shipment score"); ?>">
                                 </td>
@@ -522,7 +522,7 @@ if ($this->reqFrom == "admin") {
                                         for="documentationScore"><?= $this->translate->_("Documentation Score"); ?> <span
                                             class="mandatory">*</span></label></td>
                                 <td style="vertical-align: middle">
-                                    <input type="text" value="<?php echo $this->shipment['documentation_score']; ?>"
+                                    <input type="text" value="<?= $this->escape((string) ($this->shipment['documentation_score'])); ?>"
                                         name="documentationScore" id="documentationScore" class="form-control"
                                         placeholder="<?= $this->htmlTranslate("Enter the documentation score"); ?>"
                                         title="<?= $this->htmlTranslate("Please enter the documentation score"); ?>">

@@ -45,7 +45,9 @@ class Application_Service_ApiServices
         $sql = $this->db->select()->from(['dm' => 'data_manager'], [''])
             ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
             ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['*'])
-            ->where('dm.auth_token=?', $params['authToken']);
+            ->where('dm.auth_token=?', $params['authToken'])
+            // Inactive labs are retired. The app must not offer them, as the web portal does not.
+            ->where('p.status = ?', 'active');
         $response['participants'] = $this->db->fetchAll($sql);
         /* To get mode of receipt results */
         $modeOfReceipt = $this->common->getAllModeOfReceipt();

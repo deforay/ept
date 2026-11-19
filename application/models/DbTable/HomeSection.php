@@ -14,7 +14,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $link = $params['link'];
         }
 
-        if (isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
+        // Keep the current attachment unless a replacement is actually stored below.
+        if (isset($params['pre_section_image']) && $params['pre_section_image'] != '') {
             $sectionImage = $params['pre_section_image'];
         }
         if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
@@ -51,6 +52,10 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 // Move the uploaded file to the target directory
                 if (move_uploaded_file($_FILES['section_file']['tmp_name'], $targetDirectory . DIRECTORY_SEPARATOR . $imageName)) {
                     $sectionImage = $sectionFolder . '/' . $imageName;
+                } else {
+                    $alert = new Zend_Session_Namespace('alertSpace');
+                    $alert->message = Zend_Registry::get('translate')->_('The file could not be saved on the server. Nothing was changed.');
+                    return false;
                 }
             }
         }

@@ -1,6 +1,6 @@
 ---
 title: Dashboard
-summary: Your home page: shipments waiting for results, your latest scores, and quick links
+summary: "Your home page: shipments waiting for results, your latest scores, and quick links"
 tags: [dashboard, home, overview]
 ---
 

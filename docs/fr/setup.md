@@ -141,6 +141,8 @@ Les données suivantes sont stockées dans des volumes Docker et sont conservée
 - `logs` : journaux de l'application
 - `backups` : sauvegardes de la base de données
 - `downloads` : fichiers générés à télécharger
+- `config` : `application.ini` et `.env`
+- `certificate_templates` : modèles de certificats téléversés
 
 ### Commandes courantes {#common-commands}
 
@@ -172,7 +174,7 @@ docker compose exec ept bash
 
 ### Mise à jour (Docker) {#updating-docker}
 
-Pour mettre à jour ePT, suivez [Mettre à jour une installation Docker](updating.md#update-a-docker-installation). Une simple reconstruction perd `application.ini` et `.env`. Copiez-les d'abord hors du conteneur, comme l'indique cette section.
+Pour mettre à jour ePT, suivez [Mettre à jour une installation Docker](updating.md#update-a-docker-installation).
 
 Le script d'entrée exécute `composer post-update` (migrations et corrections de collation) à chaque démarrage du conteneur. Voir [Mettre à jour une installation ePT](updating.md) pour la vérification et le retour en arrière.
 

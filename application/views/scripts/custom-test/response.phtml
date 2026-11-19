@@ -198,15 +198,15 @@ if ($inConfirmStep) {
 					</div>
 				<?php } ?>
 				<input type="hidden" id="hdLastDate" name="hdLastDate"
-					value="<?php echo $this->shipment['response_deadline']; ?>" />
-				<input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
+					value="<?= $this->escape((string) ($this->shipment['response_deadline'])); ?>" />
+				<input type="hidden" id="smid" name="smid" value="<?= $this->escape((string) ($this->shipment['map_id'])); ?>" />
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId"
 					value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 				<input type="hidden" id="customTestName" name="customTestName"
-					value="<?php echo $this->shipment['scheme_type']; ?>" />
+					value="<?= $this->escape((string) ($this->shipment['scheme_type'])); ?>" />
 				<?php $date = (new DateTime())->setTime(0, 0, 0);
 				$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0); ?>
 				<div id="view-content">
@@ -325,7 +325,7 @@ if ($inConfirmStep) {
 									for="analystName"><?= $this->translate->_("Tester Name"); ?></label></td>
 							<td style="width:30%;">
 								<input type="text" id="analystName" name="analystName" style="float:left;"
-									value="<?php echo $this->shipment['attributes']['analyst_name'] ?? null; ?>"
+									value="<?= $this->escape((string) ($this->shipment['attributes']['analyst_name'] ?? null)); ?>"
 									class="form-control"
 									placeholder="<?= $this->htmlTranslate("Enter tester name"); ?>"
 									title="<?= $this->translate->_("Enter tester name"); ?>" />
@@ -409,7 +409,7 @@ if ($inConfirmStep) {
 										class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<input type="text" id="kitLot" name="kitLot" style="float:left;"
-									value="<?php echo $this->shipment['attributes']['kit_lot_number'] ?? ""; ?>"
+									value="<?= $this->escape((string) ($this->shipment['attributes']['kit_lot_number'] ?? "")); ?>"
 									class="form-control vlResultValues isRequired"
 									placeholder="<?= $this->htmlTranslate("Enter kit lot number"); ?>"
 									title="<?= $this->translate->_("Please enter kit lot number"); ?>" />
@@ -616,14 +616,14 @@ if ($inConfirmStep) {
 							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<input name="participantSupervisor" id="participantSupervisor" type="text"
 									class="form-control"
-									value="<?php echo $this->shipment['participant_supervisor']; ?>" />
+									value="<?= $this->escape((string) ($this->shipment['participant_supervisor'])); ?>" />
 							</td>
 						</tr>
 						<tr>
 							<th scope="col"><?= $this->translate->_("Comments"); ?> </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" class="form-control" size="120"
-									maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
+									maxlength="40"><?= $this->escape((string) ($this->shipment['user_comment'] ?? '')); ?></textarea>
 							</td>
 						</tr>
 					</table>
@@ -661,7 +661,7 @@ if ($inConfirmStep) {
 									for="shipmentScore"><?= $this->translate->_("Shipment Score"); ?> <span
 										class="mandatory">*</span></label></td>
 							<td style="vertical-align: middle">
-								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>"
+								<input type="text" value="<?= $this->escape((string) ($this->shipment['shipment_score'])); ?>"
 									name="shipmentScore" id="shipmentScore" class="form-control"
 									placeholder="<?= $this->htmlTranslate("Enter the shipment score"); ?>"
 									title="<?= $this->translate->_("Please enter the shipment score"); ?>">
@@ -672,7 +672,7 @@ if ($inConfirmStep) {
 									for="documentationScore"><?= $this->translate->_("Documentation Score"); ?> <span
 										class="mandatory">*</span></label></td>
 							<td style="vertical-align: middle">
-								<input type="text" value="<?php echo $this->shipment['documentation_score']; ?>"
+								<input type="text" value="<?= $this->escape((string) ($this->shipment['documentation_score'])); ?>"
 									name="documentationScore" id="documentationScore" class="form-control"
 									placeholder="<?= $this->htmlTranslate("Enter the documentation score"); ?>"
 									title="<?= $this->translate->_("Please enter the documentation score"); ?>">

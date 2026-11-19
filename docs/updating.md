@@ -94,18 +94,20 @@ git pull && docker compose up --build -d
 
 `application.ini`, `.env` and the uploaded certificate templates live in the `config` and `certificate_templates` volumes, so a rebuild keeps them.
 
-**Once, on an install from before these volumes existed:** the first rebuild still replaces both files, because they are inside the old container. Copy them out before that rebuild and put them back after it:
+**Once, on an install from before these volumes existed:** the first rebuild still replaces these files, because they are inside the old container. Copy them out before that rebuild and put them back after it:
 
 ```bash
 # Before the rebuild
 docker compose cp ept:/var/www/ept/application/configs/application.ini ./application.ini.keep
 docker compose cp ept:/var/www/ept/application/configs/.env ./env.keep
+docker compose cp ept:/var/www/ept/scheduled-jobs/certificate-templates ./certificate-templates.keep
 
 git pull && docker compose up --build -d
 
 # After the rebuild
 docker compose cp ./application.ini.keep ept:/var/ept-config/application.ini
 docker compose cp ./env.keep ept:/var/ept-config/.env
+docker compose cp ./certificate-templates.keep/. ept:/var/www/ept/scheduled-jobs/certificate-templates/
 docker compose restart ept
 ```
 

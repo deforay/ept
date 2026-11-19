@@ -25,6 +25,10 @@ function resolveNewPassword(SymfonyStyle $io, ?string $passwordArg, bool &$gener
     }
     if ($generate) {
         $password = Pt_Commons_MiscUtility::generateTempPassword(null, max(12, $minLength));
+        // The generator caps a password at 20 characters. Top it up for a higher minimum.
+        while (strlen($password) < $minLength) {
+            $password .= Pt_Commons_MiscUtility::generateTempPassword(null, 20);
+        }
         if ($showGenerated) {
             $io->text("Generated password: <comment>$password</comment>");
         }
