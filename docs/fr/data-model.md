@@ -5,17 +5,17 @@ Il ne constitue ni un schéma physique complet ni un dictionnaire de tous les ch
 Le [référentiel des colonnes physiques](physical-schema.md) décrit les 1 156 colonnes d'une base de référence à cette version.
 Il inclut leurs types, valeurs par défaut et règles de nullabilité.
 
-## Relations logiques
+## Relations logiques {#logical-relationships}
 
 ```mermaid
 erDiagram
-    data_manager ||--o{ participant_manager_map : représente
-    participant ||--o{ participant_manager_map : possède_des_comptes
+    data_manager ||--o{ participant_manager_map : "représente"
+    participant ||--o{ participant_manager_map : "possède des comptes"
     distributions ||--o{ shipment : regroupe
     scheme_list ||--o{ shipment : classe
     participant ||--o{ shipment_participant_map : participe
     shipment ||--o{ shipment_participant_map : inscrit
-    shipment ||--o{ reference_result : définit
+    shipment ||--o{ reference_result : "définit"
     shipment_participant_map ||--o{ response_result : enregistre
 ```
 
@@ -23,7 +23,7 @@ Dans ce diagramme, `reference_result` et `response_result` représentent des fam
 Ce ne sont pas des noms de tables réelles. Les relations décrivent les jointures applicatives.
 Elles ne garantissent pas l'existence d'une contrainte de clé étrangère pour chaque relation.
 
-## Dictionnaire des entités
+## Dictionnaire des entités {#entity-dictionary}
 
 | Entité ou table | Signification | Relation principale |
 | --- | --- | --- |
@@ -41,11 +41,11 @@ Elles ne garantissent pas l'existence d'une contrainte de clé étrangère pour 
 | `global_config` | Paramètres du programme et des rapports | Inclut la configuration propre à l'instance |
 | `system_config` | Paramètres système et métadonnées de version | Inclut la version applicative appliquée |
 | `scheduled_jobs` | File des tâches en arrière-plan | Suit les traitements en file |
-| `temp_mail` | File des courriels sortants | Suit le traitement des messages |
+| `temp_mail` | File des e-mails sortants | Suit le traitement des messages |
 | `audit_log` | Activité applicative enregistrée | Contient les informations sur les acteurs et les événements |
 | `user_login_history` | Activité de connexion | Sert à examiner les comptes et les sessions |
 
-## Dictionnaire des champs principaux
+## Dictionnaire des champs principaux {#core-field-dictionary}
 
 Les types ci-dessous décrivent le stockage SQL du schéma initial ou des migrations.
 La nullabilité et les valeurs par défaut d'une installation nécessitent un export de son propre schéma.
@@ -59,12 +59,12 @@ La nullabilité et les valeurs par défaut d'une installation nécessitent un ex
 | `shipment.shipment_code` | Texte | Code visible du cycle PT | Utilisé dans les rapports et les recherches |
 | `shipment.scheme_type` | Texte | Identifiant du programme | Code intégré ou identifiant d'un programme configuré |
 | `shipment.distribution_id` | Entier | Identifiant de l'enquête parente | Joint `distributions` |
-| `shipment.response_deadline` | Date et heure | Échéance de réponse | Son interprétation inclut le fuseau horaire configuré |
+| `shipment.response_deadline` | Date et heure | Date limite de réponse | Son interprétation inclut le fuseau horaire configuré |
 | `shipment.response_switch` | Texte | Commutateur de collecte des réponses | `on` ou `off` |
 | `shipment.shipment_attributes` | JSON | Configuration de l'expédition propre au programme | Les clés varient selon le programme |
 | `shipment_participant_map.map_id` | Entier | Identifiant d'inscription | Parent des réponses par échantillon |
 | `shipment_participant_map.response_status` | Texte | État de collecte de la réponse | Inclut `responded`, `nottested` et `late_submitted` |
-| `shipment_participant_map.final_result` | Entier | Résultat de l'évaluation | 1 Réussi, 2 Echec, 3 Exclu, 4 Non évalué |
+| `shipment_participant_map.final_result` | Entier | Résultat de l'évaluation | 1 Réussi, 2 Échec, 3 Exclu, 4 Non évalué |
 | `shipment_participant_map.shipment_score` | Décimal | Score calculé de l'expédition | Son interprétation dépend du programme |
 | `shipment_participant_map.documentation_score` | Décimal | Composante documentaire | Distincte de la notation des résultats des échantillons |
 | `shipment_participant_map.is_excluded` | `yes` / `no`, nullable | Indicateur d'exclusion | À interpréter avec le résultat de l'évaluation |
@@ -76,7 +76,7 @@ Les lignes anciennes ou non évaluées peuvent contenir d'autres valeurs initial
 Cela ne constitue pas un résultat d'évaluation supplémentaire.
 L'état de réponse et le résultat d'évaluation répondent à des questions distinctes. Ils ne sont pas interchangeables.
 
-## Sources du schéma physique
+## Sources du schéma physique {#physical-schema-sources}
 
 | Source | Périmètre | Limite |
 | --- | --- | --- |

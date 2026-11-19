@@ -4,7 +4,7 @@ Cet inventaire décrit les contrôleurs présents dans ePT 7.6.21.
 Il identifie les points d'entrée d'intégration. Il ne constitue ni un contrat client complet ni une évaluation de sécurité.
 Les routes Zend par défaut utilisent `/api/{controller}/{action}`.
 
-## Conventions des requêtes
+## Conventions des requêtes {#request-conventions}
 
 | Convention | Implémentation |
 | --- | --- |
@@ -21,7 +21,7 @@ Les enveloppes de réponse et les champs obligatoires varient selon le service.
 Plusieurs actions ne vérifient pas explicitement la méthode HTTP.
 Les entrées ci-dessous décrivent l'analyse par le contrôleur, pas des restrictions de méthode imposées.
 
-## Connexion et initialisation
+## Connexion et initialisation {#login-and-initialization}
 
 | Route | Entrée | Fonction |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ Une connexion réussie renvoie un `authToken` dans `data` et remplace le jeton e
 La rotation des jetons et les contrôles de profil suivent des chemins d'implémentation distincts.
 Le délai d'inactivité web ne correspond pas à la durée de validité du jeton API.
 
-## Routes des expéditions
+## Routes des expéditions {#shipment-routes}
 
 | Route | Entrée | Fonction |
 | --- | --- | --- |
@@ -66,18 +66,18 @@ La route du contrôleur ne détermine pas à elle seule le programme du corps de
 Le service vérifie la possibilité de modifier l'expédition et les champs obligatoires.
 Les schémas complets des corps de requête et les cas de rejet nécessitent une vérification pour chaque client prévu.
 
-## Routes des participants et des rapports
+## Routes des participants et des rapports {#participant-and-reporting-routes}
 
 | Route | Entrée | Fonction |
 | --- | --- | --- |
 | `/api/participant/get` | Paramètres de requête | Obtenir les informations du rapport individuel |
-| `/api/participant/summary` | Paramètres de requête | Obtenir les informations du rapport récapitulatif |
+| `/api/participant/summary` | Paramètres de requête | Obtenir les informations du rapport de synthèse |
 | `/api/participant/get-filter` | Paramètres de requête | Obtenir les filtres des participants |
 | `/api/participant/get-profile-check` | Paramètres de requête | Obtenir les informations de vérification du profil |
 | `/api/participant/update-profile` | Corps JSON | Mettre à jour les informations du profil |
 | `/api/participant/download` | Paramètres du lien généré | Rendre le contenu de téléchargement du rapport individuel |
-| `/api/participant/download-summary` | Paramètres du lien généré | Rendre le contenu de téléchargement du rapport récapitulatif |
-| `/api/participant/resend` | Paramètre de requête encodé | Renvoyer la vérification du courriel |
+| `/api/participant/download-summary` | Paramètres du lien généré | Rendre le contenu de téléchargement du rapport de synthèse |
+| `/api/participant/resend` | Paramètre de requête encodé | Renvoyer la vérification de l'adresse e-mail |
 | `/api/participant/file-downloads` | Paramètres de requête | Obtenir les informations de téléchargement des certificats |
 | `/api/aggregated-insights` | Le contrôleur accepte les paramètres de requête | Renvoyer des informations sur l'instance et des données agrégées |
 
@@ -95,7 +95,7 @@ Aucune route implémentée ne prouve une intégration active avec un autre syst�
 Le dossier d'intégration doit préciser le propriétaire du client, les routes activées, la fréquence des échanges
 et des exemples de données. Il doit aussi inclure l'authentification et les tests d'acceptation exécutés.
 
-## Sources de l'implémentation
+## Sources de l'implémentation {#implementation-sources}
 
 Contrôleurs : `application/modules/api/controllers/`.
 Services : `ApiServices.php`, `Shipments.php`, `Participants.php` et `DataManagers.php`.

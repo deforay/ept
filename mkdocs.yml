@@ -98,16 +98,16 @@ plugins:
           site_description: Documentation et formation pour le système ePT d'essais d'aptitude
           nav_translations:
             Home: Accueil
-            About ePT: Présentation (anglais)
+            About ePT: À propos d'ePT
             User guide: Guide utilisateur
             Operations: Exploitation
-            Install: Installation (anglais)
-            Update: Mise à jour (anglais)
-            Backup & recovery: Sauvegarde et reprise (anglais)
-            Infrastructure: Infrastructure (anglais)
-            Email delivery: Envoi des e-mails (anglais)
-            CLI tools: Outils CLI (anglais)
-            Repair missing tables: Réparer les tables manquantes (anglais)
+            Install: Installation
+            Update: Mise à jour
+            Backup & recovery: Sauvegarde et reprise
+            Infrastructure: Infrastructure
+            Email delivery: Envoi des e-mails
+            CLI tools: Outils CLI
+            Repair missing tables: Réparer les tables manquantes
             Troubleshooting: Dépannage
             User management: Gestion des utilisateurs
             Storage & retention: Stockage et conservation
@@ -120,19 +120,19 @@ plugins:
             API routes: Routes API
             Software & licenses: Logiciels et licences
             Validation: Validation
-            Development: Développement (anglais)
-            Architecture: Architecture (anglais)
-            Schemes: Programmes (anglais)
-            Admin module: Module administrateur (anglais)
-            Translation: Traduction (anglais)
-            Engineering standards: Règles de développement (anglais)
-            Training: Formation (anglais)
-            Overview: Vue d'ensemble (anglais)
-            "Part 1: Setup & participants": "Partie 1 : Configuration et participants (anglais)"
-            "Part 2: Surveys & shipments": "Partie 2 : Enquêtes et expéditions (anglais)"
-            "Part 3: Participant results": "Partie 3 : Résultats des participants (anglais)"
-            "Part 4: Evaluation & reports": "Partie 4 : Évaluation et rapports (anglais)"
-            "Exercise: DTS HIV Serology": "Exercice : Sérologie VIH DTS (anglais)"
+            Development: Développement
+            Architecture: Architecture
+            Schemes: Programmes
+            Admin module: Module administrateur
+            Translation: Traduction
+            Engineering standards: Normes d'ingénierie
+            Training: Formation
+            Overview: Vue d'ensemble
+            "Part 1: Setup & participants": "Partie 1 : Configuration et participants"
+            "Part 2: Surveys & shipments": "Partie 2 : Enquêtes et expéditions"
+            "Part 3: Participant results": "Partie 3 : Résultats et rapports des participants"
+            "Part 4: Evaluation & reports": "Partie 4 : Évaluation et rapports"
+            "Exercise: DTS HIV Serology": "Exercice : sérologie du VIH sur DTS"
 
 markdown_extensions:
   - admonition

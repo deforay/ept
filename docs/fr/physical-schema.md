@@ -15,7 +15,7 @@ Les significations métier figurent dans le [dictionnaire principal](data-model.
 Les installations peuvent différer selon leur historique de migration ou leurs extensions locales.
 Des numéros de version identiques ne prouvent pas l'identité des schémas.
 
-## Notation
+## Notation {#notation}
 
 `PRI`, `UNI` et `MUL` reproduisent les métadonnées MySQL des clés de colonnes.
 Ils ne décrivent pas les index composites complets.
@@ -25,7 +25,7 @@ Une cellule vide dans Clé ou Attributs supplémentaires signifie qu'aucune vale
 Les entrées de clés étrangères conservent les lignes de métadonnées, y compris les relations de colonnes répétées.
 Les indicateurs SQL `YES` et `NO` restent inchangés.
 
-## Index des tables
+## Index des tables {#table-index}
 
 | Table | Colonnes |
 | --- | ---: |
@@ -138,7 +138,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | [track_report_downloaded_history](#track_report_downloaded_history) | 5 |
 | [user_login_history](#user_login_history) | 10 |
 
-## announcements
+## announcements {#announcements}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -148,7 +148,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `end_date` | `date` | NO | NULL |  |  |
 | `status` | `varchar(45)` | NO | active |  |  |
 
-## announcements_notification
+## announcements_notification {#announcements_notification}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -159,7 +159,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `created_on` | `datetime` | YES | NULL |  |  |
 | `created_by` | `int` | YES | NULL |  |  |
 
-## audit_log
+## audit_log {#audit_log}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -173,7 +173,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `user_agent` | `varchar(512)` | YES | NULL |  |  |
 | `session_hash` | `varchar(16)` | YES | NULL | MUL |  |
 
-## certificate_batches
+## certificate_batches {#certificate_batches}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -193,7 +193,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `approved_on` | `datetime` | YES | NULL |  |  |
 | `distributed_on` | `datetime` | YES | NULL |  |  |
 
-## certificate_templates
+## certificate_templates {#certificate_templates}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -206,7 +206,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `created_by` | `varchar(256)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## contact_us
+## contact_us {#contact_us}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -225,7 +225,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `contacted_on` | `datetime` | YES | NULL |  |  |
 | `ip_address` | `varchar(255)` | YES | NULL |  |  |
 
-## countries
+## countries {#countries}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -235,7 +235,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `iso3` | `varchar(3)` | NO | NULL |  |  |
 | `numeric_code` | `smallint` | NO | NULL |  |  |
 
-## covid19_identified_genes
+## covid19_identified_genes {#covid19_identified_genes}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -253,14 +253,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `shipment_id` | `shipment` | `shipment_id` |
 | `gene_id` | `r_covid19_gene_types` | `gene_id` |
 
-## covid19_recommended_test_types
+## covid19_recommended_test_types {#covid19_recommended_test_types}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `test_no` | `int` | NO | NULL | PRI |  |
 | `test_type` | `varchar(255)` | NO | NULL | PRI |  |
 
-## custom_page_content
+## custom_page_content {#custom_page_content}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -271,7 +271,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `status` | `varchar(50)` | YES | NULL |  |  |
 | `modified_date_time` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## data_manager
+## data_manager {#data_manager}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -318,7 +318,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `last_date_for_email_reset` | `date` | YES | NULL |  |  |
 | `language` | `varchar(256)` | YES | en_US |  |  |
 
-## distributions
+## distributions {#distributions}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -331,7 +331,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_on` | `datetime` | YES | NULL |  |  |
 | `updated_by` | `varchar(255)` | YES | NULL |  |  |
 
-## dts_recommended_testkits
+## dts_recommended_testkits {#dts_recommended_testkits}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -339,7 +339,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `testkit` | `varchar(255)` | NO | NULL | PRI |  |
 | `dts_test_mode` | `varchar(256)` | NO | dts | PRI |  |
 
-## dts_shipment_corrective_action_map
+## dts_shipment_corrective_action_map {#dts_shipment_corrective_action_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -348,7 +348,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `action_taken` | `text` | YES | NULL |  |  |
 | `action_date` | `date` | YES | NULL |  |  |
 
-## email_participants
+## email_participants {#email_participants}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -360,7 +360,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `date_initiated` | `datetime` | YES | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 | `initiated_by` | `varchar(256)` | YES | NULL |  |  |
 
-## enrollments
+## enrollments {#enrollments}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -371,14 +371,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `enrolled_on` | `datetime` | YES | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 | `status` | `varchar(255)` | NO | NULL |  |  |
 
-## generic_recommended_test_types
+## generic_recommended_test_types {#generic_recommended_test_types}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `scheme_id` | `varchar(256)` | NO | NULL |  |  |
 | `testkit` | `varchar(256)` | NO | NULL |  |  |
 
-## global_config
+## global_config {#global_config}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -386,14 +386,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `value` | `longtext` | YES | NULL |  |  |
 | `context` | `varchar(50)` | NO | global |  |  |
 
-## home_banner
+## home_banner {#home_banner}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `banner_id` | `int` | NO | NULL | PRI | auto_increment |
 | `image` | `varchar(255)` | YES | NULL |  |  |
 
-## home_sections
+## home_sections {#home_sections}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -409,7 +409,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `modified_by` | `varchar(256)` | YES | NULL |  |  |
 | `modified_date_time` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## mail_template
+## mail_template {#mail_template}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -423,7 +423,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mail_content` | `mediumtext` | YES | NULL |  |  |
 | `mail_footer` | `mediumtext` | YES | NULL |  |  |
 
-## notify
+## notify {#notify}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -434,7 +434,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `status` | `varchar(50)` | NO | unread |  |  |
 | `created_on` | `timestamp` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## participant
+## participant {#participant}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -487,14 +487,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `status` | `varchar(255)` | NO | inactive |  |  |
 | `contact_name` | `varchar(45)` | YES | NULL |  |  |
 
-## participant_enrolled_programs_map
+## participant_enrolled_programs_map {#participant_enrolled_programs_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `participant_id` | `int` | NO | NULL | PRI |  |
 | `ep_id` | `int` | NO | NULL | PRI |  |
 
-## participant_feedback_answer
+## participant_feedback_answer {#participant_feedback_answer}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -516,28 +516,28 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `participant_id` | `participant` | `participant_id` |
 | `participant_id` | `participant` | `participant_id` |
 
-## participant_manager_map
+## participant_manager_map {#participant_manager_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `participant_id` | `int` | NO | NULL | PRI |  |
 | `dm_id` | `int` | NO | NULL | PRI |  |
 
-## participant_manager_map090319
+## participant_manager_map090319 {#participant_manager_map090319}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `participant_id` | `int` | NO | NULL | PRI |  |
 | `dm_id` | `int` | NO | NULL | PRI |  |
 
-## participant_manager_map18052022
+## participant_manager_map18052022 {#participant_manager_map18052022}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `participant_id` | `int` | NO | NULL | PRI |  |
 | `dm_id` | `int` | NO | NULL | PRI |  |
 
-## participant_messages
+## participant_messages {#participant_messages}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -550,7 +550,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `created_at` | `datetime` | YES | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 | `sent_at` | `datetime` | YES | NULL |  |  |
 
-## participant_testkit_map
+## participant_testkit_map {#participant_testkit_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -564,7 +564,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `testkit_id` | `r_testkitnames` | `TestKitName_ID` |
 | `shipment_id` | `shipment` | `shipment_id` |
 
-## participants_not_uploaded
+## participants_not_uploaded {#participants_not_uploaded}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -592,7 +592,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `error` | `mediumtext` | YES | NULL |  |  |
 | `updated_datetime` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## partners
+## partners {#partners}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -605,7 +605,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `status` | `varchar(45)` | YES | NULL |  |  |
 | `logo_image` | `text` | YES | NULL |  |  |
 
-## ptcc_countries_map
+## ptcc_countries_map {#ptcc_countries_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -619,7 +619,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `ptcc_id` | `data_manager` | `dm_id` |
 
-## push_notification
+## push_notification {#push_notification}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -633,7 +633,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `notification_type` | `varchar(50)` | YES | NULL |  |  |
 | `announcement_id` | `int` | YES | NULL |  |  |
 
-## push_notification_template
+## push_notification_template {#push_notification_template}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -644,7 +644,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `data_msg` | `mediumtext` | YES | NULL |  |  |
 | `icon` | `varchar(255)` | YES | NULL |  |  |
 
-## queue_report_generation
+## queue_report_generation {#queue_report_generation}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -667,7 +667,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `shipment_id` | `shipment` | `shipment_id` |
 
-## r_control
+## r_control {#r_control}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -676,7 +676,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `for_scheme` | `varchar(255)` | YES | NULL |  |  |
 | `is_active` | `varchar(45)` | YES | NULL |  |  |
 
-## r_covid19_corrective_actions
+## r_covid19_corrective_actions {#r_covid19_corrective_actions}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -684,7 +684,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `corrective_action` | `mediumtext` | NO | NULL |  |  |
 | `description` | `mediumtext` | NO | NULL |  |  |
 
-## r_covid19_gene_types
+## r_covid19_gene_types {#r_covid19_gene_types}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -695,21 +695,21 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `created_by` | `int` | YES | NULL |  |  |
 | `created_on` | `datetime` | YES | NULL |  |  |
 
-## r_dbs_eia
+## r_dbs_eia {#r_dbs_eia}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `eia_id` | `int` | NO | NULL | PRI | auto_increment |
 | `eia_name` | `varchar(500)` | NO | NULL |  |  |
 
-## r_dbs_wb
+## r_dbs_wb {#r_dbs_wb}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `wb_id` | `int` | NO | NULL | PRI | auto_increment |
 | `wb_name` | `varchar(500)` | NO | NULL |  |  |
 
-## r_dts_corrective_actions
+## r_dts_corrective_actions {#r_dts_corrective_actions}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -717,7 +717,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `corrective_action` | `mediumtext` | NO | NULL |  |  |
 | `description` | `mediumtext` | NO | NULL |  |  |
 
-## r_eid_detection_assay
+## r_eid_detection_assay {#r_eid_detection_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -726,7 +726,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `sort_order` | `int` | YES | 0 |  |  |
 | `status` | `varchar(45)` | NO | active |  |  |
 
-## r_eid_extraction_assay
+## r_eid_extraction_assay {#r_eid_extraction_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -735,14 +735,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `sort_order` | `int` | YES | 0 |  |  |
 | `status` | `varchar(45)` | NO | active |  |  |
 
-## r_enrolled_programs
+## r_enrolled_programs {#r_enrolled_programs}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `r_epid` | `int` | NO | NULL | PRI | auto_increment |
 | `enrolled_programs` | `varchar(255)` | YES | NULL |  |  |
 
-## r_evaluation_comments
+## r_evaluation_comments {#r_evaluation_comments}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -750,7 +750,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `scheme` | `varchar(255)` | NO | NULL |  |  |
 | `comment` | `mediumtext` | NO | NULL |  |  |
 
-## r_feedback_questions
+## r_feedback_questions {#r_feedback_questions}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -764,28 +764,28 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_datetime` | `datetime` | YES | NULL |  |  |
 | `modified_by` | `varchar(256)` | YES | NULL |  |  |
 
-## r_modes_of_receipt
+## r_modes_of_receipt {#r_modes_of_receipt}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `mode_id` | `int` | NO | NULL | PRI | auto_increment |
 | `mode_name` | `varchar(255)` | YES | NULL |  |  |
 
-## r_network_tiers
+## r_network_tiers {#r_network_tiers}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `network_id` | `int` | NO | NULL | PRI | auto_increment |
 | `network_name` | `varchar(255)` | YES | NULL |  |  |
 
-## r_participant_affiliates
+## r_participant_affiliates {#r_participant_affiliates}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `aff_id` | `int` | NO | NULL | PRI | auto_increment |
 | `affiliate` | `varchar(255)` | NO | NULL |  |  |
 
-## r_participant_feedback_form
+## r_participant_feedback_form {#r_participant_feedback_form}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -803,7 +803,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `shipment_id` | `shipment` | `shipment_id` |
 | `question_id` | `r_feedback_questions` | `question_id` |
 
-## r_participant_feedback_form_files_map
+## r_participant_feedback_form_files_map {#r_participant_feedback_form_files_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -820,7 +820,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `shipment_id` | `shipment` | `shipment_id` |
 
-## r_participant_feedback_form_question_map
+## r_participant_feedback_form_question_map {#r_participant_feedback_form_question_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -838,7 +838,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `question_id` | `r_feedback_questions` | `question_id` |
 | `rpff_id` | `r_participant_feedback_form` | `rpff_id` |
 
-## r_possibleresult
+## r_possibleresult {#r_possibleresult}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -860,7 +860,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `sort_order` | `int` | YES | NULL |  |  |
 | `status` | `enum('active','inactive')` | NO | active |  |  |
 
-## r_recency_assay
+## r_recency_assay {#r_recency_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -868,7 +868,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `name` | `varchar(255)` | NO | NULL |  |  |
 | `sort_order` | `int` | YES | 0 |  |  |
 
-## r_response_not_tested_reasons
+## r_response_not_tested_reasons {#r_response_not_tested_reasons}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -879,7 +879,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `reason_code` | `varchar(50)` | YES | NULL |  |  |
 | `ntr_status` | `varchar(256)` | YES | NULL |  |  |
 
-## r_response_vl_not_tested_reason
+## r_response_vl_not_tested_reason {#r_response_vl_not_tested_reason}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -887,21 +887,21 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `vl_not_tested_reason` | `varchar(500)` | YES | NULL |  |  |
 | `status` | `varchar(45)` | NO | active |  |  |
 
-## r_results
+## r_results {#r_results}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `result_id` | `int` | NO | NULL | PRI | auto_increment |
 | `result_name` | `varchar(255)` | NO | NULL |  |  |
 
-## r_site_type
+## r_site_type {#r_site_type}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `r_stid` | `int` | NO | NULL | PRI | auto_increment |
 | `site_type` | `varchar(255)` | YES | NULL |  |  |
 
-## r_tb_assay
+## r_tb_assay {#r_tb_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -912,7 +912,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `drug_resistance_test` | `varchar(255)` | NO | yes |  |  |
 | `status` | `varchar(256)` | YES | active |  |  |
 
-## r_test_type_covid19
+## r_test_type_covid19 {#r_test_type_covid19}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -935,7 +935,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `test_type_2` | `int` | NO | 0 |  |  |
 | `test_type_3` | `int` | NO | 0 |  |  |
 
-## r_testkitname_dts
+## r_testkitname_dts {#r_testkitname_dts}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -960,7 +960,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `testkit_3` | `int` | NO | 0 |  |  |
 | `testkit_status` | `varchar(256)` | YES | NULL |  |  |
 
-## r_testkitnames
+## r_testkitnames {#r_testkitnames}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -981,7 +981,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `attributes` | `json` | YES | NULL |  |  |
 | `testkit_status` | `varchar(256)` | YES | NULL |  |  |
 
-## r_vl_assay
+## r_vl_assay {#r_vl_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -991,7 +991,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `allow_invalid` | `varchar(10)` | NO | no |  |  |
 | `status` | `varchar(256)` | YES | active |  |  |
 
-## reference_covid19_test_type
+## reference_covid19_test_type {#reference_covid19_test_type}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1003,7 +1003,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `expiry_date` | `date` | NO | NULL |  |  |
 | `result` | `varchar(255)` | NO | NULL |  |  |
 
-## reference_dbs_eia
+## reference_dbs_eia {#reference_dbs_eia}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1016,7 +1016,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `od` | `varchar(255)` | YES | NULL |  |  |
 | `cutoff` | `varchar(255)` | YES | NULL |  |  |
 
-## reference_dbs_wb
+## reference_dbs_wb {#reference_dbs_wb}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1036,7 +1036,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `24` | `int` | YES | NULL |  |  |
 | `17` | `int` | YES | NULL |  |  |
 
-## reference_dts_eia
+## reference_dts_eia {#reference_dts_eia}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1051,7 +1051,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `cutoff` | `varchar(255)` | YES | NULL |  |  |
 | `result` | `varchar(556)` | YES | NULL |  |  |
 
-## reference_dts_geenius
+## reference_dts_geenius {#reference_dts_geenius}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1063,7 +1063,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `expiry_date` | `date` | YES | NULL |  |  |
 | `result` | `varchar(256)` | YES | NULL |  |  |
 
-## reference_dts_rapid_hiv
+## reference_dts_rapid_hiv {#reference_dts_rapid_hiv}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1076,7 +1076,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `expiry_date` | `date` | NO | NULL |  |  |
 | `result` | `varchar(255)` | NO | NULL |  |  |
 
-## reference_dts_wb
+## reference_dts_wb {#reference_dts_wb}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1098,7 +1098,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `17` | `int` | YES | NULL |  |  |
 | `result` | `varchar(256)` | YES | NULL |  |  |
 
-## reference_generic_test_calculations
+## reference_generic_test_calculations {#reference_generic_test_calculations}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1141,7 +1141,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `int` | YES | NULL |  |  |
 | `use_range` | `varchar(255)` | NO | calculated |  |  |
 
-## reference_recency_assay
+## reference_recency_assay {#reference_recency_assay}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1153,7 +1153,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `expiry_date` | `date` | YES | NULL |  |  |
 | `result` | `varchar(256)` | YES | NULL |  |  |
 
-## reference_result_covid19
+## reference_result_covid19 {#reference_result_covid19}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1170,7 +1170,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `shipment_id` | `shipment` | `shipment_id` |
 
-## reference_result_dbs
+## reference_result_dbs {#reference_result_dbs}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1183,7 +1183,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mandatory` | `int` | NO | 0 |  |  |
 | `sample_score` | `int` | NO | 1 |  |  |
 
-## reference_result_dts
+## reference_result_dts {#reference_result_dts}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1199,7 +1199,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `is_sample_diluted` | `varchar(50)` | YES | NULL |  |  |
 | `sample_score` | `decimal(10,4)` | NO | 0.0000 |  |  |
 
-## reference_result_eid
+## reference_result_eid {#reference_result_eid}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1214,7 +1214,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mandatory` | `int` | NO | 0 |  |  |
 | `sample_score` | `decimal(10,4)` | NO | 0.0000 |  |  |
 
-## reference_result_generic_test
+## reference_result_generic_test {#reference_result_generic_test}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1227,7 +1227,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mandatory` | `int` | NO | 0 |  |  |
 | `sample_score` | `decimal(10,4)` | NO | 0.0000 |  |  |
 
-## reference_result_recency
+## reference_result_recency {#reference_result_recency}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1244,7 +1244,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mandatory` | `int` | NO | 0 |  |  |
 | `sample_score` | `int` | NO | 1 |  |  |
 
-## reference_result_tb
+## reference_result_tb {#reference_result_tb}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1280,7 +1280,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `rif_ultra_resistance_consensus` | `varchar(3)` | YES | NULL |  |  |
 | `sample_score` | `decimal(10,4)` | NO | 0.0000 |  |  |
 
-## reference_result_vl
+## reference_result_vl {#reference_result_vl}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1293,7 +1293,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `mandatory` | `int` | NO | 0 |  |  |
 | `sample_score` | `decimal(10,4)` | NO | 0.0000 |  |  |
 
-## reference_vl_calculation
+## reference_vl_calculation {#reference_vl_calculation}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1332,7 +1332,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `int` | YES | NULL |  |  |
 | `use_range` | `varchar(255)` | NO | calculated |  |  |
 
-## reference_vl_methods
+## reference_vl_methods {#reference_vl_methods}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1341,7 +1341,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `assay` | `int` | NO | NULL | PRI |  |
 | `value` | `varchar(255)` | NO | NULL |  |  |
 
-## response_covid19_not_tested_reason
+## response_covid19_not_tested_reason {#response_covid19_not_tested_reason}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1349,7 +1349,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `covid19_not_tested_reason` | `varchar(500)` | YES | NULL |  |  |
 | `status` | `varchar(45)` | NO | active |  |  |
 
-## response_result_covid19
+## response_result_covid19 {#response_result_covid19}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1387,7 +1387,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `shipment_map_id` | `shipment_participant_map` | `map_id` |
 
-## response_result_dbs
+## response_result_dbs {#response_result_dbs}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1427,7 +1427,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_dts
+## response_result_dts {#response_result_dts}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1489,7 +1489,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_eid
+## response_result_eid {#response_result_eid}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1504,7 +1504,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_generic_test
+## response_result_generic_test {#response_result_generic_test}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1525,7 +1525,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_recency
+## response_result_recency {#response_result_recency}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1542,7 +1542,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(255)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_tb
+## response_result_tb {#response_result_tb}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1575,7 +1575,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## response_result_vl
+## response_result_vl {#response_result_vl}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1595,14 +1595,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_by` | `varchar(45)` | YES | NULL |  |  |
 | `updated_on` | `datetime` | YES | NULL |  |  |
 
-## run_once_scripts
+## run_once_scripts {#run_once_scripts}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `script_name` | `varchar(255)` | NO | NULL | PRI |  |
 | `executed_at` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## scheduled_jobs
+## scheduled_jobs {#scheduled_jobs}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1615,14 +1615,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `status` | `varchar(256)` | NO | pending |  |  |
 | `initated_by` | `int` | YES | NULL |  |  |
 
-## scheme_config
+## scheme_config {#scheme_config}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `scheme_config_name` | `varchar(32)` | NO | NULL | PRI |  |
 | `scheme_config_value` | `json` | YES | NULL |  |  |
 
-## scheme_list
+## scheme_list {#scheme_list}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1636,7 +1636,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `attribute_list` | `varchar(255)` | YES | NULL |  |  |
 | `status` | `varchar(255)` | YES | NULL |  |  |
 
-## scheme_testkit_map
+## scheme_testkit_map {#scheme_testkit_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1647,7 +1647,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `testkit_3` | `int` | NO | 0 |  |  |
 | `shipment_id` | `int` | YES | NULL |  |  |
 
-## shipment
+## shipment {#shipment}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1692,7 +1692,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `last_heartbeat` | `datetime` | YES | NULL |  |  |
 | `results_approved_by` | `varchar(256)` | YES | NULL |  |  |
 
-## shipment_participant_map
+## shipment_participant_map {#shipment_participant_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1760,7 +1760,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `report_download_metadata` | `json` | YES | NULL |  |  |
 | `individual_report_downloaded_on` | `datetime` | YES | NULL |  |  |
 
-## shipment_testkit_map
+## shipment_testkit_map {#shipment_testkit_map}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1771,7 +1771,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `testkit_2` | `int` | NO | 0 |  |  |
 | `testkit_3` | `int` | NO | 0 |  |  |
 
-## system_admin
+## system_admin {#system_admin}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1792,7 +1792,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `updated_on` | `datetime` | YES | NULL |  |  |
 | `updated_by` | `varchar(255)` | YES | NULL |  |  |
 
-## system_config
+## system_config {#system_config}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1800,14 +1800,14 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `value` | `longtext` | YES | NULL |  |  |
 | `display_name` | `longtext` | YES | NULL |  |  |
 
-## system_metadata
+## system_metadata {#system_metadata}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
 | `metadata_id` | `varchar(128)` | NO | NULL | PRI |  |
 | `metadata_value` | `text` | YES | NULL |  |  |
 
-## tb_instruments
+## tb_instruments {#tb_instruments}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1826,7 +1826,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | --- | --- | --- |
 | `participant_id` | `participant` | `participant_id` |
 
-## temp_mail
+## temp_mail {#temp_mail}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1848,7 +1848,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `sent_at` | `datetime` | YES | NULL |  |  |
 | `created_at` | `timestamp` | YES | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 
-## track_api_requests
+## track_api_requests {#track_api_requests}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1865,7 +1865,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `response_data` | `text` | YES | NULL |  |  |
 | `data_format` | `varchar(255)` | YES | NULL |  |  |
 
-## track_report_downloaded_history
+## track_report_downloaded_history {#track_report_downloaded_history}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |
@@ -1875,7 +1875,7 @@ Les indicateurs SQL `YES` et `NO` restent inchangés.
 | `downloaded_on` | `datetime` | NO | CURRENT_TIMESTAMP |  | DEFAULT_GENERATED |
 | `downloaded_by` | `varchar(256)` | NO | NULL |  |  |
 
-## user_login_history
+## user_login_history {#user_login_history}
 
 | Colonne | Type SQL | Nullable | Valeur par défaut | Clé | Attributs supplémentaires |
 | --- | --- | --- | --- | --- | --- |

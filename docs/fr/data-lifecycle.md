@@ -3,7 +3,7 @@
 Ce référentiel décrit le stockage et le nettoyage implémentés dans ePT 7.6.21.
 Les valeurs logicielles par défaut ne constituent pas une politique approuvée de conservation ou d'élimination du programme.
 
-## Emplacements de stockage
+## Emplacements de stockage {#storage-locations}
 
 Sauf indication contraire, les chemins sont relatifs au répertoire d'installation.
 
@@ -20,10 +20,10 @@ Sauf indication contraire, les chemins sont relatifs au répertoire d'installati
 | `backups/` | Destination par défaut des archives de la base | Le stockage sur le même serveur ne protège pas contre sa perte |
 | `backups/config/` | Copies de `application.ini`, et `templates.*.zip` avec les modèles de certificat, les en-têtes de rapport et les logos | Contiennent des secrets et ne constituent pas une sauvegarde complète de la configuration |
 
-Les emplacements des rapports sont décrits dans l'[architecture des programmes, en anglais](../SchemeArchitecture.md#file-output-locations).
+Les emplacements des rapports sont décrits dans l'[architecture des programmes](SchemeArchitecture.md#file-output-locations).
 Les chemins configurés et les destinations hors serveur doivent figurer dans le dossier de déploiement.
 
-## Opérations planifiées
+## Opérations planifiées {#scheduled-operations}
 
 La planification utilise le fuseau horaire de l'application et dépend du bon fonctionnement de cron/Crunz.
 La présence des définitions ne prouve pas la réussite des tâches.
@@ -39,7 +39,7 @@ La rétention par défaut de `db-tools.php` est de 15 archives de base de donné
 Les copies de configuration sont conservées au nombre de 26 par défaut, avec un seuil minimal de 4.
 L'outil ne crée pas de nouvelle copie lorsque le fichier est inchangé.
 
-## Règles de nettoyage
+## Règles de nettoyage {#housekeeping-rules}
 
 | Cible | Éligibilité | Limite de conservation |
 | --- | --- | --- |
@@ -56,11 +56,11 @@ Une installation inactive conserve donc sa dernière période d'activité.
 Le nettoyage ne cible ni les tables de réponses PT ni les répertoires des rapports générés.
 La suppression des métadonnées des requêtes API ne supprime pas les fichiers de contenu correspondants.
 
-## Décisions de politique hors du code
+## Décisions de politique hors du code {#policy-decisions-outside-the-code}
 
 Le responsable des données définit les durées de conservation des données PT, rapports, comptes, contenus API, sauvegardes et preuves d'audit.
 La politique doit aussi couvrir les obligations de gel de suppression, l'autorisation d'élimination,
 la vérification de suppression et les copies hors serveur.
 
-Les procédures de reprise figurent dans [sauvegarde et migration, en anglais](../backup-and-migration.md).
-Le [guide de remise](deployment-handover.md) consigne les responsables et les objectifs de reprise.
+Les procédures de reprise figurent dans [sauvegarde et migration](backup-and-migration.md).
+Le [guide de remise du déploiement](deployment-handover.md) consigne les responsables et les objectifs de reprise.
