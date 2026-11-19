@@ -11,7 +11,7 @@ ePT is designed to run as a **single central instance**, so the tooling here fav
 | `bin/setup.sh` | Fresh install on a new machine, with an optional database import |
 | `bin/upgrade.sh` (`ept update`) | Offers pre-upgrade database and folder backups |
 
-> **What is and isn't automated:** db-tools handles the **database** end-to-end. Application **code** is always fetched fresh from GitHub by `setup.sh`. **Uploaded files** (`public/uploads/`) and **config secrets** are never carried automatically — you copy those by hand during a move (see [Migrating to a new machine](#migrating-to-a-new-machine)).
+> **What is and isn't automated:** db-tools handles the **database** end-to-end. Application **code** is always fetched fresh from GitHub by `setup.sh`. **Uploaded files** (`public/uploads/`), **generated reports** (`downloads/`), **certificate templates** and **config secrets** are never carried automatically. Copy them by hand during a move. See [Migrating to a new machine](#migrating-to-a-new-machine).
 
 ---
 
@@ -32,7 +32,7 @@ ept backup verify
 
 `ept backup` runs as the account that owns the installation, so the archives stay readable by the app. Archives are written to `<ept>/backups` with a 15-archive retention by default.
 
-> **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) using an encryption password unless you pass `--no-encrypt`. **You need the same password to restore.** For a backup you intend to restore on a *different* machine, either record the encryption password or create an unencrypted archive with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine)).
+> **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) using an encryption password unless you pass `--no-encrypt`. **You need the same password to restore.** For a backup you intend to restore on a *different* machine, either record the encryption password or create an unencrypted archive with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine).
 
 ### Direct db-tools usage
 
@@ -66,8 +66,9 @@ timezone. It also defines a Sunday 01:00 snapshot of `application.ini`.
 These jobs require a working cron/Crunz runner. Verify execution before adding another
 backup schedule. Old archives beyond the retention count are pruned automatically.
 
-The configuration snapshot covers only `application.ini`. File backups, other
-configuration files and off-host copying require separate arrangements.
+The configuration snapshot writes two files to `backups/config/`. One is a copy of `application.ini`. The other is `templates.<timestamp>.zip`, which holds the uploaded certificate templates, report letterheads and logos. The snapshot skips the zip when no template changed. Restore the zip from the installation directory, because its paths are relative to it.
+
+The snapshot does not cover `application/configs/.env`, `public/uploads/` or `downloads/`. File backups and off-host copying need separate arrangements.
 See [storage and retention](data-lifecycle.md) for scope and default retention.
 
 > **Pre-upgrade backups are optional:** `ept update` offers database and folder backups.
@@ -109,7 +110,7 @@ php vendor/bin/db-tools purge-binlogs             # housekeeping (from the ePT d
 
 ## Migrating to a new machine
 
-`setup.sh` installs fresh code and **imports your database**, but it does **not** carry over uploads or config from the old machine. A complete move is therefore three parts: database, uploaded files, and config secrets.
+`setup.sh` installs fresh code and **imports your database**, but it does **not** carry over uploads or config from the old machine. A complete move has four parts: the database, uploaded files, generated reports, and config secrets.
 
 > **Preserve the salt and form secret:** Two values must survive the move, or existing hashed/encrypted data and logged-in sessions will break:
 >
@@ -121,17 +122,18 @@ php vendor/bin/db-tools purge-binlogs             # housekeeping (from the ePT d
 ### 1. On the old machine
 
 ```bash
-# Database — unencrypted for a straightforward migration
-php vendor/bin/db-tools backup --no-encrypt
-# (or keep it encrypted and carry the --encryption-password to the new box)
+# Database: unencrypted and gzip-compressed, because setup.sh reads only .sql, .gz and .zip
+php vendor/bin/db-tools backup --no-encrypt --compression=gzip
 
 # Uploaded files and config secrets — copy these off the box
 #   application/configs/application.ini   (contains security.salt + DB creds)
 #   application/configs/.env              (FORM_SECRET)
-#   public/uploads/                       (participant uploads, assets)
+#   public/uploads/                       (participant uploads, report formats, logos)
+#   downloads/                            (generated reports and participant files)
+#   scheduled-jobs/certificate-templates/ (certificate designs)
 ```
 
-Transfer the archive plus those files/folders to the new server (scp/rsync/USB — your choice).
+Transfer the archive and those files and folders to the new server with scp, rsync or a USB drive.
 
 ### 2. On the new machine
 
@@ -151,6 +153,8 @@ This builds the LAMP stack, downloads ePT, and imports your database instead of 
 ```bash
 # Put the uploaded files back
 rsync -a /path/to/old/public/uploads/  /var/www/ept/public/uploads/
+rsync -a /path/to/old/downloads/  /var/www/ept/downloads/
+rsync -a /path/to/old/scheduled-jobs/certificate-templates/  /var/www/ept/scheduled-jobs/certificate-templates/
 
 # Restore config secrets (review DB host/creds for the new box first)
 cp /path/to/old/application.ini  /var/www/ept/application/configs/application.ini
@@ -163,7 +167,7 @@ ept check
 
 > **Check DB credentials after copying application.ini:** `application.ini` carries the **old** machine's database host/user/password. If the new machine's MySQL differs, update `resources.db.params.*` before loading the app.
 
-Finally, log in at `http://<host>/admin`, confirm participants/shipments/reports render, and generate one report end-to-end to be sure uploads and the salt/secret came across intact.
+Finally, log in at `http://<host>/admin`, confirm participants and shipments render, and open one report that was finalized on the old machine. Then generate one new report to confirm uploads and the salt and secret came across intact.
 
 ---
 
@@ -174,6 +178,8 @@ Finally, log in at `http://<host>/admin`, confirm participants/shipments/reports
 | Application code | ✅ fresh from GitHub master | — |
 | Database | ✅ via `--db=<archive>` | Produce the archive with db-tools |
 | `public/uploads/` | ❌ | Copy manually |
+| `downloads/` | ❌ | Copy manually |
+| `scheduled-jobs/certificate-templates/` | ❌ | Copy manually |
 | `application.ini` / `.env` | ❌ regenerated from templates | Copy manually |
 | `security.salt` / `FORM_SECRET` | ❌ regenerated | **Must** copy from old machine |
 

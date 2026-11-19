@@ -99,7 +99,7 @@ Session-based authentication using `Zend_Session_Namespace`:
   - Force password reset capability.
   - CAPTCHA verification before login.
   - Session tracking via `UserLoginHistory`.
-  - A 30-minute web inactivity timeout. Participant impersonation defaults to a 15-minute idle timeout.
+  - A 120-minute web inactivity timeout by default. `session.idleMinutes` in `application.ini` sets it, within 10 to 480 minutes. Participant impersonation defaults to a 15-minute idle timeout.
 
 ### Authorization
 

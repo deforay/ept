@@ -8,7 +8,7 @@ Il décrit les paquets verrouillés. Il ne résulte pas d'une inspection des log
 | Composant | Référence enregistrée |
 | --- | --- |
 | ePT | `composer.json` déclare `AGPL-3.0-only`. Le dépôt contient `LICENSE.md` |
-| PHP | `composer.json` exige des versions compatibles avec PHP 8.4 |
+| PHP | `composer.json` exige PHP 8.4.27 ou ultérieur sur la branche 8.4, ou PHP 8.5.12 ou ultérieur |
 | Node.js | `package.json` exige Node.js 22 ou ultérieur pour produire les graphiques |
 | Base de données et serveur web | L'inventaire du déploiement fournit les versions réelles et les informations de licence des distributions |
 

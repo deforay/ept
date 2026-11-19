@@ -6,6 +6,8 @@
 
 **Important:** This installation works exclusively on Ubuntu 22.04 or later LTS versions. Ubuntu 24.04 LTS is recommended.
 
+ePT requires PHP 8.4.27 or later, or PHP 8.5.12 or later. On older releases ePT refuses to start. `setup.sh` and `ept update` install a supported release.
+
 ### Installation Steps
 
 Open your terminal and execute these commands sequentially:
@@ -252,7 +254,7 @@ docker compose --profile ssl exec nginx nginx -s reload
 ### 2. Configure PHP
 
 - Download `cacert.pem` from https://curl.se/docs/caextract.html and place in `C:\wamp64\`
-- Switch PHP version to 8.4: WampServer icon > PHP > version > 8.4.x
+- Switch PHP version to 8.4: WampServer icon > PHP > version > 8.4.x. The release must be 8.4.27 or later. ePT refuses to start on older 8.4 releases. If WampServer offers no such release, install a newer PHP addon from the WampServer site.
 - Open `php.ini` via WampServer icon > PHP > php.ini and modify:
   - `memory_limit` = `2G` (or higher if available)
   - `post_max_size` = `500M`
@@ -322,7 +324,7 @@ composer dump-autoload -o
   - Database credentials (`resources.db.params.*`)
   - Email SMTP settings (or set them later on **Configure → ePT Global Settings**, see [Keeping email delivery working](email.md))
   - Security salt (set to a random string)
-- Set your organization name on **Configure → ePT Global Settings** and the evaluation settings on **Configure → Scheme Settings** after you sign in
+- Set your organization name on **Configure → ePT Global Settings** and the evaluation settings on **Configure → Scheme Config** after you sign in
 
 **Virtual host setup:**
 

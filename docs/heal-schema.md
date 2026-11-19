@@ -5,7 +5,7 @@ Use `sql/init.sql` to restore missing schema before running migrations.
 1. Back up the database:
 
    ```sh
-   ept db-backup
+   ept backup
    ```
 
 2. Preview the repairs:

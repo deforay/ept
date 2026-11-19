@@ -18,7 +18,7 @@ Sauf indication contraire, les chemins sont relatifs au répertoire d'installati
 | `public/temporary/` | Exports temporaires et fichiers de travail | Soumis au nettoyage |
 | `logs/` | Journaux applicatifs | Peuvent contenir des informations opérationnelles et de compte |
 | `backups/` | Destination par défaut des archives de la base | Le stockage sur le même serveur ne protège pas contre sa perte |
-| `backups/config/` | Copies de `application.ini` | Contiennent des secrets et ne constituent pas une sauvegarde complète de la configuration |
+| `backups/config/` | Copies de `application.ini`, et `templates.*.zip` avec les modèles de certificat, les en-têtes de rapport et les logos | Contiennent des secrets et ne constituent pas une sauvegarde complète de la configuration |
 
 Les emplacements des rapports sont décrits dans l'[architecture des programmes, en anglais](../SchemeArchitecture.md#file-output-locations).
 Les chemins configurés et les destinations hors serveur doivent figurer dans le dossier de déploiement.
@@ -44,7 +44,7 @@ L'outil ne crée pas de nouvelle copie lorsque le fichier est inchangé.
 | Cible | Éligibilité | Limite de conservation |
 | --- | --- | --- |
 | `track_api_requests` | Métadonnées des requêtes | 90 jours selon `requested_on` |
-| `temp_mail` | Statuts terminaux `sent`, `failed`, `failure`, `fail` | 30 jours selon l'horodatage disponible d'envoi, de mise à jour ou de mise en file |
+| `temp_mail` | Statuts terminaux `sent`, `failed`, `failure`, `fail`, `cancelled` | 30 jours selon l'horodatage disponible d'envoi, de mise à jour ou de mise en file |
 | `push_notification` | Statut nul ou différent de `pending` | 90 jours selon `created_on` |
 | `audit_log` | Activité enregistrée ancienne | 730 jours avant le `created_on` le plus récent de la table |
 | `user_login_history` | Activité de connexion ancienne | 730 jours avant le dernier horodatage de connexion de la table |

@@ -8,7 +8,7 @@ A one-page reference for procurement and infrastructure teams planning an ePT de
 
 | Component | Technology |
 | --------- | ---------- |
-| Language | PHP 8.4 |
+| Language | PHP 8.4.27 or later, or PHP 8.5.12 or later |
 | Database | MySQL 8+ |
 | Web Server | Apache 2 with `mod_rewrite` |
 | OS | Ubuntu 24.04 LTS (recommended) |

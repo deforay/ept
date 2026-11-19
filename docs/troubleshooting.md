@@ -16,6 +16,7 @@ These procedures target ePT 7.6.21 and require access appropriate to the affecte
 | --- | --- | --- | --- |
 | Site unavailable | Web service, database connectivity, disk space and certificate | Restore the failed infrastructure component through the hosting procedure | Load the site and sign in |
 | Code/database mismatch | `php bin/check-version-sync.php` | Follow [update recovery](updating.md#fix-a-version-mismatch) | Version check succeeds |
+| Page says "ePT requires PHP 8.4.27 or later" | `php -v` on the server | Run `sudo ept update`, which upgrades PHP. On Windows, switch WampServer to PHP 8.4.27 or later | The site loads and `ept check` passes |
 | Missing participants or shipments | Account status, participant mapping and enrollment | Correct the assignment through authorized administration | Affected account sees the intended records only |
 | Response cannot be edited | Shipment status, response switch, deadline and account permissions | Ask the programme administrator to review collection state | A permitted test response saves and reopens |
 | Late response awaiting review | Supported submission path and late-submission state | Have an authorized administrator review the held response | Approved result appears in the intended workflow |

@@ -9,7 +9,7 @@ Il présente les contrôles et leurs limites. Il ne constitue ni un rapport de t
 | --- | --- | --- |
 | Authentification web | Sessions distinctes pour les administrateurs et les gestionnaires de données | Les fiches participants sont distinctes des comptes de connexion |
 | Vérification des mots de passe | Les empreintes sont vérifiées avec `password_verify()` | La réinitialisation et la gestion des accès nécessitent aussi des contrôles opérateur |
-| Inactivité de session | Les sessions web authentifiées normales expirent après 1 800 secondes d'inactivité | Les jetons API suivent un fonctionnement distinct |
+| Inactivité de session | Par défaut, les sessions web authentifiées normales expirent après 120 minutes d'inactivité. `session.idleMinutes` dans `application.ini` modifie cette limite, entre 10 et 480 minutes | Les jetons API suivent un fonctionnement distinct |
 | Connexion en tant que participant | L'activité de consultation par un administrateur est journalisée, avec une limite d'inactivité par défaut de 900 secondes | Il s'agit d'une fonction d'assistance privilégiée |
 | Autorisation | Les privilèges administratifs et les associations de participants limitent les accès | Chaque point d'accès nécessite des tests d'accès autorisé et interdit |
 | Contrôle CSRF | Les requêtes web modificatrices peuvent nécessiter un jeton de session et une comparaison à temps constant | Les requêtes XHR, API, CLI, les routes d'erreur et l'absence de jeton de session contournent cet auxiliaire |
