@@ -520,8 +520,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 $file = 'feedback-form';
                 $field = 'shipment_id';
             }
-            $clone = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '/type/clone" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Clone</a>';
-            $edit = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $clone = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '/type/clone" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Clone') . '</a>';
+            $edit = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
             // $downloadResponse = '<a href="javascript:void(0);" onclick="generateFeedbackResponseReports(' . $aRow['shipment_id'] . ')" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download"></i> Download Feedback</a>';
 
             $row[] = $edit . $clone;

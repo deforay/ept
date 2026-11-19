@@ -141,7 +141,7 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
             $row[] = $inert($aRow['country']);
             $row[] = $inert($aRow['subject'] ?: $aRow['reason']);
             $row[] = '<div class="contact-message">' . nl2br($inert($aRow['message'] ?: $aRow['additional_info'])) . '</div>';
-            $row[] = '<a href="/admin/data-managers/add/contact/' . (int) $aRow['contact_id'] . '" class="btn btn-default btn-xs"><i class="icon-plus"></i> ' . $plain($translator->_('Add PT Participant')) . '</a>';
+            $row[] = '<a href="/admin/data-managers/add/contact/' . (int) $aRow['contact_id'] . '" class="btn btn-default btn-xs"><i class="icon-plus"></i> ' . $plain($translator->_('Create Data Manager login')) . '</a>';
 
             $output['aaData'][] = $row;
         }

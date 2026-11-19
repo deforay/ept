@@ -167,9 +167,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['scheme_name']);
             $row[] = $aRow['scheme_id'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/custom-test/edit/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>'
-                . '<a href="/admin/custom-test/clone/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>'
-                . '<a href="/admin/custom-test/export/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download-alt"></i> Export</a>';
+            $row[] = '<a href="/admin/custom-test/edit/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>'
+                . '<a href="/admin/custom-test/clone/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Clone') . '</a>'
+                . '<a href="/admin/custom-test/export/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download-alt"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Export') . '</a>';
             $output['aaData'][] = $row;
         }
 
@@ -469,7 +469,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['scheme_name']);
             $row[] = strtoupper($aRow['scheme_id']);
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/schemes/manage-test-results/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Test Results</a>';
+            $row[] = '<a href="/admin/schemes/manage-test-results/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Test Results') . '</a>';
             $output['aaData'][] = $row;
         }
 

@@ -23,7 +23,7 @@ résultats d'un gestionnaire de données sont arrivés dans ePT.
 4. Sous **Sélectionner le type de synchronisation (optionnel)**,
    choisissez **Save Shipments**.
 5. Trouvez la ligne dans la liste.
-6. Cliquez sur **Show Params** pour voir ce qui a été envoyé et ce
+6. Cliquez sur **Afficher les paramètres** pour voir ce qui a été envoyé et ce
    qu'ePT a renvoyé.
 
 La fenêtre comporte un onglet **REQUEST** et un onglet
@@ -55,4 +55,4 @@ nouveau.
 | **Type de programme** | Le programme, ou **COMMON** quand la requête ne concerne pas un programme précis |
 | **URL** | L'adresse appelée |
 | **Synchronisé le** | La date de réception de la requête par ePT |
-| **Action** | **Show Params** |
+| **Action** | **Afficher les paramètres** |

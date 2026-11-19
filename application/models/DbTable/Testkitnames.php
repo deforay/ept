@@ -279,7 +279,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             $row[] = $ptValidated;
             $row[] = $approved;
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
-            $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
         }

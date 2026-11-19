@@ -56,7 +56,7 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
                 ?>
                 <input type="hidden" name="pre_section_image" id="pre-file" value="<?php echo $sectionImage; ?>">
                 <div class="col-lg-5">
-                    <input type="file" id="file" name="section_file" class="form-control" />
+                    <input type="file" id="file" name="section_file" class="form-control" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx" />
                     <?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists($filePath)) { ?>
                         <a href="/uploads/<?php echo $sectionImage; ?>" target="_blank">Click here to view file</a>
                     <?php } ?>

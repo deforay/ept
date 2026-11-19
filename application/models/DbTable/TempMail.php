@@ -398,14 +398,14 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             }
             $messageCell = '<div class="mail-snippet">' . htmlspecialchars($snippet, ENT_QUOTES) . '</div>'
                 . '<button type="button" class="btn btn-default btn-xs view-mail" data-message="'
-                . htmlspecialchars((string) $aRow['message'], ENT_QUOTES) . '">View</button>';
+                . htmlspecialchars((string) $aRow['message'], ENT_QUOTES) . '">' . Pt_Commons_TranslateUtility::htmlTranslate('View') . '</button>';
 
             $row = [];
             $row[] = htmlspecialchars((string) $aRow['to_email'], ENT_QUOTES);
             $row[] = htmlspecialchars((string) $aRow['subject'], ENT_QUOTES);
             $row[] = $messageCell;
-            $row[] = ucwords((string) $aRow['status']);
-            $row[] = ucwords(str_replace(['-', '_'], ' ', (string) $aRow['failure_type']));
+            $row[] = htmlspecialchars(self::statusLabel((string) $aRow['status']), ENT_QUOTES);
+            $row[] = htmlspecialchars(self::failureTypeLabel((string) $aRow['failure_type']), ENT_QUOTES);
             $row[] = htmlspecialchars((string) $aRow['failure_reason'], ENT_QUOTES);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['updated_at'], true);
 
@@ -413,5 +413,37 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+
+    /** Translated label for a temp_mail status. Each label is a literal so the catalog picks it up. */
+    private static function statusLabel(string $status): string
+    {
+        $t = Zend_Registry::get('translate');
+        return match ($status) {
+            'failed', 'failure', 'fail' => $t->_('Failed'),
+            'sent' => $t->_('Sent'),
+            'pending' => $t->_('Pending'),
+            'cancelled' => $t->_('Cancelled'),
+            default => ucwords($status),
+        };
+    }
+
+    /** Translated label for a failure_type, as set by Common::classifyMailFailure() and the mail jobs. */
+    private static function failureTypeLabel(string $type): string
+    {
+        $t = Zend_Registry::get('translate');
+        return match ($type) {
+            'bad-recipient' => $t->_('Bad recipient'),
+            'connectivity' => $t->_('Connection problem'),
+            'content' => $t->_('Message content rejected'),
+            'rate-limit' => $t->_('Sending limit reached'),
+            'smtp-auth' => $t->_('Mail login refused'),
+            'invalid_dsn' => $t->_('Mail settings not usable'),
+            'not_configured' => $t->_('Email not set up'),
+            'expired' => $t->_('Expired'),
+            'dev_trap_block' => $t->_('Held by the development mail trap'),
+            'other' => $t->_('Other'),
+            default => ucwords(str_replace(['-', '_'], ' ', $type)),
+        };
     }
 }

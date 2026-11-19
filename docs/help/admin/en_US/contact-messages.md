@@ -40,14 +40,14 @@ bar to read them here.
 | **Country** | The country the sender chose |
 | **Subject** | The subject the sender wrote |
 | **Message** | The message text |
-| **Action** | **Add PT Participant** |
+| **Action** | **Create Data Manager login** |
 
 Web addresses in a message show as plain text, for example
 `hxxps://example[.]com`. A click cannot open them.
 
 ## Add a login for the sender
 
-Click **Add PT Participant** to open **Add New Data Manager
-(Participant Login)**. The sender's first and last names are
-already filled in. Complete the form and save it. See [Data
+Click **Create Data Manager login** to open **Add New Data
+Manager (Participant Login)**. The sender's email, names, lab and
+phone are already filled in. Complete the form and save it. See [Data
 Manager form](data-managers-form.md).

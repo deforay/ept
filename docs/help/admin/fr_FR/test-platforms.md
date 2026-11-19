@@ -63,7 +63,7 @@ approuvées.
 
 ## Modifier une plateforme de test
 
-1. Cliquez sur **Edit** dans la ligne de la plateforme.
+1. Cliquez sur **Modifier** dans la ligne de la plateforme.
 2. Modifiez les champs. **Approuvé** indique si la plateforme compte
    comme approuvée dans la liste.
 3. Cliquez sur **Mettre à jour**.

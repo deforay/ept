@@ -93,23 +93,23 @@
     <tr>
         <td>
             <select id="filterJobType" name="filterJobType" class="form-control input-sm" onchange="applyFilters();">
-                <option value="">-- All Job Types --</option>
-                <option value="Report Generation">Report Generation</option>
-                <option value="Evaluation">Evaluation</option>
-                <option value="Certificate Generation">Certificate Generation</option>
-                <option value="Email Reports">Email Reports</option>
-                <option value="Send Emails">Send Emails</option>
-                <option value="TB Forms Generation">TB Forms Generation</option>
-                <option value="Bulk Password Reset">Bulk Password Reset</option>
+                <option value="">-- <?= $this->translate->_("All Job Types"); ?> --</option>
+                <option value="Report Generation"><?= $this->translate->_("Report Generation"); ?></option>
+                <option value="Evaluation"><?= $this->translate->_("Evaluation"); ?></option>
+                <option value="Certificate Generation"><?= $this->translate->_("Certificate Generation"); ?></option>
+                <option value="Email Reports"><?= $this->translate->_("Email Reports"); ?></option>
+                <option value="Send Emails"><?= $this->translate->_("Send Emails"); ?></option>
+                <option value="TB Forms Generation"><?= $this->translate->_("TB Forms Generation"); ?></option>
+                <option value="Bulk Password Reset"><?= $this->translate->_("Bulk Password Reset"); ?></option>
             </select>
         </td>
         <td>
             <select id="filterStatus" name="filterStatus" class="form-control input-sm" onchange="applyFilters();">
-                <option value="">-- All Statuses --</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
+                <option value="">-- <?= $this->translate->_("All Statuses"); ?> --</option>
+                <option value="pending"><?= $this->translate->_("Pending"); ?></option>
+                <option value="processing"><?= $this->translate->_("Processing"); ?></option>
+                <option value="completed"><?= $this->translate->_("Completed"); ?></option>
+                <option value="failed"><?= $this->translate->_("Failed"); ?></option>
             </select>
         </td>
         <td>
@@ -441,7 +441,7 @@
         var end = resolveEnd(row);
         if (end) return formatDateTime(end);
         if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
-            return '<span class="job-status-processing"><i class="icon-spinner icon-spin"></i> running</span>';
+            return '<span class="job-status-processing"><i class="icon-spinner icon-spin"></i> <?= $this->jsTranslate('running'); ?></span>';
         }
         return '<span class="text-muted">-</span>';
     }

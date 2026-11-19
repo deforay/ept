@@ -168,9 +168,9 @@
 
         var m = payload.meta || {};
         var pills = [
-            (m.count || 0) + ' lines (cap ' + (m.limit || 0) + ')',
+            '<?= $this->jsTranslate('%1$s lines (cap %2$s)'); ?>'.replace('%1$s', m.count || 0).replace('%2$s', m.limit || 0),
             ((m.size || 0) / 1024).toFixed(1) + ' KB',
-            'Last write: ' + (m.mtime || '')
+            '<?= $this->jsTranslate('Last write:'); ?> ' + (m.mtime || '')
         ];
         for (var i = 0; i < pills.length; i++) {
             metaEl.appendChild(el('span', { className: 'pill', text: pills[i] }));
@@ -249,14 +249,14 @@
     document.getElementById('logvDelete').addEventListener('click', function () {
         var name = fileSel.value;
         if (!name) { return; }
-        if (!confirm('Delete log file "' + name + '"? This cannot be undone.')) { return; }
+        if (!confirm('<?= $this->jsTranslate('Delete log file %s? This cannot be undone.'); ?>'.replace('%s', '"' + name + '"'))) { return; }
         postDelete({ channel: channel, mode: 'file', file: name }, function () { location.reload(); });
     });
     document.getElementById('logvDeleteAll').addEventListener('click', function () {
-        if (!confirm('Delete ALL log files for the "' + channel + '" channel? This cannot be undone.')) { return; }
-        if (!confirm('Are you sure? Every dated file in this channel will be removed.')) { return; }
+        if (!confirm('<?= $this->jsTranslate('Delete ALL log files for the %s channel? This cannot be undone.'); ?>'.replace('%s', '"' + channel + '"'))) { return; }
+        if (!confirm('<?= $this->jsTranslate('Are you sure? Every dated file in this channel will be removed.'); ?>')) { return; }
         postDelete({ channel: channel, mode: 'all' }, function (json) {
-            alert('Deleted ' + (json.deleted || 0) + ' file(s).');
+            alert('<?= $this->jsTranslate('Deleted %s file(s).'); ?>'.replace('%s', json.deleted || 0));
             location.reload();
         });
     });

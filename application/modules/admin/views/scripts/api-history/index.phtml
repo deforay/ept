@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Audit Log"); ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("API Sync History"); ?></div>
 </h4>
 
 <table style="margin:20px 0;" class="table table-bordered">
@@ -23,7 +23,7 @@
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range" onchange="drawTable();" />
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" onchange="drawTable();" />
         </td>
         <td>
             <select id="syncType" name="syncType" onchange="drawTable();" class="form-control input-sm">

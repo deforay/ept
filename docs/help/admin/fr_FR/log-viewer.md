@@ -28,12 +28,11 @@ s'ouvre avec l'ID d'erreur déjà saisi dans la zone de recherche.
 
 ## Choisir le journal
 
-Les deux onglets du haut choisissent le journal. Leurs noms
-s'affichent en anglais :
+Les deux onglets du haut choisissent le journal :
 
-- **Application Errors** : les problèmes sur le serveur.
-- **Client (Browser) Errors** : les problèmes dans le navigateur
-  des utilisateurs.
+- **Erreurs de l'application** : les problèmes sur le serveur.
+- **Erreurs du client (navigateur)** : les problèmes dans le
+  navigateur des utilisateurs.
 
 ## Commandes
 

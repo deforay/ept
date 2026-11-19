@@ -485,7 +485,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 											$dc = !empty($row['display_context']) ? $row['display_context'] : 'all';
 											$dcName = $locked ? 'lockedDisplayContext[' . $encId . ']' : 'displayContext[' . $i . ']';
 											?>
-											<select name="<?= $dcName; ?>" class="form-control" <?php echo $disable; ?>
+											<select name="<?= $dcName; ?>" class="form-control"
 												title="<?= $this->translate->_("Please select who this result is displayed to"); ?>">
 												<option value="all" <?= ($dc === 'all') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All"); ?></option>
 												<option value="participant" <?= ($dc === 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
@@ -495,7 +495,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 										</td>
 										<td>
 											<?php $soName = $locked ? 'lockedSortOrder[' . $encId . ']' : 'sortOrder[' . $i . ']'; ?>
-											<input type="text" name="<?= $soName; ?>" class="form-control js-sort" <?php echo $disable; ?>
+											<input type="text" name="<?= $soName; ?>" class="form-control js-sort"
 												value="<?= htmlspecialchars((string) ($row['sort_order'] ?? '')); ?>" placeholder="0" />
 										</td>
 										<td class="action-cell">
