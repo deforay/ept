@@ -41,9 +41,12 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = [
-            'result' => '',
-            'repeat_result' => '',
+            'result_1' => '',
+            'result_2' => '',
+            'result_3' => '',
             'reported_result' => '',
+            'is_result_invalid' => null,
+            'error_code' => null,
             'additional_detail' => '',
             'comments' => '',
             'updated_by' => $authNameSpace->dm_id,
@@ -63,8 +66,9 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             $data = [
                 'shipment_map_id' => $params['mapId'],
                 'sample_id' => $sampleId,
-                'result' => $params['result']->$key ?? null,
-                'repeat_result' => $params['repeatResult']->$key ?? null,
+                // The API keeps its older field names. They map to the renamed columns.
+                'result_1' => $params['result']->$key ?? null,
+                'result_2' => $params['repeatResult']->$key ?? null,
                 'reported_result' => $params['finalResult']->$key ?? null,
                 'additional_detail' => $params['additionalDetail']->$key ?? null,
                 'comments' => $params['comments']->$key ?? null,
