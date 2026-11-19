@@ -49,7 +49,7 @@ voulez faire ensuite :
   préparer les panels tout de suite. C'est le parcours habituel.
 - **Enregistrer et ajouter l'expédition plus tard** : enregistre
   l'enquête et vous ramène à la liste des enquêtes. La nouvelle
-  enquête reste à l'état *Not yet fully set up* jusqu'à ce que vous
+  enquête reste à l'état **Créé** jusqu'à ce que vous
   y ajoutiez des expéditions.
 
 Utilisez **Annuler** pour abandonner les modifications et revenir à
@@ -62,9 +62,9 @@ la liste des enquêtes.
   enquêtes restent masquées jusqu'au clic sur **Expédier maintenant**
   dans la liste des enquêtes, une fois leurs expéditions entièrement
   préparées.
-- Vous pouvez modifier le code ou d'autres informations plus tard
-  depuis la liste des enquêtes, tant que les expéditions ne sont pas
-  parties.
+- Vous pouvez modifier la date et le code plus tard depuis la liste
+  des enquêtes. Le code se verrouille dès qu'une des expéditions de
+  l'enquête est finalisée.
 
 ## Conseils
 

@@ -44,11 +44,9 @@ désactivé.
 
 ## Programmes
 
-Le formulaire de modification affiche aussi les **programmes**
-auxquels ce participant est inscrit. Utilisez cette section pour
-inscrire le participant à des programmes PT ou le désinscrire, par
-exemple pour l'ajouter à un nouveau panel de charge virale ou le
-retirer d'un programme abandonné.
+Le champ **Programmes** liste les programmes auxquels ce participant
+est inscrit. Ajoutez ou retirez des programmes ici, par exemple pour
+inscrire le participant au programme de charge virale.
 
 ## Réinitialiser le mot de passe
 
@@ -59,7 +57,7 @@ passe vides, l'ancien mot de passe est conservé.
 
 ## Enregistrer
 
-Cliquez sur le bouton d'envoi en bas pour enregistrer. Vous
+Cliquez sur **Mettre à jour** en bas pour enregistrer. Vous
 revenez à la liste des participants. Si vous remplacez l'ID du
 participant par un ID qui appartient déjà à un autre participant,
 la vérification des doublons le signale et bloque

@@ -91,8 +91,10 @@ désactivé est affiché.
   d'attente ou en cours.
 - **Plage VL** : uniquement pour les expéditions **VL**. Ouvre
   l'éditeur manuel des plages de référence.
-- Le bouton d'e-mail aux participants sans réponse reste affiché tant
-  que certains laboratoires n'ont pas répondu.
+- **Relancer** *(avec le nombre de laboratoires)* : envoie un e-mail
+  aux laboratoires qui n'ont pas répondu. Il s'affiche uniquement
+  tant que les réponses sont ouvertes : avant la date limite, et
+  avant la finalisation ou l'annulation de l'expédition.
 
 ### Après la génération des rapports
 

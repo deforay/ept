@@ -100,8 +100,8 @@ participants** pour les relances.
   plus récentes en haut. Le cycle en cours est donc toujours en tête.
 - Pour voir uniquement les enquêtes qui attendent d'être expédiées,
   saisissez *configured* dans la recherche de la colonne **Statut**.
-  Seules les lignes *Prêt à être expédié* s'affichent, et vous pouvez
-  les traiter une à une.
-- La modification d'une enquête *après* l'expédition est limitée : la
-  date est verrouillée une fois les expéditions parties (voir l'aide
-  **Modifier l'enquête PT** pour plus de détails).
+  Seules les lignes **Configured** s'affichent, et vous pouvez les
+  traiter une à une.
+- Après l'expédition, vous pouvez encore modifier la date. Le code se
+  verrouille dès qu'une des expéditions de l'enquête est finalisée.
+  Voir l'aide **Modifier l'enquête PT**.

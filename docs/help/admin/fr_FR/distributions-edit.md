@@ -28,7 +28,7 @@ pour la signification de chaque champ.
   revient à la liste des enquêtes.
 - **Ajouter et passer à l'expédition** : enregistre vos modifications
   et ouvre la page des expéditions. Utile quand l'enquête est encore à
-  l'état *Not yet fully set up* et qu'il faut ajouter ou ajuster des
+  l'état **Créé** et qu'il faut ajouter ou ajuster des
   expéditions.
 
 Utilisez **Annuler** pour abandonner les modifications et revenir à

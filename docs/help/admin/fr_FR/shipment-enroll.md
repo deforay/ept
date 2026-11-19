@@ -16,8 +16,9 @@ La page comporte deux sections côte à côte :
   expédition.
 - **À droite** : les participants **sélectionnés** pour cette expédition.
 
-Cliquez sur le nom d'un participant pour le faire passer d'un côté à
-l'autre. Rien n'est enregistré avant que vous cliquiez sur **Inscrire**
+À la première ouverture de la page, les participants inscrits au
+programme sont déjà à droite. Cliquez sur le nom d'un participant
+pour le faire passer d'un côté à l'autre. Rien n'est enregistré avant que vous cliquiez sur **Inscrire**
 en bas de la page.
 
 ## La méthode rapide : les outils de sélection automatique

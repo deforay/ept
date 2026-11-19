@@ -27,7 +27,7 @@ pouvez :
 - Un petit tableau affiche le **Type de programme**, le **Code de
   l'enquête PT** et la **Date**.
 
-## Fichier d'action corrective et commentaire commun
+## Fichiers d'action corrective et commentaire commun
 
 Juste sous l'en-tête se trouve un petit formulaire. Les deux champs
 s'appliquent à **tous** les participants de cette expédition et
@@ -45,8 +45,7 @@ pas réussi. Il explique la marche à suivre.
 - Un bouton de téléchargement **Action corrective** apparaît à côté
   du rapport du participant. Il reçoit ainsi ces consignes avec son
   résultat.
-- Pour retirer le fichier, téléversez simplement un nouveau fichier à
-  sa place.
+- Pour retirer le fichier, téléversez un nouveau fichier à sa place.
 
 ### Commentaire pour tous les participants de cette expédition
 
@@ -71,8 +70,9 @@ finalisation de l'expédition.
 
 ## Afficher uniquement les résultats modifiés
 
-Au-dessus du tableau, le filtre **Remplacement manuel uniquement**
-affiche uniquement les lignes que vous avez modifiées à la main.
+Dans les filtres au-dessus du tableau, réglez **Remplacement manuel
+uniquement** pour afficher uniquement les lignes que vous avez
+modifiées à la main.
 C'est utile pour une dernière vérification avant de générer les
 rapports.
 
