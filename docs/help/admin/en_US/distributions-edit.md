@@ -36,7 +36,7 @@ list.
 
 ## Editing after shipping
 
-Once a survey has been shipped (status **Already shipped**), it
+Once a survey has been shipped (status **Shipped**), it
 is already visible to participants. The system protects shipped
 surveys from changes that would confuse people:
 

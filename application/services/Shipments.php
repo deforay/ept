@@ -588,15 +588,15 @@ class Application_Service_Shipments
             // Finalized shipments get no Edit button (and no disabled "Finalized"
             // placeholder — the Status column already says it).
             if ($aRow['status'] != 'finalized') {
-                $edit = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
+                $edit = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</span></a>';
             }
 
             // Clone is offered for every shipment (including finalized) so the sample
             // panel and config can be re-used for a new PT Survey.
-            $clone = '<a class="btn btn-warning btn-xs" href="/admin/shipment/clone/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-copy"></i> Clone</span></a>';
+            $clone = '<a class="btn btn-warning btn-xs" href="/admin/shipment/clone/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-copy"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Clone') . '</span></a>';
 
             if ($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized') {
-                $enrolled = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
+                $enrolled = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Enroll') . '</span></a>';
             }
             // The disabled "Shipped" placeholder button is gone — the Status column
             // already carries that information. Notify is parked, not removed:
@@ -604,7 +604,7 @@ class Application_Service_Shipments
             //     $announcementMail = '<a class="btn btn-warning btn-xs" href="javascript:void(0);" title="Send the new shipment mail to participants" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> Notify</span></a>';
             // }
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
-                $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment</span></a>';
+                $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Enrollment') . '</span></a>';
             }
             // Finalized and cancelled shipments are closed — no TB form
             // generation or download from this grid.
@@ -624,7 +624,7 @@ class Application_Service_Shipments
                 }
             }
             if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
-                $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> Remind</span></a>';
+                $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Remind') . '</span></a>';
             }
             $testkitbtn = '';
             if ((!empty($aRow['shipment_id']) && $dtsSchemeType == 'vietnam' && $aRow['scheme_type'] == 'dts') && $aRow['status'] != 'finalized') {

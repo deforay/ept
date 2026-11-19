@@ -3,8 +3,10 @@
 // frame — see Admin_SchemeConfigController for why one scheme at a time.
 $currentScheme = $this->currentScheme ?? '';
 $schemeLabels = (array) ($this->schemeLabels ?? []);
-$this->schemeConfigTitle = $this->translate->_($schemeLabels[$currentScheme] ?? $currentScheme)
-    . ' ' . $this->translate->_('Settings');
+$this->schemeConfigTitle = sprintf(
+    $this->translate->_('%s Settings'),
+    $this->translate->_($schemeLabels[$currentScheme] ?? $currentScheme)
+);
 ?>
 <?php echo $this->render('partials/scheme-config-open.phtml'); ?>
 

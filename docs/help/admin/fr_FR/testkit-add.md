@@ -60,9 +60,8 @@ réussi/échec.
 - **Annuler** : abandonne les modifications et revient à la liste.
 
 À l'enregistrement, un nouveau kit est **marqué comme approuvé par
-défaut**. Il apparaît tout de suite dans les listes déroulantes des
-participants. Utilisez le formulaire *Modifier* pour le passer en non
-approuvé si vous voulez le masquer.
+défaut**. Les participants peuvent le choisir dès qu'il est associé au
+programme et au numéro de test. **Approuvé** ne change rien à cela.
 
 ## Conseils
 

@@ -55,9 +55,9 @@ pass/fail result.
 - **Add** — saves the form and returns to the test-kit list.
 - **Cancel** — discards changes and returns to the list.
 
-A new kit is **marked as Approved by default** on save — it
-appears in participant dropdowns right away. Use the *Edit*
-form to switch it to unapproved if you want to hide it.
+A new kit is **marked as Approved by default** on save.
+Participants can pick it once it is mapped to the scheme and test
+number. **Approved** does not change that.
 
 ## Tips
 
