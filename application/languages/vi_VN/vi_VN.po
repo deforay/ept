@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 20:44+0530\n"
+"POT-Creation-Date: 2026-11-19 21:06+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -99,7 +99,7 @@ msgstr ""
 "sau khi hoàn nguyên theo quy trình tiêu chuẩn (SOP)."
 
 #: application/languages/db-translation-strings.php:47
-#: application/models/Dts.php:2305
+#: application/models/Dts.php:2311
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:12
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:176
 #: library/Pt/Commons/ImportTemplate.php:81
@@ -120,8 +120,8 @@ msgid "Did not meet the minimum score required"
 msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 
 #: application/languages/db-translation-strings.php:55
-#: application/models/Dts.php:1610 application/models/Dts.php:1628
-#: application/models/Dts.php:2309 application/models/Dts.php:2386
+#: application/models/Dts.php:1616 application/models/Dts.php:1634
+#: application/models/Dts.php:2315 application/models/Dts.php:2392
 #: application/modules/admin/views/scripts/data-managers/index.phtml:233
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:80
 #: application/modules/admin/views/scripts/enrollments/add.phtml:51
@@ -218,7 +218,7 @@ msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 #: application/languages/db-translation-strings.php:85
 #: application/models/DbTable/DataManagers.php:469
 #: application/models/DbTable/Distribution.php:156
-#: application/models/Dts.php:2312
+#: application/models/Dts.php:2318
 #: application/modules/admin/views/scripts/audit-log/index.phtml:654
 #: application/modules/admin/views/scripts/email-participants/index.phtml:464
 #: application/modules/admin/views/scripts/login/index.phtml:190
@@ -974,9 +974,9 @@ msgid "Private hospital"
 msgstr "Bệnh viện tư nhân"
 
 #: application/languages/db-translation-strings.php:377
-#: application/models/Dts.php:1609 application/models/Dts.php:1627
-#: application/models/Dts.php:2308 application/models/Dts.php:2338
-#: application/models/Dts.php:2358 application/models/Dts.php:2385
+#: application/models/Dts.php:1615 application/models/Dts.php:1633
+#: application/models/Dts.php:2314 application/models/Dts.php:2344
+#: application/models/Dts.php:2364 application/models/Dts.php:2391
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:70
 #: application/modules/admin/views/scripts/enrollments/add.phtml:40
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:306
@@ -2985,7 +2985,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/distributions/index.phtml:132
 #: application/modules/admin/views/scripts/email-participants/index.phtml:510
 #: application/modules/admin/views/scripts/evaluate/add-manual-limits-bulk.phtml:140
-#: application/modules/admin/views/scripts/global-config/index.phtml:1595
+#: application/modules/admin/views/scripts/global-config/index.phtml:1614
 #: application/modules/admin/views/scripts/login/index.phtml:170
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:150
 #: application/modules/admin/views/scripts/shipment/edit.phtml:234
@@ -3774,8 +3774,8 @@ msgstr "Đặt lại mật khẩu của người dùng này"
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:136
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:480
-#: application/modules/admin/views/scripts/global-config/index.phtml:1144
-#: application/modules/admin/views/scripts/global-config/index.phtml:1247
+#: application/modules/admin/views/scripts/global-config/index.phtml:1163
+#: application/modules/admin/views/scripts/global-config/index.phtml:1266
 #: application/modules/admin/views/scripts/login/index.phtml:194
 #: application/modules/admin/views/scripts/participants/add.phtml:120
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:188
@@ -3947,7 +3947,7 @@ msgid "Name"
 msgstr "Tên"
 
 #: application/models/DbTable/Enrollments.php:617
-#: application/models/Dts.php:2306 application/models/Dts.php:2388
+#: application/models/Dts.php:2312 application/models/Dts.php:2394
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
 #: application/modules/admin/views/scripts/contact-us/index.phtml:27
 #: application/modules/admin/views/scripts/data-managers/add.phtml:206
@@ -4015,8 +4015,8 @@ msgstr "Quốc gia"
 #: application/models/DbTable/Participants.php:404
 #: application/models/DbTable/Participants.php:472
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
-#: application/modules/admin/views/scripts/global-config/index.phtml:1131
-#: application/modules/admin/views/scripts/global-config/index.phtml:1229
+#: application/modules/admin/views/scripts/global-config/index.phtml:1150
+#: application/modules/admin/views/scripts/global-config/index.phtml:1248
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:353
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:493
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:664
@@ -4263,9 +4263,9 @@ msgstr "Gửi báo cáo qua email"
 msgid "Replace Summary Report"
 msgstr "Thay thế báo cáo tổng hợp"
 
-#: application/models/Dts.php:1606 application/models/Dts.php:1624
-#: application/models/Dts.php:2302 application/models/Dts.php:2335
-#: application/models/Dts.php:2355 application/models/Dts.php:2382
+#: application/models/Dts.php:1612 application/models/Dts.php:1630
+#: application/models/Dts.php:2308 application/models/Dts.php:2341
+#: application/models/Dts.php:2361 application/models/Dts.php:2388
 #: application/views/scripts/covid19/response.phtml:191
 #: application/views/scripts/dbs/response.phtml:66
 #: application/views/scripts/dts/response.phtml:196
@@ -4277,9 +4277,9 @@ msgstr "Thay thế báo cáo tổng hợp"
 msgid "Participant Code"
 msgstr "Mã đơn vị tham gia"
 
-#: application/models/Dts.php:1607 application/models/Dts.php:1625
-#: application/models/Dts.php:2303 application/models/Dts.php:2336
-#: application/models/Dts.php:2356 application/models/Dts.php:2383
+#: application/models/Dts.php:1613 application/models/Dts.php:1631
+#: application/models/Dts.php:2309 application/models/Dts.php:2342
+#: application/models/Dts.php:2362 application/models/Dts.php:2389
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:32
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:88
 #: application/views/scripts/capa/index.phtml:61
@@ -4294,11 +4294,11 @@ msgstr "Mã đơn vị tham gia"
 msgid "Participant Name"
 msgstr "Tên đơn vị tham gia"
 
-#: application/models/Dts.php:1608 application/models/Dts.php:1626
-#: application/models/Dts.php:2304 application/models/Dts.php:2337
-#: application/models/Dts.php:2357 application/models/Dts.php:2384
+#: application/models/Dts.php:1614 application/models/Dts.php:1632
+#: application/models/Dts.php:2310 application/models/Dts.php:2343
+#: application/models/Dts.php:2363 application/models/Dts.php:2390
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:128
-#: application/modules/admin/views/scripts/global-config/index.phtml:741
+#: application/modules/admin/views/scripts/global-config/index.phtml:760
 #: application/modules/admin/views/scripts/participants/add.phtml:95
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:175
 #: application/modules/admin/views/scripts/participants/edit.phtml:130
@@ -4316,7 +4316,7 @@ msgstr "Tên đơn vị tham gia"
 msgid "Institute Name"
 msgstr "Tên đơn vị"
 
-#: application/models/Dts.php:1611 application/models/Dts.php:1629
+#: application/models/Dts.php:1617 application/models/Dts.php:1635
 #: application/views/scripts/dbs/response.phtml:91
 #: application/views/scripts/eid/response.phtml:260
 #: application/views/scripts/recency/response.phtml:168
@@ -4327,12 +4327,12 @@ msgstr "Tên đơn vị"
 msgid "Shipment Receipt Date"
 msgstr "Ngày nhận bộ mẫu"
 
-#: application/models/Dts.php:1612 application/models/Dts.php:1630
+#: application/models/Dts.php:1618 application/models/Dts.php:1636
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:269
 msgid "Test Type"
 msgstr "Loại xét nghiệm"
 
-#: application/models/Dts.php:1613 application/models/Dts.php:2361
+#: application/models/Dts.php:1619 application/models/Dts.php:2367
 #: application/views/scripts/covid19/response.phtml:236
 #: application/views/scripts/dbs/response.phtml:105
 #: application/views/scripts/dts/response.phtml:258
@@ -4344,7 +4344,7 @@ msgstr "Loại xét nghiệm"
 msgid "Sample Rehydration Date"
 msgstr "Ngày hoàn nguyên mẫu"
 
-#: application/models/Dts.php:1614 application/models/Dts.php:1631
+#: application/models/Dts.php:1620 application/models/Dts.php:1637
 #: application/views/scripts/covid19/response.phtml:255
 #: application/views/scripts/dbs/response.phtml:120
 #: application/views/scripts/shipment-form/download.phtml:216
@@ -4355,89 +4355,89 @@ msgstr "Ngày hoàn nguyên mẫu"
 msgid "Testing Date"
 msgstr "Ngày xét nghiệm"
 
-#: application/models/Dts.php:1615 application/models/Dts.php:1632
+#: application/models/Dts.php:1621 application/models/Dts.php:1638
 msgid "Reported On"
 msgstr "Ngày báo cáo"
 
-#: application/models/Dts.php:1616 application/models/Dts.php:1636
+#: application/models/Dts.php:1622 application/models/Dts.php:1642
 msgid "Test #1 Kit Name"
 msgstr "Tên bộ sinh phẩm xét nghiệm #1"
 
-#: application/models/Dts.php:1617 application/models/Dts.php:1637
+#: application/models/Dts.php:1623 application/models/Dts.php:1643
 msgid "Kit Lot #1"
 msgstr "Số lô bộ sinh phẩm #1"
 
-#: application/models/Dts.php:1618 application/models/Dts.php:1638
+#: application/models/Dts.php:1624 application/models/Dts.php:1644
 msgid "Expiry Date #1"
 msgstr "Ngày hết hạn #1"
 
-#: application/models/Dts.php:1619 application/models/Dts.php:1639
+#: application/models/Dts.php:1625 application/models/Dts.php:1645
 msgid "QC Done #1"
 msgstr "Đã thực hiện QC #1"
 
-#: application/models/Dts.php:1620 application/models/Dts.php:1640
+#: application/models/Dts.php:1626 application/models/Dts.php:1646
 msgid "QC Expiry Date #1"
 msgstr "Ngày hết hạn QC #1"
 
-#: application/models/Dts.php:1633
+#: application/models/Dts.php:1639
 #: application/views/scripts/dts/response.phtml:343
 msgid "Condition Of PT Samples"
 msgstr "Tình trạng của các mẫu PT"
 
-#: application/models/Dts.php:1634
+#: application/models/Dts.php:1640
 #: application/views/scripts/dts/response.phtml:355
 #: application/views/scripts/dts/response.phtml:359
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:286
 msgid "Room Temperature"
 msgstr "Nhiệt độ phòng"
 
-#: application/models/Dts.php:1635
+#: application/models/Dts.php:1641
 #: application/views/scripts/dts/response.phtml:365
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:290
 msgid "Stop Watch"
 msgstr "Đồng hồ bấm giờ"
 
-#: application/models/Dts.php:1656
+#: application/models/Dts.php:1662
 msgid "Test #2 Kit Name"
 msgstr "Tên bộ sinh phẩm xét nghiệm #2"
 
-#: application/models/Dts.php:1657
+#: application/models/Dts.php:1663
 msgid "Kit Lot #2"
 msgstr "Số lô bộ sinh phẩm #2"
 
-#: application/models/Dts.php:1658
+#: application/models/Dts.php:1664
 msgid "Expiry Date #2"
 msgstr "Ngày hết hạn #2"
 
-#: application/models/Dts.php:1659
+#: application/models/Dts.php:1665
 msgid "QC Done #2"
 msgstr "Đã thực hiện QC #2"
 
-#: application/models/Dts.php:1660
+#: application/models/Dts.php:1666
 msgid "QC Expiry Date #2"
 msgstr "Ngày hết hạn QC #2"
 
-#: application/models/Dts.php:1691
+#: application/models/Dts.php:1697
 msgid "Test#3 Kit Name"
 msgstr "Tên sinh phẩm xét nghiệm #3"
 
-#: application/models/Dts.php:1692
+#: application/models/Dts.php:1698
 msgid "Kit Lot #3"
 msgstr "Số lô bộ sinh phẩm #3"
 
-#: application/models/Dts.php:1693
+#: application/models/Dts.php:1699
 msgid "Expiry Date #3"
 msgstr "Ngày hết hạn #3"
 
-#: application/models/Dts.php:1694
+#: application/models/Dts.php:1700
 msgid "QC Done #3"
 msgstr "Đã thực hiện QC #3"
 
-#: application/models/Dts.php:1695
+#: application/models/Dts.php:1701
 msgid "QC Expiry Date #3"
 msgstr "Ngày hết hạn QC #3"
 
-#: application/models/Dts.php:1752
+#: application/models/Dts.php:1758
 #: application/modules/admin/views/scripts/test-platform/add.phtml:75
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:82
 #: application/modules/admin/views/scripts/testkit/add.phtml:147
@@ -4459,14 +4459,14 @@ msgstr "Ngày hết hạn QC #3"
 msgid "Comments"
 msgstr "Ghi chú"
 
-#: application/models/Dts.php:2307
+#: application/models/Dts.php:2313
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:13
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:177
 #: library/Pt/Commons/ImportTemplate.php:82
 msgid "Address"
 msgstr "Địa chỉ"
 
-#: application/models/Dts.php:2310 application/models/Dts.php:2387
+#: application/models/Dts.php:2316 application/models/Dts.php:2393
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:11
 #: application/modules/admin/views/scripts/participants/add.phtml:169
@@ -4483,23 +4483,23 @@ msgstr "Địa chỉ"
 msgid "City"
 msgstr "Thành phố"
 
-#: application/models/Dts.php:2311
+#: application/models/Dts.php:2317
 msgid "Telephone"
 msgstr "Điện thoại"
 
-#: application/models/Dts.php:2341
+#: application/models/Dts.php:2347
 msgid "No. of Correct Responses"
 msgstr "Số phản hồi đúng"
 
-#: application/models/Dts.php:2341
+#: application/models/Dts.php:2347
 msgid "% Correct"
 msgstr "% Đúng"
 
-#: application/models/Dts.php:2359
+#: application/models/Dts.php:2365
 msgid "Supervisor signature"
 msgstr "Chữ ký của người giám sát"
 
-#: application/models/Dts.php:2360
+#: application/models/Dts.php:2366
 #: application/views/scripts/custom-test/response.phtml:338
 #: application/views/scripts/dts/response.phtml:225
 #: application/views/scripts/tb/response.phtml:245
@@ -4507,27 +4507,27 @@ msgstr "Chữ ký của người giám sát"
 msgid "Panel Receipt Date"
 msgstr "Ngày nhận bộ mẫu"
 
-#: application/models/Dts.php:2362
+#: application/models/Dts.php:2368
 msgid "Tested Date"
 msgstr "Ngày xét nghiệm"
 
-#: application/models/Dts.php:2363
+#: application/models/Dts.php:2369
 msgid "Rehydration Test In Specified Time"
 msgstr "Hoàn nguyên mẫu đúng thời gian quy định"
 
-#: application/models/Dts.php:2364
+#: application/models/Dts.php:2370
 msgid "Documentation Score %"
 msgstr "Điểm đánh giá tài liệu %"
 
-#: application/models/Dts.php:2389
+#: application/models/Dts.php:2395
 msgid "No. of Correct Samples"
 msgstr "Số mẫu đúng"
 
-#: application/models/Dts.php:2390
+#: application/models/Dts.php:2396
 msgid "Panel Score"
 msgstr "Điểm bộ mẫu"
 
-#: application/models/Dts.php:2391
+#: application/models/Dts.php:2397
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:341
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:120
 #: application/modules/admin/views/scripts/scheme-config/partials/recency.phtml:35
@@ -4546,15 +4546,15 @@ msgstr "Điểm bộ mẫu"
 msgid "Documentation Score"
 msgstr "Điểm đánh giá tài liệu"
 
-#: application/models/Dts.php:2392
+#: application/models/Dts.php:2398
 msgid "Total Score"
 msgstr "Tổng điểm"
 
-#: application/models/Dts.php:2393
+#: application/models/Dts.php:2399
 msgid "Overall Performance"
 msgstr "Hiệu suất tổng thể"
 
-#: application/models/Dts.php:2394
+#: application/models/Dts.php:2400
 msgid "Warnings and/or Reasons for Failure"
 msgstr "Cảnh báo và/hoặc lý do không đạt"
 
@@ -5409,7 +5409,7 @@ msgid "Actor email"
 msgstr "Email của người thực hiện"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:613
-#: application/modules/admin/views/scripts/global-config/index.phtml:1105
+#: application/modules/admin/views/scripts/global-config/index.phtml:1124
 #: application/modules/admin/views/scripts/login/index.phtml:191
 #: application/modules/admin/views/scripts/profile/index.phtml:217
 #: application/modules/admin/views/scripts/profile/index.phtml:226
@@ -6256,12 +6256,12 @@ msgstr "Vui lòng chọn quốc gia áp dụng tại đây"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:434
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1224
 #: application/modules/admin/views/scripts/global-config/index.phtml:500
-#: application/modules/admin/views/scripts/global-config/index.phtml:768
 #: application/modules/admin/views/scripts/global-config/index.phtml:787
-#: application/modules/admin/views/scripts/global-config/index.phtml:807
-#: application/modules/admin/views/scripts/global-config/index.phtml:820
-#: application/modules/admin/views/scripts/global-config/index.phtml:1127
-#: application/modules/admin/views/scripts/global-config/index.phtml:1154
+#: application/modules/admin/views/scripts/global-config/index.phtml:806
+#: application/modules/admin/views/scripts/global-config/index.phtml:826
+#: application/modules/admin/views/scripts/global-config/index.phtml:839
+#: application/modules/admin/views/scripts/global-config/index.phtml:1146
+#: application/modules/admin/views/scripts/global-config/index.phtml:1173
 #: application/modules/admin/views/scripts/participants/add.phtml:198
 #: application/modules/admin/views/scripts/participants/add.phtml:224
 #: application/modules/admin/views/scripts/participants/add.phtml:235
@@ -6615,7 +6615,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:82
 #: application/modules/admin/views/scripts/distributions/edit.phtml:55
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
-#: application/modules/admin/views/scripts/global-config/index.phtml:1581
+#: application/modules/admin/views/scripts/global-config/index.phtml:1600
 #: application/modules/admin/views/scripts/home-config/index.phtml:624
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:102
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:128
@@ -6736,8 +6736,8 @@ msgstr "Tắt các bộ sinh phẩm xét nghiệm khác"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:134
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:224
 #: application/modules/admin/views/scripts/global-config/index.phtml:620
-#: application/modules/admin/views/scripts/global-config/index.phtml:808
-#: application/modules/admin/views/scripts/global-config/index.phtml:821
+#: application/modules/admin/views/scripts/global-config/index.phtml:827
+#: application/modules/admin/views/scripts/global-config/index.phtml:840
 #: application/modules/admin/views/scripts/participants/add.phtml:236
 #: application/modules/admin/views/scripts/participants/edit.phtml:353
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:37
@@ -6902,8 +6902,8 @@ msgstr "Có"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:135
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:222
 #: application/modules/admin/views/scripts/global-config/index.phtml:619
-#: application/modules/admin/views/scripts/global-config/index.phtml:809
-#: application/modules/admin/views/scripts/global-config/index.phtml:822
+#: application/modules/admin/views/scripts/global-config/index.phtml:828
+#: application/modules/admin/views/scripts/global-config/index.phtml:841
 #: application/modules/admin/views/scripts/participants/add.phtml:237
 #: application/modules/admin/views/scripts/participants/edit.phtml:356
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:38
@@ -9745,7 +9745,7 @@ msgstr "Chưa cập nhật được trạng thái. Vui lòng thử lại."
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:127
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:166
-#: application/modules/admin/views/scripts/global-config/index.phtml:1584
+#: application/modules/admin/views/scripts/global-config/index.phtml:1603
 #: application/modules/admin/views/scripts/home-config/index.phtml:627
 #: application/modules/admin/views/scripts/participant-messages/view.phtml:43
 #: application/modules/admin/views/scripts/profile/index.phtml:336
@@ -12894,18 +12894,18 @@ msgid "General Settings"
 msgstr "Cài đặt chung"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:460
-#: application/modules/admin/views/scripts/global-config/index.phtml:891
+#: application/modules/admin/views/scripts/global-config/index.phtml:910
 msgid "Participant Settings"
 msgstr "Cài đặt đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:461
-#: application/modules/admin/views/scripts/global-config/index.phtml:1016
+#: application/modules/admin/views/scripts/global-config/index.phtml:1035
 #: application/views/partials/spotlight.phtml:219
 msgid "Shipment Custom Fields"
 msgstr "Các trường tùy chỉnh cho vòng ngoại kiểm"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:462
-#: application/modules/admin/views/scripts/global-config/index.phtml:1065
+#: application/modules/admin/views/scripts/global-config/index.phtml:1084
 msgid "Email Settings"
 msgstr "Cài đặt email"
 
@@ -13082,11 +13082,12 @@ msgstr "Bật xét nghiệm tùy chỉnh"
 #: application/modules/admin/views/scripts/global-config/index.phtml:659
 #: application/modules/admin/views/scripts/global-config/index.phtml:678
 #: application/modules/admin/views/scripts/global-config/index.phtml:694
-#: application/modules/admin/views/scripts/global-config/index.phtml:921
-#: application/modules/admin/views/scripts/global-config/index.phtml:937
-#: application/modules/admin/views/scripts/global-config/index.phtml:955
-#: application/modules/admin/views/scripts/global-config/index.phtml:971
-#: application/modules/admin/views/scripts/global-config/index.phtml:1031
+#: application/modules/admin/views/scripts/global-config/index.phtml:713
+#: application/modules/admin/views/scripts/global-config/index.phtml:940
+#: application/modules/admin/views/scripts/global-config/index.phtml:956
+#: application/modules/admin/views/scripts/global-config/index.phtml:974
+#: application/modules/admin/views/scripts/global-config/index.phtml:990
+#: application/modules/admin/views/scripts/global-config/index.phtml:1050
 #: application/modules/admin/views/scripts/report-config/index.phtml:293
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:173
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:190
@@ -13106,11 +13107,12 @@ msgstr "CÓ"
 #: application/modules/admin/views/scripts/global-config/index.phtml:662
 #: application/modules/admin/views/scripts/global-config/index.phtml:681
 #: application/modules/admin/views/scripts/global-config/index.phtml:697
-#: application/modules/admin/views/scripts/global-config/index.phtml:924
-#: application/modules/admin/views/scripts/global-config/index.phtml:940
-#: application/modules/admin/views/scripts/global-config/index.phtml:958
-#: application/modules/admin/views/scripts/global-config/index.phtml:974
-#: application/modules/admin/views/scripts/global-config/index.phtml:1034
+#: application/modules/admin/views/scripts/global-config/index.phtml:716
+#: application/modules/admin/views/scripts/global-config/index.phtml:943
+#: application/modules/admin/views/scripts/global-config/index.phtml:959
+#: application/modules/admin/views/scripts/global-config/index.phtml:977
+#: application/modules/admin/views/scripts/global-config/index.phtml:993
+#: application/modules/admin/views/scripts/global-config/index.phtml:1053
 #: application/modules/admin/views/scripts/report-config/index.phtml:296
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:176
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:193
@@ -13139,10 +13141,22 @@ msgid "Admin Email Notifications"
 msgstr "Thông báo qua email cho quản trị viên"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:708
+msgid "Only Approved Test Kits for Participants"
+msgstr "Chỉ dùng kit xét nghiệm đã phê duyệt cho đơn vị tham gia"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:721
+msgid ""
+"When Yes, participants can pick only test kits marked Approved. A kit "
+"already saved on a response stays on it."
+msgstr ""
+"Khi chọn Có, đơn vị tham gia chỉ chọn được kit xét nghiệm đã được phê duyệt. "
+"Kit đã lưu trong một phản hồi vẫn được giữ."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:727
 msgid "Application Timezone"
 msgstr "Múi giờ của ứng dụng"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:710
+#: application/modules/admin/views/scripts/global-config/index.phtml:729
 msgid ""
 "The timezone the whole application runs in. Response deadline times are "
 "entered and judged in this zone. Changing it shifts how existing deadlines "
@@ -13153,7 +13167,7 @@ msgstr ""
 "hạn nộp kết quả hiện có, do đó hãy thiết lập một lần và tránh thay đổi giữa "
 "chừng chương trình."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:721
+#: application/modules/admin/views/scripts/global-config/index.phtml:740
 msgid ""
 "Could not update the Application Timezone (application.ini not writable or "
 "invalid value)."
@@ -13161,11 +13175,11 @@ msgstr ""
 "Không thể cập nhật múi giờ của ứng dụng (tệp application.ini không thể ghi "
 "hoặc giá trị không hợp lệ)."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:726
+#: application/modules/admin/views/scripts/global-config/index.phtml:745
 msgid "Response Deadline Cutoff Policy"
 msgstr "Chính sách áp dụng hạn nộp kết quả"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:728
+#: application/modules/admin/views/scripts/global-config/index.phtml:747
 msgid ""
 "How a response deadline is judged to have passed. Application timezone "
 "closes at the exact local time. Anywhere on Earth keeps it open until the "
@@ -13175,189 +13189,189 @@ msgstr ""
 "điểm theo giờ địa phương. “Anywhere on Earth” sẽ giữ mở cho đến khi đã quá "
 "hạn nộp kết quả ở mọi múi giờ (UTC-12)."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:730
+#: application/modules/admin/views/scripts/global-config/index.phtml:749
 msgid "Application timezone (default)"
 msgstr "Múi giờ của ứng dụng (mặc định)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:733
+#: application/modules/admin/views/scripts/global-config/index.phtml:752
 msgid "Anywhere on Earth (UTC-12)"
 msgstr "Bất kỳ nơi nào trên Trái Đất (UTC-12)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:743
+#: application/modules/admin/views/scripts/global-config/index.phtml:762
 msgid "Enter institute name"
 msgstr "Nhập tên viện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:744
+#: application/modules/admin/views/scripts/global-config/index.phtml:763
 msgid "Enter the name of your institute"
 msgstr "Hãy nhập tên cơ sở của bạn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:748
+#: application/modules/admin/views/scripts/global-config/index.phtml:767
 msgid "Institute Address"
 msgstr "Địa chỉ Viện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:750
+#: application/modules/admin/views/scripts/global-config/index.phtml:769
 msgid "Enter institute address"
 msgstr "Nhập địa chỉ của viện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:751
+#: application/modules/admin/views/scripts/global-config/index.phtml:770
 msgid "Enter your institute address"
 msgstr "Nhập địa chỉ cơ sở của bạn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:757
+#: application/modules/admin/views/scripts/global-config/index.phtml:776
 msgid "Additional Institute Details"
 msgstr "Thông tin chi tiết khác về Viện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:760
+#: application/modules/admin/views/scripts/global-config/index.phtml:779
 msgid "Enter additional institute details"
 msgstr "Nhập thông tin bổ sung của đơn vị"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:761
+#: application/modules/admin/views/scripts/global-config/index.phtml:780
 msgid "Enter any additional details about your institute"
 msgstr "Nhập thêm thông tin chi tiết về đơn vị của bạn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:765
+#: application/modules/admin/views/scripts/global-config/index.phtml:784
 msgid "Theme Color"
 msgstr "Màu của giao diện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:767
+#: application/modules/admin/views/scripts/global-config/index.phtml:786
 msgid "Select a theme color for the interface"
 msgstr "Chọn màu chủ đề cho giao diện"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:769
+#: application/modules/admin/views/scripts/global-config/index.phtml:788
 msgid "Green"
 msgstr "Xanh lá"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:770
+#: application/modules/admin/views/scripts/global-config/index.phtml:789
 msgid "Blue"
 msgstr "Xanh dương"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:772
+#: application/modules/admin/views/scripts/global-config/index.phtml:791
 msgid "Yellow"
 msgstr "Vàng"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:775
+#: application/modules/admin/views/scripts/global-config/index.phtml:794
 msgid "Purple"
 msgstr "Tím"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:777
+#: application/modules/admin/views/scripts/global-config/index.phtml:796
 msgid "Red"
 msgstr "Đỏ"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:778
+#: application/modules/admin/views/scripts/global-config/index.phtml:797
 msgid "Black"
 msgstr "Đen"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:784
+#: application/modules/admin/views/scripts/global-config/index.phtml:803
 msgid "Instance"
 msgstr "Phiên bản triển khai"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:786
+#: application/modules/admin/views/scripts/global-config/index.phtml:805
 msgid "Select the deployment instance"
 msgstr "Chọn phiên bản triển khai"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:803
+#: application/modules/admin/views/scripts/global-config/index.phtml:822
 msgid "Job Completion Alerts"
 msgstr "Thông báo hoàn thành công việc"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:805
+#: application/modules/admin/views/scripts/global-config/index.phtml:824
 msgid "Enable email alerts when jobs complete"
 msgstr "Bật thông báo qua email khi công việc hoàn tất"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:816
+#: application/modules/admin/views/scripts/global-config/index.phtml:835
 msgid "Auto-generate PT Survey Code"
 msgstr "Tự động tạo mã khảo sát PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:819
+#: application/modules/admin/views/scripts/global-config/index.phtml:838
 msgid "Automatically generate PT survey codes"
 msgstr "Tự động tạo mã khảo sát PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:827
+#: application/modules/admin/views/scripts/global-config/index.phtml:846
 msgid "Footer Text"
 msgstr "Văn bản chân trang"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:830
+#: application/modules/admin/views/scripts/global-config/index.phtml:849
 msgid "Enter footer text"
 msgstr "Nhập nội dung chân trang"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:831
+#: application/modules/admin/views/scripts/global-config/index.phtml:850
 msgid "Enter the text to display in the page footer"
 msgstr "Nhập nội dung muốn hiển thị ở chân trang"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:838
+#: application/modules/admin/views/scripts/global-config/index.phtml:857
 msgid "Job Completion Alert Recipients"
 msgstr "Người nhận thông báo hoàn thành công việc"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:840
+#: application/modules/admin/views/scripts/global-config/index.phtml:859
 msgid "Enter email addresses"
 msgstr "Nhập địa chỉ email"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:841
+#: application/modules/admin/views/scripts/global-config/index.phtml:860
 msgid "Enter email addresses to receive job completion alerts"
 msgstr "Nhập địa chỉ email để nhận thông báo khi công việc hoàn thành"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:843
+#: application/modules/admin/views/scripts/global-config/index.phtml:862
 msgid "Enter comma-separated email addresses for multiple recipients"
 msgstr ""
 "Nhập các địa chỉ email được phân tách bằng dấu phẩy để gửi cho nhiều người "
 "nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:847
+#: application/modules/admin/views/scripts/global-config/index.phtml:866
 msgid "Date Format"
 msgstr "Định dạng ngày"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:849
+#: application/modules/admin/views/scripts/global-config/index.phtml:868
 msgid "e.g., d-M-Y"
 msgstr "ví dụ: d-M-Y"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:850
+#: application/modules/admin/views/scripts/global-config/index.phtml:869
 msgid "Enter the date format (e.g., d-M-Y)"
 msgstr "Nhập định dạng ngày (ví dụ: d-M-Y)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:854
+#: application/modules/admin/views/scripts/global-config/index.phtml:873
 msgid "Certificate Email"
 msgstr "Email giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:857
+#: application/modules/admin/views/scripts/global-config/index.phtml:876
 msgid "Enter certificate notification email"
 msgstr "Nhập địa chỉ email nhận thông báo về giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:858
+#: application/modules/admin/views/scripts/global-config/index.phtml:877
 msgid "Enter the email address for certificate notifications"
 msgstr "Nhập địa chỉ email để nhận thông báo về giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:862
+#: application/modules/admin/views/scripts/global-config/index.phtml:881
 msgid "Certificate Signatory Name"
 msgstr "Tên người ký giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:865
+#: application/modules/admin/views/scripts/global-config/index.phtml:884
 msgid "e.g., Dr. A. Example"
 msgstr "VD: TS. Nguyễn Văn A"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:866
+#: application/modules/admin/views/scripts/global-config/index.phtml:885
 msgid "Printed in the signatory_name field of certificate templates"
 msgstr "In vào trường signatory_name của các bản mẫu giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:870
+#: application/modules/admin/views/scripts/global-config/index.phtml:889
 msgid "Certificate Signatory Title"
 msgstr "Chức danh người ký giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:873
+#: application/modules/admin/views/scripts/global-config/index.phtml:892
 msgid "e.g., Deputy Director General"
 msgstr "VD: Phó Tổng Giám đốc"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:874
+#: application/modules/admin/views/scripts/global-config/index.phtml:893
 msgid "Printed in the signatory_title field of certificate templates"
 msgstr "In vào trường signatory_title của các bản mẫu giấy chứng nhận"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:878
+#: application/modules/admin/views/scripts/global-config/index.phtml:897
 msgid "Late Submission Grace Window (minutes)"
 msgstr "Thời gian ân hạn nộp muộn (phút)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:881
+#: application/modules/admin/views/scripts/global-config/index.phtml:900
 msgid "e.g., 1440"
 msgstr "VD: 1440"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:882
+#: application/modules/admin/views/scripts/global-config/index.phtml:901
 msgid ""
 "Minutes after a shipment deadline during which a participant who opened the "
 "response form before the deadline may still submit. The submission is saved "
@@ -13367,113 +13381,113 @@ msgstr ""
 "biểu mẫu phản hồi trước hạn vẫn có thể nộp. Bài nộp được lưu và giữ lại để "
 "quản trị viên xem xét như một lần nộp muộn. 0 sẽ tắt tính năng này."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:897
+#: application/modules/admin/views/scripts/global-config/index.phtml:916
 msgid "Login ID Prefix"
 msgstr "Tiền tố ID đăng nhập"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:899
+#: application/modules/admin/views/scripts/global-config/index.phtml:918
 msgid "e.g., PT"
 msgstr "ví dụ: PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:900
+#: application/modules/admin/views/scripts/global-config/index.phtml:919
 msgid "Enter the prefix for participant login IDs"
 msgstr "Nhập tiền tố cho ID đăng nhập của đơn vị tham gia"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:905
+#: application/modules/admin/views/scripts/global-config/index.phtml:924
 msgid "Password Length"
 msgstr "Độ dài mật khẩu"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:908
+#: application/modules/admin/views/scripts/global-config/index.phtml:927
 msgid "e.g., 8"
 msgstr "ví dụ: 8"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:909
+#: application/modules/admin/views/scripts/global-config/index.phtml:928
 msgid "Enter the minimum password length for participants"
 msgstr "Nhập độ dài tối thiểu của mật khẩu cho đơn vị tham gia"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:916
+#: application/modules/admin/views/scripts/global-config/index.phtml:935
 msgid "Allow Name Editing"
 msgstr "Cho phép chỉnh sửa tên"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:932
+#: application/modules/admin/views/scripts/global-config/index.phtml:951
 msgid "Enable Feedback"
 msgstr "Bật tính năng phản hồi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:950
+#: application/modules/admin/views/scripts/global-config/index.phtml:969
 msgid "Direct Login"
 msgstr "Đăng nhập trực tiếp"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:966
+#: application/modules/admin/views/scripts/global-config/index.phtml:985
 msgid "Login Attempt Ban"
 msgstr "Cấm đăng nhập do cố gắng đăng nhập quá nhiều lần"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:986
+#: application/modules/admin/views/scripts/global-config/index.phtml:1005
 msgid "Temporary Ban Duration (minutes)"
 msgstr "Thời gian cấm tạm thời (phút)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:988
+#: application/modules/admin/views/scripts/global-config/index.phtml:1007
 msgid "e.g., 5"
 msgstr "ví dụ: 5"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:989
+#: application/modules/admin/views/scripts/global-config/index.phtml:1008
 msgid "Enter the duration for temporary login bans in minutes"
 msgstr "Nhập thời gian áp dụng lệnh cấm đăng nhập tạm thời (tính bằng phút)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:995
+#: application/modules/admin/views/scripts/global-config/index.phtml:1014
 msgid "Attempts Before Temporary Ban"
 msgstr "Số lần thử trước khi bị cấm tạm thời"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:997
+#: application/modules/admin/views/scripts/global-config/index.phtml:1016
 msgid "e.g., 3"
 msgstr "ví dụ: 3"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:998
+#: application/modules/admin/views/scripts/global-config/index.phtml:1017
 msgid "Enter the number of failed attempts before a temporary ban"
 msgstr "Nhập số lần thử không thành công trước khi bị cấm tạm thời"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1004
+#: application/modules/admin/views/scripts/global-config/index.phtml:1023
 msgid "Attempts Before Permanent Ban"
 msgstr "Số lần thử trước khi bị cấm vĩnh viễn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1006
+#: application/modules/admin/views/scripts/global-config/index.phtml:1025
 msgid "e.g., 10"
 msgstr "ví dụ: 10"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1007
+#: application/modules/admin/views/scripts/global-config/index.phtml:1026
 msgid "Enter the number of failed attempts before a permanent ban"
 msgstr "Nhập số lần thử không thành công trước khi bị cấm vĩnh viễn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1021
+#: application/modules/admin/views/scripts/global-config/index.phtml:1040
 msgid "These are additional fields that will be added to Response Forms."
 msgstr "Đây là các trường bổ sung sẽ được thêm vào Biểu mẫu phản hồi."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1026
+#: application/modules/admin/views/scripts/global-config/index.phtml:1045
 msgid "Add Custom Field(s)?"
 msgstr "Thêm trường tùy chỉnh?"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1039
+#: application/modules/admin/views/scripts/global-config/index.phtml:1058
 msgid "If Yes, enter at least Custom Field 1."
 msgstr "Nếu chọn Có, hãy nhập ít nhất Trường tùy chỉnh 1."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1045
+#: application/modules/admin/views/scripts/global-config/index.phtml:1064
 msgid "Custom Field 1"
 msgstr "Trường tùy chỉnh 1"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1047
-#: application/modules/admin/views/scripts/global-config/index.phtml:1055
+#: application/modules/admin/views/scripts/global-config/index.phtml:1066
+#: application/modules/admin/views/scripts/global-config/index.phtml:1074
 msgid "Enter custom field name"
 msgstr "Nhập tên trường tùy chỉnh"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1048
-#: application/modules/admin/views/scripts/global-config/index.phtml:1056
+#: application/modules/admin/views/scripts/global-config/index.phtml:1067
+#: application/modules/admin/views/scripts/global-config/index.phtml:1075
 msgid "Please enter custom field name"
 msgstr "Vui lòng nhập tên trường tùy chỉnh"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1053
+#: application/modules/admin/views/scripts/global-config/index.phtml:1072
 msgid "Custom Field 2"
 msgstr "Trường tùy chỉnh 2"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1070
+#: application/modules/admin/views/scripts/global-config/index.phtml:1089
 msgid ""
 "Email configuration is optional. You can configure it later when you have "
 "the email server details."
@@ -13481,7 +13495,7 @@ msgstr ""
 "Việc cấu hình email là tùy chọn. Bạn có thể cấu hình sau khi có thông tin "
 "chi tiết về máy chủ email."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1071
+#: application/modules/admin/views/scripts/global-config/index.phtml:1090
 msgid ""
 "These settings are stored in application.ini on the server, not in the "
 "database."
@@ -13489,108 +13503,108 @@ msgstr ""
 "Các cài đặt này được lưu trong application.ini trên máy chủ, không phải "
 "trong cơ sở dữ liệu."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1080
+#: application/modules/admin/views/scripts/global-config/index.phtml:1099
 msgid "SMTP Host"
 msgstr "Máy chủ SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1083
+#: application/modules/admin/views/scripts/global-config/index.phtml:1102
 msgid "e.g., smtp.gmail.com"
 msgstr "ví dụ: smtp.gmail.com"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1084
+#: application/modules/admin/views/scripts/global-config/index.phtml:1103
 msgid "Enter the SMTP server hostname"
 msgstr "Nhập tên máy chủ SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1087
+#: application/modules/admin/views/scripts/global-config/index.phtml:1106
 msgid "SMTP Port"
 msgstr "Cổng SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1090
+#: application/modules/admin/views/scripts/global-config/index.phtml:1109
 msgid "e.g., 587 or 465"
 msgstr "ví dụ: 587 hoặc 465"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1091
+#: application/modules/admin/views/scripts/global-config/index.phtml:1110
 msgid "Enter the SMTP port (typically 587 or 465)"
 msgstr "Nhập cổng SMTP (thường là 587 hoặc 465)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1096
+#: application/modules/admin/views/scripts/global-config/index.phtml:1115
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:44
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:2
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:17
 msgid "From Name"
 msgstr "Tên người gửi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1099
+#: application/modules/admin/views/scripts/global-config/index.phtml:1118
 msgid "e.g., ePT System"
 msgstr "ví dụ: Hệ thống ePT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1102
+#: application/modules/admin/views/scripts/global-config/index.phtml:1121
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:50
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:8
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:23
 msgid "From Email"
 msgstr "Email người gửi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1110
+#: application/modules/admin/views/scripts/global-config/index.phtml:1129
 msgid "CC"
 msgstr "CC"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1113
+#: application/modules/admin/views/scripts/global-config/index.phtml:1132
 msgid "Enter CC emails"
 msgstr "Nhập địa chỉ email CC"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1116
+#: application/modules/admin/views/scripts/global-config/index.phtml:1135
 msgid "BCC"
 msgstr "BCC"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1119
+#: application/modules/admin/views/scripts/global-config/index.phtml:1138
 msgid "Enter BCC emails"
 msgstr "Nhập địa chỉ email vào ô \"BCC\""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1124
-#: application/modules/admin/views/scripts/global-config/index.phtml:1225
+#: application/modules/admin/views/scripts/global-config/index.phtml:1143
+#: application/modules/admin/views/scripts/global-config/index.phtml:1244
 msgid "Encryption"
 msgstr "Mã hóa"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1126
+#: application/modules/admin/views/scripts/global-config/index.phtml:1145
 msgid "Select the encryption type"
 msgstr "Chọn loại mã hóa"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1135
-#: application/modules/admin/views/scripts/global-config/index.phtml:1241
+#: application/modules/admin/views/scripts/global-config/index.phtml:1154
+#: application/modules/admin/views/scripts/global-config/index.phtml:1260
 msgid "Username"
 msgstr "Tên đăng nhập"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1138
+#: application/modules/admin/views/scripts/global-config/index.phtml:1157
 msgid "Enter email address for authentication"
 msgstr "Nhập địa chỉ email để xác thực"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1139
+#: application/modules/admin/views/scripts/global-config/index.phtml:1158
 msgid "Enter the email address used for SMTP authentication"
 msgstr "Nhập địa chỉ email được sử dụng để xác thực SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1147
-#: application/modules/admin/views/scripts/global-config/index.phtml:1250
+#: application/modules/admin/views/scripts/global-config/index.phtml:1166
+#: application/modules/admin/views/scripts/global-config/index.phtml:1269
 msgid "Password is set. Leave blank to keep it"
 msgstr "Mật khẩu đã được thiết lập. Để trống để giữ nguyên"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1147
+#: application/modules/admin/views/scripts/global-config/index.phtml:1166
 msgid "Enter SMTP password"
 msgstr "Nhập mật khẩu SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1151
+#: application/modules/admin/views/scripts/global-config/index.phtml:1170
 msgid "Authentication Type"
 msgstr "Kiểu xác thực"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1153
+#: application/modules/admin/views/scripts/global-config/index.phtml:1172
 msgid "Select the authentication method"
 msgstr "Chọn phương thức xác thực"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1162
+#: application/modules/admin/views/scripts/global-config/index.phtml:1181
 msgid "Bounce Inbox"
 msgstr "Hộp thư thư bị trả lại"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1165
+#: application/modules/admin/views/scripts/global-config/index.phtml:1184
 msgid ""
 "ePT reads delivery-failure reports from this IMAP mailbox every 30 minutes "
 "and marks addresses that no longer exist, so later emails skip them. Leave "
@@ -13600,24 +13614,24 @@ msgstr ""
 "dấu các địa chỉ không còn tồn tại để các email sau bỏ qua chúng. Để trống "
 "Máy chủ IMAP để tắt tính năng này."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1166
+#: application/modules/admin/views/scripts/global-config/index.phtml:1185
 msgid ""
 "Leave Username empty to read the SMTP account's mailbox with the SMTP login."
 msgstr ""
 "Để trống Tên đăng nhập để đọc hộp thư của tài khoản SMTP bằng thông tin đăng "
 "nhập SMTP."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1179
+#: application/modules/admin/views/scripts/global-config/index.phtml:1198
 msgid "Not checked yet. The first check runs within 30 minutes of saving."
 msgstr ""
 "Chưa kiểm tra. Lần kiểm tra đầu tiên sẽ chạy trong vòng 30 phút sau khi lưu."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1181
+#: application/modules/admin/views/scripts/global-config/index.phtml:1200
 #, php-format
 msgid "The last check failed on %s:"
 msgstr "Lần kiểm tra gần nhất thất bại vào %s:"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1185
+#: application/modules/admin/views/scripts/global-config/index.phtml:1204
 #, php-format
 msgid ""
 "Last checked on %s: read %d new message(s) and marked %d address(es) as "
@@ -13626,13 +13640,13 @@ msgstr ""
 "Kiểm tra gần nhất vào %s: đã đọc %d thư mới và đánh dấu %d địa chỉ là bị trả "
 "lại."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1191
+#: application/modules/admin/views/scripts/global-config/index.phtml:1210
 #, php-format
 msgid ""
 "%d older message(s) are still waiting; up to 200 are read every 30 minutes."
 msgstr "Còn %d thư cũ hơn đang chờ; tối đa 200 thư được đọc mỗi 30 phút."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1195
+#: application/modules/admin/views/scripts/global-config/index.phtml:1214
 msgid ""
 "No check has run for over two hours. Check that the ePT scheduler (cron) is "
 "running on the server."
@@ -13640,17 +13654,17 @@ msgstr ""
 "Không có lần kiểm tra nào trong hơn hai giờ. Hãy kiểm tra xem trình lập lịch "
 "ePT (cron) có đang chạy trên máy chủ không."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1197
+#: application/modules/admin/views/scripts/global-config/index.phtml:1216
 #, php-format
 msgid "Addresses marked as bounced so far: %d."
 msgstr "Số địa chỉ đã bị đánh dấu là bị trả lại đến nay: %d."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1199
+#: application/modules/admin/views/scripts/global-config/index.phtml:1218
 #, php-format
 msgid "Most recent on %s."
 msgstr "Gần nhất vào %s."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1201
+#: application/modules/admin/views/scripts/global-config/index.phtml:1220
 msgid ""
 "To see which ones, use the Unusable Emails button on the PT Participants "
 "page."
@@ -13658,55 +13672,55 @@ msgstr ""
 "Để xem đó là những địa chỉ nào, hãy dùng nút Email không dùng được trên "
 "trang Đơn vị tham gia PT."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1211
+#: application/modules/admin/views/scripts/global-config/index.phtml:1230
 msgid "IMAP Host"
 msgstr "Máy chủ IMAP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1214
+#: application/modules/admin/views/scripts/global-config/index.phtml:1233
 msgid "e.g., imap.gmail.com"
 msgstr "VD: imap.gmail.com"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1217
+#: application/modules/admin/views/scripts/global-config/index.phtml:1236
 msgid "IMAP Port"
 msgstr "Cổng IMAP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1233
+#: application/modules/admin/views/scripts/global-config/index.phtml:1252
 msgid "Folder or Gmail Label"
 msgstr "Thư mục hoặc nhãn Gmail"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1236
+#: application/modules/admin/views/scripts/global-config/index.phtml:1255
 msgid "e.g., ept-bounces (default INBOX)"
 msgstr "vd: ept-bounces (mặc định INBOX)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1244
-#: application/modules/admin/views/scripts/global-config/index.phtml:1250
+#: application/modules/admin/views/scripts/global-config/index.phtml:1263
+#: application/modules/admin/views/scripts/global-config/index.phtml:1269
 msgid "Empty: use the SMTP login"
 msgstr "Để trống: dùng thông tin đăng nhập SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1259
-#: application/modules/admin/views/scripts/global-config/index.phtml:1924
+#: application/modules/admin/views/scripts/global-config/index.phtml:1278
+#: application/modules/admin/views/scripts/global-config/index.phtml:1943
 msgid "Mail server login"
 msgstr "Đăng nhập máy chủ thư"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1260
-#: application/modules/admin/views/scripts/global-config/index.phtml:1925
+#: application/modules/admin/views/scripts/global-config/index.phtml:1279
+#: application/modules/admin/views/scripts/global-config/index.phtml:1944
 msgid "Test email"
 msgstr "Email thử nghiệm"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1261
-#: application/modules/admin/views/scripts/global-config/index.phtml:1926
+#: application/modules/admin/views/scripts/global-config/index.phtml:1280
+#: application/modules/admin/views/scripts/global-config/index.phtml:1945
 msgid "Bounce inbox"
 msgstr "Hộp thư thư bị trả lại"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1266
+#: application/modules/admin/views/scripts/global-config/index.phtml:1285
 msgid "Send the test email to"
 msgstr "Gửi email thử nghiệm tới"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1268
+#: application/modules/admin/views/scripts/global-config/index.phtml:1287
 msgid "Verify Email Setup"
 msgstr "Kiểm tra cài đặt email"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1271
+#: application/modules/admin/views/scripts/global-config/index.phtml:1290
 msgid ""
 "Signs in to the mail server, sends a test email to this address and opens "
 "the bounce inbox. It uses the saved settings. Leave the address empty to "
@@ -13716,7 +13730,7 @@ msgstr ""
 "thư bị trả lại. Sử dụng cài đặt đã lưu. Để trống địa chỉ nếu không muốn gửi "
 "email thử nghiệm."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1272
+#: application/modules/admin/views/scripts/global-config/index.phtml:1291
 msgid ""
 "ePT also signs in to the mail server on its own every hour, and every 10 "
 "minutes while email is failing."
@@ -13724,7 +13738,7 @@ msgstr ""
 "ePT cũng tự động đăng nhập máy chủ thư mỗi giờ, và mỗi 10 phút khi email "
 "không hoạt động."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1275
+#: application/modules/admin/views/scripts/global-config/index.phtml:1294
 msgid ""
 "You changed the email settings. Save them first, because Verify Email Setup "
 "tests the saved settings."
@@ -13732,120 +13746,120 @@ msgstr ""
 "Bạn đã thay đổi cài đặt email. Hãy lưu lại trước, vì Kiểm tra cài đặt email "
 "dùng cài đặt đã lưu."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1282
+#: application/modules/admin/views/scripts/global-config/index.phtml:1301
 #, php-format
 msgid "Checked automatically on %s: email works."
 msgstr "Đã kiểm tra tự động lúc %s: email hoạt động."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1282
+#: application/modules/admin/views/scripts/global-config/index.phtml:1301
 #, php-format
 msgid "Checked automatically on %s: email does not work."
 msgstr "Đã kiểm tra tự động lúc %s: email không hoạt động."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1285
+#: application/modules/admin/views/scripts/global-config/index.phtml:1304
 #, php-format
 msgid "Last verified on %s by %s: email works."
 msgstr "Lần kiểm tra gần nhất lúc %s bởi %s: email hoạt động."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1285
+#: application/modules/admin/views/scripts/global-config/index.phtml:1304
 #, php-format
 msgid "Last verified on %s by %s: email does not work."
 msgstr "Lần kiểm tra gần nhất lúc %s bởi %s: email không hoạt động."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1598
+#: application/modules/admin/views/scripts/global-config/index.phtml:1617
 #: application/modules/admin/views/scripts/home-config/index.phtml:641
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:68
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:74
 msgid "Select Icon"
 msgstr "Chọn biểu tượng"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1600
+#: application/modules/admin/views/scripts/global-config/index.phtml:1619
 #: application/modules/admin/views/scripts/home-config/index.phtml:643
 msgid "Search icons..."
 msgstr "Tìm biểu tượng..."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1608
+#: application/modules/admin/views/scripts/global-config/index.phtml:1627
 #: application/modules/admin/views/scripts/home-config/index.phtml:649
 msgid "No icons found matching your search"
 msgstr "Không tìm thấy biểu tượng nào phù hợp với tìm kiếm của bạn"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1642
+#: application/modules/admin/views/scripts/global-config/index.phtml:1661
 msgid "Invalid email address(es)"
 msgstr "Địa chỉ email không hợp lệ"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1670
+#: application/modules/admin/views/scripts/global-config/index.phtml:1689
 msgid "Please select at least one Active Scheme"
 msgstr "Vui lòng chọn ít nhất một chương trình đang hoạt động"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1678
+#: application/modules/admin/views/scripts/global-config/index.phtml:1697
 msgid "Please enter Custom Field 1 or set Add Custom Field(s) to No"
 msgstr ""
 "Vui lòng nhập Trường tùy chỉnh 1 hoặc đặt Thêm trường tùy chỉnh thành Không"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1823
+#: application/modules/admin/views/scripts/global-config/index.phtml:1842
 msgid "%active of %total schemes active"
 msgstr "%active trên %total chương trình đang hoạt động"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1886
+#: application/modules/admin/views/scripts/global-config/index.phtml:1905
 msgid "Search timezone..."
 msgstr "Tìm kiếm múi giờ..."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1901
+#: application/modules/admin/views/scripts/global-config/index.phtml:1920
 msgid "Search instance..."
 msgstr "Tìm phiên bản triển khai..."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1954
+#: application/modules/admin/views/scripts/global-config/index.phtml:1973
 msgid "Checking the mail settings. This can take up to a minute."
 msgstr "Đang kiểm tra cài đặt thư. Việc này có thể mất tới một phút."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1960
+#: application/modules/admin/views/scripts/global-config/index.phtml:1979
 #, php-format
 msgid "Email works. Verified on %s."
 msgstr "Email hoạt động. Đã kiểm tra lúc %s."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1961
+#: application/modules/admin/views/scripts/global-config/index.phtml:1980
 #, php-format
 msgid "Email does not work. Verified on %s."
 msgstr "Email không hoạt động. Đã kiểm tra lúc %s."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1967
+#: application/modules/admin/views/scripts/global-config/index.phtml:1986
 msgid "Open the dev mail trap"
 msgstr "Mở bẫy thư phát triển"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1971
+#: application/modules/admin/views/scripts/global-config/index.phtml:1990
 msgid "The check did not finish. Reload the page and try again."
 msgstr "Việc kiểm tra chưa hoàn tất. Hãy tải lại trang và thử lại."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2034
+#: application/modules/admin/views/scripts/global-config/index.phtml:2053
 #: application/modules/admin/views/scripts/home-config/index.phtml:581
 #: application/modules/admin/views/scripts/home-config/index.phtml:600
 #: application/modules/admin/views/scripts/home-config/index.phtml:693
 msgid "Enter the question"
 msgstr "Nhập câu hỏi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2034
+#: application/modules/admin/views/scripts/global-config/index.phtml:2053
 msgid "Enter the FAQ question"
 msgstr "Nhập câu hỏi trong phần Câu hỏi thường gặp"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2037
+#: application/modules/admin/views/scripts/global-config/index.phtml:2056
 #: application/modules/admin/views/scripts/home-config/index.phtml:585
 #: application/modules/admin/views/scripts/home-config/index.phtml:604
 #: application/modules/admin/views/scripts/home-config/index.phtml:696
 msgid "Enter the answer"
 msgstr "Nhập câu trả lời"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2037
+#: application/modules/admin/views/scripts/global-config/index.phtml:2056
 msgid "Enter the FAQ answer"
 msgstr "Nhập câu trả lời cho câu hỏi thường gặp"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2040
+#: application/modules/admin/views/scripts/global-config/index.phtml:2059
 #: application/modules/admin/views/scripts/home-config/index.phtml:589
 #: application/modules/admin/views/scripts/home-config/index.phtml:608
 #: application/modules/admin/views/scripts/home-config/index.phtml:699
 msgid "Add row"
 msgstr "Thêm dòng"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2041
+#: application/modules/admin/views/scripts/global-config/index.phtml:2060
 #: application/modules/admin/views/scripts/home-config/index.phtml:592
 #: application/modules/admin/views/scripts/home-config/index.phtml:700
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:506
@@ -21254,7 +21268,7 @@ msgstr ""
 msgid "Design uploaded."
 msgstr "Đã tải mẫu thiết kế lên."
 
-#: application/services/Common.php:2061
+#: application/services/Common.php:2067
 msgid ""
 "email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
 "sends no email."
@@ -21262,12 +21276,12 @@ msgstr ""
 "email.devTrapDsn trong application.ini không phải là địa chỉ smtp:// hợp lệ, "
 "vì vậy ePT không gửi email nào."
 
-#: application/services/Common.php:2069
+#: application/services/Common.php:2075
 msgid "No SMTP host is set. Enter the mail server details and save them first."
 msgstr ""
 "Chưa thiết lập máy chủ SMTP. Hãy nhập thông tin máy chủ thư và lưu lại trước."
 
-#: application/services/Common.php:2088
+#: application/services/Common.php:2094
 #, php-format
 msgid ""
 "Connected to the dev mail trap at %s. Mail from this server goes there, not "
@@ -21276,40 +21290,40 @@ msgstr ""
 "Đã kết nối tới bẫy thư phát triển tại %s. Thư từ máy chủ này được chuyển tới "
 "đó, không tới hộp thư thật."
 
-#: application/services/Common.php:2090
+#: application/services/Common.php:2096
 #, php-format
 msgid "Connected to %s. No username is set, so ePT sends without signing in."
 msgstr ""
 "Đã kết nối tới %s. Chưa thiết lập tên đăng nhập, vì vậy ePT gửi mà không "
 "đăng nhập."
 
-#: application/services/Common.php:2092
+#: application/services/Common.php:2098
 #, php-format
 msgid "Connected to %s and signed in as %s."
 msgstr "Đã kết nối tới %s và đăng nhập bằng %s."
 
-#: application/services/Common.php:2098 application/services/Common.php:2131
+#: application/services/Common.php:2104 application/services/Common.php:2137
 #, php-format
 msgid "The server said: %s"
 msgstr "Máy chủ trả lời: %s"
 
-#: application/services/Common.php:2103
+#: application/services/Common.php:2109
 msgid "Not sent. The automatic check only signs in to the mail server."
 msgstr "Không gửi. Việc kiểm tra tự động chỉ đăng nhập vào máy chủ thư."
 
-#: application/services/Common.php:2105
+#: application/services/Common.php:2111
 msgid "Not tried, because ePT could not sign in to the mail server."
 msgstr "Chưa thử, vì ePT không đăng nhập được vào máy chủ thư."
 
-#: application/services/Common.php:2107
+#: application/services/Common.php:2113
 msgid "Not tried, because no valid address was given for the test email."
 msgstr "Chưa thử, vì chưa nhập địa chỉ hợp lệ cho email thử nghiệm."
 
-#: application/services/Common.php:2109
+#: application/services/Common.php:2115
 msgid "No From Email is set. Enter one and save it first."
 msgstr "Chưa thiết lập email người gửi. Hãy nhập và lưu lại trước."
 
-#: application/services/Common.php:2115
+#: application/services/Common.php:2121
 msgid ""
 "This is a test email from ePT. It confirms that ePT can send email with the "
 "saved mail settings."
@@ -21317,28 +21331,28 @@ msgstr ""
 "Đây là email thử nghiệm từ ePT. Email này xác nhận ePT có thể gửi email với "
 "cài đặt thư đã lưu."
 
-#: application/services/Common.php:2116
+#: application/services/Common.php:2122
 #, php-format
 msgid "Sent from %s by Verify Email Setup in Global Config on %s."
 msgstr ""
 "Được gửi từ %s bởi chức năng Kiểm tra cài đặt email trong Cấu hình chung lúc "
 "%s."
 
-#: application/services/Common.php:2117
+#: application/services/Common.php:2123
 msgid "No action is needed."
 msgstr "Không cần thực hiện thao tác nào."
 
-#: application/services/Common.php:2122
+#: application/services/Common.php:2128
 msgid "ePT test email"
 msgstr "Email thử nghiệm ePT"
 
-#: application/services/Common.php:2127
+#: application/services/Common.php:2133
 #, php-format
 msgid "Sent a test email to %s. The dev mail trap caught it."
 msgstr ""
 "Đã gửi email thử nghiệm tới %s. Bẫy thư phát triển đã giữ lại email này."
 
-#: application/services/Common.php:2128
+#: application/services/Common.php:2134
 #, php-format
 msgid ""
 "Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
@@ -21347,25 +21361,25 @@ msgstr ""
 "Đã gửi email thử nghiệm tới %s. Hãy kiểm tra email có đến không. Nếu không "
 "thấy trong hộp thư đến, hãy xem thư mục thư rác."
 
-#: application/services/Common.php:2144
+#: application/services/Common.php:2150
 msgid "Not checked. The automatic check only signs in to the mail server."
 msgstr "Không kiểm tra. Việc kiểm tra tự động chỉ đăng nhập vào máy chủ thư."
 
-#: application/services/Common.php:2146
+#: application/services/Common.php:2152
 msgid "Bounce processing is off, because no IMAP Host is set."
 msgstr "Xử lý thư bị trả lại đang tắt, vì chưa thiết lập máy chủ IMAP."
 
-#: application/services/Common.php:2152
+#: application/services/Common.php:2158
 #, php-format
 msgid "Opened the %s folder on %s as %s. It holds %d messages."
 msgstr "Đã mở thư mục %s trên %s bằng %s. Thư mục có %d thư."
 
-#: application/services/Common.php:2154
+#: application/services/Common.php:2160
 #, php-format
 msgid "Could not open the bounce inbox: %s"
 msgstr "Không mở được hộp thư thư bị trả lại: %s"
 
-#: application/services/Common.php:2179
+#: application/services/Common.php:2185
 msgid ""
 "The mail server refused the username or password. Gmail and Microsoft 365 "
 "need an app password, not the account password."
@@ -21373,7 +21387,7 @@ msgstr ""
 "Máy chủ thư từ chối tên đăng nhập hoặc mật khẩu. Gmail và Microsoft 365 cần "
 "mật khẩu ứng dụng, không phải mật khẩu tài khoản."
 
-#: application/services/Common.php:2180
+#: application/services/Common.php:2186
 msgid ""
 "ePT could not reach the mail server. Check the host, port and encryption, "
 "and that this server allows outgoing connections on that port."
@@ -21381,47 +21395,47 @@ msgstr ""
 "ePT không kết nối được tới máy chủ thư. Hãy kiểm tra máy chủ, cổng và mã "
 "hóa, và kiểm tra máy chủ này cho phép kết nối ra ngoài qua cổng đó."
 
-#: application/services/Common.php:2181
+#: application/services/Common.php:2187
 msgid "The mail server refused the recipient address."
 msgstr "Máy chủ thư từ chối địa chỉ người nhận."
 
-#: application/services/Common.php:2182
+#: application/services/Common.php:2188
 msgid "The mail server has hit its sending limit. Try again later."
 msgstr "Máy chủ thư đã đạt giới hạn gửi. Hãy thử lại sau."
 
-#: application/services/Common.php:2183
+#: application/services/Common.php:2189
 msgid "The mail server refused the request."
 msgstr "Máy chủ thư từ chối yêu cầu."
 
-#: application/services/Common.php:2450
+#: application/services/Common.php:2456
 msgid "Password must be a string."
 msgstr "Mật khẩu phải là một chuỗi ký tự."
 
-#: application/services/Common.php:2460
+#: application/services/Common.php:2466
 msgid "Password must not exceed 128 characters."
 msgstr "Mật khẩu không được dài quá 128 ký tự."
 
-#: application/services/Common.php:2465
+#: application/services/Common.php:2471
 msgid "Password must contain at least one letter."
 msgstr "Mật khẩu phải chứa ít nhất một chữ cái."
 
-#: application/services/Common.php:2470
+#: application/services/Common.php:2476
 msgid "Password must contain at least one number."
 msgstr "Mật khẩu phải chứa ít nhất một chữ số."
 
-#: application/services/Common.php:2475
+#: application/services/Common.php:2481
 msgid "Password must contain at least one symbol."
 msgstr "Mật khẩu phải chứa ít nhất một ký tự đặc biệt."
 
-#: application/services/Common.php:2486
+#: application/services/Common.php:2492
 msgid "Password must not contain parts of your name."
 msgstr "Mật khẩu không được chứa bất kỳ phần nào trong tên của bạn."
 
-#: application/services/Common.php:2506
+#: application/services/Common.php:2512
 msgid "Password must not contain parts of your email address."
 msgstr "Mật khẩu không được chứa bất kỳ phần nào của địa chỉ email của bạn."
 
-#: application/services/Common.php:2523
+#: application/services/Common.php:2529
 msgid "Password is too weak. Please choose a more complex password."
 msgstr "Mật khẩu quá yếu. Vui lòng chọn một mật khẩu phức tạp hơn."
 
