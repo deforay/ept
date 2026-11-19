@@ -1,6 +1,6 @@
 # How to manage user access
 
-Create and review ePT 7.6.21 accounts with the access needed for their assigned work.
+Create and review ePT accounts with the access needed for their assigned work.
 
 ## Before you start
 
