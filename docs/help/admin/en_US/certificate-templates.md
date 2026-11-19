@@ -64,7 +64,7 @@ Each box holds text: details, fixed wording or both. A detail appears in the tex
 
 | Setting | Values | Default |
 |---|---|---|
-| Font | Sans, Serif, Sans for all languages, Serif for all languages | Sans |
+| Font | Sans, Serif, Sans, all languages, or Serif, all languages | Sans |
 | Size | 4 to 120 points | 28 for Participant name, 14 for other details |
 | Style | Bold, italic | Bold for Participant name |
 | Colour | Any colour | Black |

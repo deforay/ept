@@ -32,7 +32,7 @@ Day-to-day rules and report details.
 
 - **Days for Sample Rehydration** *(required)* — how soon a
   participant may test the rehydrated sample:
-  - **0 — Allow same-day testing**
+  - **0 — Allow Same Day Testing**
   - **1 — Testing after 1 day only**
   - **2 — Testing after 2 days only**
 - **Collect Additional Testkits** *(Yes/No)* — let participants
@@ -84,9 +84,9 @@ depending on your scheme):
 
 ### Standard DTS Panel
 
-- **Test 1 Kit Selections** — kits allowed at test position 1.
-- **Test 2 Kit Selections** — kits allowed at test position 2.
-- **Test 3 Kit Selections** — kits allowed at test position 3.
+- **Test 1 Kits** — kits allowed at test position 1.
+- **Test 2 Kits** — kits allowed at test position 2.
+- **Test 3 Kits** — kits allowed at test position 3.
 
 Each is a multi-select — you can allow more than one kit per
 position.

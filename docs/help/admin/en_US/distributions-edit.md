@@ -28,7 +28,7 @@ means.
   the surveys list.
 - **Add and continue to Shipment** — saves your changes and
   jumps to the shipments page. Useful when the survey is still
-  in the *Not yet fully set up* state and needs shipments added
+  in the **Created** state and needs shipments added
   or adjusted.
 
 Use **Cancel** to drop the changes and return to the surveys

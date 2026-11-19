@@ -85,8 +85,10 @@ If no participant has responded yet, you will see only a disabled
   PDF reports. Disabled while a job is queued or running.
 - **VL Range** — only for **VL** shipments. Opens the manual
   reference-range editor.
-- The mail-non-responders button stays while some labs have not
-  responded.
+- **Remind** *(with the number of labs)* — emails the labs that
+  have not responded. It shows only while responses are still
+  open: before the deadline, and before the shipment is finalized
+  or cancelled.
 
 ### After Generate Reports
 

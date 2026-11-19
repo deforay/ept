@@ -171,9 +171,9 @@ if (!empty($this->shipment)) {
         <br />
         <?php
         $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
-        $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
+        $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? $this->htmlTranslate('Generating Reports and Finalizing Shipment ...') : $this->htmlTranslate('Generate Reports and Finalize Shipment');
         if ($this->shipment[0]['report_generated'] == 'yes') {
-            $reportTitle = 'Generate Reports and Finalize Shipment';
+            $reportTitle = $this->htmlTranslate('Generate Reports and Finalize Shipment');
         }
         $btnStates = Application_Service_Shipments::getShipmentButtonStates($this->shipment[0]);
         // Finalizing opens the participant feedback window, so it stays blocked until the

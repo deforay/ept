@@ -91,8 +91,8 @@ Email to Participants** for reminders.
   surveys on top, so the round you are working on is always at
   the top.
 - To see only surveys waiting to be shipped, type *configured*
-  in the **Status** column search. This shows only the *Ready to
-  ship* rows so you can clear them off your queue.
-- Editing a survey *after* shipping is limited: the date is
-  locked once shipments have gone out (see the **Edit PT Survey**
-  help for more).
+  in the **Status** column search. This shows only the
+  **Configured** rows so you can clear them off your queue.
+- After shipping you can still edit the date. The code locks
+  once one of the survey's shipments is finalized. See the
+  **Edit PT Survey** help.

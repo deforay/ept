@@ -84,7 +84,11 @@ Clicking **Finalize** moves the shipment to its final state:
    their own report.
 4. Disables Re-Evaluate, Generate Reports and Finalize for this
    shipment. You can still change the comment with **Update
-   Comment**, and replace the summary report.
+   Comment**. To replace the summary report PDF, click **Replace
+   Summary Report** on the shipment in **Analyze → View Finalized
+   Shipments**. It shows only to
+   admins with the privilege to replace finalized summary
+   reports.
 
 This **cannot be undone** through the normal UI. Be sure the
 draft reports look right *before* you finalize.

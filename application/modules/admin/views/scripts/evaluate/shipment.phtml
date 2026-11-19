@@ -182,7 +182,7 @@ if ($shipmentAttributesRaw !== '') {
 		action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>">
 		<div class="row">
 			<div class="col-md-12">
-				<label for="correctiveActionFile" class="form-control-label">Corrective Action Files</label>
+				<label for="correctiveActionFile" class="form-control-label"><?= $this->translate->_("Corrective Action Files"); ?></label>
 				<input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile"
 					title="<?= $this->htmlTranslate("Please chosse corrective actiion file.") ?>">
 
