@@ -130,8 +130,8 @@ Repeat this for **at least 3 of the 8 participants** you created. To make evalua
 5. Click **Enter Response**
 6. Fill in the result form for each sample:
    - **Test Kit** — select any test kit from the dropdown for Test-1 (and Test-2, Test-3 if applicable)
-   - **Individual test results** — select Reactive or Non-Reactive for each test
-   - **Final Interpretation** — select HIV Positive or HIV Negative
+   - **Individual test results** — select REACTIVE or NONREACTIVE for each test
+   - **Final Interpretation** — select POSITIVE or NEGATIVE
    - **Documentation fields** — fill in lot number, expiry date, etc. (these affect the documentation score)
 7. Click **Submit**
 8. If a review page opens, check the answers, then click the green **Confirm Response** button at the bottom
@@ -190,10 +190,12 @@ Repeat this for **at least 3 of the 8 participants** you created. To make evalua
 
 1. Go to **Reports → Shipments Report**
 2. Find your shipment and click the **green shipment code** link
-3. An Excel file will download — open it and explore the sheets:
-   - **Summary** — overall shipment statistics
-   - **Participant results** — per-participant scores and pass/fail status
-   - **Sample-level detail** — how each participant responded to each sample
+3. Open the Excel file that downloads. It has five sheets:
+   - **Participant List**: the code, name and contact details of each participant
+   - **Results Reported**: the test kits and results each participant reported for each sample
+   - **Panel Score**: the correct responses per sample, the count of correct responses and the percentage correct
+   - **Documentation Score**: the documentation score of each participant
+   - **Total Score**: the panel score, documentation score, total score, overall performance and reasons for failure
 
 ---
 

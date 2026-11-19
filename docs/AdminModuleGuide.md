@@ -150,17 +150,18 @@ flowchart TD
 - Survey acts as a container for multiple shipments
 
 #### 2. Add Shipment(s)
-**Location:** PT Survey List → Add Scheme
+**Location:** Manage → PT Survey → **Add Shipment** on the survey row
+
+**Add Shipment** opens the shipment list of that survey. Pick the **Scheme Type**, then click **New Shipment**.
 
 For each shipment:
-- Select scheme type (DTS, VL, EID, TB, etc.)
 - Set Shipment Code (auto-generated or custom)
 - Set Result Due Date
 - Add reference samples with expected results (qualitative tests)
 - Configure scheme-specific options (algorithms, test panels, etc.)
 
 #### 3. Enroll Participants
-**Location:** Shipment List → Enroll button
+**Location:** Shipment list → **Enroll** button on the shipment row. The button is red until the shipment has participants.
 
 - The right-hand list holds the participants who get the shipment. The first time the page opens, it already holds the participants enrolled in the scheme (Configure → Scheme Enrollments)
 - The left-hand list holds every other active participant
@@ -671,9 +672,9 @@ if ($request->isPost()) {
 
 ## System Configuration
 
-### Global Config - Scheme Activation
+### Global Settings - Scheme Activation
 
-Not all deployments use all test schemes. In **Global Config**, administrators can enable/disable which schemes are active for the current instance:
+Not all deployments use all test schemes. In **Configure → ePT Global Settings**, administrators enable or disable the schemes of the current instance:
 
 - Some deployments use only DTS (HIV Serology)
 - Some use only TB
@@ -694,16 +695,16 @@ Test kits are a critical component of ePT:
 
 ### Scheme-Specific Settings
 
-Each built-in scheme has a settings page in the Scheme Config hub. Open **Configure → Scheme Config**, then pick the scheme. The settings are stored in the `scheme_config` table.
+All scheme settings live in one hub. Open **Configure → Scheme Config**, then pick the scheme. Each scheme has one page. Its title is the scheme name followed by "Settings", such as "VL Settings". The settings are stored in the `scheme_config` table.
 
-| Scheme | Settings Page | Key Configurations |
+| Scheme | Page title | Key Configurations |
 |--------|---------------|-------------------|
-| DTS | DTS Settings | Algorithm type, test panel count, result options |
+| DTS | HIV Serology Settings | Algorithm type, test panel count, result options |
 | VL | VL Settings | Assay list, Z-score thresholds, reference methods |
 | EID | EID Settings | Result interpretation rules |
 | TB | TB Settings | Molecular vs microscopy options, drug resistance |
-| Recency | Recency Settings | RTRI cutoffs, viral load thresholds |
-| COVID-19 | COVID-19 Settings | Platform options, Ct value ranges |
+| Recency | HIV Recency (RTRI) Settings | RTRI cutoffs, viral load thresholds |
+| COVID-19 | SARS-CoV-2 Settings | Platform options, Ct value ranges |
 
 **Location:** Configure → Scheme Config. The old per-scheme settings URLs redirect to the hub.
 

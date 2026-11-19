@@ -10,8 +10,14 @@ Ce document explique l'organisation des programmes de tests (DTS, VL, EID, TB, R
 2. [Structure des répertoires](#directory-structure)
 3. [Composants d'un programme](#scheme-components)
 4. [Flux de données](#data-flow)
-5. [Ajouter un nouveau programme](#adding-a-new-scheme)
-6. [Détails propres à chaque programme](#scheme-specific-details)
+5. [Tables de la base de données](#database-tables)
+6. [Ajouter un nouveau programme](#adding-a-new-scheme)
+7. [Détails propres à chaque programme](#scheme-specific-details)
+8. [Configuration](#configuration)
+9. [Cycle de vie d'une expédition](#shipment-lifecycle)
+10. [Formule de notation](#scoring-formula)
+11. [Génération des rapports et export Excel](#report-generation-excel-export)
+12. [Documentation associée](#related-documentation)
 
 ---
 
@@ -156,13 +162,13 @@ public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
 | `get{Scheme}Samples()` | Lecture des données des échantillons |
 
 **Taille des modèles (indicateur de complexité) :**
-- TB.php : 133K (le plus complexe, moléculaire et microscopie)
-- VL.php : 114K (calculs de Z-score)
-- DTS.php : 111K (plusieurs algorithmes)
-- Covid19.php : 79K
-- CustomTest.php : 79K
-- Recency.php : 63K
-- Eid.php : 21K (le plus simple)
+- Dts.php : 173K (le plus complexe, plusieurs algorithmes)
+- Tb.php : 142K (moléculaire et microscopie)
+- Vl.php : 140K (calculs de Z-score)
+- CustomTest.php : 81K
+- Covid19.php : 75K
+- Recency.php : 62K
+- Eid.php : 25K (le plus simple)
 
 ### 2. Contrôleur (`application/controllers/{Scheme}Controller.php`) {#2-controller-applicationcontrollersschemecontrollerphp}
 
@@ -261,7 +267,7 @@ sequenceDiagram
 
     P->>D: Consulter les expéditions disponibles
     D->>P: Afficher la liste des programmes
-    P->>C: Cliquer sur « Enter Results » (GET)
+    P->>C: Cliquer sur « Saisir la réponse » (GET)
     C->>C: Charger les échantillons, kits de test et résultats possibles
     C->>P: Afficher le formulaire response.phtml
     P->>C: Envoyer les résultats (POST)
@@ -615,10 +621,10 @@ stateDiagram-v2
     end note
 ```
 
-## Formule de notation {#scoring-formula}
-
 Le cycle de vie ci-dessus décrit des étapes du processus. Il ne reprend pas littéralement chaque état stocké en base de données.
 Le traitement de la date limite peut aussi mettre l'évaluation en file. La génération et la finalisation sont des actions distinctes.
+
+## Formule de notation {#scoring-formula}
 
 La plupart des programmes suivent ce modèle :
 
