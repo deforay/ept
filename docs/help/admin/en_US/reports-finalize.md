@@ -41,10 +41,13 @@ generate pages — *No. of Samples / Participants / Responses*,
 
 ### Ready to finalize
 
-- **Finalize** *(green ✓)* — opens the finalize page where you
-  can review the comment, mark the report as "approved", and
-  queue the final report build. Available once reports have been
-  generated and the shipment is not already finalized.
+- **Finalize** *(green ✓)* — opens the finalize page. Available
+  once reports are generated and the shipment is not finalized.
+  On that page:
+  1. Check **Comment for all Participants of this shipment**.
+  2. Fill in **Date of Approval** and **Approved By**. Leave both
+     blank to record you, as of now.
+  3. Click **Finalize** to queue the final report build.
 
 ### Already finalized
 
@@ -79,9 +82,9 @@ Clicking **Finalize** moves the shipment to its final state:
 3. **Makes the per-participant reports visible on the
    participant's dashboard.** Participants can now download
    their own report.
-4. Disables Re-Evaluate, Generate Reports, and Finalize on the
-   rest of the admin pages for this shipment — the shipment is
-   now read-only.
+4. Disables Re-Evaluate, Generate Reports and Finalize for this
+   shipment. You can still change the comment with **Update
+   Comment**, and replace the summary report.
 
 This **cannot be undone** through the normal UI. Be sure the
 draft reports look right *before* you finalize.

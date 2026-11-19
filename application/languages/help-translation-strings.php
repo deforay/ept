@@ -33,6 +33,8 @@ _('Add VL Assay / Platform');
 _('admin');
 // admin/users#title
 _('Admin Users');
+// admin/shipment-manage-enroll#summary
+_('After shipping, see who responded, add participants who are not enrolled, remove participants, and copy email lists');
 // admin/dts-settings#tags
 _('algorithm');
 // admin/reports-tb-all-sites-results#tags
@@ -161,9 +163,11 @@ _('EID Assays / Platforms');
 _('email');
 // admin/email-participants#title
 _('Email Participants');
+// admin/shipment-manage-enroll#tags
+_('emails');
 // admin/shipment-enroll#tags
 _('enroll');
-// admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/shipment-enroll#tags
+// admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/shipment-enroll#tags, admin/shipment-manage-enroll#tags
 _('enrollment');
 // admin/shipment-enroll#title
 _('Enroll Participants');
@@ -263,6 +267,8 @@ _('login');
 _('logo');
 // admin/data-managers#summary
 _('Manage Data Manager / PT Login accounts — add, edit, reset password, change email, and link to participants');
+// admin/shipment-manage-enroll#title
+_('Manage Enrollment');
 // admin/ptcc#summary
 _('Manage PT Country Coordinators — add, bulk import, reset passwords, export, and see the participants in each region');
 // admin/evaluate-shipment#tags
@@ -277,6 +283,8 @@ _('Map Test Kits to Tests');
 _('My account');
 // admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('non-responders');
+// admin/shipment-manage-enroll#tags
+_('not responded');
 // admin/dashboard#tags, admin/reports-shipments#tags, participant/dashboard#tags
 _('overview');
 // admin/shipment-add#tags, admin/shipment#tags
@@ -341,6 +349,8 @@ _('reminder');
 _('Rename a Viral Load assay / platform');
 // admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags, participant/view-reports#tags
 _('reports');
+// admin/shipment-manage-enroll#tags
+_('responded');
 // participant/result-submission#tags
 _('response');
 // admin/reports-participant-response#summary
@@ -393,7 +403,7 @@ _('settings');
 _('ship');
 // admin/shipment-enroll#tags
 _('ship-it');
-// admin/shipment-add#tags, admin/shipment-enroll#tags, admin/shipment#tags, participant/result-submission#tags
+// admin/shipment-add#tags, admin/shipment-enroll#tags, admin/shipment-manage-enroll#tags, admin/shipment#tags, participant/result-submission#tags
 _('shipment');
 // admin/reports-shipment-response#title
 _('Shipment Response Report');

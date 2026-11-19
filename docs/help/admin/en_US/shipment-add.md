@@ -43,12 +43,19 @@ A short code that identifies this shipment.
   you want.
 - Use letters, numbers, and hyphens only.
 
-### Result Due Date
+### Result Due Date & Time
 
-The last date by which participants must send in their results.
+The exact time responses close. The time is in the application
+time zone, set in **ePT Global Settings**.
 
-- Pick a future date.
-- Participants will see this date on their portal.
+- Pick a future date and time.
+- Participants see this deadline on their portal.
+
+### Auto-close at deadline
+
+- **Yes** stops accepting responses at the deadline.
+- **No** keeps accepting late responses. They are still flagged
+  as late.
 
 ### Samples
 

@@ -6,7 +6,9 @@ tags: [reports, trends, performance, response rate, pass rate, regions]
 
 # Participant Trends
 
-**Reports → Participant Trends** shows how participants respond and perform across the shipments of one scheme. The page heading is **Participant Performance Overview**.
+**Reports → Participant Trends** shows how participants respond and perform across shipments. The page heading is **Participant Performance Overview**.
+
+The page opens on an overview of every scheme for the last three years. Click a scheme's row to see its shipments one by one.
 
 ## Filters
 
@@ -14,11 +16,9 @@ Click **Expand Filters** to show the filters. Set them, then click **Get Report*
 
 | Filter | What it does | Default |
 |---|---|---|
-| Date range | Includes shipments whose shipment date falls in this range. | Last 180 days |
-| Scheme | The scheme to report on. Required. | None. If only one scheme is active, that scheme. |
+| Date range | Includes shipments whose shipment date falls in this range. | Last 3 years |
+| Scheme | The scheme to report on. Leave it empty for the overview of every scheme. | Empty. If only one scheme is active, that scheme. |
 | Shipment | Limits the report to one shipment. | All shipments in the date range |
-
-When only one scheme is active, the report runs as soon as the page opens.
 
 Each active filter shows as a chip next to the **Expand Filters** button.
 

@@ -16,14 +16,14 @@ selected scheme(s).
   for duplicates as you tab out of the field.
 - **Short Test Kit Name** — optional shorter label (used where
   space is tight, like report tables).
-- **Approval Agency** *(required)* — the agency that approved
-  the kit (WHO, FDA, MOH, and so on). Free text.
-- **Country Approved/Validated** *(required, Yes/No)* — whether
-  the kit has country-level approval.
+- **Is Ministry of Health Approved?** *(Yes/No)* — whether the
+  Ministry of Health approved this kit.
+- **Is PT Provider Validated?** *(Yes/No)* — whether your PT
+  programme validated this kit.
 - **Source Reference** — optional citation / URL / document name.
 - **Test Kit Manufacturer** — free text manufacturer name.
 - **Scheme** *(required, multi-select)* — one or more schemes
-  this kit applies to (DTS, VL, TB, etc.). When **DTS** is
+  this kit applies to. When **DTS** is
   selected, the **Choose a Test Number** field appears (see
   below).
 - **Choose a Test Number to map test kit** *(required when DTS is

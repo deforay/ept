@@ -40,10 +40,12 @@ Once a survey has been shipped (status **Already shipped**), it
 is already visible to participants. The system protects shipped
 surveys from changes that would confuse people:
 
-- The date picker is locked to the current survey date.
-- The PT Survey Code is still editable, but think twice before
-  changing it — participants will have already seen the old
-  code in their notifications and dashboards.
+- The date stays editable. Think twice before changing it,
+  because participants have already seen it.
+- The PT Survey Code stays editable until one of the survey's
+  shipments is finalized. After that it is locked, because
+  finalized reports print it. Participants have also seen the
+  old code in their emails and dashboards.
 
 If you need to make bigger changes to a shipped survey, adjust
 the individual *shipments* under it from the shipments page
