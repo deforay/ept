@@ -23,7 +23,7 @@
 - Allez dans **Analyse → Générer les rapports**
 - Trouvez votre expédition et cliquez sur **Voir**
 - Faites défiler la page vers le bas et cliquez sur le bouton vert **Rapport**
-- Cliquez sur **Generate Participant Reports**
+- Cliquez sur **Générer les rapports des participants**
 - Patientez un instant, puis actualisez la page. Les rapports sont générés en arrière-plan.
 
 ## 4.3 Finaliser l'expédition {#43-finalize-the-shipment}
@@ -31,7 +31,7 @@
 - Allez dans **Analyse → Finaliser les rapports**
 - Trouvez votre expédition et cliquez sur **Voir**
 - Faites défiler la page vers le bas et cliquez sur le bouton vert **Finaliser**
-- Cliquez sur **Generate Reports and Finalize Shipment**
+- Cliquez sur **Générer les rapports et finaliser l'expédition**
 - Patientez un instant, puis actualisez la page
 
 > **Important :** la finalisation est définitive. Après la finalisation, les participants peuvent télécharger leurs rapports. Vérifiez que l'évaluation et les rapports sont corrects avant de finaliser.

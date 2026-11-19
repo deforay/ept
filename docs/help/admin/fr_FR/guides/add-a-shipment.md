@@ -53,13 +53,13 @@ Dans la colonne **Action**, cliquez sur **Ajouter une expédition**.
 La liste des expéditions de cette enquête s'ouvre.
 
 En haut de la liste des expéditions, choisissez le type de test
-dans **Type de programme**. Cliquez ensuite sur **New Shipment**.
+dans **Type de programme**. Cliquez ensuite sur **Nouvelle expédition**.
 Le formulaire d'expédition s'ouvre en dessous.
 
 Si votre enquête contient déjà une expédition et que vous voulez en
 ajouter une autre (par exemple, envoyer à la même date un panel de
 sérologie VIH et un panel de charge virale), choisissez l'autre type
-de test et cliquez de nouveau sur **New Shipment**. Une enquête peut
+de test et cliquez de nouveau sur **Nouvelle expédition**. Une enquête peut
 contenir plusieurs expéditions.
 
 ## Étape 3 : Remplissez les détails de l'expédition

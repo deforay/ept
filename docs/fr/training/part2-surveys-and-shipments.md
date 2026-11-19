@@ -20,7 +20,7 @@
 
 - Dans la liste des enquêtes PT, cliquez sur **Ajouter une expédition** à côté de votre nouvelle enquête. La liste des expéditions de l'enquête s'ouvre.
 - Sélectionnez le programme dans **Type de programme** (par exemple, Échantillon sur tube séché - Sérologie du VIH)
-- Cliquez sur **New Shipment**
+- Cliquez sur **Nouvelle expédition**
 - Faites défiler la page vers le bas et configurez :
   - **Code de l'expédition** : généré automatiquement, modifiable
   - **Date limite de soumission des résultats** : date limite de soumission pour les participants

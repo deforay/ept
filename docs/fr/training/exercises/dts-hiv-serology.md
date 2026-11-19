@@ -75,7 +75,7 @@ L'inscription au programme est une configuration unique. Lorsque vous inscrivez 
 ### Étape 4 : Ajouter une expédition de sérologie du VIH sur DTS {#step-4-add-a-dts-hiv-serology-shipment}
 
 1. Votre nouvelle enquête PT doit apparaître dans la liste. Cliquez sur **Ajouter une expédition**. La liste des expéditions de l'enquête s'ouvre.
-2. Sélectionnez **Échantillon sur tube séché - Sérologie du VIH** dans **Type de programme**, puis cliquez sur **New Shipment**
+2. Sélectionnez **Échantillon sur tube séché - Sérologie du VIH** dans **Type de programme**, puis cliquez sur **Nouvelle expédition**
 3. Faites défiler la page vers le bas et configurez :
    - **Code de l'expédition** : gardez la valeur par défaut ou modifiez-la
    - **Date limite de soumission des résultats** : choisissez une date située au moins quelques jours plus tard
@@ -173,7 +173,7 @@ Répétez cette étape pour **au moins 3 des 8 participants** que vous avez cré
 1. Allez dans **Analyse → Générer les rapports**
 2. Trouvez votre expédition et cliquez sur **Voir**
 3. Faites défiler la page vers le bas et cliquez sur le bouton vert **Rapport**
-4. Cliquez sur **Generate Participant Reports**
+4. Cliquez sur **Générer les rapports des participants**
 5. Patientez un instant, puis actualisez la page. Les rapports sont générés en arrière-plan.
 
 **8c. Finaliser :**
@@ -181,7 +181,7 @@ Répétez cette étape pour **au moins 3 des 8 participants** que vous avez cré
 1. Allez dans **Analyse → Finaliser les rapports**
 2. Trouvez votre expédition et cliquez sur **Voir**
 3. Faites défiler la page vers le bas et cliquez sur le bouton vert **Finaliser**
-4. Cliquez sur **Generate Reports and Finalize Shipment**
+4. Cliquez sur **Générer les rapports et finaliser l'expédition**
 5. Patientez un instant, puis actualisez la page
 
 > **Important :** la finalisation est définitive. Après la finalisation, les participants peuvent télécharger leur rapport individuel. Dans une situation réelle, vérifiez que l'évaluation et les rapports sont corrects avant cette étape.

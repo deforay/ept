@@ -152,7 +152,7 @@ flowchart TD
 #### 2. Ajouter une ou plusieurs expéditions {#2-add-shipments}
 **Emplacement :** Gérer → Enquête PT → **Ajouter une expédition** sur la ligne de l'enquête
 
-**Ajouter une expédition** ouvre la liste des expéditions de cette enquête. Choisissez le **Type de programme**, puis cliquez sur **New Shipment**.
+**Ajouter une expédition** ouvre la liste des expéditions de cette enquête. Choisissez le **Type de programme**, puis cliquez sur **Nouvelle expédition**.
 
 Pour chaque expédition :
 - Définissez le code de l'expédition (généré automatiquement ou personnalisé)
