@@ -102,7 +102,7 @@ touching.
 | New filenames | Kebab-case, for example `backup-and-migration.md`. `ARCHITECTURE.md` and `SchemeArchitecture.md` keep their names because renaming them breaks published URLs. |
 | Callouts | Use `> **Title:**` blockquotes. MkDocs admonitions (`!!! warning`) render as literal text on GitHub, and these pages are read there as well as on the site. |
 | Raw HTML | Avoid it. Markdown inside an HTML block does not render on GitHub, so Material card grids break the GitHub view. |
-| Adding a page | Add it to the `nav` in `mkdocs.yml` and to the "Where to start" table in [the documentation index](README.md). A page missing from either one is hard to find. |
+| Adding a page | Add it to the `nav` in `mkdocs.yml` and to the "All documentation" table in [the documentation index](README.md#all-documentation). If readers need it to get started, add it to the "Start here" table too. A page missing from either one is hard to find. |
 | Scheme names | Match the `scheme_list` table. The [supported test schemes](README.md#supported-test-schemes) table is the reference. |
 
 Run `mkdocs build --strict` before pushing. The deploy workflow uses it, so a

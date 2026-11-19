@@ -369,6 +369,7 @@ php bin\migrate.php -yq
 
 - Ouvrez ePT à l'adresse http://ept/admin
 - Connectez-vous avec les identifiants administrateur fournis par l'import SQL
+- Si l'import SQL ne contient aucun compte administrateur, créez le premier. Ouvrez une invite de commandes dans `C:\wamp64\www\ept` et exécutez `php bin\seed-admin.php`. Le script demande le nom, l'e-mail et le mot de passe de l'administrateur.
 - Changez immédiatement le mot de passe administrateur par défaut
 
 ---
