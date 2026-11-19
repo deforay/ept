@@ -57,7 +57,7 @@ pass/fail result.
 
 A new kit is **marked as Approved by default** on save.
 Participants can pick it once it is mapped to the scheme and test
-number. **Approved** does not change that.
+number.
 
 ## Tips
 

@@ -1389,6 +1389,7 @@ final class Application_Model_Dts
                     'TESTKITNAMEID' => 'TestKitName_ID',
                     'TESTKITNAME' => 'TestKit_Name',
                     'attributes',
+                    'APPROVED' => 'Approval',
                 ]
             )
             ->joinLeft(['stm' => 'scheme_testkit_map'], $joinCond, ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
@@ -1445,24 +1446,27 @@ final class Application_Model_Dts
      * saved to stay in the list even when they fall outside the shipment's selection —
      * narrowing the options must never silently drop a kit off an existing response.
      *
+     * Only approved kits (r_testkitnames.Approval = 1) are offered. An unapproved kit stays
+     * only at the positions where this response already saved it.
+     *
      * @param array<string, array<string>> $keepSelectable ['testkit_1' => ['tkAbc'], ...]
      */
     public function getEffectiveTestKitList($shipmentId, bool $countryAdapted = false, array $keepSelectable = []): array
     {
         $kits = $this->getAllDtsTestKitList($countryAdapted);
         $shipmentKitPos = $this->getShipmentTestkitPositions($shipmentId);
-        if (empty($shipmentKitPos)) {
-            return $kits;
-        }
         foreach ($kits as &$kit) {
+            $kitId = (string) $kit['TESTKITNAMEID'];
             foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $pos) {
-                if (!isset($shipmentKitPos[$pos])) {
-                    continue;
+                $saved = in_array($kitId, $keepSelectable[$pos] ?? [], true);
+                if (isset($shipmentKitPos[$pos])) {
+                    $kit[$pos] = (in_array($kitId, $shipmentKitPos[$pos], true) || $saved) ? '1' : '0';
                 }
-                $kitId = (string) $kit['TESTKITNAMEID'];
-                $allowed = in_array($kitId, $shipmentKitPos[$pos], true)
-                    || in_array($kitId, $keepSelectable[$pos] ?? [], true);
-                $kit[$pos] = $allowed ? '1' : '0';
+                // Participants pick only approved kits. An unapproved kit stays offered
+                // only where this response already saved it.
+                if ((int) ($kit['APPROVED'] ?? 0) !== 1 && !$saved) {
+                    $kit[$pos] = '0';
+                }
             }
         }
         unset($kit);

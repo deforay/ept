@@ -22,7 +22,7 @@ list.
 - **Source Reference** — optional citation / URL / document.
 - **Test Kit Manufacturer** — manufacturer name.
 - **Active** *(Yes/No)* — shown as **Approved** in the kit list.
-  The **Show Approved** and **Show UnApproved** filters use it.
+  Only kits set to **Yes** appear in participants' drop-downs.
 - **Scheme** *(required, multi-select)* — scheme(s) the kit
   belongs to. When **DTS** is one of them, the **Choose a Test
   Number** field appears.
@@ -43,9 +43,9 @@ list.
 
 ## Tips
 
-- **Approved** does not decide which kits participants can pick.
-  To stop a kit being offered, remove its scheme or test number
-  mapping.
+- **Set Active to No instead of deleting.** Past shipments may
+  use this kit. With *No*, participants can no longer pick it, and
+  responses that already use it keep it.
 - Changing **Allow Additional Information** affects the
   participant response form *from now on*. Old responses keep
   whatever was recorded at the time.

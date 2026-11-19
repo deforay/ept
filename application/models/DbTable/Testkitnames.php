@@ -401,7 +401,11 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         return $this->fetchRow($this->getAdapter()->quoteInto('TestKitName_ID = ?', $kit) . ' OR ' . $this->getAdapter()->quoteInto('TestKit_Name = ?', $kit));
     }
 
-    public function getAllTestKitList($scheme = null, $countryAdapted = false, $isArray = false)
+    /**
+     * @param bool $approvedOnly offer only approved kits (participant forms)
+     * @param array<string> $keepIds kits to keep even when unapproved, such as one already saved
+     */
+    public function getAllTestKitList($scheme = null, $countryAdapted = false, $isArray = false, bool $approvedOnly = false, array $keepIds = [])
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
@@ -420,6 +424,12 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         }
         if ($countryAdapted) {
             $sql = $sql->where('pt_provider_validated = 1');
+        }
+        if ($approvedOnly) {
+            $keepIds = array_values(array_filter(array_map('strval', $keepIds), fn ($id) => $id !== ''));
+            $sql = empty($keepIds)
+                ? $sql->where('t.Approval = 1')
+                : $sql->where('t.Approval = 1 OR t.TestKitName_ID IN (?)', $keepIds);
         }
         $stmt = $db->fetchAll($sql);
         $response = [];

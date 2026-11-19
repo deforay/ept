@@ -61,7 +61,7 @@ réussi/échec.
 
 À l'enregistrement, un nouveau kit est **marqué comme approuvé par
 défaut**. Les participants peuvent le choisir dès qu'il est associé au
-programme et au numéro de test. **Approuvé** ne change rien à cela.
+programme et au numéro de test.
 
 ## Conseils
 

@@ -22,8 +22,8 @@ formulaire **Ajouter**. Un champ **Actif** s'y ajoute. Il est affiché comme
 - **Référence de la source** : citation, URL ou document, facultatif.
 - **Fabricant de kits de test** : nom du fabricant.
 - **Actif** *(Oui/Non)* : affiché comme **Approuvé** dans la liste des
-  kits. Les filtres **Afficher les éléments approuvés** et **Afficher
-  les éléments non approuvés** l'utilisent.
+  kits. Seuls les kits réglés sur **Oui** apparaissent dans les listes
+  déroulantes des participants.
 - **Programme** *(obligatoire, choix multiple)* : le ou les programmes
   du kit. Quand **DTS** en fait partie, le champ **Choose a Test Number**
   apparaît.
@@ -48,9 +48,9 @@ formulaire **Ajouter**. Un champ **Actif** s'y ajoute. Il est affiché comme
 
 ## Conseils
 
-- **Approuvé** ne décide pas des kits que les participants peuvent
-  choisir. Pour ne plus proposer un kit, retirez son association au
-  programme ou au numéro de test.
+- **Passez Actif à Non au lieu de supprimer le kit.** Des expéditions
+  passées utilisent peut-être ce kit. Avec *Non*, les participants ne
+  peuvent plus le choisir, et les réponses qui l'utilisent le gardent.
 - Modifier **Autoriser les informations supplémentaires** change le
   formulaire de réponse des participants *à partir de maintenant*. Les
   anciennes réponses gardent ce qui a été saisi à l'époque.
