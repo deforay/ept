@@ -190,10 +190,12 @@ Répétez cette étape pour **au moins 3 des 8 participants** que vous avez cré
 
 1. Allez dans **Rapports → Rapport sur les expéditions**
 2. Trouvez votre expédition et cliquez sur le **lien vert du code de l'expédition**
-3. Un fichier Excel est téléchargé. Ouvrez-le et parcourez ses feuilles :
-   - **Résumé** : statistiques globales de l'expédition
-   - **Résultats des participants** : scores et statut réussi ou échec de chaque participant
-   - **Détail par échantillon** : réponse de chaque participant pour chaque échantillon
+3. Ouvrez le fichier Excel téléchargé. Il contient cinq feuilles, dont les noms restent en anglais :
+   - **Participant List** : le code, le nom et les coordonnées de chaque participant
+   - **Results Reported** : les kits de test et les résultats déclarés par chaque participant pour chaque échantillon
+   - **Panel Score** : les réponses correctes par échantillon, leur nombre et le pourcentage de réponses correctes
+   - **Documentation Score** : le score de documentation de chaque participant
+   - **Total Score** : le score du panel, le score de documentation, le score total, la performance globale et les motifs d'échec
 
 ---
 

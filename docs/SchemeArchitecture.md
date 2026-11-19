@@ -10,8 +10,14 @@ This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DB
 2. [Directory Structure](#directory-structure)
 3. [Scheme Components](#scheme-components)
 4. [Data Flow](#data-flow)
-5. [Adding a New Scheme](#adding-a-new-scheme)
-6. [Scheme-Specific Details](#scheme-specific-details)
+5. [Database Tables](#database-tables)
+6. [Adding a New Scheme](#adding-a-new-scheme)
+7. [Scheme-Specific Details](#scheme-specific-details)
+8. [Configuration](#configuration)
+9. [Shipment Lifecycle](#shipment-lifecycle)
+10. [Scoring Formula](#scoring-formula)
+11. [Report Generation & Excel Export](#report-generation-excel-export)
+12. [Related Documentation](#related-documentation)
 
 ---
 
@@ -156,13 +162,13 @@ public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
 | `get{Scheme}Samples()` | Retrieve sample data |
 
 **Model Sizes (complexity indicator):**
-- TB.php: 133K (most complex - molecular/microscopy)
-- VL.php: 114K (Z-score calculations)
-- DTS.php: 111K (multiple algorithms)
-- Covid19.php: 79K
-- CustomTest.php: 79K
-- Recency.php: 63K
-- Eid.php: 21K (simplest)
+- Dts.php: 173K (most complex, multiple algorithms)
+- Tb.php: 142K (molecular and microscopy)
+- Vl.php: 140K (Z-score calculations)
+- CustomTest.php: 81K
+- Covid19.php: 75K
+- Recency.php: 62K
+- Eid.php: 25K (simplest)
 
 ### 2. Controller (`application/controllers/{Scheme}Controller.php`)
 
@@ -261,7 +267,7 @@ sequenceDiagram
 
     P->>D: View available shipments
     D->>P: Show scheme list
-    P->>C: Click "Enter Results" (GET)
+    P->>C: Click "Enter Response" (GET)
     C->>C: Load samples, testkits, possible results
     C->>P: Render response.phtml form
     P->>C: Submit results (POST)
@@ -615,10 +621,10 @@ stateDiagram-v2
     end note
 ```
 
-## Scoring Formula
-
 The lifecycle above describes workflow stages, not literal values for every database status.
 Deadline processing can also queue evaluation. Generation and finalization are separate actions.
+
+## Scoring Formula
 
 Most schemes follow this pattern:
 

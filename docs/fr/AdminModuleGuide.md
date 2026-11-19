@@ -150,17 +150,18 @@ flowchart TD
 - L'enquête regroupe plusieurs expéditions
 
 #### 2. Ajouter une ou plusieurs expéditions {#2-add-shipments}
-**Emplacement :** PT Survey List → Add Scheme
+**Emplacement :** Gérer → Enquête PT → **Ajouter une expédition** sur la ligne de l'enquête
+
+**Ajouter une expédition** ouvre la liste des expéditions de cette enquête. Choisissez le **Type de programme**, puis cliquez sur **New Shipment**.
 
 Pour chaque expédition :
-- Sélectionnez le type de programme (DTS, VL, EID, TB, etc.)
 - Définissez le code de l'expédition (généré automatiquement ou personnalisé)
 - Définissez la date limite de réponse
 - Ajoutez les échantillons de référence avec les résultats attendus (tests qualitatifs)
 - Configurez les options propres au programme (algorithmes, panels de test, etc.)
 
 #### 3. Inscrire les participants {#3-enroll-participants}
-**Emplacement :** Shipment List → bouton Inscrire
+**Emplacement :** liste des expéditions → bouton **Inscrire** sur la ligne de l'expédition. Le bouton reste rouge tant que l'expédition n'a aucun participant.
 
 - La liste de droite contient les participants qui reçoivent l'expédition. À la première ouverture de la page, elle contient déjà les participants inscrits au programme (Configurer → Inscriptions au programme)
 - La liste de gauche contient tous les autres participants actifs
@@ -671,9 +672,9 @@ if ($request->isPost()) {
 
 ## Configuration du système {#system-configuration}
 
-### Global Config : activation des programmes {#global-config-scheme-activation}
+### Paramètres globaux : activation des programmes {#global-config-scheme-activation}
 
-Toutes les installations n'utilisent pas tous les programmes de test. Dans **Global Config**, les administrateurs activent ou désactivent les programmes de l'installation :
+Toutes les installations n'utilisent pas tous les programmes de test. Dans **Configurer → Paramètres globaux d'ePT**, les administrateurs activent ou désactivent les programmes de l'installation :
 
 - Certaines installations n'utilisent que DTS (sérologie VIH)
 - Certaines n'utilisent que TB
@@ -694,16 +695,16 @@ Les kits de test sont un élément essentiel d'ePT :
 
 ### Paramètres propres à chaque programme {#scheme-specific-settings}
 
-Chaque programme intégré a une page de paramètres dans le centre de configuration des programmes. Ouvrez **Configurer → Configuration des programmes**, puis choisissez le programme. Les paramètres sont stockés dans la table `scheme_config`.
+Tous les paramètres des programmes se trouvent dans un même centre. Ouvrez **Configurer → Configuration des programmes**, puis choisissez le programme. Chaque programme a une page. Son titre est le nom du programme suivi de « Paramètres », par exemple « VL Paramètres ». Les paramètres sont stockés dans la table `scheme_config`.
 
-| Programme | Page de paramètres | Paramètres principaux |
+| Programme | Titre de la page | Paramètres principaux |
 |--------|---------------|-------------------|
-| DTS | DTS Settings | Type d'algorithme, nombre de tests du panel, options de résultat |
-| VL | Paramètres VL | Liste des techniques, seuils de Z-score, méthodes de référence |
-| EID | Paramètres EID | Règles d'interprétation des résultats |
-| TB | Paramètres TB | Options moléculaire ou microscopie, résistance aux médicaments |
-| Recency | Recency Settings | Seuils RTRI, seuils de charge virale |
-| COVID-19 | COVID-19 Settings | Options de plateforme, plages de valeurs Ct |
+| DTS | Sérologie du VIH Paramètres | Type d'algorithme, nombre de tests du panel, options de résultat |
+| VL | VL Paramètres | Liste des techniques, seuils de Z-score, méthodes de référence |
+| EID | EID Paramètres | Règles d'interprétation des résultats |
+| TB | TB Paramètres | Options moléculaire ou microscopie, résistance aux médicaments |
+| Recency | Récence du VIH (RTRI) Paramètres | Seuils RTRI, seuils de charge virale |
+| COVID-19 | SARS-CoV-2 Paramètres | Options de plateforme, plages de valeurs Ct |
 
 **Emplacement :** Configurer → Configuration des programmes. Les anciennes URL de paramètres par programme redirigent vers ce centre.
 
