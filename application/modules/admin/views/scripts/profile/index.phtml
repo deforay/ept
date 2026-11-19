@@ -312,7 +312,7 @@ $initials  = strtoupper(
                         </div>
                         <div class="col-md-6">
                             <label for="confirm_password"><?= $this->translate->_("Confirm New Password"); ?></label>
-                            <input type="password" id="confirm_password" name="password"
+                            <input type="password" id="confirm_password" name="confirmPassword"
                                 class="form-control"
                                 placeholder="<?= $this->htmlTranslate("Re-enter new password"); ?>"
                                 title="<?= $this->translate->_("Must match the new password"); ?>"
@@ -375,9 +375,9 @@ $initials  = strtoupper(
         var cp = $('#confirm_password').val();
 
         if (np !== '' || cp !== '') {
-            if ($('#old_password').val() === '') {
+            if ($('#oldPassword').val() === '') {
                 alert('<?= $this->jsTranslate("Please enter your current password to change it.") ?>');
-                $('#old_password').focus();
+                $('#oldPassword').focus();
                 return false;
             }
             if (!validatePassword('#new_password')) return false;

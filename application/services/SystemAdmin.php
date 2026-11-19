@@ -17,6 +17,11 @@ class Application_Service_SystemAdmin
         $adminDb = new Application_Model_DbTable_SystemAdmin();
         return $adminDb->updateSystemAdmin($params);
     }
+    public function updateOwnProfile(int $adminId, array $params): string
+    {
+        return (new Application_Model_DbTable_SystemAdmin())->updateOwnProfile($adminId, $params);
+    }
+
     public function getSystemAdminDetails($adminId)
     {
         $adminDb = new Application_Model_DbTable_SystemAdmin();

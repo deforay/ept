@@ -211,8 +211,8 @@ class ParticipantController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $params = $request->getPost();
-            $userService->updateUser($params);
+            // Own record only. updateUser() is the admin path and trusts userSystemId.
+            $userService->updateOwnInfo($request->getPost());
 
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Updated own user info', 'participants');

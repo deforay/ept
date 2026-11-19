@@ -17,13 +17,16 @@ class Admin_ProfileController extends Zend_Controller_Action
         $adminService = new Application_Service_SystemAdmin();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         if ($request->isPost()) {
-            $params = $this->getAllParams();
+            // Only the signed-in admin's own record, and only profile fields. Never pass the
+            // whole request to updateSystemAdmin(): it trusts adminId, status and privileges.
+            $error = $adminService->updateOwnProfile((int) $authNameSpace->admin_id, $request->getPost());
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            if ($adminService->updateSystemAdmin($params)) {
-                $alertMsg->message = 'Profile updated successfully.';
+            $translator = Zend_Registry::get('translate');
+            if ($error === '') {
+                $alertMsg->message = $translator->_('Profile updated successfully.');
                 $this->redirect('/admin');
             } else {
-                $alertMsg->message = 'Profile not updated!';
+                $alertMsg->message = $translator->_($error);
                 $this->redirect('/admin/profile');
             }
         }
