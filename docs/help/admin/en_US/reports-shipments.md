@@ -6,7 +6,7 @@ tags: [reports, shipments, downloads, overview, non-responders, status]
 
 # Shipments Report
 
-**Reports → Shipments** lists every shipment in the selected period. Each row shows how many participants responded, how they performed, where the shipment is in the workflow, and the files you can download.
+**Reports → Shipments Report** lists every shipment in the selected period. Each row shows how many participants responded, how they performed, where the shipment is in the workflow, and the files you can download.
 
 The newest shipment comes first. Click a column heading to sort by that column. The Downloads column does not sort.
 

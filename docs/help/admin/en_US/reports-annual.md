@@ -6,7 +6,7 @@ tags: [reports, annual, certificates, excellence, participation, csv, excel]
 
 # Annual Performance Report
 
-**Reports → Annual Performance Report** lists every evaluated response to the finalized shipments in a date range. The same page generates the excellence and participation certificates.
+**Reports → Annual Performance Report** lists every evaluated response to the finalized shipments in a date range. It also exports the data used for certificates. Issue the certificates themselves on **Reports → Annual Certificates**.
 
 ## Which responses count
 

@@ -53,8 +53,8 @@ has an icon and a heading.
   shown on the card.
 
 To set the **links** that go under each card heading, use
-**Manage → Home Section Links** (a separate admin page) — those
-are loaded from elsewhere rather than set in code here.
+the **Manage Resource Links** button on this page. It opens a
+separate page for the links.
 
 ## Home Page Logos
 

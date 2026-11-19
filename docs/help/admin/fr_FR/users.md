@@ -15,13 +15,15 @@ Une fiche participant est distincte de ces deux types de compte.
 
 ## Ajouter un compte
 
-1. Sélectionnez **Ajouter** dans la page Responsables PT.
-2. Saisissez le nom, le courriel principal, le mot de passe initial et les coordonnées obligatoires.
-3. Sélectionnez les programmes actifs attribués au compte.
-4. Sélectionnez les privilèges approuvés.
-5. Définissez le statut du compte, puis soumettez le formulaire.
-6. Organisez la transmission sécurisée des identifiants initiaux.
-7. Confirmez que le titulaire peut se connecter et changer son mot de passe initial.
+1. Cliquez sur **Ajouter un nouveau gestionnaire PT** dans la page Responsables PT.
+2. Saisissez **Prénom**, **Nom** et **Adresse e-mail principale**.
+3. Saisissez deux fois le **Mot de passe** initial.
+4. Réglez **Statut** sur **Actif**.
+5. Dans **Choisir des programmes actifs**, sélectionnez les programmes gérés par la personne.
+6. Sous **Privilèges**, cochez uniquement les privilèges approuvés.
+7. Cliquez sur **Ajouter**.
+8. Organisez la transmission sécurisée des identifiants initiaux.
+9. Confirmez que le titulaire peut se connecter et changer son mot de passe initial.
 
 Le formulaire utilise des attributions de programmes et des privilèges individuels.
 Il ne propose pas de liste fixe de rôles Super Admin, Relecteur et Lecture seule.

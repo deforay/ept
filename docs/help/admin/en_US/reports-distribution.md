@@ -81,12 +81,14 @@ For very large surveys (thousands of participants), generation
 can take several minutes. Start jobs for several shipments in a
 row and check back later.
 
-## Date check
+## When Generate Reports is disabled
 
-You can't generate reports on or before the PT Survey Date. If
-the date is still in the future, the **Generate Reports** button
-is disabled and a message explains why. Change the survey date
-(via *Manage → PT Surveys → Edit*) if you need to build early.
+- **The shipment is not evaluated yet.** Evaluate it on
+  **Analyze → Evaluate Responses** first.
+- **A job is queued or running.** Every button is disabled until
+  it finishes. Wait, then refresh the page.
+- **The shipment is finalized.** Its reports are final and cannot
+  be generated again.
 
 ## What gets produced
 

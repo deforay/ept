@@ -76,8 +76,8 @@ to require a specific test-kit at each test position.
 > matches one of the kits you have selected here. Leave a
 > position blank to skip this check for that position.
 >
-> **Set up the test kits first** under *Manage → Test Kits →
-> Standard Kit*. Otherwise the kit dropdowns here will be empty.
+> **Set up the test kits first** under *Configure → Test Kits →
+> Map Test kits to Tests*. Otherwise the kit dropdowns here will be empty.
 
 The section is split into three panels (each one shows up
 depending on your scheme):

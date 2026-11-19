@@ -59,9 +59,15 @@ generate pages — *No. of Samples / Participants / Responses*,
 
 ### Not ready yet
 
-- **Finalize** *(disabled)* — shown when reports have not been
-  generated yet, or some other step is missing. Go back to
-  *Generate Reports* and build the drafts first.
+- **Finalize** *(disabled)* — one of these is missing:
+  - **Reports are not generated.** Go to **Analyze → Generate
+    Reports** and generate them first.
+  - **The feedback form does not exist.** If the shipment
+    collects participant feedback, a **Create Feedback Form**
+    button shows instead. Click it, build the form, then come
+    back and finalize.
+  - **A job is queued or running.** Wait, then refresh the
+    page.
 
 ## What "Finalize" actually does
 
