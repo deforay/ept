@@ -695,16 +695,16 @@ Les kits de test sont un élément essentiel d'ePT :
 
 ### Paramètres propres à chaque programme {#scheme-specific-settings}
 
-Tous les paramètres des programmes se trouvent dans un même centre. Ouvrez **Configurer → Configuration des programmes**, puis choisissez le programme. Chaque programme a une page. Son titre est le nom du programme suivi de « Paramètres », par exemple « VL Paramètres ». Les paramètres sont stockés dans la table `scheme_config`.
+Tous les paramètres des programmes se trouvent dans un même centre. Ouvrez **Configurer → Configuration des programmes**, puis choisissez le programme. Chaque programme a une page. Son titre est « Paramètres : » suivi du nom du programme, par exemple « Paramètres : VL ». Les paramètres sont stockés dans la table `scheme_config`.
 
 | Programme | Titre de la page | Paramètres principaux |
 |--------|---------------|-------------------|
-| DTS | Sérologie du VIH Paramètres | Type d'algorithme, nombre de tests du panel, options de résultat |
-| VL | VL Paramètres | Liste des techniques, seuils de Z-score, méthodes de référence |
-| EID | EID Paramètres | Règles d'interprétation des résultats |
-| TB | TB Paramètres | Options moléculaire ou microscopie, résistance aux médicaments |
-| Recency | Récence du VIH (RTRI) Paramètres | Seuils RTRI, seuils de charge virale |
-| COVID-19 | SARS-CoV-2 Paramètres | Options de plateforme, plages de valeurs Ct |
+| DTS | Paramètres : Sérologie du VIH | Type d'algorithme, nombre de tests du panel, options de résultat |
+| VL | Paramètres : VL | Liste des techniques, seuils de Z-score, méthodes de référence |
+| EID | Paramètres : EID | Règles d'interprétation des résultats |
+| TB | Paramètres : TB | Options moléculaire ou microscopie, résistance aux médicaments |
+| Recency | Paramètres : Récence du VIH (RTRI) | Seuils RTRI, seuils de charge virale |
+| COVID-19 | Paramètres : SARS-CoV-2 | Options de plateforme, plages de valeurs Ct |
 
 **Emplacement :** Configurer → Configuration des programmes. Les anciennes URL de paramètres par programme redirigent vers ce centre.
 

@@ -6,7 +6,7 @@ tags: [shipment, enrollment, responded, not responded, emails]
 
 # Gérer l'inscription
 
-Vous êtes sur cette page parce que vous avez cliqué sur **Enrollment**
+Vous êtes sur cette page parce que vous avez cliqué sur **Inscriptions**
 pour une expédition déjà expédiée. Avant l'expédition, la ligne affiche
 **Inscrire** à la place. Ce bouton ouvre le sélecteur de participants.
 

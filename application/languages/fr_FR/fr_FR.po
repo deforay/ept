@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 20:35+0530\n"
+"POT-Creation-Date: 2026-11-19 20:44+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -3798,6 +3798,7 @@ msgstr "Modifier ce gestionnaire de données"
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:70
 #: application/services/Evaluation.php:2583
+#: application/services/Shipments.php:591
 msgid "Edit"
 msgstr "Modifier"
 
@@ -11157,6 +11158,7 @@ msgstr "Dupliquer %s"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:464
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
+#: application/services/Shipments.php:596
 msgid "Clone"
 msgstr "Dupliquer"
 
@@ -11420,6 +11422,7 @@ msgid "Email the participants who have not responded"
 msgstr "Envoyer un e-mail aux participants qui n'ont pas répondu"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:195
+#: application/services/Shipments.php:627
 msgid "Remind"
 msgstr "Relancer"
 
@@ -15421,7 +15424,6 @@ msgstr "Résultats des tests"
 
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:103
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:107
-#: application/modules/admin/views/scripts/scheme-config/index.phtml:7
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -16936,6 +16938,11 @@ msgstr "Programme disponible"
 msgid "If It Collect Panel Receipt Date?"
 msgstr "Collecte la date de réception du panel ?"
 
+#: application/modules/admin/views/scripts/scheme-config/index.phtml:7
+#, php-format
+msgid "%s Settings"
+msgstr "Paramètres : %s"
+
 #: application/modules/admin/views/scripts/scheme-config/partials/covid19.phtml:24
 #: application/modules/admin/views/scripts/scheme-config/partials/eid.phtml:13
 #: application/modules/admin/views/scripts/scheme-config/partials/recency.phtml:12
@@ -17921,6 +17928,7 @@ msgstr "Exporter vers Excel"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:146
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:238
+#: application/services/Shipments.php:599
 msgid "Enroll"
 msgstr "Inscrire"
 
@@ -22184,6 +22192,10 @@ msgstr "Pays"
 #: application/services/Reports.php:4274
 msgid "Regions"
 msgstr "Régions"
+
+#: application/services/Shipments.php:607
+msgid "Enrollment"
+msgstr "Inscriptions"
 
 #: application/services/Shipments.php:621
 msgid "TB Forms"
