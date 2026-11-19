@@ -22,8 +22,9 @@ formulaire **Ajouter**. Un champ **Actif** s'y ajoute. Il est affiché comme
 - **Référence de la source** : citation, URL ou document, facultatif.
 - **Fabricant de kits de test** : nom du fabricant.
 - **Actif** *(Oui/Non)* : affiché comme **Approuvé** dans la liste des
-  kits. Seuls les kits réglés sur **Oui** apparaissent dans les listes
-  déroulantes des participants.
+  kits. Si **Uniquement les kits de test approuvés pour les
+  participants** est activé dans **Paramètres globaux d'ePT**, seuls les
+  kits réglés sur **Oui** sont proposés aux participants.
 - **Programme** *(obligatoire, choix multiple)* : le ou les programmes
   du kit. Quand **DTS** en fait partie, le champ **Choose a Test Number**
   apparaît.
@@ -49,8 +50,8 @@ formulaire **Ajouter**. Un champ **Actif** s'y ajoute. Il est affiché comme
 ## Conseils
 
 - **Passez Actif à Non au lieu de supprimer le kit.** Des expéditions
-  passées utilisent peut-être ce kit. Avec *Non*, les participants ne
-  peuvent plus le choisir, et les réponses qui l'utilisent le gardent.
+  passées utilisent peut-être ce kit, et les réponses qui l'utilisent
+  le gardent.
 - Modifier **Autoriser les informations supplémentaires** change le
   formulaire de réponse des participants *à partir de maintenant*. Les
   anciennes réponses gardent ce qui a été saisi à l'époque.

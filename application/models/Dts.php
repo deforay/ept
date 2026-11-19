@@ -1446,8 +1446,9 @@ final class Application_Model_Dts
      * saved to stay in the list even when they fall outside the shipment's selection —
      * narrowing the options must never silently drop a kit off an existing response.
      *
-     * Only approved kits (r_testkitnames.Approval = 1) are offered. An unapproved kit stays
-     * only at the positions where this response already saved it.
+     * When the participant_testkits_approved_only setting is on, only approved kits
+     * (r_testkitnames.Approval = 1) are offered, and an unapproved kit stays only at the
+     * positions where this response already saved it.
      *
      * @param array<string, array<string>> $keepSelectable ['testkit_1' => ['tkAbc'], ...]
      */
@@ -1455,6 +1456,7 @@ final class Application_Model_Dts
     {
         $kits = $this->getAllDtsTestKitList($countryAdapted);
         $shipmentKitPos = $this->getShipmentTestkitPositions($shipmentId);
+        $approvedOnly = Application_Service_Common::participantTestkitsApprovedOnly();
         foreach ($kits as &$kit) {
             $kitId = (string) $kit['TESTKITNAMEID'];
             foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $pos) {
@@ -1464,7 +1466,7 @@ final class Application_Model_Dts
                 }
                 // Participants pick only approved kits. An unapproved kit stays offered
                 // only where this response already saved it.
-                if ((int) ($kit['APPROVED'] ?? 0) !== 1 && !$saved) {
+                if ($approvedOnly && (int) ($kit['APPROVED'] ?? 0) !== 1 && !$saved) {
                     $kit[$pos] = '0';
                 }
             }

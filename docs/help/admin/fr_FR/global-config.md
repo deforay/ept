@@ -65,6 +65,10 @@ toute l'application.
   actuels. Ils peuvent donc différer de la dernière évaluation.
 - **Activer le CAPA** : active le module d'actions correctives et
   préventives dans toute l'application.
+- **Uniquement les kits de test approuvés pour les participants** : avec
+  *Oui*, les participants ne peuvent choisir que les kits de test
+  marqués **Approuvé**. Un kit déjà enregistré sur une réponse y reste.
+  Valeur par défaut : *Non*.
 - **Notifications par e-mail à l'administrateur** : active ou
   désactive globalement les e-mails envoyés aux administrateurs.
 - **Nom de l'institut** / **Adresse de l'institut** /

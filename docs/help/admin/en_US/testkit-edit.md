@@ -22,7 +22,8 @@ list.
 - **Source Reference** — optional citation / URL / document.
 - **Test Kit Manufacturer** — manufacturer name.
 - **Active** *(Yes/No)* — shown as **Approved** in the kit list.
-  Only kits set to **Yes** appear in participants' drop-downs.
+  When **Only Approved Test Kits for Participants** is on in **ePT
+  Global Settings**, only kits set to **Yes** reach participants.
 - **Scheme** *(required, multi-select)* — scheme(s) the kit
   belongs to. When **DTS** is one of them, the **Choose a Test
   Number** field appears.
@@ -44,8 +45,7 @@ list.
 ## Tips
 
 - **Set Active to No instead of deleting.** Past shipments may
-  use this kit. With *No*, participants can no longer pick it, and
-  responses that already use it keep it.
+  use this kit, and responses that already use it keep it.
 - Changing **Allow Additional Information** affects the
   participant response form *from now on*. Old responses keep
   whatever was recorded at the time.

@@ -312,6 +312,12 @@ class Application_Service_Common
         return self::getSetting($name);
     }
 
+    /** Whether participants may pick only approved test kits (ePT Global Settings, off by default). */
+    public static function participantTestkitsApprovedOnly(): bool
+    {
+        return self::getSetting('participant_testkits_approved_only') === 'yes';
+    }
+
     /** The minimum password length the web forms enforce: the global setting, or 8 when unset. */
     public static function minimumPasswordLength(): int
     {

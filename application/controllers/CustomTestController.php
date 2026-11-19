@@ -70,12 +70,12 @@ class CustomTestController extends Zend_Controller_Action
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
             $kitDb = new Application_Model_DbTable_Testkitnames();
-            // Only approved kits, plus the kit this response already saved.
+            // With the approved-only setting on: approved kits, plus the kit this response saved.
             $this->view->allTestKits = $kitDb->getAllTestKitList(
                 $shipment['scheme_type'],
                 false,
                 false,
-                true,
+                Application_Service_Common::participantTestkitsApprovedOnly(),
                 [(string) ($shipment['attributes']['kit_name'] ?? '')]
             );
 

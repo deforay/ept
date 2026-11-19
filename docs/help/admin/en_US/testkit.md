@@ -24,8 +24,7 @@ The **status dropdown** above the table filters which kits are
 shown:
 
 - **Show All** — every kit, regardless of approval status.
-- **Show Approved** — kits marked as approved. Only these appear
-  in participants' drop-downs.
+- **Show Approved** — kits marked as approved.
 - **Show UnApproved** — kits explicitly disapproved.
 - **Show Pending** — kits awaiting an approval decision. Picking
   this option also reveals a **Change Status** dropdown with
@@ -53,10 +52,11 @@ To change one kit, click **Edit** on its row.
 ## Tips
 
 - A new kit defaults to **Approved = Yes** when created.
-- Participants can pick a kit only when it is **approved** and
-  mapped to the scheme and test number. Approve kits before you
-  ship a survey that needs them. A kit a participant already saved
-  on a response stays on that response.
+- Participants can pick a kit when it is mapped to the scheme and
+  test number. If **Only Approved Test Kits for Participants** is
+  *Yes* in **ePT Global Settings**, the kit must also be approved.
+  A kit a participant already saved on a response stays on that
+  response.
 - **Approve All** appears only after you choose *Show Pending*.
 - For DTS, after approving a kit you usually want to also link
   it to a test position (Test 1 / 2 / 3) via **Map Test kits

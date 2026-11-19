@@ -28,8 +28,6 @@ affichés :
 - **Afficher tout** : tous les kits, quel que soit leur statut
   d'approbation.
 - **Afficher les éléments approuvés** : les kits marqués comme approuvés.
-  Seuls ces kits apparaissent dans les listes déroulantes des
-  participants.
 - **Afficher les éléments non approuvés** : les kits explicitement
   refusés.
 - **Show Pending** : les kits en attente d'une décision d'approbation.
@@ -60,10 +58,11 @@ ligne.
 ## Conseils
 
 - À sa création, un nouveau kit est réglé sur **Approuvé = Oui**.
-- Les participants ne peuvent choisir un kit que s'il est **approuvé**
-  et associé au programme et au numéro de test. Approuvez les kits
-  avant d'expédier une enquête qui en a besoin. Un kit déjà enregistré
-  sur une réponse reste sur cette réponse.
+- Les participants peuvent choisir un kit associé au programme et au
+  numéro de test. Si **Uniquement les kits de test approuvés pour les
+  participants** est réglé sur *Oui* dans **Paramètres globaux d'ePT**,
+  le kit doit aussi être approuvé. Un kit déjà enregistré sur une
+  réponse reste sur cette réponse.
 - **Tout approuver** n'apparaît qu'après avoir choisi *Show Pending*.
 - Pour DTS, après avoir approuvé un kit, associez-le en général aussi à
   une position de test (Test 1 / 2 / 3) avec **Associer les kits de test
