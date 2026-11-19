@@ -28,6 +28,8 @@ affichés :
 - **Afficher tout** : tous les kits, quel que soit leur statut
   d'approbation.
 - **Afficher les éléments approuvés** : les kits marqués comme approuvés.
+  Seuls ces kits apparaissent dans les listes déroulantes des
+  participants.
 - **Afficher les éléments non approuvés** : les kits explicitement
   refusés.
 - **Show Pending** : les kits en attente d'une décision d'approbation.
@@ -58,9 +60,10 @@ ligne.
 ## Conseils
 
 - À sa création, un nouveau kit est réglé sur **Approuvé = Oui**.
-- **Approuvé** ne décide pas des kits que les participants peuvent
-  choisir. Leurs listes déroulantes proposent les kits associés au
-  programme et au numéro de test.
+- Les participants ne peuvent choisir un kit que s'il est **approuvé**
+  et associé au programme et au numéro de test. Approuvez les kits
+  avant d'expédier une enquête qui en a besoin. Un kit déjà enregistré
+  sur une réponse reste sur cette réponse.
 - **Tout approuver** n'apparaît qu'après avoir choisi *Show Pending*.
 - Pour DTS, après avoir approuvé un kit, associez-le en général aussi à
   une position de test (Test 1 / 2 / 3) avec **Associer les kits de test

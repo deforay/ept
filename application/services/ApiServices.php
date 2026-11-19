@@ -66,6 +66,10 @@ class Application_Service_ApiServices
         // To load kit attributes for each kit
         $testKit = [];
         foreach ($allTestKits as $kit) {
+            // The app offers participants only approved kits, like the web form.
+            if ((int) ($kit['APPROVED'] ?? 0) !== 1) {
+                continue;
+            }
             foreach (range(1, 3) as $no) {
                 if ($kit['testkit_' . $no] == 1) {
                     $testKit['testKit' . $no][$kit['TESTKITNAMEID']]['kitid'] = $kit['TESTKITNAMEID'];
