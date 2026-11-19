@@ -65,6 +65,21 @@ Commercial proficiency testing platforms solve the same problem. They usually pr
 
 ePT is the third option. One open-source codebase carries the schemes, and country differences live in configuration and report layouts. Report layouts ship for programs in Ghana, Jamaica, Malawi, Myanmar, Vietnam, and Zimbabwe, alongside a default layout for everyone else.
 
+## Supported test schemes
+
+Seven built-in schemes ship in the `scheme_list` table, alongside any number of user-configured custom tests. The middle column is the name shown in the admin panel and the participant portal.
+
+| Code | Name in ePT | Description |
+| --- | --- | --- |
+| `dts` | Dried Tube Specimen - HIV Serology | Rapid HIV testing with multiple algorithms |
+| `vl` | Dried Tube Specimen - HIV Viral Load | Quantitative viral load testing with Z-score analysis |
+| `eid` | Dried Blood Spot - Early Infant Diagnosis | PCR-based infant HIV testing |
+| `tb` | Dried Tube Specimen - Tuberculosis | Molecular (GeneXpert) and microscopy testing |
+| `recency` | Rapid Test for Recent Infection (RTRI) | Recent infection testing |
+| `covid19` | SARS-CoV-2 | Multi-platform PCR testing |
+| `dbs` | Dried Blood Spot - HIV Serology | EIA and Western Blot testing |
+| `generic` | Custom Tests | User-configured test types with dynamic fields |
+
 ## Read next
 
 - [Install](setup.md) to set up a server.

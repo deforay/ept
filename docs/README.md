@@ -1,14 +1,55 @@
 # ePT Documentation
 
-ePT is an open-source proficiency testing system for laboratory quality assurance. Organisations use it to run PT shipments, collect results from participating laboratories, evaluate those results against reference data, and issue reports.
+ePT is an open-source proficiency testing (PT) system. A PT provider uses it to send test panels to laboratories, collect their results, score them and return a report to each laboratory.
 
 ## Start here
 
-| I need to | Go to |
-| --- | --- |
-| Submit PT results or find my report | [Submit results as a data manager](user-guide.md#submit-results-as-a-data-manager) |
-| Run a PT round from start to finish | [Training](training/README.md) |
-| Fix a problem someone reported | [Troubleshooting](troubleshooting.md) |
+Pick the card that describes you.
+
+<div class="grid cards" markdown>
+
+-   :material-flask-outline:{ .lg .middle } __I test PT panels at a laboratory__
+
+    ---
+
+    Submit your results and download your report.
+
+    - [Submit results](user-guide.md#submit-results-as-a-data-manager)
+    - [Find your report](user-guide.md#find-reports-and-account-information)
+    - [Can't sign in or can't find a shipment?](troubleshooting.md#fix-problems-participants-report)
+
+-   :material-clipboard-check-outline:{ .lg .middle } __I run PT rounds__
+
+    ---
+
+    Set up participants, ship panels, evaluate results and send reports.
+
+    - [Training](training/README.md)
+    - [User guide](user-guide.md)
+    - [Manage user access](user-management.md)
+
+-   :material-server-outline:{ .lg .middle } __I look after the server__
+
+    ---
+
+    Install, update, back up and keep ePT running.
+
+    - [Install](setup.md)
+    - [Update](updating.md)
+    - [Backup & recovery](backup-and-migration.md)
+    - [Troubleshooting](troubleshooting.md)
+
+-   :material-code-tags:{ .lg .middle } __I work on the code__
+
+    ---
+
+    Learn how ePT is built and how to change it.
+
+    - [Architecture](ARCHITECTURE.md)
+    - [Schemes](SchemeArchitecture.md)
+    - [Engineering standards](engineering-standards.md)
+
+</div>
 
 ## All documentation
 
@@ -59,41 +100,6 @@ These pages use ePT 7.6.21 as their baseline. Deployment facts, approved policie
 | Add or change a test scheme | [Schemes](SchemeArchitecture.md) |
 | Translate the interface or add a language | [Translation](TranslationGuide.md) |
 | Get a change reviewed and merged | [Engineering standards](engineering-standards.md) |
-
-## Supported test schemes
-
-Seven built-in schemes ship in the `scheme_list` table, alongside any number of user-configured custom tests. The middle column is the name shown in the admin panel and the participant portal.
-
-| Code | Name in ePT | Description |
-| --- | --- | --- |
-| `dts` | Dried Tube Specimen - HIV Serology | Rapid HIV testing with multiple algorithms |
-| `vl` | Dried Tube Specimen - HIV Viral Load | Quantitative viral load testing with Z-score analysis |
-| `eid` | Dried Blood Spot - Early Infant Diagnosis | PCR-based infant HIV testing |
-| `tb` | Dried Tube Specimen - Tuberculosis | Molecular (GeneXpert) and microscopy testing |
-| `recency` | Rapid Test for Recent Infection (RTRI) | Recent infection testing |
-| `covid19` | SARS-CoV-2 | Multi-platform PCR testing |
-| `dbs` | Dried Blood Spot - HIV Serology | EIA and Western Blot testing |
-| `generic` | Custom Tests | User-configured test types with dynamic fields |
-
-## Training curriculum
-
-| Document | Audience | Duration |
-| --- | --- | --- |
-| [Overview](training/README.md) | All | — |
-| [Part 1: Setup and participants](training/part1-setup-and-participants.md) | Admin | ~10 min |
-| [Part 2: Surveys and shipments](training/part2-surveys-and-shipments.md) | Admin | ~10 min |
-| [Part 3: Participant results and reports](training/part3-participant.md) | Participant | ~5–10 min |
-| [Part 4: Evaluation, reports, and finalization](training/part4-evaluation-and-reports.md) | Admin | ~10 min |
-| [Exercise: DTS HIV Serology](training/exercises/dts-hiv-serology.md) | All | ~20–30 min |
-
-## Key configuration files
-
-| File | Purpose |
-| --- | --- |
-| `application/configs/application.ini` | Database, sessions, modules |
-| `constants.php` | Global paths and `APP_VERSION` |
-
-For the technology stack and hardware sizing, see [Infrastructure](infrastructure.md). For the directory layout, see [Architecture](ARCHITECTURE.md#directory-map). For documentation and code conventions, see [Engineering standards](engineering-standards.md).
 
 ## Support
 

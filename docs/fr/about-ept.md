@@ -65,6 +65,22 @@ Les plateformes commerciales d'essais d'aptitude résolvent le même problème. 
 
 ePT est la troisième option. Un seul code source ouvert contient les programmes, et les différences entre pays se trouvent dans la configuration et les présentations des rapports. Des présentations de rapports sont fournies pour les programmes du Ghana, de la Jamaïque, du Malawi, du Myanmar, du Vietnam et du Zimbabwe, avec une présentation par défaut pour tous les autres.
 
+## Programmes pris en charge {#supported-test-schemes}
+
+La table `scheme_list` contient sept programmes intégrés. Vous pouvez y ajouter autant de tests personnalisés que nécessaire.
+La colonne centrale reprend le nom affiché dans l'interface d'administration et le portail participant.
+
+| Code | Nom dans ePT | Description |
+| --- | --- | --- |
+| `dts` | Dried Tube Specimen - HIV Serology | Tests rapides du VIH selon plusieurs algorithmes |
+| `vl` | Dried Tube Specimen - HIV Viral Load | Mesure quantitative de la charge virale avec analyse du score Z |
+| `eid` | Dried Blood Spot - Early Infant Diagnosis | Diagnostic du VIH chez le nourrisson par PCR |
+| `tb` | Dried Tube Specimen - Tuberculosis | Tests moléculaires (GeneXpert) et microscopie |
+| `recency` | Rapid Test for Recent Infection (RTRI) | Tests d'infection récente |
+| `covid19` | SARS-CoV-2 | Tests PCR sur plusieurs plateformes |
+| `dbs` | Dried Blood Spot - HIV Serology | Tests EIA et Western Blot |
+| `generic` | Custom Tests | Types de tests configurables avec champs dynamiques |
+
 ## À lire ensuite {#read-next}
 
 - [Installation](setup.md) pour installer un serveur.
