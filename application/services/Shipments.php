@@ -1611,6 +1611,17 @@ class Application_Service_Shipments
 
     public function removeDtsEidResults($mapId)
     {
+        $this->removeQcSchemeResults($mapId, new Application_Model_DbTable_ResponseEid(), 'removeDtsEidResults');
+    }
+
+    public function removeDbsResults($mapId)
+    {
+        $this->removeQcSchemeResults($mapId, new Application_Model_DbTable_ResponseDbs(), 'removeDbsResults');
+    }
+
+    /** Clears the participant's response and QC details, then deletes the scheme's result rows. */
+    private function removeQcSchemeResults(int $mapId, Zend_Db_Table_Abstract $responseDb, string $label): void
+    {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $ownTx = !$dbAdapter->getConnection()->inTransaction();
         if ($ownTx) {
@@ -1650,7 +1661,6 @@ class Application_Service_Shipments
             ];
             $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
-            $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete(['shipment_map_id = ?' => $mapId]);
             if ($ownTx) {
                 $dbAdapter->commit();
@@ -1659,7 +1669,7 @@ class Application_Service_Shipments
             if ($ownTx) {
                 $dbAdapter->rollBack();
             }
-            Pt_Commons_LoggerUtility::logError('removeDtsEidResults rolled back: ' . $e->getMessage(), [
+            Pt_Commons_LoggerUtility::logError($label . ' rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
