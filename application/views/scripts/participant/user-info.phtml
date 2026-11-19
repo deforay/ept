@@ -18,13 +18,13 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                         <tr align="left" class="dark">
                             <td colspan="2" style=" text-align: center; padding: 25px; ">
                                 <?= $this->translate->_("Please verify your primary email change to"); ?>
-                                <b>“<?php echo $this->rsUser['new_email']; ?>”</b>
+                                <b>“<?= $this->escape($this->rsUser['new_email'] ?? ''); ?>”</b>
                                 <?= $this->translate->_("by clicking on the verification link sent to your email."); ?><br>
                                 <?php if (!empty($this->mailUnavailable)) { ?>
                                     <span class="text-muted"><?= $this->translate->_("ePT cannot send email right now, so the verification email cannot be resent."); ?></span>
                                 <?php } else { ?>
                                     <a href="javascript:void(0);"
-                                        onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email']; ?>');"><?= $this->translate->_("Click here to resend the verification mail"); ?></a>
+                                        onclick="reSentVerifyMail(<?= htmlspecialchars(json_encode((string) ($this->rsUser['new_email'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>);"><?= $this->translate->_("Click here to resend the verification mail"); ?></a>
                                 <?php } ?>
                             </td>
                         </tr>
@@ -38,18 +38,18 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Primary e-mail address (used for login)"); ?></td>
                         <td>
-                            <?= $this->rsUser['primary_email']; ?>
+                            <?= $this->escape($this->rsUser['primary_email'] ?? ''); ?>
                             <input type="hidden" id="oldpemail" name="oldpemail"
-                                value="<?php echo $this->rsUser['primary_email']; ?>" />
+                                value="<?= $this->escape($this->rsUser['primary_email'] ?? ''); ?>" />
                             <input type="hidden" id="userSystemId" name="userSystemId"
-                                value="<?php echo $this->rsUser['dm_id']; ?>" />
+                                value="<?= $this->escape($this->rsUser['dm_id'] ?? ''); ?>" />
                         </td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></td>
                         <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> type="text"
                                 id="fname" name="fname" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"
+                                value="<?= $this->escape($this->rsUser['first_name'] ?? ''); ?>" class="isRequired form-control"
                                 title="<?= $this->htmlTranslate("Please enter your first name"); ?>"
                                 placeholder="<?= $this->htmlTranslate("First name"); ?>" /></td>
                     </tr>
@@ -59,7 +59,7 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                                
                                                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> type="text"
                                 id="lname" name="lname" size="50" maxlength="45" class="form-control"
-                                value="<?php echo $this->rsUser['last_name']; ?>"
+                                value="<?= $this->escape($this->rsUser['last_name'] ?? ''); ?>"
                                 title="<?= $this->htmlTranslate("Please enter your last name"); ?>"
                                 placeholder="<?= $this->htmlTranslate("Last name"); ?>" /></td>
                     </tr>
@@ -67,21 +67,21 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                         <td><?= $this->translate->_("Secondary e-mail address"); ?>
                         </td>
                         <td><input type="email" id="semail" name="semail" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['secondary_email']; ?>" class="form-control"
+                                value="<?= $this->escape($this->rsUser['secondary_email'] ?? ''); ?>" class="form-control"
                                 title="<?= $this->htmlTranslate("Please enter a secondary email address"); ?>"
                                 placeholder="<?= $this->htmlTranslate("Secondary email address"); ?>" /></td>
                     </tr>
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Cell Phone Number"); ?> </td>
                         <td><input type="text" id="phone1" name="phone1" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['mobile']; ?>" class="isNumeric form-control"
+                                value="<?= $this->escape($this->rsUser['mobile'] ?? ''); ?>" class="isNumeric form-control"
                                 title="<?= $this->htmlTranslate("Please enter your contact number"); ?>"
                                 placeholder="<?= $this->htmlTranslate("Cell phone number"); ?>" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("Phone Number"); ?></td>
                         <td><input type="text" id="phone2" name="phone2" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control"
+                                value="<?= $this->escape($this->rsUser['phone'] ?? ''); ?>" class="isNumeric form-control"
                                 title="<?= $this->htmlTranslate("Please enter your phone number"); ?>"
                                 placeholder="<?= $this->htmlTranslate("Phone number"); ?>" /></td>
                     </tr>
@@ -108,15 +108,15 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                     </tr>
                     <!-- <tr align="left" class="dark">
                         <td>UserFld1</td>
-                        <td><input id="UserFld1" type="text" id="UserFld1" name="UserFld1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld1']; ?>" /></td>
+                        <td><input id="UserFld1" type="text" id="UserFld1" name="UserFld1" size="50" maxlength="45" value="<?= $this->escape($this->rsUser['UserFld1'] ?? ''); ?>" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td>UserFld2</td>
-                        <td><input id="UserFld12" type="text" id="UserFld2" name="UserFld2" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld2']; ?>" /></td>
+                        <td><input id="UserFld12" type="text" id="UserFld2" name="UserFld2" size="50" maxlength="45" value="<?= $this->escape($this->rsUser['UserFld2'] ?? ''); ?>" /></td>
                     </tr>
                     <tr align="left" class="dark">
                         <td>UserFld3</td>
-                        <td><input id="UserFld3" type="text" id="UserFld3" name="UserFld3" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld3']; ?>" /></td>
+                        <td><input id="UserFld3" type="text" id="UserFld3" name="UserFld3" size="50" maxlength="45" value="<?= $this->escape($this->rsUser['UserFld3'] ?? ''); ?>" /></td>
                     </tr>-->
 
                 </table>

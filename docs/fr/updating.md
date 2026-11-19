@@ -88,22 +88,28 @@ La liste complète des options se trouve dans la [Référence des outils en lign
 
 `ept update` ne s'applique pas à Docker. Reconstruisez plutôt les conteneurs.
 
-La reconstruction remplace le conteneur. `application.ini` et `.env` se trouvent dans le conteneur, et non dans un volume. La reconstruction en crée donc de nouveaux, avec un nouveau sel et un nouveau secret de formulaire. Les paramètres d'e-mail enregistrés sont perdus, et les liens déjà envoyés par ePT cessent de fonctionner. Copiez les deux fichiers hors du conteneur avant la reconstruction, puis remettez-les en place après :
+```bash
+git pull && docker compose up --build -d
+```
+
+`application.ini`, `.env` et les modèles de certificats téléversés se trouvent dans les volumes `config` et `certificate_templates`. Une reconstruction les conserve donc.
+
+**Une seule fois, sur une installation antérieure à ces volumes :** la première reconstruction remplace encore ces fichiers, car ils se trouvent dans l'ancien conteneur. Copiez-les hors du conteneur avant cette reconstruction, puis remettez-les en place après :
 
 ```bash
 # Before the rebuild
 docker compose cp ept:/var/www/ept/application/configs/application.ini ./application.ini.keep
 docker compose cp ept:/var/www/ept/application/configs/.env ./env.keep
+docker compose cp ept:/var/www/ept/scheduled-jobs/certificate-templates ./certificate-templates.keep
 
 git pull && docker compose up --build -d
 
 # After the rebuild
-docker compose cp ./application.ini.keep ept:/var/www/ept/application/configs/application.ini
-docker compose cp ./env.keep ept:/var/www/ept/application/configs/.env
+docker compose cp ./application.ini.keep ept:/var/ept-config/application.ini
+docker compose cp ./env.keep ept:/var/ept-config/.env
+docker compose cp ./certificate-templates.keep/. ept:/var/www/ept/scheduled-jobs/certificate-templates/
 docker compose restart ept
 ```
-
-Les modèles de certificats téléversés dans `scheduled-jobs/certificate-templates/` se trouvent aussi dans le conteneur. Si vous les utilisez, copiez-les et remettez-les en place de la même façon.
 
 Le script d'entrée exécute `composer post-update` à chaque démarrage du conteneur. Les migrations s'appliquent donc d'elles-mêmes. Exécutez les commandes de vérification ci-dessous dans le conteneur avec `docker compose exec ept <command>`.
 

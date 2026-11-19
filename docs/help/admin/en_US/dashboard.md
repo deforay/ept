@@ -1,6 +1,6 @@
 ---
 title: Dashboard
-summary: Your home page: the rounds in progress, what each one needs next, and how labs are taking part
+summary: "Your home page: the rounds in progress, what each one needs next, and how labs are taking part"
 tags: [dashboard, home, overview, rounds]
 ---
 
