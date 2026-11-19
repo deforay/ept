@@ -7,6 +7,8 @@
 // Body markdown content is translated by adding sibling locale files under
 // docs/help/{audience}/{locale}/{slug}.md — not via gettext.
 
+// participant/my-account#tags
+_('account');
 // admin/distributions-add#tags, admin/eid-assay-add#tags, admin/participants-add#tags, admin/shipment-add#tags, admin/testkit-add#tags, admin/vl-assay-add#tags
 _('add');
 // admin/participants#summary
@@ -41,6 +43,8 @@ _('annual');
 _('Annual Performance Report');
 // admin/testkit-edit#tags, admin/testkit#tags
 _('approval');
+// admin/report-config#tags
+_('approver');
 // admin/eid-assay-add#tags, admin/eid-assay#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
 _('assay');
 // admin/participants-manager-map#summary
@@ -55,18 +59,26 @@ _('bulk-import');
 _('Bulk Import Enrollment');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
+// participant/corrective-action#tags
+_('capa');
 // admin/certificate-templates#tags, admin/reports-annual#tags
 _('certificates');
 // admin/certificate-templates#title
 _('Certificate Templates');
+// participant/my-account#summary
+_('Check your login and lab details, change your password or login email');
 // admin/email-participants#tags
 _('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
 // admin/ptcc#tags
 _('coordinator');
+// participant/corrective-action#tags
+_('corrective action');
 // admin/reports-corrective-actions#tags
 _('corrective actions');
+// participant/corrective-action#title
+_('Corrective actions');
 // admin/reports-corrective-actions#title
 _('Corrective Actions Report');
 // admin/reports-tb-participants-per-country#tags
@@ -87,9 +99,9 @@ _('Create a new Viral Load assay / platform');
 _('csv');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
-// admin/dashboard#title
+// admin/dashboard#title, participant/dashboard#title
 _('Dashboard');
-// admin/dashboard#tags
+// admin/dashboard#tags, participant/dashboard#tags
 _('dashboard');
 // admin/data-managers#tags, admin/participants-manager-map#tags
 _('data-manager');
@@ -109,14 +121,22 @@ _('distribution');
 _('distributions');
 // admin/reports-participant-response#tags
 _('districts');
-// admin/reports-shipments#tags
+// participant/file-download#tags
+_('documents');
+// participant/view-reports#tags
+_('download');
+// admin/reports-shipments#tags, participant/file-download#tags
 _('downloads');
+// participant/file-download#title
+_('Downloads');
 // admin/reports-distribution#tags
 _('draft');
 // admin/dts-settings#tags, admin/reports-corrective-actions#tags, admin/reports-testkit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
+// participant/result-submission#tags
+_('due date');
 // admin/reports-participant-performance#summary
 _('Each participant\'s results across shipments, with pass rate, failures and average score');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
@@ -137,7 +157,7 @@ _('Edit VL Assay / Platform');
 _('eid');
 // admin/eid-assay#title
 _('EID Assays / Platforms');
-// admin/email-participants#tags
+// admin/email-participants#tags, participant/my-account#tags
 _('email');
 // admin/email-participants#title
 _('Email Participants');
@@ -175,12 +195,18 @@ _('failures');
 _('faq');
 // admin/certificate-templates#tags
 _('fields');
+// participant/file-download#tags
+_('files');
+// participant/file-download#summary
+_('Files your PT provider shared with your lab');
 // admin/enrollments-add#tags
 _('filters');
 // admin/evaluate#tags, admin/reports-finalize#tags
 _('finalize');
 // admin/reports-finalize#title
 _('Finalize Reports');
+// participant/corrective-action#tags
+_('follow-up');
 // admin/reports-distribution#tags
 _('generate');
 // admin/reports-distribution#title
@@ -191,8 +217,6 @@ _('generic-scheme');
 _('global');
 // admin/global-config#title
 _('Global Settings');
-// admin/report-config#summary
-_('Header text, logo, layout, and PDF template used on generated reports');
 // admin/home-config#tags
 _('hero');
 // admin/vl-settings#tags
@@ -201,7 +225,7 @@ _('hiv');
 _('hiv-serology');
 // admin/reports-corrective-actions#tags, admin/reports-testkit#tags
 _('hiv serology');
-// admin/dashboard#tags, admin/home-config#tags
+// admin/dashboard#tags, admin/home-config#tags, participant/dashboard#tags
 _('home');
 // admin/home-config#title
 _('Home Page Settings');
@@ -211,12 +235,20 @@ _('How often each DTS corrective action was given, and to which participants');
 _('How to add a shipment (sample panel) under a PT Survey');
 // admin/shipment-enroll#summary
 _('How to choose which participants get a shipment — filters, preset lists, copying from another shipment, and saving a preset');
+// participant/result-submission#summary
+_('How to find a shipment, enter your results and confirm them before the due date');
 // admin/reports-xtpt-indicators#tags
 _('indicators');
+// participant/view-reports#tags
+_('individual report');
 // admin/participants#tags
 _('labs');
 // admin/home-config#tags
 _('landing');
+// admin/report-config#tags
+_('letterhead');
+// admin/report-config#summary
+_('Letterhead, logo, PDF template, layout and approver used on generated reports');
 // admin/vl-assay#summary
 _('List, add, and edit Viral Load assays / platforms used by participants');
 // admin/testkit#summary
@@ -225,7 +257,7 @@ _('List, filter, approve, and manage test kits used by participants in their res
 _('List Early Infant Diagnosis Extraction and Detection assays, add new ones, and toggle their active status');
 // admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
 _('lists');
-// admin/users#tags
+// admin/users#tags, participant/my-account#tags
 _('login');
 // admin/report-config#tags
 _('logo');
@@ -241,9 +273,11 @@ _('Map Participants to Data Managers');
 _('mapping');
 // admin/testkit-standard-kit#title
 _('Map Test Kits to Tests');
+// participant/my-account#title
+_('My account');
 // admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('non-responders');
-// admin/dashboard#tags, admin/reports-shipments#tags
+// admin/dashboard#tags, admin/reports-shipments#tags, participant/dashboard#tags
 _('overview');
 // admin/shipment-add#tags, admin/shipment#tags
 _('panel');
@@ -265,9 +299,9 @@ _('Participant Trends');
 _('participation');
 // admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
-// admin/data-managers#tags, admin/ptcc#tags
+// admin/data-managers#tags, admin/ptcc#tags, participant/my-account#tags
 _('password');
-// admin/certificate-templates#tags, admin/report-config#tags
+// admin/certificate-templates#tags, admin/report-config#tags, participant/view-reports#tags
 _('pdf');
 // admin/report-config#title
 _('PDF Report Settings');
@@ -279,6 +313,8 @@ _('performance');
 _('platform');
 // admin/shipment-enroll#tags
 _('preset');
+// participant/my-account#tags
+_('profile');
 // admin/data-managers#tags, admin/participants-manager-map#tags
 _('pt-login');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
@@ -301,15 +337,17 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags, participant/view-reports#tags
 _('reports');
+// participant/result-submission#tags
+_('response');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
 // admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags
 _('response rate');
 // admin/reports-participant-trends#summary
 _('Response rate, timeliness and pass rate across shipments, with a breakdown by region');
-// admin/reports-tb-all-sites-results#tags, admin/reports-tb-results#tags
+// admin/reports-tb-all-sites-results#tags, admin/reports-tb-results#tags, participant/result-submission#tags
 _('results');
 // admin/users#tags
 _('roles');
@@ -338,7 +376,7 @@ _('Scoring, sample and testing options, and national algorithm test-kit rules fo
 // admin/evaluate-shipment#summary
 _('See each participant\'s response to a shipment, change results, and add a shared comment');
 // admin/enrollments#summary
-_('See every enrollment list per scheme, create and edit lists, and archive, rename, merge or delete them');
+_('See every enrollment list per scheme, create and edit lists, and clone, archive, rename, merge or delete them');
 // admin/testkit-standard-kit#summary
 _('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
 // admin/email-participants#summary
@@ -349,7 +387,7 @@ _('settings');
 _('ship');
 // admin/shipment-enroll#tags
 _('ship-it');
-// admin/shipment-add#tags, admin/shipment-enroll#tags, admin/shipment#tags
+// admin/shipment-add#tags, admin/shipment-enroll#tags, admin/shipment#tags, participant/result-submission#tags
 _('shipment');
 // admin/reports-shipment-response#title
 _('Shipment Response Report');
@@ -363,6 +401,12 @@ _('Shipments Report');
 _('smtp');
 // admin/reports-shipments#tags
 _('status');
+// participant/result-submission#tags
+_('submit');
+// participant/result-submission#title
+_('Submit PT results');
+// participant/view-reports#tags
+_('summary report');
 // admin/users#tags
 _('system-admin');
 // admin/global-config#summary
@@ -435,6 +479,8 @@ _('view');
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
 // admin/evaluate-shipment#title
 _('View / Re-Evaluate Shipment');
+// participant/view-reports#title
+_('View your reports');
 // admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('viral-load');
 // admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags
@@ -451,6 +497,10 @@ _('VL Assays / Platforms');
 _('VL results per assay, with the pass rate of each assay');
 // admin/reports-vl-sample-analysis#title
 _('VL Sample Analysis');
+// participant/view-reports#summary
+_('Where to download your individual report and the shipment summary report');
+// participant/corrective-action#summary
+_('Where to see the corrective actions for a shipment, and the CAPA form if your PT provider uses it');
 // admin/reports-testkit#summary
 _('Which test kits participants used in HIV serology (DTS) responses, and how those responses performed');
 // admin/reports-shipment-response#summary
@@ -459,6 +509,8 @@ _('Who responded to each shipment, who did not, and how they performed');
 _('xtpt');
 // admin/reports-xtpt-indicators#title
 _('XTPT Indicators & Panel Statistics');
+// participant/dashboard#summary
+_('Your home page: shipments waiting for results, your latest scores, and quick links');
 // admin/dashboard#summary
 _('Your home page — what is happening across PT Surveys and Participants right now');
 // admin/reports-vl-sample-analysis#tags
