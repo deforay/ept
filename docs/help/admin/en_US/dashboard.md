@@ -1,56 +1,63 @@
 ---
 title: Dashboard
-summary: Your home page — what is happening across PT Surveys and Participants right now
-tags: [dashboard, home, overview]
+summary: Your home page: the rounds in progress, what each one needs next, and how labs are taking part
+tags: [dashboard, home, overview, rounds]
 ---
 
 # Dashboard
 
-The Dashboard is the home page you see right after you log in.
-It gives you a quick look at the most important numbers in
-your ePT system.
+The Dashboard shows the PT rounds you are running and what each
+one needs next. Start here after you log in.
 
-## What's on the page
+## Find the round you are working on
 
-You will see a set of **cards** at the top with key numbers, and
-**charts** below.
+The rounds table lists every round that is open for response or
+awaiting finalize. Each row shows the **Deadline**, how many labs
+**Responded**, the **Response %** and the **Pass %**.
 
-### Top cards
+The **Next action** button tells you what to do:
 
-- **Total Participants** — how many labs (participants) are set
-  up in the system.
-- **Total PT Surveys** — how many PT rounds have been created so
-  far.
-- **Active Schemes** — the test types your system is set up for
-  (for example, HIV Serology, VL, EID).
+| Next action | What it means |
+| --- | --- |
+| **Awaiting responses** | The round is open. Click to see which labs have not responded |
+| **No responses received** | The deadline passed and no lab responded |
+| **Ready to evaluate** | Responses are in. Click to evaluate the shipment |
+| **Generate reports** | The shipment is evaluated. Click to generate the reports |
+| **Ready to finalize** | Reports are generated. Click to review and finalize |
 
-The exact list of cards can be slightly different in your
-system, depending on what your admin has turned on.
+Click **outstanding** on a row to see the labs that still need to
+respond.
 
-### Charts
+## The cards at the top
 
-The charts below show things like how many PT Surveys are coming
-up, how many have been shipped, and how participants are doing
-over time. Click on a chart to zoom in.
+- **Active participants** — labs enrolled in your schemes.
+- **Rounds in progress** — rounds open for response, and rounds
+  awaiting finalize.
+- **Labs yet to respond** — labs in open rounds that have not
+  responded.
+- **Rounds completed** — rounds finalized this year.
 
-## What you usually do next
+A notice above the cards shows participants who registered and
+wait for approval. Click it to review them.
 
-The Dashboard is a starting point, not a place where you do work.
-From here you will normally go to:
+## Previous rounds
 
-- **Configure → PT Participants** — to add or edit labs.
-- **Manage → PT Survey** — to create a new PT round, add
-  shipments, or ship them.
-- **Analyze → Evaluate Responses** — once participants have sent
-  in their results.
+Below the table, **Previous rounds** shows finalized rounds with
+their **Participation** and **Results**. **Repeat failers**
+counts labs that failed this round and the round before.
+**Never responded** counts labs that missed every one of the
+scheme's last few finalized rounds. Both need an earlier
+finalized round of the same scheme.
 
-You can also press **Ctrl + K** to open a search box and jump to
-any page by name.
+## Participant engagement
+
+**Participation by scheme** shows how many labs in each scheme
+are **Actively participating**, and how many are **In a scheme,
+not responding**. A lab counts as participating after it responds
+to a round shipped in the last few months.
 
 ## Tips
 
-- The numbers refresh every time you open the page. If you just
-  added something and don't see it yet, reload the page.
-- If a card or chart looks empty, it usually means there is no
-  data of that type yet — for example, no PT Surveys have been
-  shipped.
+- The numbers refresh each time you open the page. Reload it to
+  see a change you just made.
+- Press **Ctrl + K** to search for any page by name.
