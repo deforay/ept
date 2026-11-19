@@ -11,7 +11,7 @@ Une page de référence pour les équipes d'achat et d'infrastructure qui prépa
 | Langage | PHP 8.4.27 ou ultérieur, ou PHP 8.5.12 ou ultérieur |
 | Base de données | MySQL 8+ |
 | Serveur web | Apache 2 avec `mod_rewrite` |
-| Système d'exploitation | Ubuntu 24.04 LTS (recommandé) |
+| Système d'exploitation | Ubuntu 26.04 LTS |
 | Moteur de graphiques | Node.js 22 ou ultérieur, avec des dépendances npm verrouillées |
 
 Docker Compose est aussi pris en charge (voir [setup.md](setup.md)).

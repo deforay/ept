@@ -2,9 +2,9 @@
 
 ---
 
-## Installing on Ubuntu 22.04 or above (only Ubuntu LTS)
+## Installing on Ubuntu 26.04 LTS
 
-**Important:** This installation works exclusively on Ubuntu 22.04 or later LTS versions. Ubuntu 24.04 LTS is recommended.
+**Important:** Use Ubuntu 26.04 LTS for a new server. Existing servers on Ubuntu 22.04 or 24.04 LTS keep working, and `ept update` still updates them. Setup refuses non-LTS releases.
 
 ePT requires PHP 8.4.27 or later, or PHP 8.5.12 or later. On older releases ePT refuses to start. `setup.sh` and `ept update` install a supported release.
 
