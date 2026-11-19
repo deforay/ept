@@ -59,6 +59,8 @@ _('assay');
 _('Assign participants to a Data Manager so the right person sees the right participants when filling out responses');
 // admin/home-config#tags
 _('banner');
+// admin/certificate-batches#tags
+_('batches');
 // admin/reports-distribution#summary
 _('Build draft per-participant and summary reports for internal review (not yet visible to participants)');
 // admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/participants-bulk-import#tags, admin/participants-manager-map#tags
@@ -69,7 +71,9 @@ _('Bulk Import Enrollment');
 _('Bulk Import Participants');
 // participant/corrective-action#tags
 _('capa');
-// admin/certificate-templates#tags, admin/certificates#tags, admin/reports-annual#tags
+// admin/certificate-batches#title
+_('Certificate Batches');
+// admin/certificate-batches#tags, admin/certificate-templates#tags, admin/certificates#tags, admin/reports-annual#tags
 _('certificates');
 // admin/certificate-templates#title
 _('Certificate Templates');
@@ -129,6 +133,8 @@ _('design');
 _('designer');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('detection');
+// admin/files-for-participants#tags
+_('distribute');
 // admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-vl-sample-analysis#tags
 _('distribution');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
@@ -137,9 +143,9 @@ _('distributions');
 _('districts');
 // participant/file-download#tags
 _('documents');
-// participant/view-reports#tags
+// admin/certificate-batches#tags, participant/view-reports#tags
 _('download');
-// admin/reports-shipments#tags, participant/file-download#tags
+// admin/files-for-participants#tags, admin/reports-shipments#tags, participant/file-download#tags
 _('downloads');
 // participant/file-download#title
 _('Downloads');
@@ -193,6 +199,8 @@ _('Evaluated results for a date range, and the certificates that follow from the
 _('Evaluate PT Survey');
 // admin/evaluate#tags
 _('evaluation');
+// admin/certificate-batches#summary
+_('Every certificate batch, past and present, with its status and downloads');
 // admin/reports-shipments#summary
 _('Every shipment with its responses, pass rate, status and downloads');
 // admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-tb-all-sites-results#tags, admin/reports-xtpt-indicators#tags
@@ -219,8 +227,10 @@ _('Feedback Forms');
 _('Feedback Questions');
 // admin/certificate-templates#tags
 _('fields');
-// participant/file-download#tags
+// admin/files-for-participants#tags, participant/file-download#tags
 _('files');
+// admin/files-for-participants#title
+_('Files For Participants');
 // participant/file-download#summary
 _('Files your PT provider shared with your lab');
 // admin/enrollments-add#tags
@@ -245,6 +255,8 @@ _('global');
 _('Global Settings');
 // admin/home-config#tags
 _('hero');
+// admin/certificate-batches#tags
+_('history');
 // admin/vl-settings#tags
 _('hiv');
 // admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
@@ -327,7 +339,7 @@ _('participant-login');
 _('Participant Performance Report');
 // admin/reports-participant-response#title
 _('Participant Response Report');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-corrective-actions#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/shipment-enroll#tags
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/files-for-participants#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-corrective-actions#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
@@ -441,6 +453,8 @@ _('See each participant\'s response to a shipment, change results, and add a sha
 _('See every enrollment list per scheme, create and edit lists, and clone, archive, rename, merge or delete them');
 // admin/testkit-standard-kit#summary
 _('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
+// admin/files-for-participants#summary
+_('Send files, such as instructions or forms, to the participants you choose');
 // admin/email-participants#summary
 _('Send or schedule an email about one or more shipments, such as a reminder to labs that have not responded');
 // admin/global-config#tags
