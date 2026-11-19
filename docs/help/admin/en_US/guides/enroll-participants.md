@@ -46,8 +46,9 @@ to exclude it (maybe it is closed for maintenance). Shipment
 enrollment lets you pick and choose per round, without removing
 the lab from the scheme.
 
-A lab must be enrolled in the **scheme** before it can be
-enrolled in any **shipment** of that scheme.
+Scheme enrollment decides which labs are **selected by default**
+when you enroll a shipment of that scheme. You can still add or
+remove labs for each shipment.
 
 > So the order is always: **Add lab → Scheme enrollment →
 > Shipment enrollment.**
@@ -104,17 +105,17 @@ This is the step you do **every time** you create a new shipment.
   to your survey. The survey's shipment list opens.
 - Click the red **Enroll** button on the shipment row.
 - You will see two lists:
-  - **Participants not yet enrolled for this scheme** (left) —
-    labs that are scheme-enrolled but not yet on this shipment.
   - **Enrolled/Selected Participants** (right) — labs that will
-    receive this shipment.
-- Click a name to move it from left to right.
+    receive this shipment. The first time you open the page, the
+    labs enrolled in the scheme are already here.
+  - **Participants not yet enrolled for this scheme** (left) —
+    every other active lab.
+- Click a name to move it between the lists.
 - Click **Enroll** at the bottom to save.
 
-If a lab you expect to see is **missing from the left
-list**, it is almost always because the lab is not yet enrolled
-in the scheme (Step 3). Go back and enroll it in the scheme
-first, then come back here.
+If a lab you expect is **not on the right-hand list**, find it on
+the left and click it. To have it selected by default next time,
+enroll it in the scheme (Step 3).
 
 After saving, the shipment will go to the labs on the right-hand
 list as soon as you click **Ship Now** on the PT Survey list.

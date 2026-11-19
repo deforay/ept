@@ -30,10 +30,11 @@
 ## 2.3 Enroll Participants to the Shipment
 
 - On the shipment list, click the red **Enroll** button on your shipment. If you left the page, go to **Manage → PT Survey** and click **Add Participants** next to your survey to reopen it.
-- Click each participant name to move it to the enrolled side
+- Check the right-hand list. It holds the participants who get this shipment.
+- Click a name to move it between the lists
 - Click **Enroll** to save
 
-> **Note:** Only participants who are already enrolled in the scheme (Part 1, Step 1.3) appear on this page.
+> **Note:** The first time you open this page, the participants enrolled in the scheme (Part 1, Step 1.3) are already on the right. Every other active participant is on the left. Do not click **Select All** unless every participant in the system should get this shipment.
 
 ## 2.4 Ship the PT Survey
 

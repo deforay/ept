@@ -162,9 +162,9 @@ For each shipment:
 #### 3. Enroll Participants
 **Location:** Shipment List → Enroll button
 
-- Select participants from available list
-- Move to enrolled list
-- Participants must be enrolled in the scheme first (Configure → Scheme Enrollments)
+- The right-hand list holds the participants who get the shipment. The first time the page opens, it already holds the participants enrolled in the scheme (Configure → Scheme Enrollments)
+- The left-hand list holds every other active participant
+- Click a name to move it between the lists, then click **Enroll**
 
 #### 4. Ship the PT Survey
 **Location:** Manage → PT Survey → Ship Now
