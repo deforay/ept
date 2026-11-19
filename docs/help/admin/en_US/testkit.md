@@ -30,13 +30,13 @@ shown:
 - **Show Pending** — kits awaiting an approval decision. Picking
   this option also reveals a second dropdown (**Change Status**)
   with bulk actions:
-  - **Approve All** — approves every pending kit.
-  - **Pending All** — flips approved kits back to pending (rare —
-    use for re-review).
+  - **Approve All** — approves every pending kit in the system.
+  - **Pending All** — leaves pending kits as they are. It does not
+    move approved kits back to pending.
 
-Bulk-status changes apply to **every kit currently matching the
-filter**, not just visible rows on the page. Confirm before
-clicking.
+**Approve All** ignores the filter and the visible rows. It
+changes every pending kit, so check the pending list first. To
+change one kit, click **Edit** on its row.
 
 ## Columns
 

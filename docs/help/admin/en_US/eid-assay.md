@@ -41,8 +41,7 @@ them separately on the response form.
 - The **Extraction** and **Detection** lists are separate —
   adding a name on one tab does not add it to the other. If a
   single platform does both, add it twice (once per category).
-- Switching tabs reloads the same page. There is nothing to
-  lose — there is no editable form on this page.
+- Click **Extraction** or **Detection** to switch lists.
 - There is **no Edit form** for EID assays. Once added, the
   name is fixed. If you need to rename, mark the old one
   *Inactive* and add a fresh entry with the corrected name.

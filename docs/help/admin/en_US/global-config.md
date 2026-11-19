@@ -43,8 +43,10 @@ Branding, behaviour, and defaults for the whole app.
   Default is *No*.
 - **Enable Custom Tests** — let PT admins set up non-standard
   test types.
-- **Re-evaluate Before Finalizing** — when *Yes*, finalize is
-  blocked until a fresh re-evaluation has run.
+- **Re-evaluate Before Finalizing** — when *Yes*, ePT
+  re-evaluates the shipment automatically each time it generates
+  or finalizes reports. Scores then follow the current scoring
+  settings, so they can change from the last evaluation.
 - **Enable CAPA** — turns on the Corrective / Preventive Action
   module across the app.
 - **Admin Email Notifications** — global on/off switch for
