@@ -5,7 +5,7 @@ Assemble a versioned evidence package for an ePT installation.
 ## Before you start
 
 Use an operator account authorized to inspect the target installation.
-This guide targets ePT 7.6.21 with PHP 8.4.27 or later (or 8.5.12 or later) and MySQL 8 or later.
+This guide targets ePT with PHP 8.4.27 or later (or 8.5.12 or later) and MySQL 8 or later.
 Obtain the programme owner, hosting owner and acceptance reviewer names.
 
 ## Record the baseline

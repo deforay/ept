@@ -1,6 +1,6 @@
 # Comment gérer les accès utilisateurs
 
-Créez et examinez les comptes ePT 7.6.21 avec les droits nécessaires aux tâches attribuées.
+Créez et examinez les comptes ePT avec les droits nécessaires aux tâches attribuées.
 
 ## Avant de commencer
 

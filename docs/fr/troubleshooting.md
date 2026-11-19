@@ -2,7 +2,7 @@
 
 Commencez par le premier tableau lorsqu'un participant ou un gestionnaire de données signale un problème.
 Pour une panne du serveur, consignez d'abord l'incident. Identifiez le composant défaillant avant de modifier une installation ePT.
-Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès correspondant au composant concerné.
+Ces procédures nécessitent les droits d'accès correspondant au composant concerné.
 
 ## Résoudre les problèmes signalés par les participants
 

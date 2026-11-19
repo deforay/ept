@@ -2,7 +2,7 @@
 
 Start with the first table when a participant or data manager reports a problem.
 For a server fault, capture the incident first. Identify the failing component before changing an ePT installation.
-These procedures target ePT 7.6.21 and require access appropriate to the affected component.
+These procedures require access appropriate to the affected component.
 
 ## Fix problems participants report
 

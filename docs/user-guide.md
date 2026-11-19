@@ -1,6 +1,6 @@
 # How to complete common ePT workflows
 
-Use this guide to find the procedure for your role in ePT 7.6.21.
+Use this guide to find the procedure for your role in ePT.
 Menu visibility depends on account privileges and enabled programme features.
 
 ## Before you start
