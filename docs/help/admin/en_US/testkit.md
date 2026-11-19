@@ -24,8 +24,7 @@ The **status dropdown** above the table filters which kits are
 shown:
 
 - **Show All** — every kit, regardless of approval status.
-- **Show Approved** — kits marked as approved (visible to
-  participants).
+- **Show Approved** — kits marked as approved.
 - **Show UnApproved** — kits explicitly disapproved.
 - **Show Pending** — kits awaiting an approval decision. Picking
   this option also reveals a **Change Status** dropdown with
@@ -52,15 +51,11 @@ To change one kit, click **Edit** on its row.
 
 ## Tips
 
-- A new kit defaults to **Approved = Yes** when created. Switch
-  it to *No* via Edit if you want to hide it from the
-  participant form without deleting it.
-- Approve kits *before* shipping a survey that needs them.
-  Unapproved kits do not appear in participant dropdowns, so a
-  late approval mid-cycle can leave participants stuck.
-- The **bulk Approve / Pending** actions follow the current
-  status dropdown — switch to *Show Pending* first, then
-  bulk-approve to onboard a batch of new kits at once.
+- A new kit defaults to **Approved = Yes** when created.
+- **Approved** does not decide which kits participants can pick.
+  Their drop-downs list the kits mapped to the scheme and test
+  number.
+- **Approve All** appears only after you choose *Show Pending*.
 - For DTS, after approving a kit you usually want to also link
   it to a test position (Test 1 / 2 / 3) via **Map Test kits
   to Tests** — otherwise it will not show up in the response

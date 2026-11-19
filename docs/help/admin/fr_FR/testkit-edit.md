@@ -7,9 +7,8 @@ tags: [config, testkit, edit, approval, additional-info]
 # Modifier le kit de test
 
 Modifie un kit de test existant. Les champs sont les mêmes que dans le
-formulaire **Ajouter**. Une liste déroulante **Approuvé** s'y ajoute :
-elle permet de montrer ou de masquer un kit aux participants sans le
-supprimer.
+formulaire **Ajouter**. Un champ **Actif** s'y ajoute. Il est affiché comme
+**Approuvé** dans la liste des kits.
 
 ## Champs
 
@@ -49,9 +48,9 @@ supprimer.
 
 ## Conseils
 
-- **Passez Approuvé à Non au lieu de supprimer le kit.** Des expéditions
-  passées utilisent peut-être ce kit. Avec *Non*, il disparaît de la
-  liste déroulante des participants sans casser les anciennes données.
+- **Approuvé** ne décide pas des kits que les participants peuvent
+  choisir. Pour ne plus proposer un kit, retirez son association au
+  programme ou au numéro de test.
 - Modifier **Autoriser les informations supplémentaires** change le
   formulaire de réponse des participants *à partir de maintenant*. Les
   anciennes réponses gardent ce qui a été saisi à l'époque.
