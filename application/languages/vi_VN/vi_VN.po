@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 21:20+0530\n"
+"POT-Creation-Date: 2026-11-19 21:33+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -807,6 +807,7 @@ msgid "Online Response"
 msgstr "Phản hồi trực tuyến"
 
 #: application/languages/db-translation-strings.php:315
+#: application/models/DbTable/TempMail.php:445
 #: application/views/scripts/contact-us/index.phtml:45
 #: application/views/scripts/covid19/response.phtml:434
 #: application/views/scripts/covid19/response.phtml:455
@@ -1569,6 +1570,7 @@ msgstr "api"
 
 #: application/languages/help-translation-strings.php:63
 #: application/layouts/scripts/admin.phtml:512
+#: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/views/partials/spotlight.phtml:283
 msgid "API Sync History"
 msgstr "Lịch sử đồng bộ hóa API"
@@ -1611,7 +1613,6 @@ msgstr "kiểm tra"
 
 #: application/languages/help-translation-strings.php:79
 #: application/layouts/scripts/admin.phtml:506
-#: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/modules/admin/views/scripts/audit-log/index.phtml:569
 #: application/views/partials/spotlight.phtml:267
 msgid "Audit Log"
@@ -3364,7 +3365,7 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:416
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:462
 #: application/modules/admin/views/scripts/custom-test/import.phtml:76
-#: application/modules/admin/views/scripts/data-managers/add.phtml:255
+#: application/modules/admin/views/scripts/data-managers/add.phtml:256
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:92
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:76
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:171
@@ -3396,7 +3397,6 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:350
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:129
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:67
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:48
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:81
 #: application/modules/admin/views/scripts/participants/add.phtml:307
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:142
@@ -3405,8 +3405,8 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/participants/files.phtml:43
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:195
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:162
-#: application/modules/admin/views/scripts/partners/add.phtml:33
-#: application/modules/admin/views/scripts/partners/edit.phtml:61
+#: application/modules/admin/views/scripts/partners/add.phtml:40
+#: application/modules/admin/views/scripts/partners/edit.phtml:71
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:56
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:60
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:528
@@ -3962,8 +3962,8 @@ msgid "Participant Code/ID"
 msgstr "Mã/ID đơn vị tham gia"
 
 #: application/models/DbTable/ContactUs.php:144
-msgid "Add PT Participant"
-msgstr "Thêm đơn vị tham gia PT"
+msgid "Create Data Manager login"
+msgstr "Tạo tài khoản người quản lý dữ liệu"
 
 #: application/models/DbTable/DataManagers.php:338
 msgid "Bounced"
@@ -4030,8 +4030,18 @@ msgstr "Chỉnh sửa người quản lý dữ liệu này"
 #: application/models/DbTable/DataManagers.php:460
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
+#: application/models/DbTable/FeedBackTable.php:524
+#: application/models/DbTable/HomeSection.php:200
 #: application/models/DbTable/Participants.php:410
 #: application/models/DbTable/Participants.php:478
+#: application/models/DbTable/Partners.php:188
+#: application/models/DbTable/RCovid19GeneTypes.php:197
+#: application/models/DbTable/ResponseNotTestedReasons.php:147
+#: application/models/DbTable/SchemeList.php:170
+#: application/models/DbTable/SystemAdmin.php:121
+#: application/models/DbTable/Testkitnames.php:282
+#: application/models/DbTable/TestTypenameCovid19.php:234
+#: application/models/DbTable/VlAssay.php:132
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1416
 #: application/modules/admin/views/scripts/enrollments/index.phtml:61
@@ -4056,7 +4066,7 @@ msgid "Reset this user's password"
 msgstr "Đặt lại mật khẩu của người dùng này"
 
 #: application/models/DbTable/DataManagers.php:468
-#: application/modules/admin/views/scripts/data-managers/add.phtml:42
+#: application/modules/admin/views/scripts/data-managers/add.phtml:43
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:136
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:480
@@ -4098,6 +4108,7 @@ msgid "No Shipment/Panel Added"
 msgstr "Chưa thêm vòng ngoại kiểm/bộ mẫu nào"
 
 #: application/models/DbTable/Distribution.php:144
+#: application/models/DbTable/TempMail.php:426
 #: application/modules/admin/views/scripts/alerts/email.phtml:54
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:142
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
@@ -4150,6 +4161,7 @@ msgstr "Xóa"
 #: application/models/DbTable/Shipments.php:432
 #: application/models/DbTable/Shipments.php:933
 #: application/models/DbTable/Shipments.php:2180
+#: application/models/DbTable/TempMail.php:401
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:368
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:142
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:209
@@ -4236,7 +4248,7 @@ msgstr "Tên"
 #: application/models/Dts.php:2312 application/models/Dts.php:2394
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
 #: application/modules/admin/views/scripts/contact-us/index.phtml:27
-#: application/modules/admin/views/scripts/data-managers/add.phtml:206
+#: application/modules/admin/views/scripts/data-managers/add.phtml:207
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:14
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:190
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:149
@@ -4298,6 +4310,20 @@ msgstr "Tên"
 msgid "Country"
 msgstr "Quốc gia"
 
+#: application/models/DbTable/FeedBackTable.php:523
+#: application/models/DbTable/SchemeList.php:171
+#: application/modules/admin/views/scripts/enrollments/index.phtml:464
+#: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
+#: application/services/Shipments.php:596
+msgid "Clone"
+msgstr "Sao chép/nhân bản"
+
+#: application/models/DbTable/HomeSection.php:32
+msgid ""
+"This file type is not allowed. Upload a JPG, PNG, PDF, Word or Excel file."
+msgstr ""
+"Loại tệp này không được phép. Hãy tải lên tệp JPG, PNG, PDF, Word hoặc Excel."
+
 #: application/models/DbTable/Participants.php:404
 #: application/models/DbTable/Participants.php:472
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
@@ -4344,6 +4370,18 @@ msgstr "1 vòng ngoại kiểm"
 #, php-format
 msgid "%d shipments"
 msgstr "%d vòng ngoại kiểm"
+
+#: application/models/DbTable/SchemeList.php:172
+#: application/modules/admin/views/scripts/data-managers/index.phtml:104
+#: application/modules/admin/views/scripts/participants/index.phtml:122
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:80
+msgid "Export"
+msgstr "Xuất ra"
+
+#: application/models/DbTable/SchemeList.php:472
+#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:85
+msgid "Test Results"
+msgstr "Kết quả xét nghiệm"
 
 #: application/models/DbTable/ShipmentParticipantMap.php:145
 msgid ""
@@ -4548,6 +4586,84 @@ msgstr "Gửi báo cáo qua email"
 #: application/modules/reports/views/scripts/finalize/replace-summary-report.phtml:61
 msgid "Replace Summary Report"
 msgstr "Thay thế báo cáo tổng hợp"
+
+#: application/models/DbTable/TempMail.php:423
+#: application/modules/admin/views/scripts/alerts/email.phtml:49
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
+#: application/modules/admin/views/scripts/email-participants/index.phtml:1313
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:112
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
+#: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:69
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:143
+#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:13
+#: application/modules/reports/views/scripts/testkit/index.phtml:185
+#: application/services/Dashboard.php:1023 application/services/Reports.php:515
+#: application/services/Reports.php:1230 application/services/Reports.php:1610
+#: application/services/Reports.php:2781 application/services/Reports.php:3032
+#: application/services/Reports.php:3164 application/services/Reports.php:4241
+#: application/views/partials/participant-performance-report.phtml:272
+#: application/views/partials/participant-response-report.phtml:316
+#: application/views/partials/shipment-response-report.phtml:106
+#: application/views/partials/shipment-response-report.phtml:125
+#: application/views/partials/tb-participants-per-country-report.phtml:57
+msgid "Failed"
+msgstr "Thất bại"
+
+#: application/models/DbTable/TempMail.php:424
+#: application/modules/admin/views/scripts/alerts/email.phtml:52
+#: application/modules/admin/views/scripts/email-participants/index.phtml:1311
+msgid "Sent"
+msgstr "Đã gửi"
+
+#: application/models/DbTable/TempMail.php:425
+#: application/modules/admin/views/scripts/alerts/email.phtml:51
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:109
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
+#: application/modules/admin/views/scripts/participants/index.phtml:173
+#: application/modules/admin/views/scripts/testkit/index.phtml:33
+msgid "Pending"
+msgstr "Đang chờ xử lý"
+
+#: application/models/DbTable/TempMail.php:436
+msgid "Bad recipient"
+msgstr "Người nhận không hợp lệ"
+
+#: application/models/DbTable/TempMail.php:437
+msgid "Connection problem"
+msgstr "Lỗi kết nối"
+
+#: application/models/DbTable/TempMail.php:438
+msgid "Message content rejected"
+msgstr "Nội dung thư bị từ chối"
+
+#: application/models/DbTable/TempMail.php:439
+msgid "Sending limit reached"
+msgstr "Đã đạt giới hạn gửi"
+
+#: application/models/DbTable/TempMail.php:440
+msgid "Mail login refused"
+msgstr "Đăng nhập máy chủ thư bị từ chối"
+
+#: application/models/DbTable/TempMail.php:441
+msgid "Mail settings not usable"
+msgstr "Cài đặt thư không dùng được"
+
+#: application/models/DbTable/TempMail.php:442
+msgid "Email not set up"
+msgstr "Chưa thiết lập email"
+
+#: application/models/DbTable/TempMail.php:443
+msgid "Expired"
+msgstr "Đã hết hạn"
+
+#: application/models/DbTable/TempMail.php:444
+msgid "Held by the development mail trap"
+msgstr "Bị giữ bởi bẫy thư phát triển"
 
 #: application/models/Dts.php:1612 application/models/Dts.php:1630
 #: application/models/Dts.php:2308 application/models/Dts.php:2341
@@ -4979,6 +5095,14 @@ msgstr ""
 "Chương trình %s đã có danh sách cùng tên. Mỗi tên danh sách chỉ được dùng "
 "trong một chương trình. Hãy chọn tên khác."
 
+#: application/modules/admin/controllers/LogViewerController.php:35
+msgid "Application Errors"
+msgstr "Lỗi ứng dụng"
+
+#: application/modules/admin/controllers/LogViewerController.php:36
+msgid "Client (Browser) Errors"
+msgstr "Lỗi phía người dùng (trình duyệt)"
+
 #: application/modules/admin/controllers/ParticipantsController.php:328
 msgid ""
 "No participants selected — nothing was changed. Use \"Clear all mappings\" "
@@ -5095,6 +5219,7 @@ msgstr "Tin nhắn"
 #: application/modules/admin/views/scripts/announcement/index.phtml:19
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:123
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:163
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:24
 #: application/modules/admin/views/scripts/custom-test/add.phtml:62
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:74
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:168
@@ -5102,7 +5227,7 @@ msgstr "Tin nhắn"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:612
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:115
 #: application/modules/admin/views/scripts/custom-test/index.phtml:36
-#: application/modules/admin/views/scripts/data-managers/add.phtml:190
+#: application/modules/admin/views/scripts/data-managers/add.phtml:191
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:15
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:145
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:141
@@ -5128,7 +5253,7 @@ msgstr "Tin nhắn"
 #: application/modules/admin/views/scripts/participants/index.phtml:180
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:156
 #: application/modules/admin/views/scripts/participants/pending.phtml:21
-#: application/modules/admin/views/scripts/partners/edit.phtml:39
+#: application/modules/admin/views/scripts/partners/edit.phtml:49
 #: application/modules/admin/views/scripts/partners/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:43
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:46
@@ -5228,29 +5353,6 @@ msgstr "Đang tải dữ liệu từ máy chủ"
 msgid "Failed & Skipped"
 msgstr "Thất bại và bỏ qua"
 
-#: application/modules/admin/views/scripts/alerts/email.phtml:49
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
-#: application/modules/admin/views/scripts/email-participants/index.phtml:1313
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
-#: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:69
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:143
-#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:13
-#: application/modules/reports/views/scripts/testkit/index.phtml:185
-#: application/services/Dashboard.php:1023 application/services/Reports.php:515
-#: application/services/Reports.php:1230 application/services/Reports.php:1610
-#: application/services/Reports.php:2781 application/services/Reports.php:3032
-#: application/services/Reports.php:3164 application/services/Reports.php:4241
-#: application/views/partials/participant-performance-report.phtml:272
-#: application/views/partials/participant-response-report.phtml:316
-#: application/views/partials/shipment-response-report.phtml:106
-#: application/views/partials/shipment-response-report.phtml:125
-#: application/views/partials/tb-participants-per-country-report.phtml:57
-msgid "Failed"
-msgstr "Thất bại"
-
 #: application/modules/admin/views/scripts/alerts/email.phtml:50
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:166
 #: application/modules/admin/views/scripts/custom-test/import.phtml:26
@@ -5262,20 +5364,6 @@ msgstr "Thất bại"
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:161
 msgid "Skipped"
 msgstr "Bỏ qua"
-
-#: application/modules/admin/views/scripts/alerts/email.phtml:51
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
-#: application/modules/admin/views/scripts/participants/index.phtml:173
-#: application/modules/admin/views/scripts/testkit/index.phtml:33
-msgid "Pending"
-msgstr "Đang chờ xử lý"
-
-#: application/modules/admin/views/scripts/alerts/email.phtml:52
-#: application/modules/admin/views/scripts/email-participants/index.phtml:1311
-msgid "Sent"
-msgstr "Đã gửi"
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:53
 msgid "Held (paused)"
@@ -5470,6 +5558,7 @@ msgid "Action"
 msgstr "Hành động"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:54
+#: application/modules/admin/views/scripts/api-history/index.phtml:26
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:254
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:335
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:296
@@ -5573,6 +5662,27 @@ msgstr "Ẩn Tìm kiếm nâng cao"
 msgid "Created On"
 msgstr "Được tạo"
 
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:26
+msgid "API Params"
+msgstr "Tham số API"
+
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:28
+msgid "Request"
+msgstr "Yêu cầu"
+
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:29
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:330
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:373
+#: application/modules/admin/views/scripts/shipment/index.phtml:66
+#: application/modules/reports/views/scripts/distribution/finalize.phtml:98
+#: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
+#: application/services/Participants.php:1786
+#: application/views/partials/shipment-response-report.phtml:119
+#: application/views/partials/shipment-response-report.phtml:138
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:629
+msgid "Response"
+msgstr "Phản hồi"
+
 #: application/modules/admin/views/scripts/api-history/index.phtml:10
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:36
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:50
@@ -5618,7 +5728,6 @@ msgstr "Loại đồng bộ"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:384
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:109
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:49
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:23
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:64
 #: application/modules/admin/views/scripts/shipment/index.phtml:25
 #: application/modules/admin/views/scripts/shipment/index.phtml:60
@@ -6449,6 +6558,7 @@ msgid "From"
 msgstr "Từ"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:6
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:17
 msgid "Add New Gene Type"
 msgstr "Thêm loại gen mới"
 
@@ -6462,6 +6572,7 @@ msgid "Please enter the GeneType Name here"
 msgstr "Vui lòng nhập tên kiểu gen tại đây"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:15
+#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:15
 msgid ""
 "This GeneType Name already exists for another GeneType. Please try something "
 "else."
@@ -6803,10 +6914,11 @@ msgstr "Chọn"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:40
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:40
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:27
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:210
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:344
 #: application/modules/admin/views/scripts/custom-test/index.phtml:23
-#: application/modules/admin/views/scripts/data-managers/add.phtml:195
+#: application/modules/admin/views/scripts/data-managers/add.phtml:196
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:144
 #: application/modules/admin/views/scripts/data-managers/index.phtml:133
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:35
@@ -6817,7 +6929,7 @@ msgstr "Chọn"
 #: application/modules/admin/views/scripts/participants/edit.phtml:452
 #: application/modules/admin/views/scripts/participants/index.phtml:158
 #: application/modules/admin/views/scripts/participants/index.phtml:182
-#: application/modules/admin/views/scripts/partners/edit.phtml:45
+#: application/modules/admin/views/scripts/partners/edit.phtml:55
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:50
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:91
@@ -6833,10 +6945,11 @@ msgstr "Đang hoạt động"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:41
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:41
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:211
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:345
 #: application/modules/admin/views/scripts/custom-test/index.phtml:24
-#: application/modules/admin/views/scripts/data-managers/add.phtml:196
+#: application/modules/admin/views/scripts/data-managers/add.phtml:197
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:145
 #: application/modules/admin/views/scripts/data-managers/index.phtml:134
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:36
@@ -6848,7 +6961,7 @@ msgstr "Đang hoạt động"
 #: application/modules/admin/views/scripts/participants/index.phtml:159
 #: application/modules/admin/views/scripts/participants/index.phtml:183
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:97
-#: application/modules/admin/views/scripts/partners/edit.phtml:48
+#: application/modules/admin/views/scripts/partners/edit.phtml:58
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:51
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
@@ -6863,16 +6976,15 @@ msgstr "Không hoạt động"
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:50
 #: application/modules/admin/views/scripts/custom-test/add.phtml:238
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:461
-#: application/modules/admin/views/scripts/data-managers/add.phtml:253
+#: application/modules/admin/views/scripts/data-managers/add.phtml:254
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:30
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:19
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:69
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:554
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:306
-#: application/modules/admin/views/scripts/partners/add.phtml:31
+#: application/modules/admin/views/scripts/partners/add.phtml:38
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:55
-#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:59
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:362
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:32
 #: application/modules/admin/views/scripts/system-admins/add.phtml:142
@@ -6884,21 +6996,16 @@ msgid "Add"
 msgstr "Thêm"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:6
-#: application/modules/admin/views/scripts/test-platform/edit.phtml:6
-msgid "Edit Test Platform"
-msgstr "Chỉnh sửa hệ thống máy xét nghiệm"
+msgid "Edit Gene Type"
+msgstr "Sửa loại gen"
+
+#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:8
+msgid "Gene Type Name"
+msgstr "Tên loại gen"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:14
 msgid "Please enter the Gene Type Name here"
 msgstr "Vui lòng nhập tên kiểu gen tại đây"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:15
-msgid ""
-"This Test Platform Name already exists for another Test Platform. Please try "
-"something else."
-msgstr ""
-"Tên hệ thống máy xét nghiệm này đã tồn tại cho một hệ thống máy xét nghiệm "
-"khác. Vui lòng thử tên khác."
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:49
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:415
@@ -6910,12 +7017,12 @@ msgstr ""
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:102
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:128
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:66
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:47
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:80
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:89
 #: application/modules/admin/views/scripts/participants/edit.phtml:472
-#: application/modules/admin/views/scripts/partners/edit.phtml:59
+#: application/modules/admin/views/scripts/partners/edit.phtml:69
 #: application/modules/admin/views/scripts/report-config/index.phtml:326
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:59
 #: application/modules/admin/views/scripts/scheme-config/partials/covid19.phtml:151
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:391
 #: application/modules/admin/views/scripts/scheme-config/partials/eid.phtml:30
@@ -6935,26 +7042,10 @@ msgstr "Cập nhật"
 msgid "List of All Gene Types"
 msgstr "Danh sách tất cả các loại gen"
 
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:24
-#: application/modules/admin/views/scripts/test-platform/index.phtml:30
-#: application/modules/admin/views/scripts/testkit/index.phtml:28
-msgid "Approval status"
-msgstr "Tình trạng phê duyệt"
-
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:26
 #: application/modules/admin/views/scripts/test-platform/index.phtml:32
 msgid "Show All"
 msgstr "Hiển thị tất cả"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:27
-#: application/modules/admin/views/scripts/test-platform/index.phtml:33
-msgid "Show Approved"
-msgstr "Hiển thị đã được phê duyệt"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
-#: application/modules/admin/views/scripts/test-platform/index.phtml:34
-msgid "Show UnApproved"
-msgstr "Hiển thị các mục chưa được phê duyệt"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:36
 msgid "Gene type Name"
@@ -7014,10 +7105,10 @@ msgstr "Tắt các bộ sinh phẩm xét nghiệm khác"
 #: application/modules/admin/views/scripts/custom-test/add.phtml:77
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:89
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:138
-#: application/modules/admin/views/scripts/data-managers/add.phtml:142
-#: application/modules/admin/views/scripts/data-managers/add.phtml:155
-#: application/modules/admin/views/scripts/data-managers/add.phtml:168
-#: application/modules/admin/views/scripts/data-managers/add.phtml:182
+#: application/modules/admin/views/scripts/data-managers/add.phtml:143
+#: application/modules/admin/views/scripts/data-managers/add.phtml:156
+#: application/modules/admin/views/scripts/data-managers/add.phtml:169
+#: application/modules/admin/views/scripts/data-managers/add.phtml:183
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:66
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:103
@@ -7180,10 +7271,10 @@ msgstr "Có"
 #: application/modules/admin/views/scripts/custom-test/add.phtml:78
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:90
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:143
-#: application/modules/admin/views/scripts/data-managers/add.phtml:144
-#: application/modules/admin/views/scripts/data-managers/add.phtml:158
-#: application/modules/admin/views/scripts/data-managers/add.phtml:171
-#: application/modules/admin/views/scripts/data-managers/add.phtml:184
+#: application/modules/admin/views/scripts/data-managers/add.phtml:145
+#: application/modules/admin/views/scripts/data-managers/add.phtml:159
+#: application/modules/admin/views/scripts/data-managers/add.phtml:172
+#: application/modules/admin/views/scripts/data-managers/add.phtml:185
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:65
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:104
@@ -7513,7 +7604,7 @@ msgstr "Hiển thị cho"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:611
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:249
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:409
-#: application/modules/admin/views/scripts/partners/edit.phtml:29
+#: application/modules/admin/views/scripts/partners/edit.phtml:39
 #: application/modules/admin/views/scripts/partners/index.phtml:15
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:357
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:376
@@ -7865,7 +7956,15 @@ msgstr "Vui lòng nhập địa chỉ email chính xác vào đây"
 msgid "Please enter the primary email id here"
 msgstr "Vui lòng nhập địa chỉ email chính vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:47
+#: application/modules/admin/views/scripts/data-managers/add.phtml:37
+#: application/modules/admin/views/scripts/data-managers/add.phtml:280
+msgid ""
+"This primary e-mail ID already exists for another PT login. Please try "
+"something else."
+msgstr ""
+"Email chính này đã được dùng cho tài khoản PT khác. Hãy dùng email khác."
+
+#: application/modules/admin/views/scripts/data-managers/add.phtml:48
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/participants/add.phtml:122
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:33
@@ -7873,7 +7972,7 @@ msgstr "Vui lòng nhập địa chỉ email chính vào đây"
 msgid "Please enter a valid password and should minimum length of "
 msgstr "Vui lòng nhập mật khẩu hợp lệ và có độ dài tối thiểu là "
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:48
+#: application/modules/admin/views/scripts/data-managers/add.phtml:49
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/participants/add.phtml:122
 #: application/modules/admin/views/scripts/participants/edit.phtml:176
@@ -7882,7 +7981,7 @@ msgstr "Vui lòng nhập mật khẩu hợp lệ và có độ dài tối thiể
 msgid "Please enter a password"
 msgstr "Vui lòng nhập mật khẩu"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:57
+#: application/modules/admin/views/scripts/data-managers/add.phtml:58
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:51
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:298
 #: application/modules/admin/views/scripts/participants/add.phtml:126
@@ -7892,8 +7991,8 @@ msgstr "Vui lòng nhập mật khẩu"
 msgid "Confirm Password"
 msgstr "Xác nhận mật khẩu"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:62
 #: application/modules/admin/views/scripts/data-managers/add.phtml:63
+#: application/modules/admin/views/scripts/data-managers/add.phtml:64
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:53
 #: application/modules/admin/views/scripts/participants/add.phtml:128
 #: application/modules/admin/views/scripts/participants/edit.phtml:184
@@ -7906,7 +8005,7 @@ msgstr "Xác nhận mật khẩu"
 msgid "Please repeat the same password"
 msgstr "Vui lòng nhập lại mật khẩu"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:69
+#: application/modules/admin/views/scripts/data-managers/add.phtml:70
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:9
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:148
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:59
@@ -7926,34 +8025,34 @@ msgstr "Vui lòng nhập lại mật khẩu"
 msgid "Institute"
 msgstr "Viện"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:72
 #: application/modules/admin/views/scripts/data-managers/add.phtml:73
+#: application/modules/admin/views/scripts/data-managers/add.phtml:74
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:60
 msgid "Please enter the institute name here"
 msgstr "Vui lòng nhập tên đơn vị vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:82
+#: application/modules/admin/views/scripts/data-managers/add.phtml:83
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:67
 #: library/Pt/Commons/ImportTemplate.php:103
 msgid "User First Name"
 msgstr "Tên người dùng"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:86
 #: application/modules/admin/views/scripts/data-managers/add.phtml:87
+#: application/modules/admin/views/scripts/data-managers/add.phtml:88
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:68
 #: application/modules/admin/views/scripts/system-admins/add.phtml:13
 #: application/modules/admin/views/scripts/system-admins/add.phtml:14
 msgid "Please enter the first name here"
 msgstr "Vui lòng nhập tên ở đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:94
+#: application/modules/admin/views/scripts/data-managers/add.phtml:95
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:73
 #: library/Pt/Commons/ImportTemplate.php:104
 msgid "User Last Name"
 msgstr "Họ người dùng"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:97
 #: application/modules/admin/views/scripts/data-managers/add.phtml:98
+#: application/modules/admin/views/scripts/data-managers/add.phtml:99
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:74
 #: application/modules/admin/views/scripts/participants/add.phtml:86
 #: application/modules/admin/views/scripts/participants/edit.phtml:115
@@ -7963,19 +8062,19 @@ msgstr "Họ người dùng"
 msgid "Please enter the last name here"
 msgstr "Vui lòng điền họ vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:107
+#: application/modules/admin/views/scripts/data-managers/add.phtml:108
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:81
 #: library/Pt/Commons/ImportTemplate.php:106
 msgid "Secondary e-mail Address"
 msgstr "Địa chỉ email phụ"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:110
 #: application/modules/admin/views/scripts/data-managers/add.phtml:111
+#: application/modules/admin/views/scripts/data-managers/add.phtml:112
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:82
 msgid "Please enter a secondary email id here"
 msgstr "Vui lòng nhập địa chỉ email phụ vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:117
+#: application/modules/admin/views/scripts/data-managers/add.phtml:118
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:130
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:87
 #: application/views/scripts/participant/user-info.phtml:75
@@ -7983,8 +8082,8 @@ msgstr "Vui lòng nhập địa chỉ email phụ vào đây"
 msgid "Cell Phone Number"
 msgstr "Số điện thoại di động"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:120
 #: application/modules/admin/views/scripts/data-managers/add.phtml:121
+#: application/modules/admin/views/scripts/data-managers/add.phtml:122
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:88
 #: application/modules/admin/views/scripts/participants/add.phtml:255
 #: application/modules/admin/views/scripts/participants/edit.phtml:374
@@ -7994,7 +8093,7 @@ msgstr "Số điện thoại di động"
 msgid "Please enter mobile/cell number here"
 msgstr "Vui lòng nhập số điện thoại di động vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:130
+#: application/modules/admin/views/scripts/data-managers/add.phtml:131
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:131
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:95
 #: application/modules/admin/views/scripts/participants/add.phtml:260
@@ -8006,36 +8105,36 @@ msgstr "Vui lòng nhập số điện thoại di động vào đây"
 msgid "Phone Number"
 msgstr "Số điện thoại"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:132
+#: application/modules/admin/views/scripts/data-managers/add.phtml:133
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:262
 #: application/modules/admin/views/scripts/participants/edit.phtml:381
 msgid "Please enter phone number here"
 msgstr "Vui lòng nhập số điện thoại vào đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:138
+#: application/modules/admin/views/scripts/data-managers/add.phtml:139
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:101
 msgid "QC Access"
 msgstr "Truy cập QC"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:152
+#: application/modules/admin/views/scripts/data-managers/add.phtml:153
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:112
 msgid "Enable Adding Response Date"
 msgstr "Bật tính năng thêm ngày phản hồi"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:165
+#: application/modules/admin/views/scripts/data-managers/add.phtml:166
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:121
 msgid "Enable Choosing Mode of Receipt"
 msgstr "Cho phép chọn phương thức nhận mẫu"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:179
+#: application/modules/admin/views/scripts/data-managers/add.phtml:180
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:132
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:132
 #: library/Pt/Commons/ImportTemplate.php:109
 msgid "Enable View-Only Access"
 msgstr "Bật quyền truy cập chỉ xem"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:194
+#: application/modules/admin/views/scripts/data-managers/add.phtml:195
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:86
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:90
 #: application/modules/admin/views/scripts/participants/add.phtml:297
@@ -8044,11 +8143,11 @@ msgstr "Bật quyền truy cập chỉ xem"
 msgid "Please select user status here"
 msgstr "Vui lòng chọn trạng thái người dùng tại đây"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:210
+#: application/modules/admin/views/scripts/data-managers/add.phtml:211
 msgid "Please choose country"
 msgstr "Vui lòng chọn quốc gia"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:212
+#: application/modules/admin/views/scripts/data-managers/add.phtml:213
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:158
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1261
 #: application/modules/admin/views/scripts/participants/index.phtml:152
@@ -8059,7 +8158,7 @@ msgstr "Vui lòng chọn quốc gia"
 msgid "Select Country"
 msgstr "Chọn quốc gia"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:223
+#: application/modules/admin/views/scripts/data-managers/add.phtml:224
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:134
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:168
 #: application/modules/admin/views/scripts/participants/add.phtml:161
@@ -8075,11 +8174,11 @@ msgstr "Chọn quốc gia"
 msgid "State/Province"
 msgstr "Tiểu bang/Tỉnh"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:225
+#: application/modules/admin/views/scripts/data-managers/add.phtml:226
 msgid "Please choose state"
 msgstr "Vui lòng chọn tiểu bang"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:232
+#: application/modules/admin/views/scripts/data-managers/add.phtml:233
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:135
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:180
 #: application/modules/admin/views/scripts/participants/add.phtml:165
@@ -8096,11 +8195,11 @@ msgstr "Vui lòng chọn tiểu bang"
 msgid "District/County"
 msgstr "Quận/Huyện"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:234
+#: application/modules/admin/views/scripts/data-managers/add.phtml:235
 msgid "Please choose district"
 msgstr "Vui lòng chọn quận"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:277
+#: application/modules/admin/views/scripts/data-managers/add.phtml:285
 msgid ""
 "This email is already linked to a Data Manager account. Do you want to add "
 "this user as a PTCC? If you choose yes, then this data manager will be "
@@ -8110,33 +8209,33 @@ msgstr ""
 "muốn thêm người dùng này làm PTCC không? Nếu chọn có, người quản lý dữ liệu "
 "này sẽ được chuyển thành PTCC và tất cả liên kết đơn vị tham gia cũ sẽ bị xóa"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:293
+#: application/modules/admin/views/scripts/data-managers/add.phtml:301
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:223
 #: application/modules/admin/views/scripts/testkit/add.phtml:182
 #: application/modules/admin/views/scripts/testkit/edit.phtml:195
 msgid "Choose one or more options"
 msgstr "Chọn một hoặc nhiều tùy chọn"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:297
+#: application/modules/admin/views/scripts/data-managers/add.phtml:305
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:227
 #: application/modules/admin/views/scripts/participants/index.phtml:541
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:184
 msgid "Choose one or more Countries"
 msgstr "Chọn một hoặc nhiều quốc gia"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:302
+#: application/modules/admin/views/scripts/data-managers/add.phtml:310
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:232
 #: application/modules/admin/views/scripts/participants/index.phtml:546
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:189
 msgid "Type Country name to search"
 msgstr "Nhập tên quốc gia để tìm kiếm"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:410
+#: application/modules/admin/views/scripts/data-managers/add.phtml:418
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:347
 msgid "Please select at least one Participant to map"
 msgstr "Vui lòng chọn ít nhất một đơn vị tham gia để gán"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:427
+#: application/modules/admin/views/scripts/data-managers/add.phtml:435
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:365
 #: application/modules/admin/views/scripts/system-admins/add.phtml:208
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:166
@@ -8992,12 +9091,6 @@ msgstr "Đặt lại theo danh sách đã dán"
 msgid "Active PTCC + Passwords"
 msgstr "PTCC đang hoạt động + mật khẩu"
 
-#: application/modules/admin/views/scripts/data-managers/index.phtml:104
-#: application/modules/admin/views/scripts/participants/index.phtml:122
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:80
-msgid "Export"
-msgstr "Xuất ra"
-
 #: application/modules/admin/views/scripts/data-managers/index.phtml:106
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:740
 msgid "PTCC"
@@ -9174,7 +9267,6 @@ msgstr "Lọc theo ID, tên, cơ sở hoặc email…"
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:23
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:107
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:47
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:21
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:62
 #: application/modules/admin/views/scripts/participants/index.phtml:216
 #: application/modules/admin/views/scripts/participants/pending.phtml:16
@@ -9622,7 +9714,6 @@ msgstr "Thêm khảo sát PT mới"
 #: application/modules/admin/views/scripts/evaluate/index.phtml:32
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:111
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:51
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:25
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:66
 #: application/modules/admin/views/scripts/shipment/edit.phtml:240
 #: application/modules/admin/views/scripts/shipment/index.phtml:62
@@ -9662,7 +9753,6 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:174
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:110
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:50
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:24
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:65
 #: application/modules/admin/views/scripts/shipment/edit.phtml:246
 #: application/modules/admin/views/scripts/shipment/index.phtml:61
@@ -9886,7 +9976,6 @@ msgstr "Các vòng ngoại kiểm thuộc khảo sát PT này"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:108
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:22
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:63
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:203
 #: application/modules/admin/views/scripts/shipment/edit.phtml:86
@@ -11349,12 +11438,6 @@ msgstr "Tên không khớp."
 msgid "Clone %s"
 msgstr "Nhân bản %s"
 
-#: application/modules/admin/views/scripts/enrollments/index.phtml:464
-#: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
-#: application/services/Shipments.php:596
-msgid "Clone"
-msgstr "Sao chép/nhân bản"
-
 #: application/modules/admin/views/scripts/enrollments/index.phtml:470
 msgid "Please enter a name for the new list"
 msgstr "Vui lòng nhập tên cho danh sách mới"
@@ -11783,6 +11866,7 @@ msgid "Queued"
 msgstr "Đang chờ"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:92
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:110
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:314
 msgid "Processing"
 msgstr "Đang xử lý"
@@ -12089,6 +12173,7 @@ msgstr "Điểm đánh giá"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:284
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:385
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:394
+#: application/services/ApiServices.php:647
 #: application/services/Reports.php:1177 application/services/Reports.php:1265
 #: application/services/Reports.php:2714 application/services/Reports.php:2816
 #: application/services/Reports.php:2992 application/services/Reports.php:3056
@@ -14342,7 +14427,6 @@ msgstr "Mục nguồn 1"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:64
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:71
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:35
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:37
 msgid "Icon"
 msgstr "Biểu tượng"
 
@@ -14954,6 +15038,50 @@ msgstr "Làm mới ngay"
 msgid "Job Type"
 msgstr "Loại công việc"
 
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:96
+msgid "All Job Types"
+msgstr "Mọi loại tác vụ"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:97
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
+msgid "Report Generation"
+msgstr "Tạo báo cáo"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:98
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
+msgid "Evaluation"
+msgstr "Đánh giá"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:99
+msgid "Certificate Generation"
+msgstr "Tạo giấy chứng nhận"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:100
+msgid "Email Reports"
+msgstr "Gửi báo cáo qua email"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:101
+msgid "Send Emails"
+msgstr "Gửi email"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:102
+msgid "TB Forms Generation"
+msgstr "Tạo biểu mẫu Lao"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:103
+msgid "Bulk Password Reset"
+msgstr "Đặt lại mật khẩu hàng loạt"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:108
+msgid "All Statuses"
+msgstr "Mọi trạng thái"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:111
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
+msgid "Completed"
+msgstr "Hoàn tất"
+
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:134
 msgid "Progress"
 msgstr "Tiến độ"
@@ -14974,10 +15102,6 @@ msgstr "Kết thúc lúc"
 msgid "Duration"
 msgstr "Thời lượng"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
-msgid "Report Generation"
-msgstr "Tạo báo cáo"
-
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:277
 msgid "Shipment: "
 msgstr "Vòng ngoại kiểm: "
@@ -14995,11 +15119,6 @@ msgstr "Loại: "
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:313
 msgid "Finalizing"
 msgstr "Đang hoàn tất"
-
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
-msgid "Completed"
-msgstr "Hoàn tất"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:318
 #: application/services/Shipments.php:5182
@@ -15033,6 +15152,10 @@ msgstr "Đã tạo báo cáo tổng hợp"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:407
 msgid "Summary pending"
 msgstr "Báo cáo tổng hợp đang chờ"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:444
+msgid "running"
+msgstr "đang chạy"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:471
 msgid "Ended: "
@@ -15078,6 +15201,15 @@ msgstr "Xóa tất cả các tệp nhật ký trong kênh này"
 msgid "Delete all"
 msgstr "Xóa toàn bộ"
 
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:171
+#, php-format
+msgid "%1$s lines (cap %2$s)"
+msgstr "%1$s dòng (giới hạn %2$s)"
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:173
+msgid "Last write:"
+msgstr "Lần ghi cuối:"
+
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:222
 msgid "Delete failed: "
 msgstr "Xóa không thành công: "
@@ -15089,6 +15221,25 @@ msgstr "không xác định"
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:227
 msgid "Delete failed (network)."
 msgstr "Xóa không thành công (lỗi mạng)."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:252
+#, php-format
+msgid "Delete log file %s? This cannot be undone."
+msgstr "Xóa tệp nhật ký %s? Không thể hoàn tác."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:256
+#, php-format
+msgid "Delete ALL log files for the %s channel? This cannot be undone."
+msgstr "Xóa TẤT CẢ tệp nhật ký của kênh %s? Không thể hoàn tác."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:257
+msgid "Are you sure? Every dated file in this channel will be removed."
+msgstr "Bạn chắc chứ? Mọi tệp theo ngày trong kênh này sẽ bị xóa."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:259
+#, php-format
+msgid "Deleted %s file(s)."
+msgstr "Đã xóa %s tệp."
 
 #: application/modules/admin/views/scripts/login/index.phtml:7
 #: application/views/scripts/auth/login.phtml:4
@@ -15274,7 +15425,6 @@ msgstr "Vui lòng nhập nội dung tin nhắn"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:87
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:45
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:19
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:60
 msgid "Key"
 msgstr "Khóa"
@@ -15307,92 +15457,33 @@ msgid "Please footer content"
 msgstr "Vui lòng nhập nội dung chân trang"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:173
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:73
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:109
 msgid "Updated successfully."
 msgstr "Cập nhật thành công."
 
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:5
-msgid "Title"
-msgstr "Tiêu đề"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:7
-msgid "Please enter a push notification title"
-msgstr "Vui lòng nhập tiêu đề thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:7
-msgid "Enter the push notification title"
-msgstr "Nhập tiêu đề thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:12
-msgid "Push Notification Message"
-msgstr "Nội dung thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:14
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:32
-msgid "Please enter a push notification message"
-msgstr "Vui lòng nhập nội dung thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:14
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:32
-msgid "Enter the push notification message"
-msgstr "Nhập nội dung thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:30
-msgid "Data Message"
-msgstr "Nội dung dữ liệu"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:39
-msgid "Please enter a push notification icon"
-msgstr "Vui lòng nhập biểu tượng thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:39
-msgid "Enter the push notification icon"
-msgstr "Nhập biểu tượng thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:86
-msgid "Push Notification Template"
-msgstr "Mẫu thông báo đẩy"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:89
+#: application/modules/admin/views/scripts/mail-template/index.phtml:88
 msgid "New Shipment Mail Template"
 msgstr "Mẫu email thông báo vòng ngoại kiểm mới"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:92
+#: application/modules/admin/views/scripts/mail-template/index.phtml:91
 msgid "Not Responded Mail Template"
 msgstr "Mẫu email chưa phản hồi"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:95
+#: application/modules/admin/views/scripts/mail-template/index.phtml:94
 msgid "Deadline Extended Mail Template"
 msgstr "Mẫu email gia hạn nộp kết quả"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:98
+#: application/modules/admin/views/scripts/mail-template/index.phtml:97
 msgid "Not Participant Report Mail Template"
 msgstr "Mẫu thư báo cáo cho đơn vị không tham gia"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:101
+#: application/modules/admin/views/scripts/mail-template/index.phtml:100
 msgid "Send Participant Report Mail Template"
 msgstr "Mẫu email gửi báo cáo cho đơn vị tham gia"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:104
+#: application/modules/admin/views/scripts/mail-template/index.phtml:103
 msgid "Announcement Mail Template"
 msgstr "Mẫu thư thông báo"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:108
-msgid "New Shipment Push Notification"
-msgstr "Thông báo đẩy về vòng ngoại kiểm mới"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:111
-msgid "Not Responded Push Notification"
-msgstr "Thông báo đẩy về việc chưa phản hồi"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:114
-msgid "Report Push Notification"
-msgstr "Thông báo đẩy về báo cáo"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:117
-msgid "Announcement Push Notification"
-msgstr "Thông báo đẩy cho thông báo chung"
 
 #: application/modules/admin/views/scripts/partials/dual-mapper.phtml:13
 #: application/modules/admin/views/scripts/partials/dual-mapper.phtml:26
@@ -15539,10 +15630,6 @@ msgstr "Xét nghiệm nhiễm mới HIV (RTRI)"
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:73
 msgid "Assays / Platforms"
 msgstr "Phương pháp xét nghiệm / Hệ thống máy"
-
-#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:85
-msgid "Test Results"
-msgstr "Kết quả xét nghiệm"
 
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:103
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:107
@@ -16235,6 +16322,7 @@ msgid "Please select the participants to map"
 msgstr "Vui lòng chọn đơn vị tham gia cần gán"
 
 #: application/modules/admin/views/scripts/participants/files.phtml:32
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:33
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:45
 msgid "Save Selected"
 msgstr "Lưu các mục đã chọn"
@@ -16586,19 +16674,37 @@ msgstr "Vui lòng nhập tên đối tác vào đây"
 msgid "Please enter the link here"
 msgstr "Vui lòng nhập liên kết vào đây"
 
+#: application/modules/admin/views/scripts/partners/add.phtml:28
+#: application/modules/admin/views/scripts/partners/edit.phtml:29
+msgid "Logo"
+msgstr "Logo"
+
+#: application/modules/admin/views/scripts/partners/add.phtml:31
+msgid ""
+"PNG, JPG, GIF or WebP. The home page shows a partner only when it has a logo."
+msgstr "PNG, JPG, GIF hoặc WebP. Trang chủ chỉ hiển thị đối tác khi có logo."
+
 #: application/modules/admin/views/scripts/partners/edit.phtml:7
 msgid "Edit Partner"
 msgstr "Sửa đối tác"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:34
+#: application/modules/admin/views/scripts/partners/edit.phtml:35
+msgid ""
+"PNG, JPG, GIF or WebP. The home page shows a partner only when it has a "
+"logo. Choose a file to replace the current logo."
+msgstr ""
+"PNG, JPG, GIF hoặc WebP. Trang chủ chỉ hiển thị đối tác khi có logo. Chọn "
+"tệp để thay logo hiện tại."
+
+#: application/modules/admin/views/scripts/partners/edit.phtml:44
 msgid "Please enter the sort order"
 msgstr "Vui lòng nhập thứ tự sắp xếp"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:35
+#: application/modules/admin/views/scripts/partners/edit.phtml:45
 msgid "Please enter the sort order here"
 msgstr "Vui lòng nhập thứ tự sắp xếp vào đây"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:43
+#: application/modules/admin/views/scripts/partners/edit.phtml:53
 msgid "Please select partner status"
 msgstr "Vui lòng chọn trạng thái đối tác"
 
@@ -16996,7 +17102,8 @@ msgstr ""
 "Bạn có chắc chắn muốn xóa mẫu này không? Hành động này không thể hoàn tác!"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:7
-msgid "Add New Not Teasted Reason"
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:14
+msgid "Add New Not Tested Reason"
 msgstr "Thêm lý do chưa xét nghiệm mới"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:10
@@ -17005,11 +17112,21 @@ msgstr "Thêm lý do chưa xét nghiệm mới"
 msgid "Not Tested Reason"
 msgstr "Lý do chưa xét nghiệm"
 
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:12
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:15
+msgid "Please enter the reason here"
+msgstr "Nhập lý do tại đây"
+
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:16
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:19
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:34
 msgid "Reason Code"
 msgstr "Mã lý do"
+
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:18
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:21
+msgid "Please enter the reason code here"
+msgstr "Nhập mã lý do tại đây"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:33
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:36
@@ -17017,16 +17134,12 @@ msgid "Collect Panel Receipt Date?"
 msgstr "Thu thập ngày nhận bộ mẫu?"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:10
-msgid "Edit Not Teasted Reason"
-msgstr "Chỉnh sửa Lý do chưa được xét nghiệm"
+msgid "Edit Not Tested Reason"
+msgstr "Sửa lý do không xét nghiệm"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:10
 msgid "List of All Not Tested Reasons"
 msgstr "Danh sách tất cả các lý do chưa xét nghiệm"
-
-#: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:14
-msgid "Add New Not Tested Reason"
-msgstr "Thêm lý do chưa xét nghiệm mới"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:35
 msgid "Available Scheme"
@@ -17582,18 +17695,6 @@ msgid "Your changes have not been saved yet. Click \"Update\" to save them."
 msgstr ""
 "Các thay đổi của bạn chưa được lưu. Hãy nhấp vào \"Cập nhật\" để lưu các "
 "thay đổi đó."
-
-#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:330
-#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:373
-#: application/modules/admin/views/scripts/shipment/index.phtml:66
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:98
-#: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
-#: application/services/Participants.php:1786
-#: application/views/partials/shipment-response-report.phtml:119
-#: application/views/partials/shipment-response-report.phtml:138
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:629
-msgid "Response"
-msgstr "Phản hồi"
 
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:332
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:459
@@ -19421,6 +19522,7 @@ msgstr "-- Chọn vị trí xét nghiệm --"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:166
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:240
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:13
 #: application/modules/admin/views/scripts/testkit/add.phtml:106
 #: application/modules/admin/views/scripts/testkit/add.phtml:249
 #: application/modules/admin/views/scripts/testkit/add.phtml:256
@@ -19437,6 +19539,7 @@ msgstr "Xét nghiệm 1"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:167
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:241
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:14
 #: application/modules/admin/views/scripts/testkit/add.phtml:107
 #: application/modules/admin/views/scripts/testkit/add.phtml:250
 #: application/modules/admin/views/scripts/testkit/edit.phtml:107
@@ -19450,6 +19553,7 @@ msgstr "Xét nghiệm 2"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:168
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:242
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:15
 #: application/modules/admin/views/scripts/testkit/add.phtml:108
 #: application/modules/admin/views/scripts/testkit/add.phtml:251
 #: application/modules/admin/views/scripts/testkit/edit.phtml:109
@@ -19677,6 +19781,15 @@ msgstr "Tên hệ thống máy xét nghiệm"
 msgid "Please enter the Test Platform Name here"
 msgstr "Vui lòng nhập tên hệ thống máy xét nghiệm vào đây"
 
+#: application/modules/admin/views/scripts/test-platform/add.phtml:16
+#: application/modules/admin/views/scripts/test-platform/edit.phtml:16
+msgid ""
+"This Test Platform Name already exists for another Test Platform. Please try "
+"something else."
+msgstr ""
+"Tên hệ thống máy xét nghiệm này đã tồn tại cho một hệ thống máy xét nghiệm "
+"khác. Vui lòng thử tên khác."
+
 #: application/modules/admin/views/scripts/test-platform/add.phtml:22
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:23
 msgid "Short Test Platform Name"
@@ -19741,6 +19854,10 @@ msgstr "Vui lòng nhập nhà sản xuất loại xét nghiệm vào đây"
 msgid "Country Approved/Validated"
 msgstr "Quốc gia đã phê duyệt/xác nhận"
 
+#: application/modules/admin/views/scripts/test-platform/edit.phtml:6
+msgid "Edit Test Platform"
+msgstr "Chỉnh sửa hệ thống máy xét nghiệm"
+
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:40
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:41
 msgid "Please enter the approval Agency here"
@@ -19762,6 +19879,19 @@ msgstr "Danh sách tất cả các hệ thống máy xét nghiệm"
 #: application/modules/admin/views/scripts/test-platform/index.phtml:22
 msgid "Covid-19 Standard Test Platform Map"
 msgstr "Liên kết hệ thống máy xét nghiệm tiêu chuẩn Covid-19"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:30
+#: application/modules/admin/views/scripts/testkit/index.phtml:28
+msgid "Approval status"
+msgstr "Tình trạng phê duyệt"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:33
+msgid "Show Approved"
+msgstr "Hiển thị đã được phê duyệt"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:34
+msgid "Show UnApproved"
+msgstr "Hiển thị các mục chưa được phê duyệt"
 
 #: application/modules/admin/views/scripts/test-platform/index.phtml:42
 msgid "Test platform Name"
@@ -21444,6 +21574,10 @@ msgid ""
 msgstr ""
 "Tạo một tệp Excel cho một đợt gửi mẫu TB. Tệp có hai trang tính: Panel "
 "Statistics, gồm các chỉ số XTPT, và All Sites' Results."
+
+#: application/services/ApiServices.php:647
+msgid "Show Params"
+msgstr "Xem tham số"
 
 #: application/services/CertificateTemplates.php:162
 msgid "The uploaded file could not be read."
@@ -27053,10 +27187,6 @@ msgstr "Mã bộ mẫu"
 msgid "Your Result"
 msgstr "Kết quả của bạn"
 
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
-msgid "Evaluation"
-msgstr "Đánh giá"
-
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:560
 msgid ""
 "(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, "
@@ -27543,6 +27673,54 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
+
+#~ msgid "Add PT Participant"
+#~ msgstr "Thêm đơn vị tham gia PT"
+
+#~ msgid "Title"
+#~ msgstr "Tiêu đề"
+
+#~ msgid "Please enter a push notification title"
+#~ msgstr "Vui lòng nhập tiêu đề thông báo đẩy"
+
+#~ msgid "Enter the push notification title"
+#~ msgstr "Nhập tiêu đề thông báo đẩy"
+
+#~ msgid "Push Notification Message"
+#~ msgstr "Nội dung thông báo đẩy"
+
+#~ msgid "Please enter a push notification message"
+#~ msgstr "Vui lòng nhập nội dung thông báo đẩy"
+
+#~ msgid "Enter the push notification message"
+#~ msgstr "Nhập nội dung thông báo đẩy"
+
+#~ msgid "Data Message"
+#~ msgstr "Nội dung dữ liệu"
+
+#~ msgid "Please enter a push notification icon"
+#~ msgstr "Vui lòng nhập biểu tượng thông báo đẩy"
+
+#~ msgid "Enter the push notification icon"
+#~ msgstr "Nhập biểu tượng thông báo đẩy"
+
+#~ msgid "Push Notification Template"
+#~ msgstr "Mẫu thông báo đẩy"
+
+#~ msgid "New Shipment Push Notification"
+#~ msgstr "Thông báo đẩy về vòng ngoại kiểm mới"
+
+#~ msgid "Not Responded Push Notification"
+#~ msgstr "Thông báo đẩy về việc chưa phản hồi"
+
+#~ msgid "Report Push Notification"
+#~ msgstr "Thông báo đẩy về báo cáo"
+
+#~ msgid "Announcement Push Notification"
+#~ msgstr "Thông báo đẩy cho thông báo chung"
+
+#~ msgid "Add New Not Teasted Reason"
+#~ msgstr "Thêm lý do chưa xét nghiệm mới"
 
 #~ msgid "TB Result of PT Panel per Site"
 #~ msgstr "TB: Kết quả bộ mẫu ngoại kiểm theo từng điểm"
@@ -28171,9 +28349,6 @@ msgstr "Không có đơn vị tham gia"
 #~ msgid "Generating certificates..."
 #~ msgstr "Đang tạo giấy chứng nhận..."
 
-#~ msgid "Certificate Generation Summary"
-#~ msgstr "Tóm tắt tạo giấy chứng nhận"
-
 #~ msgid "Excellence Certificates"
 #~ msgstr "Giấy chứng nhận xuất sắc"
 
@@ -28746,9 +28921,6 @@ msgstr "Không có đơn vị tham gia"
 
 #~ msgid "Response Switch"
 #~ msgstr "Công tắc phản hồi"
-
-#~ msgid "Are you sure you wish to delete? This cannot be undone!"
-#~ msgstr "Bạn có chắc chắn muốn xóa không? Thao tác này không thể hoàn tác!"
 
 #~ msgid "MTB/Rif"
 #~ msgstr "MTB/Súng trường"

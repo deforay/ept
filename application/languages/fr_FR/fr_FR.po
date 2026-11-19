@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 21:20+0530\n"
+"POT-Creation-Date: 2026-11-19 21:33+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -812,6 +812,7 @@ msgid "Online Response"
 msgstr "Réponse en ligne"
 
 #: application/languages/db-translation-strings.php:315
+#: application/models/DbTable/TempMail.php:445
 #: application/views/scripts/contact-us/index.phtml:45
 #: application/views/scripts/covid19/response.phtml:434
 #: application/views/scripts/covid19/response.phtml:455
@@ -1585,6 +1586,7 @@ msgstr "api"
 
 #: application/languages/help-translation-strings.php:63
 #: application/layouts/scripts/admin.phtml:512
+#: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/views/partials/spotlight.phtml:283
 msgid "API Sync History"
 msgstr "Historique de la synchronisation de l'API"
@@ -1627,7 +1629,6 @@ msgstr "audit"
 
 #: application/languages/help-translation-strings.php:79
 #: application/layouts/scripts/admin.phtml:506
-#: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/modules/admin/views/scripts/audit-log/index.phtml:569
 #: application/views/partials/spotlight.phtml:267
 msgid "Audit Log"
@@ -3411,7 +3412,7 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:416
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:462
 #: application/modules/admin/views/scripts/custom-test/import.phtml:76
-#: application/modules/admin/views/scripts/data-managers/add.phtml:255
+#: application/modules/admin/views/scripts/data-managers/add.phtml:256
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:92
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:76
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:171
@@ -3443,7 +3444,6 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:350
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:129
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:67
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:48
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:81
 #: application/modules/admin/views/scripts/participants/add.phtml:307
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:142
@@ -3452,8 +3452,8 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/participants/files.phtml:43
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:195
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:162
-#: application/modules/admin/views/scripts/partners/add.phtml:33
-#: application/modules/admin/views/scripts/partners/edit.phtml:61
+#: application/modules/admin/views/scripts/partners/add.phtml:40
+#: application/modules/admin/views/scripts/partners/edit.phtml:71
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:56
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:60
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:528
@@ -4018,8 +4018,8 @@ msgid "Participant Code/ID"
 msgstr "Code/ID du participant"
 
 #: application/models/DbTable/ContactUs.php:144
-msgid "Add PT Participant"
-msgstr "Ajouter un participant PT"
+msgid "Create Data Manager login"
+msgstr "Créer un identifiant de gestionnaire de données"
 
 #: application/models/DbTable/DataManagers.php:338
 msgid "Bounced"
@@ -4086,8 +4086,18 @@ msgstr "Modifier ce gestionnaire de données"
 #: application/models/DbTable/DataManagers.php:460
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
+#: application/models/DbTable/FeedBackTable.php:524
+#: application/models/DbTable/HomeSection.php:200
 #: application/models/DbTable/Participants.php:410
 #: application/models/DbTable/Participants.php:478
+#: application/models/DbTable/Partners.php:188
+#: application/models/DbTable/RCovid19GeneTypes.php:197
+#: application/models/DbTable/ResponseNotTestedReasons.php:147
+#: application/models/DbTable/SchemeList.php:170
+#: application/models/DbTable/SystemAdmin.php:121
+#: application/models/DbTable/Testkitnames.php:282
+#: application/models/DbTable/TestTypenameCovid19.php:234
+#: application/models/DbTable/VlAssay.php:132
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1416
 #: application/modules/admin/views/scripts/enrollments/index.phtml:61
@@ -4112,7 +4122,7 @@ msgid "Reset this user's password"
 msgstr "Réinitialiser le mot de passe de cet utilisateur"
 
 #: application/models/DbTable/DataManagers.php:468
-#: application/modules/admin/views/scripts/data-managers/add.phtml:42
+#: application/modules/admin/views/scripts/data-managers/add.phtml:43
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:136
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:480
@@ -4154,6 +4164,7 @@ msgid "No Shipment/Panel Added"
 msgstr "Aucune expédition/aucun panel ajouté"
 
 #: application/models/DbTable/Distribution.php:144
+#: application/models/DbTable/TempMail.php:426
 #: application/modules/admin/views/scripts/alerts/email.phtml:54
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:142
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
@@ -4206,6 +4217,7 @@ msgstr "Supprimer"
 #: application/models/DbTable/Shipments.php:432
 #: application/models/DbTable/Shipments.php:933
 #: application/models/DbTable/Shipments.php:2180
+#: application/models/DbTable/TempMail.php:401
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:368
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:142
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:209
@@ -4292,7 +4304,7 @@ msgstr "Nom"
 #: application/models/Dts.php:2312 application/models/Dts.php:2394
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
 #: application/modules/admin/views/scripts/contact-us/index.phtml:27
-#: application/modules/admin/views/scripts/data-managers/add.phtml:206
+#: application/modules/admin/views/scripts/data-managers/add.phtml:207
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:14
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:190
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:149
@@ -4354,6 +4366,21 @@ msgstr "Nom"
 msgid "Country"
 msgstr "Pays"
 
+#: application/models/DbTable/FeedBackTable.php:523
+#: application/models/DbTable/SchemeList.php:171
+#: application/modules/admin/views/scripts/enrollments/index.phtml:464
+#: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
+#: application/services/Shipments.php:596
+msgid "Clone"
+msgstr "Dupliquer"
+
+#: application/models/DbTable/HomeSection.php:32
+msgid ""
+"This file type is not allowed. Upload a JPG, PNG, PDF, Word or Excel file."
+msgstr ""
+"Ce type de fichier n'est pas autorisé. Téléversez un fichier JPG, PNG, PDF, "
+"Word ou Excel."
+
 #: application/models/DbTable/Participants.php:404
 #: application/models/DbTable/Participants.php:472
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
@@ -4400,6 +4427,18 @@ msgstr "1 expédition"
 #, php-format
 msgid "%d shipments"
 msgstr "%d expéditions"
+
+#: application/models/DbTable/SchemeList.php:172
+#: application/modules/admin/views/scripts/data-managers/index.phtml:104
+#: application/modules/admin/views/scripts/participants/index.phtml:122
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:80
+msgid "Export"
+msgstr "Exporter"
+
+#: application/models/DbTable/SchemeList.php:472
+#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:85
+msgid "Test Results"
+msgstr "Résultats des tests"
 
 #: application/models/DbTable/ShipmentParticipantMap.php:145
 msgid ""
@@ -4604,6 +4643,84 @@ msgstr "Envoyer des rapports par e-mail"
 #: application/modules/reports/views/scripts/finalize/replace-summary-report.phtml:61
 msgid "Replace Summary Report"
 msgstr "Remplacer le rapport de synthèse"
+
+#: application/models/DbTable/TempMail.php:423
+#: application/modules/admin/views/scripts/alerts/email.phtml:49
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
+#: application/modules/admin/views/scripts/email-participants/index.phtml:1313
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:112
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
+#: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:69
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:143
+#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:13
+#: application/modules/reports/views/scripts/testkit/index.phtml:185
+#: application/services/Dashboard.php:1023 application/services/Reports.php:515
+#: application/services/Reports.php:1230 application/services/Reports.php:1610
+#: application/services/Reports.php:2781 application/services/Reports.php:3032
+#: application/services/Reports.php:3164 application/services/Reports.php:4241
+#: application/views/partials/participant-performance-report.phtml:272
+#: application/views/partials/participant-response-report.phtml:316
+#: application/views/partials/shipment-response-report.phtml:106
+#: application/views/partials/shipment-response-report.phtml:125
+#: application/views/partials/tb-participants-per-country-report.phtml:57
+msgid "Failed"
+msgstr "Échec"
+
+#: application/models/DbTable/TempMail.php:424
+#: application/modules/admin/views/scripts/alerts/email.phtml:52
+#: application/modules/admin/views/scripts/email-participants/index.phtml:1311
+msgid "Sent"
+msgstr "Envoyé"
+
+#: application/models/DbTable/TempMail.php:425
+#: application/modules/admin/views/scripts/alerts/email.phtml:51
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:109
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
+#: application/modules/admin/views/scripts/participants/index.phtml:173
+#: application/modules/admin/views/scripts/testkit/index.phtml:33
+msgid "Pending"
+msgstr "En attente"
+
+#: application/models/DbTable/TempMail.php:436
+msgid "Bad recipient"
+msgstr "Destinataire invalide"
+
+#: application/models/DbTable/TempMail.php:437
+msgid "Connection problem"
+msgstr "Problème de connexion"
+
+#: application/models/DbTable/TempMail.php:438
+msgid "Message content rejected"
+msgstr "Contenu du message refusé"
+
+#: application/models/DbTable/TempMail.php:439
+msgid "Sending limit reached"
+msgstr "Limite d'envoi atteinte"
+
+#: application/models/DbTable/TempMail.php:440
+msgid "Mail login refused"
+msgstr "Connexion de messagerie refusée"
+
+#: application/models/DbTable/TempMail.php:441
+msgid "Mail settings not usable"
+msgstr "Paramètres de messagerie inutilisables"
+
+#: application/models/DbTable/TempMail.php:442
+msgid "Email not set up"
+msgstr "E-mail non configuré"
+
+#: application/models/DbTable/TempMail.php:443
+msgid "Expired"
+msgstr "Expiré"
+
+#: application/models/DbTable/TempMail.php:444
+msgid "Held by the development mail trap"
+msgstr "Bloqué par le piège de messagerie de développement"
 
 #: application/models/Dts.php:1612 application/models/Dts.php:1630
 #: application/models/Dts.php:2308 application/models/Dts.php:2341
@@ -5036,6 +5153,14 @@ msgstr ""
 "Le programme %s a déjà une liste portant ce nom. Chaque nom de liste ne peut "
 "être utilisé que dans un seul programme. Choisissez un autre nom."
 
+#: application/modules/admin/controllers/LogViewerController.php:35
+msgid "Application Errors"
+msgstr "Erreurs de l'application"
+
+#: application/modules/admin/controllers/LogViewerController.php:36
+msgid "Client (Browser) Errors"
+msgstr "Erreurs du client (navigateur)"
+
 #: application/modules/admin/controllers/ParticipantsController.php:328
 msgid ""
 "No participants selected — nothing was changed. Use \"Clear all mappings\" "
@@ -5152,6 +5277,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/announcement/index.phtml:19
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:123
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:163
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:24
 #: application/modules/admin/views/scripts/custom-test/add.phtml:62
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:74
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:168
@@ -5159,7 +5285,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:612
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:115
 #: application/modules/admin/views/scripts/custom-test/index.phtml:36
-#: application/modules/admin/views/scripts/data-managers/add.phtml:190
+#: application/modules/admin/views/scripts/data-managers/add.phtml:191
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:15
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:145
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:141
@@ -5185,7 +5311,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/participants/index.phtml:180
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:156
 #: application/modules/admin/views/scripts/participants/pending.phtml:21
-#: application/modules/admin/views/scripts/partners/edit.phtml:39
+#: application/modules/admin/views/scripts/partners/edit.phtml:49
 #: application/modules/admin/views/scripts/partners/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:43
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:46
@@ -5285,29 +5411,6 @@ msgstr "Chargement des données depuis le serveur"
 msgid "Failed & Skipped"
 msgstr "Échecs et ignorés"
 
-#: application/modules/admin/views/scripts/alerts/email.phtml:49
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
-#: application/modules/admin/views/scripts/email-participants/index.phtml:1313
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
-#: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:69
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:143
-#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:13
-#: application/modules/reports/views/scripts/testkit/index.phtml:185
-#: application/services/Dashboard.php:1023 application/services/Reports.php:515
-#: application/services/Reports.php:1230 application/services/Reports.php:1610
-#: application/services/Reports.php:2781 application/services/Reports.php:3032
-#: application/services/Reports.php:3164 application/services/Reports.php:4241
-#: application/views/partials/participant-performance-report.phtml:272
-#: application/views/partials/participant-response-report.phtml:316
-#: application/views/partials/shipment-response-report.phtml:106
-#: application/views/partials/shipment-response-report.phtml:125
-#: application/views/partials/tb-participants-per-country-report.phtml:57
-msgid "Failed"
-msgstr "Échec"
-
 #: application/modules/admin/views/scripts/alerts/email.phtml:50
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:166
 #: application/modules/admin/views/scripts/custom-test/import.phtml:26
@@ -5319,20 +5422,6 @@ msgstr "Échec"
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:161
 msgid "Skipped"
 msgstr "Ignorés"
-
-#: application/modules/admin/views/scripts/alerts/email.phtml:51
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
-#: application/modules/admin/views/scripts/participants/index.phtml:173
-#: application/modules/admin/views/scripts/testkit/index.phtml:33
-msgid "Pending"
-msgstr "En attente"
-
-#: application/modules/admin/views/scripts/alerts/email.phtml:52
-#: application/modules/admin/views/scripts/email-participants/index.phtml:1311
-msgid "Sent"
-msgstr "Envoyé"
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:53
 msgid "Held (paused)"
@@ -5527,6 +5616,7 @@ msgid "Action"
 msgstr "Action"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:54
+#: application/modules/admin/views/scripts/api-history/index.phtml:26
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:254
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:335
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:296
@@ -5634,6 +5724,27 @@ msgstr "Cacher la recherche avancée"
 msgid "Created On"
 msgstr "Créé le"
 
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:26
+msgid "API Params"
+msgstr "Paramètres de l'API"
+
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:28
+msgid "Request"
+msgstr "Requête"
+
+#: application/modules/admin/views/scripts/api-history/api-params.phtml:29
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:330
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:373
+#: application/modules/admin/views/scripts/shipment/index.phtml:66
+#: application/modules/reports/views/scripts/distribution/finalize.phtml:98
+#: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
+#: application/services/Participants.php:1786
+#: application/views/partials/shipment-response-report.phtml:119
+#: application/views/partials/shipment-response-report.phtml:138
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:629
+msgid "Response"
+msgstr "Réponse"
+
 #: application/modules/admin/views/scripts/api-history/index.phtml:10
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:36
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:50
@@ -5679,7 +5790,6 @@ msgstr "Type de synchronisation"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:384
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:109
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:49
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:23
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:64
 #: application/modules/admin/views/scripts/shipment/index.phtml:25
 #: application/modules/admin/views/scripts/shipment/index.phtml:60
@@ -6520,6 +6630,7 @@ msgid "From"
 msgstr "De"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:6
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:17
 msgid "Add New Gene Type"
 msgstr "Ajouter un nouveau type de gène"
 
@@ -6533,6 +6644,7 @@ msgid "Please enter the GeneType Name here"
 msgstr "Veuillez saisir ici le nom du type de gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:15
+#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:15
 msgid ""
 "This GeneType Name already exists for another GeneType. Please try something "
 "else."
@@ -6875,10 +6987,11 @@ msgstr "Sélectionner"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:40
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:40
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:27
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:210
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:344
 #: application/modules/admin/views/scripts/custom-test/index.phtml:23
-#: application/modules/admin/views/scripts/data-managers/add.phtml:195
+#: application/modules/admin/views/scripts/data-managers/add.phtml:196
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:144
 #: application/modules/admin/views/scripts/data-managers/index.phtml:133
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:35
@@ -6889,7 +7002,7 @@ msgstr "Sélectionner"
 #: application/modules/admin/views/scripts/participants/edit.phtml:452
 #: application/modules/admin/views/scripts/participants/index.phtml:158
 #: application/modules/admin/views/scripts/participants/index.phtml:182
-#: application/modules/admin/views/scripts/partners/edit.phtml:45
+#: application/modules/admin/views/scripts/partners/edit.phtml:55
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:50
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:91
@@ -6905,10 +7018,11 @@ msgstr "Actif"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:41
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:41
+#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:211
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:345
 #: application/modules/admin/views/scripts/custom-test/index.phtml:24
-#: application/modules/admin/views/scripts/data-managers/add.phtml:196
+#: application/modules/admin/views/scripts/data-managers/add.phtml:197
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:145
 #: application/modules/admin/views/scripts/data-managers/index.phtml:134
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:36
@@ -6920,7 +7034,7 @@ msgstr "Actif"
 #: application/modules/admin/views/scripts/participants/index.phtml:159
 #: application/modules/admin/views/scripts/participants/index.phtml:183
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:97
-#: application/modules/admin/views/scripts/partners/edit.phtml:48
+#: application/modules/admin/views/scripts/partners/edit.phtml:58
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:51
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
@@ -6935,16 +7049,15 @@ msgstr "Inactif"
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:50
 #: application/modules/admin/views/scripts/custom-test/add.phtml:238
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:461
-#: application/modules/admin/views/scripts/data-managers/add.phtml:253
+#: application/modules/admin/views/scripts/data-managers/add.phtml:254
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:30
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:19
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:69
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:554
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:306
-#: application/modules/admin/views/scripts/partners/add.phtml:31
+#: application/modules/admin/views/scripts/partners/add.phtml:38
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:55
-#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:59
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:362
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:32
 #: application/modules/admin/views/scripts/system-admins/add.phtml:142
@@ -6956,21 +7069,16 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:6
-#: application/modules/admin/views/scripts/test-platform/edit.phtml:6
-msgid "Edit Test Platform"
-msgstr "Modifier la plateforme de test"
+msgid "Edit Gene Type"
+msgstr "Modifier le type de gène"
+
+#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:8
+msgid "Gene Type Name"
+msgstr "Nom du type de gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:14
 msgid "Please enter the Gene Type Name here"
 msgstr "Veuillez saisir ici le nom du type de gène"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:15
-msgid ""
-"This Test Platform Name already exists for another Test Platform. Please try "
-"something else."
-msgstr ""
-"Ce nom de plateforme de test existe déjà pour une autre plateforme de test. "
-"Veuillez en choisir un autre."
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:49
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:415
@@ -6982,12 +7090,12 @@ msgstr ""
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:102
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:128
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:66
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:47
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:80
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:89
 #: application/modules/admin/views/scripts/participants/edit.phtml:472
-#: application/modules/admin/views/scripts/partners/edit.phtml:59
+#: application/modules/admin/views/scripts/partners/edit.phtml:69
 #: application/modules/admin/views/scripts/report-config/index.phtml:326
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:59
 #: application/modules/admin/views/scripts/scheme-config/partials/covid19.phtml:151
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:391
 #: application/modules/admin/views/scripts/scheme-config/partials/eid.phtml:30
@@ -7007,26 +7115,10 @@ msgstr "Mettre à jour"
 msgid "List of All Gene Types"
 msgstr "Liste de tous les types de gènes"
 
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:24
-#: application/modules/admin/views/scripts/test-platform/index.phtml:30
-#: application/modules/admin/views/scripts/testkit/index.phtml:28
-msgid "Approval status"
-msgstr "Statut d’approbation"
-
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:26
 #: application/modules/admin/views/scripts/test-platform/index.phtml:32
 msgid "Show All"
 msgstr "Afficher tout"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:27
-#: application/modules/admin/views/scripts/test-platform/index.phtml:33
-msgid "Show Approved"
-msgstr "Afficher les éléments approuvés"
-
-#: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
-#: application/modules/admin/views/scripts/test-platform/index.phtml:34
-msgid "Show UnApproved"
-msgstr "Afficher les éléments non approuvés"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:36
 msgid "Gene type Name"
@@ -7086,10 +7178,10 @@ msgstr "Désactiver l'autre kit de test"
 #: application/modules/admin/views/scripts/custom-test/add.phtml:77
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:89
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:138
-#: application/modules/admin/views/scripts/data-managers/add.phtml:142
-#: application/modules/admin/views/scripts/data-managers/add.phtml:155
-#: application/modules/admin/views/scripts/data-managers/add.phtml:168
-#: application/modules/admin/views/scripts/data-managers/add.phtml:182
+#: application/modules/admin/views/scripts/data-managers/add.phtml:143
+#: application/modules/admin/views/scripts/data-managers/add.phtml:156
+#: application/modules/admin/views/scripts/data-managers/add.phtml:169
+#: application/modules/admin/views/scripts/data-managers/add.phtml:183
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:66
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:103
@@ -7252,10 +7344,10 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/custom-test/add.phtml:78
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:90
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:143
-#: application/modules/admin/views/scripts/data-managers/add.phtml:144
-#: application/modules/admin/views/scripts/data-managers/add.phtml:158
-#: application/modules/admin/views/scripts/data-managers/add.phtml:171
-#: application/modules/admin/views/scripts/data-managers/add.phtml:184
+#: application/modules/admin/views/scripts/data-managers/add.phtml:145
+#: application/modules/admin/views/scripts/data-managers/add.phtml:159
+#: application/modules/admin/views/scripts/data-managers/add.phtml:172
+#: application/modules/admin/views/scripts/data-managers/add.phtml:185
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:65
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:104
@@ -7585,7 +7677,7 @@ msgstr "Affiché à"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:611
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:249
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:409
-#: application/modules/admin/views/scripts/partners/edit.phtml:29
+#: application/modules/admin/views/scripts/partners/edit.phtml:39
 #: application/modules/admin/views/scripts/partners/index.phtml:15
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:357
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:376
@@ -7940,7 +8032,16 @@ msgstr "Veuillez saisir ici l'adresse e-mail principale correcte"
 msgid "Please enter the primary email id here"
 msgstr "Veuillez saisir l'adresse e-mail principale ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:47
+#: application/modules/admin/views/scripts/data-managers/add.phtml:37
+#: application/modules/admin/views/scripts/data-managers/add.phtml:280
+msgid ""
+"This primary e-mail ID already exists for another PT login. Please try "
+"something else."
+msgstr ""
+"Cet e-mail principal existe déjà pour un autre identifiant PT. Essayez-en un "
+"autre."
+
+#: application/modules/admin/views/scripts/data-managers/add.phtml:48
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/participants/add.phtml:122
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:33
@@ -7948,7 +8049,7 @@ msgstr "Veuillez saisir l'adresse e-mail principale ici"
 msgid "Please enter a valid password and should minimum length of "
 msgstr "Veuillez saisir un mot de passe valide et d'une longueur minimale de "
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:48
+#: application/modules/admin/views/scripts/data-managers/add.phtml:49
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/participants/add.phtml:122
 #: application/modules/admin/views/scripts/participants/edit.phtml:176
@@ -7957,7 +8058,7 @@ msgstr "Veuillez saisir un mot de passe valide et d'une longueur minimale de "
 msgid "Please enter a password"
 msgstr "Veuillez saisir un mot de passe"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:57
+#: application/modules/admin/views/scripts/data-managers/add.phtml:58
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:51
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:298
 #: application/modules/admin/views/scripts/participants/add.phtml:126
@@ -7967,8 +8068,8 @@ msgstr "Veuillez saisir un mot de passe"
 msgid "Confirm Password"
 msgstr "Confirmer le mot de passe"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:62
 #: application/modules/admin/views/scripts/data-managers/add.phtml:63
+#: application/modules/admin/views/scripts/data-managers/add.phtml:64
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:53
 #: application/modules/admin/views/scripts/participants/add.phtml:128
 #: application/modules/admin/views/scripts/participants/edit.phtml:184
@@ -7981,7 +8082,7 @@ msgstr "Confirmer le mot de passe"
 msgid "Please repeat the same password"
 msgstr "Veuillez répéter le même mot de passe"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:69
+#: application/modules/admin/views/scripts/data-managers/add.phtml:70
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:9
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:148
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:59
@@ -8001,34 +8102,34 @@ msgstr "Veuillez répéter le même mot de passe"
 msgid "Institute"
 msgstr "Établissement"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:72
 #: application/modules/admin/views/scripts/data-managers/add.phtml:73
+#: application/modules/admin/views/scripts/data-managers/add.phtml:74
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:60
 msgid "Please enter the institute name here"
 msgstr "Veuillez saisir le nom de l'établissement ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:82
+#: application/modules/admin/views/scripts/data-managers/add.phtml:83
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:67
 #: library/Pt/Commons/ImportTemplate.php:103
 msgid "User First Name"
 msgstr "Prénom de l’utilisateur"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:86
 #: application/modules/admin/views/scripts/data-managers/add.phtml:87
+#: application/modules/admin/views/scripts/data-managers/add.phtml:88
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:68
 #: application/modules/admin/views/scripts/system-admins/add.phtml:13
 #: application/modules/admin/views/scripts/system-admins/add.phtml:14
 msgid "Please enter the first name here"
 msgstr "Veuillez saisir le prénom ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:94
+#: application/modules/admin/views/scripts/data-managers/add.phtml:95
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:73
 #: library/Pt/Commons/ImportTemplate.php:104
 msgid "User Last Name"
 msgstr "Nom de famille de l'utilisateur"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:97
 #: application/modules/admin/views/scripts/data-managers/add.phtml:98
+#: application/modules/admin/views/scripts/data-managers/add.phtml:99
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:74
 #: application/modules/admin/views/scripts/participants/add.phtml:86
 #: application/modules/admin/views/scripts/participants/edit.phtml:115
@@ -8038,19 +8139,19 @@ msgstr "Nom de famille de l'utilisateur"
 msgid "Please enter the last name here"
 msgstr "Veuillez saisir le nom de famille ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:107
+#: application/modules/admin/views/scripts/data-managers/add.phtml:108
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:81
 #: library/Pt/Commons/ImportTemplate.php:106
 msgid "Secondary e-mail Address"
 msgstr "Adresse électronique secondaire"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:110
 #: application/modules/admin/views/scripts/data-managers/add.phtml:111
+#: application/modules/admin/views/scripts/data-managers/add.phtml:112
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:82
 msgid "Please enter a secondary email id here"
 msgstr "Veuillez saisir ici une adresse e-mail secondaire"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:117
+#: application/modules/admin/views/scripts/data-managers/add.phtml:118
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:130
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:87
 #: application/views/scripts/participant/user-info.phtml:75
@@ -8058,8 +8159,8 @@ msgstr "Veuillez saisir ici une adresse e-mail secondaire"
 msgid "Cell Phone Number"
 msgstr "Numéro de téléphone portable"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:120
 #: application/modules/admin/views/scripts/data-managers/add.phtml:121
+#: application/modules/admin/views/scripts/data-managers/add.phtml:122
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:88
 #: application/modules/admin/views/scripts/participants/add.phtml:255
 #: application/modules/admin/views/scripts/participants/edit.phtml:374
@@ -8069,7 +8170,7 @@ msgstr "Numéro de téléphone portable"
 msgid "Please enter mobile/cell number here"
 msgstr "Veuillez entrer votre numéro de téléphone mobile/cellulaire ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:130
+#: application/modules/admin/views/scripts/data-managers/add.phtml:131
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:131
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:95
 #: application/modules/admin/views/scripts/participants/add.phtml:260
@@ -8081,36 +8182,36 @@ msgstr "Veuillez entrer votre numéro de téléphone mobile/cellulaire ici"
 msgid "Phone Number"
 msgstr "Numéro de téléphone"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:132
+#: application/modules/admin/views/scripts/data-managers/add.phtml:133
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:262
 #: application/modules/admin/views/scripts/participants/edit.phtml:381
 msgid "Please enter phone number here"
 msgstr "Veuillez entrer le numéro de téléphone ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:138
+#: application/modules/admin/views/scripts/data-managers/add.phtml:139
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:101
 msgid "QC Access"
 msgstr "Accès au QC"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:152
+#: application/modules/admin/views/scripts/data-managers/add.phtml:153
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:112
 msgid "Enable Adding Response Date"
 msgstr "Activer l'ajout de la date de réponse"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:165
+#: application/modules/admin/views/scripts/data-managers/add.phtml:166
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:121
 msgid "Enable Choosing Mode of Receipt"
 msgstr "Permettre de choisir le mode de réception"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:179
+#: application/modules/admin/views/scripts/data-managers/add.phtml:180
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:132
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:132
 #: library/Pt/Commons/ImportTemplate.php:109
 msgid "Enable View-Only Access"
 msgstr "Activer l'accès en consultation seule"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:194
+#: application/modules/admin/views/scripts/data-managers/add.phtml:195
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:86
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:90
 #: application/modules/admin/views/scripts/participants/add.phtml:297
@@ -8119,11 +8220,11 @@ msgstr "Activer l'accès en consultation seule"
 msgid "Please select user status here"
 msgstr "Veuillez sélectionner le statut de l'utilisateur ici"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:210
+#: application/modules/admin/views/scripts/data-managers/add.phtml:211
 msgid "Please choose country"
 msgstr "Veuillez choisir votre pays"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:212
+#: application/modules/admin/views/scripts/data-managers/add.phtml:213
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:158
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1261
 #: application/modules/admin/views/scripts/participants/index.phtml:152
@@ -8134,7 +8235,7 @@ msgstr "Veuillez choisir votre pays"
 msgid "Select Country"
 msgstr "Sélectionnez un pays"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:223
+#: application/modules/admin/views/scripts/data-managers/add.phtml:224
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:134
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:168
 #: application/modules/admin/views/scripts/participants/add.phtml:161
@@ -8150,11 +8251,11 @@ msgstr "Sélectionnez un pays"
 msgid "State/Province"
 msgstr "État/Province"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:225
+#: application/modules/admin/views/scripts/data-managers/add.phtml:226
 msgid "Please choose state"
 msgstr "Veuillez choisir un État"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:232
+#: application/modules/admin/views/scripts/data-managers/add.phtml:233
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:135
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:180
 #: application/modules/admin/views/scripts/participants/add.phtml:165
@@ -8171,11 +8272,11 @@ msgstr "Veuillez choisir un État"
 msgid "District/County"
 msgstr "District"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:234
+#: application/modules/admin/views/scripts/data-managers/add.phtml:235
 msgid "Please choose district"
 msgstr "Veuillez choisir un district"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:277
+#: application/modules/admin/views/scripts/data-managers/add.phtml:285
 msgid ""
 "This email is already linked to a Data Manager account. Do you want to add "
 "this user as a PTCC? If you choose yes, then this data manager will be "
@@ -8186,33 +8287,33 @@ msgstr ""
 "oui, ce gestionnaire de données sera converti en PTCC et toutes ses "
 "anciennes associations de participants seront supprimées"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:293
+#: application/modules/admin/views/scripts/data-managers/add.phtml:301
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:223
 #: application/modules/admin/views/scripts/testkit/add.phtml:182
 #: application/modules/admin/views/scripts/testkit/edit.phtml:195
 msgid "Choose one or more options"
 msgstr "Choisir une ou plusieurs options"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:297
+#: application/modules/admin/views/scripts/data-managers/add.phtml:305
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:227
 #: application/modules/admin/views/scripts/participants/index.phtml:541
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:184
 msgid "Choose one or more Countries"
 msgstr "Choisissez un ou plusieurs pays"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:302
+#: application/modules/admin/views/scripts/data-managers/add.phtml:310
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:232
 #: application/modules/admin/views/scripts/participants/index.phtml:546
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:189
 msgid "Type Country name to search"
 msgstr "Tapez le nom du pays à rechercher"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:410
+#: application/modules/admin/views/scripts/data-managers/add.phtml:418
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:347
 msgid "Please select at least one Participant to map"
 msgstr "Veuillez sélectionner au moins un participant à associer"
 
-#: application/modules/admin/views/scripts/data-managers/add.phtml:427
+#: application/modules/admin/views/scripts/data-managers/add.phtml:435
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:365
 #: application/modules/admin/views/scripts/system-admins/add.phtml:208
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:166
@@ -9079,12 +9180,6 @@ msgstr "Réinitialiser à partir de la liste collée"
 msgid "Active PTCC + Passwords"
 msgstr "PTCC actifs + mots de passe"
 
-#: application/modules/admin/views/scripts/data-managers/index.phtml:104
-#: application/modules/admin/views/scripts/participants/index.phtml:122
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:80
-msgid "Export"
-msgstr "Exporter"
-
 #: application/modules/admin/views/scripts/data-managers/index.phtml:106
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:740
 msgid "PTCC"
@@ -9261,7 +9356,6 @@ msgstr "Filtrer par identifiant, nom, établissement ou adresse e-mail…"
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:23
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:107
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:47
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:21
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:62
 #: application/modules/admin/views/scripts/participants/index.phtml:216
 #: application/modules/admin/views/scripts/participants/pending.phtml:16
@@ -9717,7 +9811,6 @@ msgstr "Ajouter une nouvelle enquête PT"
 #: application/modules/admin/views/scripts/evaluate/index.phtml:32
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:111
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:51
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:25
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:66
 #: application/modules/admin/views/scripts/shipment/edit.phtml:240
 #: application/modules/admin/views/scripts/shipment/index.phtml:62
@@ -9757,7 +9850,6 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:174
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:110
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:50
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:24
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:65
 #: application/modules/admin/views/scripts/shipment/edit.phtml:246
 #: application/modules/admin/views/scripts/shipment/index.phtml:61
@@ -9982,7 +10074,6 @@ msgstr "Expéditions dans le cadre de cette enquête PT"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:108
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:22
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:63
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:203
 #: application/modules/admin/views/scripts/shipment/edit.phtml:86
@@ -11456,12 +11547,6 @@ msgstr "Le nom ne correspond pas."
 msgid "Clone %s"
 msgstr "Dupliquer %s"
 
-#: application/modules/admin/views/scripts/enrollments/index.phtml:464
-#: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
-#: application/services/Shipments.php:596
-msgid "Clone"
-msgstr "Dupliquer"
-
 #: application/modules/admin/views/scripts/enrollments/index.phtml:470
 msgid "Please enter a name for the new list"
 msgstr "Veuillez saisir un nom pour la nouvelle liste"
@@ -11895,6 +11980,7 @@ msgid "Queued"
 msgstr "En file d'attente"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:92
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:110
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:314
 msgid "Processing"
 msgstr "En cours"
@@ -12201,6 +12287,7 @@ msgstr "Score de réponse"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:284
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:385
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:394
+#: application/services/ApiServices.php:647
 #: application/services/Reports.php:1177 application/services/Reports.php:1265
 #: application/services/Reports.php:2714 application/services/Reports.php:2816
 #: application/services/Reports.php:2992 application/services/Reports.php:3056
@@ -14502,7 +14589,6 @@ msgstr "Section Ressources 1"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:64
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:71
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:35
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:37
 msgid "Icon"
 msgstr "Icône"
 
@@ -15122,6 +15208,50 @@ msgstr "Actualiser maintenant"
 msgid "Job Type"
 msgstr "Type de tâche"
 
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:96
+msgid "All Job Types"
+msgstr "Tous les types de tâches"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:97
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
+msgid "Report Generation"
+msgstr "Génération des rapports"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:98
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
+msgid "Evaluation"
+msgstr "Évaluation"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:99
+msgid "Certificate Generation"
+msgstr "Génération des certificats"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:100
+msgid "Email Reports"
+msgstr "Envoi des rapports par e-mail"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:101
+msgid "Send Emails"
+msgstr "Envoi des e-mails"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:102
+msgid "TB Forms Generation"
+msgstr "Génération des formulaires TB"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:103
+msgid "Bulk Password Reset"
+msgstr "Réinitialisation groupée des mots de passe"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:108
+msgid "All Statuses"
+msgstr "Tous les statuts"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:111
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
+msgid "Completed"
+msgstr "Terminé"
+
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:134
 msgid "Progress"
 msgstr "Progression"
@@ -15142,10 +15272,6 @@ msgstr "Terminé à"
 msgid "Duration"
 msgstr "Durée"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
-msgid "Report Generation"
-msgstr "Génération des rapports"
-
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:277
 msgid "Shipment: "
 msgstr "Expédition : "
@@ -15163,11 +15289,6 @@ msgstr "Type : "
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:313
 msgid "Finalizing"
 msgstr "Finalisation en cours"
-
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
-msgid "Completed"
-msgstr "Terminé"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:318
 #: application/services/Shipments.php:5182
@@ -15201,6 +15322,10 @@ msgstr "Rapport de synthèse terminé"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:407
 msgid "Summary pending"
 msgstr "Rapport de synthèse en attente"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:444
+msgid "running"
+msgstr "en cours"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:471
 msgid "Ended: "
@@ -15246,6 +15371,15 @@ msgstr "Supprimer tous les fichiers journaux de ce canal"
 msgid "Delete all"
 msgstr "Supprimer tout"
 
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:171
+#, php-format
+msgid "%1$s lines (cap %2$s)"
+msgstr "%1$s lignes (limite %2$s)"
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:173
+msgid "Last write:"
+msgstr "Dernière écriture :"
+
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:222
 msgid "Delete failed: "
 msgstr "Échec de la suppression : "
@@ -15257,6 +15391,27 @@ msgstr "inconnu"
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:227
 msgid "Delete failed (network)."
 msgstr "Échec de la suppression (réseau)."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:252
+#, php-format
+msgid "Delete log file %s? This cannot be undone."
+msgstr "Supprimer le fichier journal %s ? Cette action est irréversible."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:256
+#, php-format
+msgid "Delete ALL log files for the %s channel? This cannot be undone."
+msgstr ""
+"Supprimer TOUS les fichiers journaux du canal %s ? Cette action est "
+"irréversible."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:257
+msgid "Are you sure? Every dated file in this channel will be removed."
+msgstr "Êtes-vous sûr ? Tous les fichiers datés de ce canal seront supprimés."
+
+#: application/modules/admin/views/scripts/log-viewer/index.phtml:259
+#, php-format
+msgid "Deleted %s file(s)."
+msgstr "%s fichier(s) supprimé(s)."
 
 #: application/modules/admin/views/scripts/login/index.phtml:7
 #: application/views/scripts/auth/login.phtml:4
@@ -15445,7 +15600,6 @@ msgstr "Veuillez saisir un message"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:87
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:45
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:19
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:60
 msgid "Key"
 msgstr "Clé"
@@ -15478,92 +15632,33 @@ msgid "Please footer content"
 msgstr "Veuillez saisir le contenu du pied de page"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:173
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:73
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:109
 msgid "Updated successfully."
 msgstr "Mis à jour avec succès."
 
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:5
-msgid "Title"
-msgstr "Titre"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:7
-msgid "Please enter a push notification title"
-msgstr "Veuillez saisir un titre de notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:7
-msgid "Enter the push notification title"
-msgstr "Saisissez le titre de la notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:12
-msgid "Push Notification Message"
-msgstr "Message de notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:14
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:32
-msgid "Please enter a push notification message"
-msgstr "Veuillez saisir un message de notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:14
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:32
-msgid "Enter the push notification message"
-msgstr "Saisissez le message de la notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:30
-msgid "Data Message"
-msgstr "Message de données"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:39
-msgid "Please enter a push notification icon"
-msgstr "Veuillez saisir une icône de notification push"
-
-#: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:39
-msgid "Enter the push notification icon"
-msgstr "Saisissez l'icône de la notification push"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:86
-msgid "Push Notification Template"
-msgstr "Modèle de notification push"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:89
+#: application/modules/admin/views/scripts/mail-template/index.phtml:88
 msgid "New Shipment Mail Template"
 msgstr "Modèle d'e-mail pour les nouvelles expéditions"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:92
+#: application/modules/admin/views/scripts/mail-template/index.phtml:91
 msgid "Not Responded Mail Template"
 msgstr "Modèle d'e-mail de non-réponse"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:95
+#: application/modules/admin/views/scripts/mail-template/index.phtml:94
 msgid "Deadline Extended Mail Template"
 msgstr "Modèle d'e-mail de prolongation de la date limite"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:98
+#: application/modules/admin/views/scripts/mail-template/index.phtml:97
 msgid "Not Participant Report Mail Template"
 msgstr "Modèle d'e-mail pour le rapport de non-participation"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:101
+#: application/modules/admin/views/scripts/mail-template/index.phtml:100
 msgid "Send Participant Report Mail Template"
 msgstr "Modèle d'e-mail pour l'envoi du rapport au participant"
 
-#: application/modules/admin/views/scripts/mail-template/index.phtml:104
+#: application/modules/admin/views/scripts/mail-template/index.phtml:103
 msgid "Announcement Mail Template"
 msgstr "Modèle d'e-mail d'annonce"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:108
-msgid "New Shipment Push Notification"
-msgstr "Notification push des nouvelles expéditions"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:111
-msgid "Not Responded Push Notification"
-msgstr "Notification push de non-réponse"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:114
-msgid "Report Push Notification"
-msgstr "Notification push du rapport"
-
-#: application/modules/admin/views/scripts/mail-template/index.phtml:117
-msgid "Announcement Push Notification"
-msgstr "Notification push des annonces"
 
 #: application/modules/admin/views/scripts/partials/dual-mapper.phtml:13
 #: application/modules/admin/views/scripts/partials/dual-mapper.phtml:26
@@ -15710,10 +15805,6 @@ msgstr "Récence du VIH (RTRI)"
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:73
 msgid "Assays / Platforms"
 msgstr "Techniques / Plateformes"
-
-#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:85
-msgid "Test Results"
-msgstr "Résultats des tests"
 
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:103
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:107
@@ -16411,6 +16502,7 @@ msgid "Please select the participants to map"
 msgstr "Veuillez sélectionner les participants à associer"
 
 #: application/modules/admin/views/scripts/participants/files.phtml:32
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:33
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:45
 msgid "Save Selected"
 msgstr "Enregistrer la sélection"
@@ -16768,19 +16860,39 @@ msgstr "Veuillez saisir le nom du partenaire ici"
 msgid "Please enter the link here"
 msgstr "Veuillez saisir le lien ici"
 
+#: application/modules/admin/views/scripts/partners/add.phtml:28
+#: application/modules/admin/views/scripts/partners/edit.phtml:29
+msgid "Logo"
+msgstr "Logo"
+
+#: application/modules/admin/views/scripts/partners/add.phtml:31
+msgid ""
+"PNG, JPG, GIF or WebP. The home page shows a partner only when it has a logo."
+msgstr ""
+"PNG, JPG, GIF ou WebP. La page d'accueil n'affiche un partenaire que s'il a "
+"un logo."
+
 #: application/modules/admin/views/scripts/partners/edit.phtml:7
 msgid "Edit Partner"
 msgstr "Modifier le partenaire"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:34
+#: application/modules/admin/views/scripts/partners/edit.phtml:35
+msgid ""
+"PNG, JPG, GIF or WebP. The home page shows a partner only when it has a "
+"logo. Choose a file to replace the current logo."
+msgstr ""
+"PNG, JPG, GIF ou WebP. La page d'accueil n'affiche un partenaire que s'il a "
+"un logo. Choisissez un fichier pour remplacer le logo actuel."
+
+#: application/modules/admin/views/scripts/partners/edit.phtml:44
 msgid "Please enter the sort order"
 msgstr "Veuillez saisir l'ordre de tri"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:35
+#: application/modules/admin/views/scripts/partners/edit.phtml:45
 msgid "Please enter the sort order here"
 msgstr "Veuillez saisir l'ordre de tri ici"
 
-#: application/modules/admin/views/scripts/partners/edit.phtml:43
+#: application/modules/admin/views/scripts/partners/edit.phtml:53
 msgid "Please select partner status"
 msgstr "Veuillez sélectionner le statut du partenaire"
 
@@ -17185,7 +17297,8 @@ msgstr ""
 "annulée !"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:7
-msgid "Add New Not Teasted Reason"
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:14
+msgid "Add New Not Tested Reason"
 msgstr "Ajouter un nouveau motif de non-réalisation du test"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:10
@@ -17194,11 +17307,21 @@ msgstr "Ajouter un nouveau motif de non-réalisation du test"
 msgid "Not Tested Reason"
 msgstr "Motif de non-test"
 
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:12
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:15
+msgid "Please enter the reason here"
+msgstr "Saisissez la raison ici"
+
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:16
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:19
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:34
 msgid "Reason Code"
 msgstr "Code Motif"
+
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:18
+#: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:21
+msgid "Please enter the reason code here"
+msgstr "Saisissez le code de la raison ici"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:33
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:36
@@ -17206,17 +17329,13 @@ msgid "Collect Panel Receipt Date?"
 msgstr "Recueillir la date de réception du panel ?"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:10
-msgid "Edit Not Teasted Reason"
-msgstr "Modifier le motif de non-réalisation du test"
+msgid "Edit Not Tested Reason"
+msgstr "Modifier la raison de non-test"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:10
 msgid "List of All Not Tested Reasons"
 msgstr ""
 "Liste de toutes les raisons pour lesquelles les tests n'ont pas été effectués"
-
-#: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:14
-msgid "Add New Not Tested Reason"
-msgstr "Ajouter un nouveau motif de non-réalisation du test"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:35
 msgid "Available Scheme"
@@ -17782,18 +17901,6 @@ msgid "Your changes have not been saved yet. Click \"Update\" to save them."
 msgstr ""
 "Vos modifications n'ont pas encore été enregistrées. Cliquez sur « Mettre à "
 "jour » pour les enregistrer."
-
-#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:330
-#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:373
-#: application/modules/admin/views/scripts/shipment/index.phtml:66
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:98
-#: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
-#: application/services/Participants.php:1786
-#: application/views/partials/shipment-response-report.phtml:119
-#: application/views/partials/shipment-response-report.phtml:138
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:629
-msgid "Response"
-msgstr "Réponse"
 
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:332
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:459
@@ -19629,6 +19736,7 @@ msgstr "-- Sélectionner la position de test --"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:166
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:240
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:13
 #: application/modules/admin/views/scripts/testkit/add.phtml:106
 #: application/modules/admin/views/scripts/testkit/add.phtml:249
 #: application/modules/admin/views/scripts/testkit/add.phtml:256
@@ -19645,6 +19753,7 @@ msgstr "Test 1"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:167
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:241
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:14
 #: application/modules/admin/views/scripts/testkit/add.phtml:107
 #: application/modules/admin/views/scripts/testkit/add.phtml:250
 #: application/modules/admin/views/scripts/testkit/edit.phtml:107
@@ -19658,6 +19767,7 @@ msgstr "Test 2"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:168
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:242
+#: application/modules/admin/views/scripts/test-platform/standard-type.phtml:15
 #: application/modules/admin/views/scripts/testkit/add.phtml:108
 #: application/modules/admin/views/scripts/testkit/add.phtml:251
 #: application/modules/admin/views/scripts/testkit/edit.phtml:109
@@ -19888,6 +19998,15 @@ msgstr "Nom de la plateforme de test"
 msgid "Please enter the Test Platform Name here"
 msgstr "Veuillez saisir le nom de la plateforme de test ici"
 
+#: application/modules/admin/views/scripts/test-platform/add.phtml:16
+#: application/modules/admin/views/scripts/test-platform/edit.phtml:16
+msgid ""
+"This Test Platform Name already exists for another Test Platform. Please try "
+"something else."
+msgstr ""
+"Ce nom de plateforme de test existe déjà pour une autre plateforme de test. "
+"Veuillez en choisir un autre."
+
 #: application/modules/admin/views/scripts/test-platform/add.phtml:22
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:23
 msgid "Short Test Platform Name"
@@ -19952,6 +20071,10 @@ msgstr "Veuillez saisir le fabricant du type de test ici"
 msgid "Country Approved/Validated"
 msgstr "Pays approuvé/validé"
 
+#: application/modules/admin/views/scripts/test-platform/edit.phtml:6
+msgid "Edit Test Platform"
+msgstr "Modifier la plateforme de test"
+
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:40
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:41
 msgid "Please enter the approval Agency here"
@@ -19973,6 +20096,19 @@ msgstr "Liste de toutes les plateformes de test"
 #: application/modules/admin/views/scripts/test-platform/index.phtml:22
 msgid "Covid-19 Standard Test Platform Map"
 msgstr "Correspondance des plateformes de test standard Covid-19"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:30
+#: application/modules/admin/views/scripts/testkit/index.phtml:28
+msgid "Approval status"
+msgstr "Statut d’approbation"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:33
+msgid "Show Approved"
+msgstr "Afficher les éléments approuvés"
+
+#: application/modules/admin/views/scripts/test-platform/index.phtml:34
+msgid "Show UnApproved"
+msgstr "Afficher les éléments non approuvés"
 
 #: application/modules/admin/views/scripts/test-platform/index.phtml:42
 msgid "Test platform Name"
@@ -21664,6 +21800,10 @@ msgstr ""
 "Génère un classeur Excel pour une expédition TB. Le classeur contient deux "
 "feuilles : Panel Statistics, avec les indicateurs XTPT, et All Sites' "
 "Results."
+
+#: application/services/ApiServices.php:647
+msgid "Show Params"
+msgstr "Afficher les paramètres"
 
 #: application/services/CertificateTemplates.php:162
 msgid "The uploaded file could not be read."
@@ -27328,10 +27468,6 @@ msgstr "Identifiant du panel d'échantillons"
 msgid "Your Result"
 msgstr "Votre résultat"
 
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
-msgid "Evaluation"
-msgstr "Évaluation"
-
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:560
 msgid ""
 "(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, "
@@ -27819,6 +27955,54 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Aucun participant"
+
+#~ msgid "Add PT Participant"
+#~ msgstr "Ajouter un participant PT"
+
+#~ msgid "Title"
+#~ msgstr "Titre"
+
+#~ msgid "Please enter a push notification title"
+#~ msgstr "Veuillez saisir un titre de notification push"
+
+#~ msgid "Enter the push notification title"
+#~ msgstr "Saisissez le titre de la notification push"
+
+#~ msgid "Push Notification Message"
+#~ msgstr "Message de notification push"
+
+#~ msgid "Please enter a push notification message"
+#~ msgstr "Veuillez saisir un message de notification push"
+
+#~ msgid "Enter the push notification message"
+#~ msgstr "Saisissez le message de la notification push"
+
+#~ msgid "Data Message"
+#~ msgstr "Message de données"
+
+#~ msgid "Please enter a push notification icon"
+#~ msgstr "Veuillez saisir une icône de notification push"
+
+#~ msgid "Enter the push notification icon"
+#~ msgstr "Saisissez l'icône de la notification push"
+
+#~ msgid "Push Notification Template"
+#~ msgstr "Modèle de notification push"
+
+#~ msgid "New Shipment Push Notification"
+#~ msgstr "Notification push des nouvelles expéditions"
+
+#~ msgid "Not Responded Push Notification"
+#~ msgstr "Notification push de non-réponse"
+
+#~ msgid "Report Push Notification"
+#~ msgstr "Notification push du rapport"
+
+#~ msgid "Announcement Push Notification"
+#~ msgstr "Notification push des annonces"
+
+#~ msgid "Add New Not Teasted Reason"
+#~ msgstr "Ajouter un nouveau motif de non-réalisation du test"
 
 #~ msgid "TB Result of PT Panel per Site"
 #~ msgstr "TB : résultat du panel de PT par site"
@@ -28457,9 +28641,6 @@ msgstr "Aucun participant"
 #~ msgid "Generating certificates..."
 #~ msgstr "Génération des certificats..."
 
-#~ msgid "Certificate Generation Summary"
-#~ msgstr "Récapitulatif de la génération des certificats"
-
 #~ msgid "Excellence Certificates"
 #~ msgstr "Certificats d'excellence"
 
@@ -29043,11 +29224,6 @@ msgstr "Aucun participant"
 #~ msgid "Response Switch"
 #~ msgstr "Interrupteur de réponse"
 
-#~ msgid "Are you sure you wish to delete? This cannot be undone!"
-#~ msgstr ""
-#~ "Êtes-vous sûr de vouloir supprimer l'information ? Cette opération ne "
-#~ "peut être annulée !"
-
 #~ msgid "MTB/Rif"
 #~ msgstr "MTB/Rif"
 
@@ -29595,9 +29771,6 @@ msgstr "Aucun participant"
 #, fuzzy
 #~ msgid "Eid"
 #~ msgstr "Fin"
-
-#~ msgid "Email Port"
-#~ msgstr "Port de messagerie électronique"
 
 #~ msgid "Enable"
 #~ msgstr "Activer"
