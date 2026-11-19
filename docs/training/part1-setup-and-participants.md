@@ -12,9 +12,9 @@
 
 - Navigate to the admin login page
 - Log in with PT Administrator / PT Manager credentials
-- Quick tour of the dashboard and left-side menu:
+- Quick tour of the dashboard and the menu bar across the top:
   - **Configure** — system settings, participants, enrollments
-  - **Manage** — PT Surveys
+  - **Manage** — PT Surveys and shipments
   - **Analyze** — evaluation, reports, finalization
   - **Reports** — shipment and performance reports
 
@@ -29,8 +29,10 @@
 - Go to **Configure → PT Participants → Bulk Import Participants**
 - Download the Excel template (link on the right side of the page)
 - Fill in participant details — fields with red headings are required
-- Password can be left blank (system will auto-generate) or set manually
+- Set a password for each participant. A blank password gives the participant the shared default password.
 - Upload the completed file
+- Review the rows on the review screen. Nothing is saved yet.
+- Click **Import … row(s)** to save the participants
 
 ## 1.3 Scheme Enrollment
 
