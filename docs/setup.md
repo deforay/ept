@@ -371,6 +371,7 @@ php bin\migrate.php -yq
 
 - Access ePT at http://ept/admin
 - Log in with the admin credentials from the SQL import
+- If the SQL import has no admin account, create the first one. Open a command prompt in `C:\wamp64\www\ept` and run `php bin\seed-admin.php`. The script asks for the admin's name, email and password.
 - Change the default admin password immediately
 
 ---

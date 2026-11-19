@@ -102,7 +102,7 @@ par ailleurs.
 | Nouveaux noms de fichiers | En kebab-case, par exemple `backup-and-migration.md`. `ARCHITECTURE.md` et `SchemeArchitecture.md` gardent leur nom, car les renommer casse des URL publiées. |
 | Encadrés | Utilisez des citations `> **Title:**`. Les admonitions MkDocs (`!!! warning`) s'affichent comme du texte brut sur GitHub, et ces pages y sont lues autant que sur le site. |
 | HTML brut | Évitez-le. Le Markdown à l'intérieur d'un bloc HTML ne s'affiche pas sur GitHub, donc les grilles de cartes Material cassent l'affichage GitHub. |
-| Ajout d'une page | Ajoutez-la au `nav` de `mkdocs.yml` et au tableau « Where to start » de [l'index de la documentation](README.md). Une page absente de l'un ou de l'autre est difficile à trouver. |
+| Ajout d'une page | Ajoutez-la au `nav` de `mkdocs.yml` et au tableau « Toute la documentation » de [l'index de la documentation](README.md#all-documentation). Si les lecteurs en ont besoin pour démarrer, ajoutez-la aussi au tableau « Par où commencer ». Une page absente de l'un ou de l'autre est difficile à trouver. |
 | Noms des programmes | Respectez la table `scheme_list`. Le tableau des [programmes pris en charge](README.md#supported-test-schemes) fait référence. |
 
 Exécutez `mkdocs build --strict` avant de pousser. Le workflow de déploiement l'utilise. Un
