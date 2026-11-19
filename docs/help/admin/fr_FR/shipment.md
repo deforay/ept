@@ -38,7 +38,7 @@ Cette page affiche toutes les expéditions de votre système. Vous pouvez :
 | **Modifier** | Jusqu'à la finalisation de l'expédition | Modifie les échantillons, la date limite et d'autres détails |
 | **Dupliquer** | Toujours | Crée une nouvelle expédition avec les mêmes échantillons et paramètres |
 | **Inscrire** | Avant l'expédition | Choisit les participants qui reçoivent l'expédition. En rouge : aucun participant pour l'instant |
-| **Enrollment** | Après l'expédition | Montre qui a répondu et permet d'ajouter des participants non inscrits |
+| **Inscriptions** | Après l'expédition | Montre qui a répondu et permet d'ajouter des participants non inscrits |
 | **Relancer** | Après l'expédition, tant que des laboratoires n'ont pas répondu | Ouvre Envoyer un e-mail aux participants pour cette expédition |
 | **Configurer le formulaire de feedback** | L'expédition recueille du feedback mais n'a pas de formulaire | Crée le formulaire. L'expédition ne peut pas être finalisée sans lui |
 | **Annuler** | Jusqu'à la finalisation de l'expédition | Annule l'expédition. Vous indiquez un motif. Cette action est irréversible |
