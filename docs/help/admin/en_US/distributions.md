@@ -36,38 +36,38 @@ you create, edit, and ship them.
 
 ## Survey statuses
 
-A survey moves through three states:
-
-- **Created** *(Not yet fully set up)* — the survey exists
-  but has no shipments yet, or its shipments do not have
-  participants linked. Participants cannot see anything until the
-  survey is shipped.
-- **Configured** *(Ready to ship)* — shipments are set up and
-  participants are linked. The **Ship Now** button appears in
-  the Action column.
-- **Shipped** *(Already Shipped)* — you have clicked **Ship
-  Now**. The survey and its shipments are now visible to
-  participants and they can start responding.
+- **Created** — the survey exists, but it has no shipments yet,
+  or its shipments have no participants. Participants see
+  nothing.
+- **Configured** — shipments and participants are set up. The
+  **Ship Now** button appears.
+- **Shipped** — you clicked **Ship Now**. Participants can see
+  the shipments and respond.
+- **Partially Finalized** — some of the survey's shipments are
+  finalized, and others are not yet.
+- **Finalized** — every active shipment is finalized.
+- **Cancelled** — every shipment in the survey was cancelled.
 
 ## Action column buttons
 
-What you see depends on the survey's status and how far along
-setup is:
+What you see depends on the survey's status:
 
-- **Edit** — always present. Opens the survey for editing.
-- **Add Shipment** — shown when the survey has *no shipments*
-  yet. Jumps to the shipments page so you can add one.
-- **Add Participants** — shown when shipments are set up but
-  participants are not fully linked yet. Jumps to the shipments
-  page so you can finish linking them.
-- **Ship Now** — shown when shipments and participants are both
+- **Edit** — opens the survey for editing.
+- **Add Shipment** — shown when the survey has no shipments.
+  Opens the survey's shipment list so you can add one.
+- **Add Participants** — shown when shipments exist but are not
+  ready to ship. Opens the shipment list, where you click
+  **Enroll** on a shipment.
+- **Ship Now** — shown when the shipments and participants are
   ready. See "Shipping a survey" below.
-- **Shipped** *(disabled)* — shown after shipping, just to
-  confirm the survey is live.
-- **Send Email to Participants** — yellow envelope button shown
-  only on **shipped** surveys. Opens the email composer with the
-  participants on this survey already picked, so you can send
-  reminders or follow-ups about this round.
+- **Shipped** *(disabled)* — confirms the survey is live.
+- **Email** — opens the email composer for the participants in
+  this survey's shipments.
+- **Cancel** — cancels every shipment in the survey that is not
+  finalized. Shown only while no shipment is finalized. You are
+  asked to confirm. Cancelling cannot be undone.
+- **Delete** — removes an empty survey. Shown only when the
+  survey has no shipments and is not shipped.
 
 ## Shipping a survey
 

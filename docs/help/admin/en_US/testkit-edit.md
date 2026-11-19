@@ -15,20 +15,19 @@ from participants without deleting it.
 - **Test Kit Name** *(required)* — full kit name. Duplicate-name
   check excludes the current kit.
 - **Short Test Kit Name** — optional short label.
-- **Approval Agency** *(required)* — agency / authority that
-  approved the kit.
+- **Is Ministry of Health Approved?** *(Yes/No)* — whether the
+  Ministry of Health approved this kit.
+- **Is PT Provider Validated?** *(Yes/No)* — whether your PT
+  programme validated this kit.
 - **Source Reference** — optional citation / URL / document.
 - **Test Kit Manufacturer** — manufacturer name.
-- **Approved** *(required, Yes/No)* — controls whether
-  participants see this kit in their response form.
-  - **Yes** — visible to participants.
-  - **No** — hidden, but not deleted; you can re-enable later.
+- **Active** *(Yes/No)* — shown as **Approved** in the kit list.
+  The **Show Approved** and **Show UnApproved** filters use it.
 - **Scheme** *(required, multi-select)* — scheme(s) the kit
   belongs to. When **DTS** is one of them, the **Choose a Test
   Number** field appears.
 - **Choose a Test Number to map test kit** — DTS-only test
   position(s): Test 1, Test 2, Test 3. Multi-select.
-- **Country Approved/Validated** *(required, Yes/No)*.
 - **Allow Additional Information** *(Yes/No)* — toggles the
   extra-data column on the participant response form. When
   **Yes**:

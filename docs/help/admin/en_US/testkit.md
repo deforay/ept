@@ -41,13 +41,14 @@ change one kit, click **Edit** on its row.
 ## Columns
 
 - **Test Kit Name** — full name of the kit.
-- **Scheme Name** — which scheme(s) it belongs to (DTS, VL, TB,
-  etc.).
+- **Scheme Name** — which scheme(s) it belongs to.
 - **Test Kit Manufacturer** — manufacturer string, free text.
-- **Approval Agency** — agency / authority that approved the kit
-  (e.g. WHO, FDA, country MOH).
-- **Approved** — *Yes* / *No*. Only **Yes** kits show up in the
-  participant response form.
+- **Is MoH Approved?** — whether the Ministry of Health approved
+  the kit.
+- **Is PT Provider Validated?** — whether your PT programme
+  validated the kit.
+- **Approved** — *Yes* / *No*. Set by **Active** on the edit form,
+  or by **Approve All** for pending kits.
 - **Created On** — when the kit was first added.
 - **Action** — pencil **Edit** button.
 
