@@ -38,7 +38,7 @@ Hands-on exercises to follow along during or after the training:
 2. Enroll in Scheme          →  Configure → Scheme Enrollments
 3. Create PT Survey          →  Manage → PT Survey → Add
 4. Add Shipment + Samples    →  PT Survey → Add Shipment
-5. Enroll in Shipment        →  PT Survey → Add Participants
+5. Enroll in Shipment        →  Shipment list → Enroll
 6. Ship PT Survey            →  Manage → PT Survey → Ship Now
 7. Participants Submit       →  Participant Portal → PT Result Submission
 8. Evaluate                  →  Analyze → Evaluate Responses

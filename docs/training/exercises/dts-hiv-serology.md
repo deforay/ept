@@ -74,8 +74,8 @@ Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV 
 
 ### Step 4: Add a DTS HIV Serology Shipment
 
-1. Your new PT Survey should appear in the list — click **Add Shipment**
-2. Select **Dried Tube Specimen - HIV Serology** from the dropdown
+1. Your new PT Survey should appear in the list. Click **Add Shipment**. The survey's shipment list opens.
+2. Select **Dried Tube Specimen - HIV Serology** in **Scheme Type**, then click **New Shipment**
 3. Scroll down and configure:
    - **Shipment Code** — keep the default or customize it
    - **Result Due Date** — set a date at least a few days from now
@@ -96,8 +96,8 @@ Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV 
 
 ### Step 5: Enroll Participants in the Shipment
 
-1. Go to **Manage → PT Survey**
-2. Click **Add Participants** next to your PT Survey, then click **Select All** to move all 8 participants to the enrolled side
+1. On the shipment list, click the red **Enroll** button on your shipment. If you left the page, go to **Manage → PT Survey** and click **Add Participants** next to your PT Survey to reopen it.
+2. Click **Select All** to move all 8 participants to the enrolled side
 3. Click **Enroll**
 
 > **Don't see your participants?** They must already be enrolled in the HIV Serology scheme (Step 2). Go back and check if needed.
