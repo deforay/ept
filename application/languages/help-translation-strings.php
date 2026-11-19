@@ -71,7 +71,7 @@ _('Certificate Templates');
 _('Check your login and lab details, change your password or login email');
 // admin/email-participants#tags
 _('communication');
-// admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
+// admin/covid19-settings#tags, admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/eid-settings#tags, admin/global-config#tags, admin/home-config#tags, admin/recency-settings#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
 // admin/ptcc#tags
 _('coordinator');
@@ -85,6 +85,8 @@ _('Corrective actions');
 _('Corrective Actions Report');
 // admin/reports-tb-participants-per-country#tags
 _('countries');
+// admin/covid19-settings#tags
+_('covid19');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
 // admin/eid-assay-add#summary
@@ -155,10 +157,12 @@ _('Edit PT Survey');
 _('Edit Test Kit');
 // admin/vl-assay-edit#title
 _('Edit VL Assay / Platform');
-// admin/eid-assay-add#tags, admin/eid-assay#tags
+// admin/eid-assay-add#tags, admin/eid-assay#tags, admin/eid-settings#tags
 _('eid');
 // admin/eid-assay#title
 _('EID Assays / Platforms');
+// admin/eid-settings#title
+_('EID Settings');
 // admin/email-participants#tags, participant/my-account#tags
 _('email');
 // admin/email-participants#title
@@ -227,6 +231,8 @@ _('hero');
 _('hiv');
 // admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('hiv-serology');
+// admin/recency-settings#title
+_('HIV Recency (RTRI) Settings');
 // admin/reports-corrective-actions#tags, admin/reports-testkit#tags
 _('hiv serology');
 // admin/dashboard#tags, admin/home-config#tags, participant/dashboard#tags
@@ -319,6 +325,8 @@ _('People who can log in to the admin side of ePT');
 _('performance');
 // admin/eid-assay#tags, admin/reports-vl-assay-distribution#tags, admin/vl-assay#tags
 _('platform');
+// admin/covid19-settings#tags
+_('platforms');
 // admin/shipment-enroll#tags
 _('preset');
 // participant/my-account#tags
@@ -341,6 +349,8 @@ _('queue');
 _('Re-build and lock the reports — only finalized reports are visible to participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('re-evaluate');
+// admin/recency-settings#tags
+_('recency');
 // admin/reports-participant-response#tags, admin/reports-participant-trends#tags
 _('regions');
 // admin/email-participants#tags
@@ -365,8 +375,14 @@ _('results');
 _('roles');
 // admin/dashboard#tags
 _('rounds');
+// admin/recency-settings#tags
+_('rtri');
 // admin/reports-vl-sample-analysis#tags, admin/shipment-add#tags, admin/shipment#tags
 _('samples');
+// admin/covid19-settings#tags
+_('sars-cov-2');
+// admin/covid19-settings#title
+_('SARS-CoV-2 Settings');
 // admin/reports-tb-results#tags
 _('satisfactory');
 // admin/email-participants#tags
@@ -381,14 +397,18 @@ _('schemes');
 _('Score participant responses, then generate and finalize reports');
 // admin/reports-participant-performance#tags
 _('scores');
-// admin/dts-settings#tags, admin/tb-settings#tags, admin/vl-settings#tags
+// admin/covid19-settings#tags, admin/dts-settings#tags, admin/eid-settings#tags, admin/recency-settings#tags, admin/tb-settings#tags, admin/vl-settings#tags
 _('scoring');
+// admin/recency-settings#summary
+_('Scoring, rehydration rule and report details for Rapid Test for Recent Infection PT');
 // admin/vl-settings#summary
 _('Scoring, report metadata, and report content for HIV Viral Load PT');
 // admin/tb-settings#summary
 _('Scoring, report metadata, and report content for TB PT');
 // admin/dts-settings#summary
 _('Scoring, sample and testing options, and national algorithm test-kit rules for HIV Serology PT');
+// admin/covid19-settings#summary
+_('Scoring, testing rules, report details and recommended test platforms for SARS-CoV-2 PT');
 // admin/evaluate-shipment#summary
 _('See each participant\'s response to a shipment, change results, and add a shared comment');
 // admin/enrollments#summary
@@ -463,6 +483,8 @@ _('The designs annual certificates print on, the details ePT adds and the checks
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
 _('theme');
+// admin/eid-settings#summary
+_('The passing score for Early Infant Diagnosis PT');
 // admin/reports-tb-results#summary
 _('The result of every TB participant in each shipment');
 // admin/reports-vl-sample-analysis#summary
