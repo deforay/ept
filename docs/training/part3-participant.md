@@ -20,20 +20,21 @@
 
 - Click **PT Result Submission** from the menu
 - Find the shipment in the list (look for the shipment code and due date)
-- Click **Enter Result**
+- Click **Enter Response**
 - Fill in the result form:
   - Select test kits used for each test
   - Enter results for each sample
   - Provide final interpretation
   - Fill in any documentation fields (lot numbers, expiry dates, etc.)
 - Click **Submit**
+- If a review page opens, check the answers, then click the green **Confirm Response** button at the bottom. The response is not saved until you confirm.
 
 > **Important:** Results must be submitted before the Result Due Date. Late submissions may not be accepted.
 
 ## 3.3 Downloading Reports (After Finalization)
 
 - Once the PT Provider has finalized the shipment, reports become available
-- Go to **View PT Results → Individual Reports**
+- Go to **View PT Result → Individual Report**
 - Search for the shipment and download the report
 
 ---

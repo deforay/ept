@@ -38,7 +38,7 @@
 
 ## 4.4 Review Performance (Shipment Report)
 
-- Go to **Reports → Shipment Reports**
+- Go to **Reports → Shipments Report**
 - Find your shipment and click the green shipment code link
 - An Excel file is downloaded with multiple sheets showing overall and per-participant performance
 

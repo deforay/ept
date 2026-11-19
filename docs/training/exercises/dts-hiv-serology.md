@@ -41,9 +41,11 @@ This exercise walks through a complete PT cycle for the **Dried Tube Specimen (D
 5. Open the file and fill in details for **8 new participants**:
    - Fields with **red headings** are required (Participant ID, Name, etc.)
    - Use a naming convention you can recognize later, e.g. `TRAIN-001` through `TRAIN-008`
-   - You may leave the password field blank (the system will auto-generate) or set a password you will remember for Step 7
+   - Set a password you will remember for Step 7. A blank password gives the participant the shared default password
 6. Save the Excel file and upload it on the same page
-7. Verify the participants appear in the **PT Participants** list
+7. Check the rows on the review screen. Nothing is saved yet.
+8. Click **Import … row(s)**
+9. Verify the participants appear in the **PT Participants** list
 
 > **Tip:** If you set a custom password, use the same one for all 8 participants — this makes Step 7 much faster. Note down the Participant IDs and passwords for later use.
 
@@ -72,7 +74,7 @@ Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV 
 
 ### Step 4: Add a DTS HIV Serology Shipment
 
-1. Your new PT Survey should appear in the list — click **Add Scheme**
+1. Your new PT Survey should appear in the list — click **Add Shipment**
 2. Select **Dried Tube Specimen - HIV Serology** from the dropdown
 3. Scroll down and configure:
    - **Shipment Code** — keep the default or customize it
@@ -94,8 +96,8 @@ Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV 
 
 ### Step 5: Enroll Participants in the Shipment
 
-1. Your new shipment should appear in the list — click the red **Enroll** button
-2. Select all 8 participants from the **Available** list and move them to the **Enrolled** list
+1. Go to **Manage → PT Survey**
+2. Click **Add Participants** next to your PT Survey, then click **Select All** to move all 8 participants to the enrolled side
 3. Click **Enroll**
 
 > **Don't see your participants?** They must already be enrolled in the HIV Serology scheme (Step 2). Go back and check if needed.
@@ -125,14 +127,15 @@ Repeat this for **at least 3 of the 8 participants** you created. To make evalua
 2. Log in using the participant's credentials (from Step 1)
 3. Click **PT Result Submission** on the left menu
 4. Find the shipment you created in Step 4
-5. Click **Enter Result**
+5. Click **Enter Response**
 6. Fill in the result form for each sample:
    - **Test Kit** — select any test kit from the dropdown for Test-1 (and Test-2, Test-3 if applicable)
    - **Individual test results** — select Reactive or Non-Reactive for each test
    - **Final Interpretation** — select HIV Positive or HIV Negative
    - **Documentation fields** — fill in lot number, expiry date, etc. (these affect the documentation score)
 7. Click **Submit**
-8. Log out and repeat for the next participant
+8. If a review page opens, check the answers, then click the green **Confirm Response** button at the bottom
+9. Log out and repeat for the next participant
 
 **Suggested result pattern for the exercise:**
 
@@ -185,7 +188,7 @@ Repeat this for **at least 3 of the 8 participants** you created. To make evalua
 
 ### Step 9: Review Performance Reports
 
-1. Go to **Reports → Shipment Reports**
+1. Go to **Reports → Shipments Report**
 2. Find your shipment and click the **green shipment code** link
 3. An Excel file will download — open it and explore the sheets:
    - **Summary** — overall shipment statistics
@@ -199,7 +202,7 @@ Repeat this for **at least 3 of the 8 participants** you created. To make evalua
 ### Step 10: Download Reports as a Participant
 
 1. Go to the **Participant Login** page and log in as one of the participants who submitted results
-2. Click **View PT Results → Individual Reports** on the left menu
+2. Click **View PT Result → Individual Report** on the left menu
 3. Search for your shipment and download the report
 4. Open the PDF — it includes the participant's results, scores, and any corrective actions
 
@@ -236,3 +239,4 @@ Use this to verify you've completed each step:
 | Evaluation shows no results | Make sure at least one participant has submitted results (Step 7) |
 | Reports not generating | Wait a moment and refresh the page. Report generation runs in the background |
 | Participant can't download reports | The shipment must be finalized first (Step 8c) |
+| Response not saved after Submit | Click the green **Confirm Response** button on the review page (Step 7) |
