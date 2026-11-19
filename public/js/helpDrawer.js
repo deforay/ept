@@ -69,6 +69,12 @@
         $noResults = $('#help-drawer-no-results');
         $fullpage  = $('#help-drawer-fullpage');
 
+        // Say on the help button itself when this page has no topic yet, so people
+        // know before they open the drawer.
+        if (!window.HELP_SLUG) {
+            $('.help-trigger-nav').attr('title', t('noTopicTitle', 'Help (Ctrl+/). This page does not have a help topic yet.'));
+        }
+
         // Dynamic regions injected once
         ensureGuideMarkup();
 
@@ -524,7 +530,7 @@
             data: { slug: slug },
             dataType: 'json'
         }).done(function (data) {
-            if (!data || !data.html) { loadIndex(); return; }
+            if (!data || !data.html) { loadIndex(true); return; }
             $('#help-drawer-title').text(data.title || '');
             $topic.html(data.html);
             $fullpage
@@ -533,12 +539,13 @@
             showOnly('topic');
         }).fail(function (xhr, status) {
             if (status === 'abort') return;
-            if (xhr && xhr.status === 404) { loadIndex(); return; }
+            if (xhr && xhr.status === 404) { loadIndex(true); return; }
             showOnly('error');
         });
     }
 
-    function loadIndex() {
+    // missingTopic: the page has a slug but its topic could not be loaded.
+    function loadIndex(missingTopic) {
         showOnly('loading');
         $('#help-drawer-title').text($('#help-drawer-title').data('default-title') || 'Help');
         $fullpage.attr('href', window.HELP_BASE_URL).show();
@@ -547,7 +554,7 @@
         // when the drawer falls back to the index *because* the page has
         // no slug. If the user reached the index intentionally (by clicking
         // the back link), hide it.
-        $index.find('.help-drawer-callout').toggle(!window.HELP_SLUG);
+        $index.find('.help-drawer-callout').toggle(!window.HELP_SLUG || missingTopic === true);
 
         var render = function () {
             renderToc($search.val() || '');
