@@ -120,6 +120,23 @@ $helpSlugMap = [
 	'feedback-responses/shipment-questions' => 'feedback-forms',
 	'feedback-responses/feedback-form' => 'feedback-forms',
 	'custom-test/index' => 'custom-tests',
+	'test-platform/index' => 'test-platforms',
+	'covid19-gene-type/index' => 'gene-types',
+	'schemes/test-results' => 'scheme-test-results',
+	'schemes/manage-test-results' => 'scheme-test-results',
+	'sample-not-tested-reasons/index' => 'not-tested-reasons',
+	'mail-template/index' => 'mail-template',
+	'home-section-links/index' => 'resource-links',
+	'partners/index' => 'partners',
+	'profile/index' => 'my-profile',
+	'alerts/email' => 'failed-emails',
+	'job-tracking/index' => 'job-tracking',
+	'contact-us/index' => 'contact-messages',
+	'audit-log/index' => 'audit-log',
+	'log-viewer/index' => 'log-viewer',
+	'api-history/index' => 'api-sync-history',
+	'data-managers/add' => 'data-managers-form',
+	'data-managers/edit' => 'data-managers-form',
 	'files-for-participants/index' => 'files-for-participants',
 	'certificate-batches/index' => 'certificate-batches',
 	'tb-results/index' => 'reports-tb-results',
@@ -175,7 +192,7 @@ if (
 	$controllerName === 'data-managers'
 	&& (Zend_Controller_Front::getInstance()->getRequest()->getParam('ptcc') == 1 || str_contains($actionName, 'ptcc'))
 ) {
-	$resolvedHelpSlug = 'ptcc';
+	$resolvedHelpSlug = in_array($actionName, ['add', 'edit'], true) ? 'ptcc-form' : 'ptcc';
 }
 // Scheme Config keeps the per-scheme help topics (docs/help/admin/*/dts-settings.md
 // and friends) — one controller, but the help still follows the scheme you're on.

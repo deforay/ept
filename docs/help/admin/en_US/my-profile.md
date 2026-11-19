@@ -43,6 +43,9 @@ The admin pages switch to the new **Language** after you save.
    field shows whether the two match.
 4. Click **Update Profile**.
 
+If the current password is wrong, nothing is saved and the page
+says so.
+
 To keep your current password, leave the password fields empty.
 
 To leave the page without saving, click **Back**.
