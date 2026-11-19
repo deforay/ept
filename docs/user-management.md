@@ -11,7 +11,7 @@ Keep participant records separate from the accounts that enter their results.
 ## Add a PT manager
 
 1. Open **Configure → PT Managers**.
-2. Select **Add**.
+2. Click **Add New PT Manager**.
 3. Enter the person's name, primary email, contact information and initial password.
 4. Select the active schemes the person can manage.
 5. Select only the approved privileges.
@@ -25,12 +25,15 @@ See the [privilege reference](AdminModuleGuide.md#privilege-system).
 
 ## Assign participant-facing access
 
-1. Create or select the data-manager account in participant management.
-2. Assign the intended participant records through the participant-manager mapping workflow.
-3. Set any approved view-only or coordinator options available for that account.
-4. Confirm the participant is enrolled in the relevant scheme and shipment.
-5. Verify the account can see the intended shipment and participant.
-6. Verify an unrelated participant remains inaccessible.
+1. Open **Configure → Data Manager (Participant Login)**.
+2. Find the account, or click **Add New Data Manager (Participant Login)** to create one.
+3. Open **Configure → Participant Login Map**.
+4. Choose the data manager.
+5. Click each participant the account enters results for, so it moves from **Not mapped** to **Mapped**.
+6. Click **Save changes**.
+7. Confirm the participant is enrolled in the relevant scheme and shipment.
+8. Sign in as the data manager, or click **View as** on the data manager list. **View as** appears only for admins with the view-as-participant privilege. Confirm the account sees the intended shipment and participant.
+9. Confirm an unrelated participant does not appear.
 
 Use [participant management training](training/part1-setup-and-participants.md) for the setup sequence.
 

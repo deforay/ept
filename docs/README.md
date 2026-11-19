@@ -2,7 +2,15 @@
 
 ePT is an open-source proficiency testing system for laboratory quality assurance. Organisations use it to run PT shipments, collect results from participating laboratories, evaluate those results against reference data, and issue reports.
 
-## Where to start
+## Start here
+
+| I need to | Go to |
+| --- | --- |
+| Submit PT results or find my report | [Submit results as a data manager](user-guide.md#submit-results-as-a-data-manager) |
+| Run a PT round from start to finish | [Training](training/README.md) |
+| Fix a problem someone reported | [Troubleshooting](troubleshooting.md) |
+
+## All documentation
 
 The system references use ePT 7.6.21 as their baseline.
 Deployment facts, approved policies and executed validation evidence remain installation-specific.

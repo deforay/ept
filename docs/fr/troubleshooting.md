@@ -1,7 +1,20 @@
 # Comment examiner les problèmes opérationnels
 
-Identifiez le composant défaillant avant de modifier une installation ePT.
+Commencez par le premier tableau lorsqu'un participant ou un gestionnaire de données signale un problème.
+Pour une panne du serveur, consignez d'abord l'incident. Identifiez le composant défaillant avant de modifier une installation ePT.
 Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès correspondant au composant concerné.
+
+## Résoudre les problèmes signalés par les participants
+
+La plupart des appels viennent des participants et des gestionnaires de données. Vérifiez d'abord ces causes.
+
+| Problème | Cause à vérifier | Solution |
+| --- | --- | --- |
+| Connexion impossible | Mot de passe erroné, ou compte inactif | Cliquez sur **Mot de passe oublié ?** sur la page de connexion. Si aucun courriel n'arrive, un administrateur réinitialise le mot de passe dans **Configurer → Gestionnaire de données (connexion des participants)**. Sur la même page, il peut repasser un compte inactif à **Actif** |
+| Expédition absente de **Envoi des résultats du PT** | L'enquête PT n'est pas expédiée, le participant n'est pas sur l'expédition, ou le gestionnaire n'est pas associé au participant | Expédiez-la dans **Gérer → Enquête PT**. Ajoutez le participant avec **Ajouter des participants**. Associez le gestionnaire dans **Configurer → Correspondance participants/identifiants de connexion** |
+| Réponse non modifiable | L'échéance est passée, l'expédition est finalisée, ou le compte est en consultation seule | Demandez au fournisseur PT de prolonger l'échéance ou d'accepter une réponse tardive |
+| L'expédition affiche encore **Saisir la réponse** après **Envoyer** | Le participant n'a pas cliqué sur **Confirmer la réponse** sur la page de vérification | Cliquez de nouveau sur **Saisir la réponse** et terminez par **Confirmer la réponse** |
+| Aucun rapport dans **Voir le résultat du PT → Rapport individuel** | Les rapports ne sont pas générés, ou l'expédition n'est pas finalisée | Générez les rapports, puis finalisez l'expédition dans **Analyse → Finaliser les rapports** |
 
 ## Consigner l'incident
 

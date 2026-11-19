@@ -11,7 +11,7 @@ Gardez les fiches participants distinctes des comptes qui saisissent leurs résu
 ## Ajouter un responsable PT
 
 1. Ouvrez **Configurer → Responsables PT**.
-2. Sélectionnez **Ajouter**.
+2. Cliquez sur **Ajouter un nouveau gestionnaire PT**.
 3. Saisissez le nom, le courriel principal, les coordonnées et le mot de passe initial.
 4. Sélectionnez les programmes actifs que la personne peut gérer.
 5. Sélectionnez uniquement les privilèges approuvés.
@@ -25,12 +25,15 @@ Consultez le [référentiel des privilèges, en anglais](../AdminModuleGuide.md#
 
 ## Attribuer les accès au portail participant
 
-1. Créez ou sélectionnez le compte du gestionnaire de données dans la gestion des participants.
-2. Attribuez les fiches prévues par le processus d'association participant-gestionnaire.
-3. Définissez les options approuvées de consultation seule ou de coordination disponibles pour le compte.
-4. Confirmez l'inscription du participant au programme et à l'expédition concernés.
-5. Vérifiez que le compte voit l'expédition et le participant prévus.
-6. Vérifiez qu'un participant non associé reste inaccessible.
+1. Ouvrez **Configurer → Gestionnaire de données (connexion des participants)**.
+2. Trouvez le compte, ou cliquez sur **Ajouter un nouveau gestionnaire de données (identifiant du participant)** pour le créer.
+3. Ouvrez **Configurer → Correspondance participants/identifiants de connexion**.
+4. Choisissez le gestionnaire de données.
+5. Cliquez sur chaque participant dont le compte saisit les résultats, pour le faire passer de **Non associés** à **Associés**.
+6. Cliquez sur **Enregistrer les modifications**.
+7. Confirmez l'inscription du participant au programme et à l'expédition concernés.
+8. Connectez-vous avec le compte du gestionnaire, ou cliquez sur **Voir comme** dans la liste des gestionnaires. **Voir comme** n'apparaît que pour les administrateurs ayant le privilège de consultation en tant que participant. Vérifiez que le compte voit l'expédition et le participant prévus.
+9. Vérifiez qu'un participant non associé n'apparaît pas.
 
 Consultez la [formation à la gestion des participants, en anglais](../training/part1-setup-and-participants.md), pour la séquence de configuration.
 
