@@ -15,6 +15,16 @@
 $audience          = $audience          ?? 'participant';
 $resolvedHelpSlug  = $resolvedHelpSlug  ?? '';
 $helpBaseUrl       = $helpBaseUrl       ?? '/help';
+
+// A page can map to a slug whose topic is not written yet (a scheme settings page
+// for a scheme without a topic, for example). Treat it like an unmapped page, so the
+// drawer says plainly that this page has no help yet instead of opening the topic
+// list with no explanation. Every topic has an en_US file, so that is the check.
+if ($resolvedHelpSlug !== ''
+    && (!preg_match('/^[a-z0-9-]+$/', $resolvedHelpSlug)
+        || !is_file(APPLICATION_PATH . "/../docs/help/{$audience}/en_US/{$resolvedHelpSlug}.md"))) {
+    $resolvedHelpSlug = '';
+}
 ?>
 <div id="help-drawer-root" class="help-drawer-root" aria-hidden="true">
     <div class="help-drawer-backdrop" data-help-close="1"></div>
@@ -58,9 +68,9 @@ $helpBaseUrl       = $helpBaseUrl       ?? '/help';
                 <div class="help-drawer-callout">
                     <i class="fa fa-info-circle"></i>
                     <div>
-                        <strong><?= $this->htmlTranslate("No dedicated help for this page yet."); ?></strong>
+                        <strong><?= $this->htmlTranslate("This page does not have a help topic yet."); ?></strong>
                         <div class="help-drawer-callout-sub">
-                            <?= $this->htmlTranslate("Browse or search the topics below."); ?>
+                            <?= $this->htmlTranslate("The topics below cover related pages. Search them, or ask your PT programme administrator."); ?>
                         </div>
                     </div>
                 </div>
@@ -102,6 +112,7 @@ window.HELP_SLUG     = "<?= $this->jsTranslate($resolvedHelpSlug); ?>";
 window.HELP_PAGE_KEY = "<?= $this->jsTranslate($helpPageKey ?? ''); ?>";
 window.HELP_I18N = {
     failedToLoad:    "<?= $this->jsTranslate("Couldn't load help. Please try again."); ?>",
+    noTopicTitle:    "<?= $this->jsTranslate("Help (Ctrl+/). This page does not have a help topic yet."); ?>",
     noResults:       "<?= $this->jsTranslate("No topics match your search."); ?>",
     openInNewTab:    "<?= $this->jsTranslate("Open full page in new tab"); ?>",
     exit_guide:      "<?= $this->jsTranslate("Exit guide"); ?>",
