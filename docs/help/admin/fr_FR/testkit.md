@@ -27,16 +27,14 @@ affichés :
 
 - **Afficher tout** : tous les kits, quel que soit leur statut
   d'approbation.
-- **Afficher les éléments approuvés** : les kits marqués comme approuvés
-  (visibles par les participants).
+- **Afficher les éléments approuvés** : les kits marqués comme approuvés.
 - **Afficher les éléments non approuvés** : les kits explicitement
   refusés.
 - **Show Pending** : les kits en attente d'une décision d'approbation.
-  Cette option affiche aussi une deuxième liste déroulante
-  (**Modifier le statut**) avec des actions groupées :
-  - **Tout approuver** : approuve tous les kits en attente du système.
-  - **Tout mettre en attente** : laisse les kits en attente tels quels.
-    Cette action ne remet pas les kits approuvés en attente.
+  Cette option affiche aussi une liste déroulante **Modifier le
+  statut** avec **Tout approuver**. Cette action approuve tous les
+  kits en attente du système. Ils apparaissent ensuite sous
+  **Afficher les éléments approuvés**.
 
 **Tout approuver** ignore le filtre et les lignes visibles. Cette action
 modifie tous les kits en attente : vérifiez d'abord la liste des kits en
@@ -60,16 +58,10 @@ ligne.
 ## Conseils
 
 - À sa création, un nouveau kit est réglé sur **Approuvé = Oui**.
-  Passez-le à *Non* avec Modifier si vous voulez le masquer du
-  formulaire des participants sans le supprimer.
-- Approuvez les kits *avant* d'expédier une enquête qui en a besoin. Les
-  kits non approuvés n'apparaissent pas dans les listes déroulantes des
-  participants. Une approbation tardive en cours de cycle peut donc
-  bloquer les participants.
-- Les actions groupées **Approuver / Mettre en attente** suivent la
-  liste déroulante de statut actuelle. Choisissez d'abord *Show
-  Pending*, puis approuvez en bloc pour intégrer un lot de nouveaux kits
-  d'un coup.
+- **Approuvé** ne décide pas des kits que les participants peuvent
+  choisir. Leurs listes déroulantes proposent les kits associés au
+  programme et au numéro de test.
+- **Tout approuver** n'apparaît qu'après avoir choisi *Show Pending*.
 - Pour DTS, après avoir approuvé un kit, associez-le en général aussi à
   une position de test (Test 1 / 2 / 3) avec **Associer les kits de test
   aux tests**. Sinon, il n'apparaît pas dans le formulaire de réponse

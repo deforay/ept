@@ -7,8 +7,8 @@ tags: [config, testkit, edit, approval, additional-info]
 # Edit Test Kit
 
 Edits an existing test kit. Same fields as the **Add** form,
-plus an **Approved** dropdown so you can show or hide a kit
-from participants without deleting it.
+plus an **Active** field, shown as **Approved** in the kit
+list.
 
 ## Fields
 
@@ -43,9 +43,9 @@ from participants without deleting it.
 
 ## Tips
 
-- **Switch Approved → No instead of deleting.** Past shipments
-  may use this kit. Setting it to *No* hides it from the
-  participant dropdown without breaking old data.
+- **Approved** does not decide which kits participants can pick.
+  To stop a kit being offered, remove its scheme or test number
+  mapping.
 - Changing **Allow Additional Information** affects the
   participant response form *from now on*. Old responses keep
   whatever was recorded at the time.
