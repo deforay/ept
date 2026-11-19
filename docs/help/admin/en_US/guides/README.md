@@ -24,7 +24,7 @@ steps:
     # "✓ You're here" vs the "Open this screen" button.
     target_pages: [distributions/index, distributions/add]
   - id: 2
-    title: Click "Add Scheme"
+    title: Click "Add Shipment"
     target_pages: [distributions/index]
   ...
 ---
@@ -39,7 +39,7 @@ Plain-language explanation of what the user does on this screen.
 
 Bullets, **bold UI labels**, short paragraphs.
 
-## Step 2: Click "Add Scheme"
+## Step 2: Click "Add Shipment"
 
 ...
 ```

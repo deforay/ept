@@ -6,8 +6,8 @@ tags: [shipment, add, samples, panel]
 
 # Add a Shipment
 
-You are on this page because you clicked **Add Scheme** next to a
-PT Survey, or you saved a new PT Survey and chose **Add and
+You are on this page because you clicked **New Shipment** on the
+shipment list, or you saved a new PT Survey and chose **Add and
 continue to Shipment**.
 
 A **shipment** is one set of test samples for one scheme (for
@@ -81,4 +81,4 @@ participants.
 - You can add **more than one shipment** to the same PT Survey
   (for example, one HIV Serology panel and one VL panel on the
   same date). Just come back to **Manage → PT Survey** and click
-  **Add Scheme** again.
+  **Add Shipment** again.
