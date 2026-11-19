@@ -33,20 +33,48 @@ Hands-on exercises to follow along during or after the training:
 
 ## Quick reference: the full PT lifecycle
 
+Set up participants once. Repeat the rest for every PT round.
+
+```mermaid
+flowchart TB
+    subgraph once["Once: set up participants (admin)"]
+        direction LR
+        A1["1. Add participants<br/><i>Configure → PT Participants</i>"]
+        A2["2. Enroll in scheme<br/><i>Configure → Scheme Enrollments</i>"]
+        A1 --> A2
+    end
+
+    subgraph round["Every round: prepare and ship (admin)"]
+        direction LR
+        B1["3. Create PT Survey<br/><i>Manage → PT Survey → Add New PT Survey</i>"]
+        B2["4. Add shipment and samples<br/><i>PT Survey row → Add Shipment</i>"]
+        B3["5. Enroll in shipment<br/><i>Shipment row → Enroll</i>"]
+        B4["6. Ship<br/><i>PT Survey row → Ship Now</i>"]
+        B1 --> B2 --> B3 --> B4
+    end
+
+    subgraph labs["Participants"]
+        C1["7. Submit and confirm results<br/><i>PT Result Submission → Enter Response</i>"]
+    end
+
+    subgraph close["Close the round (admin)"]
+        direction LR
+        D1["8. Evaluate<br/><i>Analyze → Evaluate Responses</i>"]
+        D2["9. Generate reports<br/><i>Analyze → Generate Reports</i>"]
+        D3["10. Finalize<br/><i>Analyze → Finalize Reports</i>"]
+        D1 --> D2 --> D3
+    end
+
+    subgraph out["11. Download reports"]
+        direction LR
+        E1["Admin<br/><i>Reports → Shipments Report</i>"]
+        E2["Participant<br/><i>View PT Result → Individual Report</i>"]
+    end
+
+    once --> round --> labs --> close --> out
 ```
-1. Add Participants          →  Configure → PT Participants
-2. Enroll in Scheme          →  Configure → Scheme Enrollments
-3. Create PT Survey          →  Manage → PT Survey → Add
-4. Add Shipment + Samples    →  PT Survey → Add Shipment
-5. Enroll in Shipment        →  Shipment list → Enroll
-6. Ship PT Survey            →  Manage → PT Survey → Ship Now
-7. Participants Submit       →  Participant Portal → PT Result Submission
-8. Evaluate                  →  Analyze → Evaluate Responses
-9. Generate Reports          →  Analyze → Generate Reports
-10. Finalize                 →  Analyze → Finalize Reports
-11. Download Reports         →  Reports → Shipments Report (Admin)
-                                View PT Result → Individual Report (Participant)
-```
+
+Scheme enrollment sets who is selected by default in step 5. You can add or remove participants for each shipment.
 
 ---
 
@@ -59,6 +87,7 @@ Hands-on exercises to follow along during or after the training:
 | Refresher for existing admins | Parts 2 + 4 (survey management + evaluation) | 15–20 min |
 
 **Recommended approach:**
+
 - Use a test/training instance of ePT
 - Follow along with the [DTS HIV Serology exercise](exercises/dts-hiv-serology.md) for hands-on practice
 - Have participants complete the exercise during or immediately after the training
