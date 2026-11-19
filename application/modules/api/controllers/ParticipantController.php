@@ -99,7 +99,9 @@ class Api_ParticipantController extends Zend_Controller_Action
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.first_name', 'p.last_name'])
             ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = spm.participant_id', [])
             ->where('spm.map_id = ?', $id)
-            ->where('pmm.dm_id = ?', $dm['dm_id']));
+            ->where('pmm.dm_id = ?', $dm['dm_id'])
+            // Reports are released at finalization. Before that the PDFs on disk are drafts.
+            ->where('s.status = ?', 'finalized'));
         if (!$result) {
             return $this->downloadFailure('Report not ready');
         }

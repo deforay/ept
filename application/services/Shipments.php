@@ -886,7 +886,7 @@ class Application_Service_Shipments
                         'contact_person_email' => $params['contactPersonEmail'],
                         'contact_person_telephone' => $params['contactPersonTelephone'],
                     ],
-                    'map_id = ' . $params['smid']
+                    ['map_id = ?' => (int) $params['smid']]
                 );
                 /* Participant table updation */
                 $dbAdapter->update(
@@ -898,7 +898,7 @@ class Application_Service_Shipments
                         'contact_person_email' => $params['contactPersonEmail'],
                         'contact_person_telephone' => $params['contactPersonTelephone'],
                     ],
-                    'participant_id = ' . $params['participantId']
+                    ['participant_id = ?' => (int) $params['participantId']]
                 );
             }
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -2313,7 +2313,7 @@ class Application_Service_Shipments
                         'contact_person_email' => $params['contactPersonEmail'],
                         'contact_person_telephone' => $params['contactPersonTelephone'],
                     ],
-                    'map_id = ' . $params['smid']
+                    ['map_id = ?' => (int) $params['smid']]
                 );
                 /* Participant table updation */
                 $dbAdapter->update(
@@ -2325,7 +2325,7 @@ class Application_Service_Shipments
                         'contact_person_email' => $params['contactPersonEmail'],
                         'contact_person_telephone' => $params['contactPersonTelephone'],
                     ],
-                    'participant_id = ' . $params['participantId']
+                    ['participant_id = ?' => (int) $params['participantId']]
                 );
             }
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -3696,7 +3696,7 @@ class Application_Service_Shipments
             $dbAdapter->update(
                 'shipment',
                 $updateData,
-                'shipment_id = ' . $params['shipmentId']
+                ['shipment_id = ?' => (int) $params['shipmentId']]
             );
 
             // The feedback switch decides whether participants ever see the form, and

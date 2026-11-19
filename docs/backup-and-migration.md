@@ -188,6 +188,8 @@ chmod +x ept-setup.sh
 sudo ./ept-setup.sh --db /tmp/ept-move/*.sql.gz
 ```
 
+If the old database is not named `ept`, add `--db-name OLD_NAME` to the last command, so the database keeps its name. The old settings file expects it. Check the name on the old server with `grep '^resources.db.params.dbname' /var/www/ept/application/configs/application.ini`.
+
 Setup installs ePT and loads the old database. Answer its questions like this:
 
 | Setup asks for | Answer |
@@ -197,7 +199,7 @@ Setup installs ePT and loads the old database. Answer its questions like this:
 | SSL (HTTPS) with Let's Encrypt | Answer no. You set up SSL in step 6. |
 | MySQL root password | Enter the old server's MySQL root password. |
 
-Use the old MySQL root password because the settings file from the old server contains it. If you choose a different password, edit `resources.db.params.password` in `/var/www/ept/application/configs/application.ini` after step 4.
+Use the old MySQL root password because the settings file from the old server contains it.
 
 ### Step 4. Unpack the files on the new server
 
@@ -205,6 +207,12 @@ Use the old MySQL root password because the settings file from the old server co
 sudo tar -xzf /tmp/ept-move/ept-files.tar.gz -C /var/www/ept
 cd /var/www/ept
 sudo chown -R www-data:www-data application/configs public/uploads downloads scheduled-jobs
+grep '^resources.db.params' application/configs/application.ini
+```
+
+The restored settings file still holds the old server's database settings. Check that `host`, `username`, `password` and `dbname` match the new server. Correct any line that differs. Then run:
+
+```bash
 ept post-update
 ept check
 ```

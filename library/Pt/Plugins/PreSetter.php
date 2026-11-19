@@ -327,8 +327,12 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
      */
     private static function participantScopeAllowed(Zend_Controller_Request_Abstract $request, int $dmId): bool
     {
-        $controller = $request->getControllerName();
-        $action = $request->getActionName();
+        // Compare dispatcher-normalized names. ZF1 routes edit.participant, edit_participant
+        // and testeredit_ to the same actions as edit-participant and testeredit, so an exact
+        // string match on the raw name would let those spellings skip the checks below.
+        $norm = static fn ($name) => strtolower((string) preg_replace('/[^a-z0-9]/i', '', (string) $name));
+        $controller = $norm($request->getControllerName());
+        $action = $norm($request->getActionName());
 
         $from = [$request->getUserParam('from')];
         if ($request instanceof Zend_Controller_Request_Http) {
@@ -346,9 +350,9 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         $participantParams = ['participantId'];
         $mapParams = ['smid', 'mapId'];
         if (
-            in_array($controller, self::SCHEME_CONTROLLERS, true)
-            || ($controller === 'participant' && in_array($action, ['feed-back', 'certificate', 'download-tb'], true))
-            || ($controller === 'shipment-form' && $action === 'tb-download')
+            in_array($controller, array_map($norm, self::SCHEME_CONTROLLERS), true)
+            || ($controller === 'participant' && in_array($action, ['feedback', 'certificate', 'downloadtb'], true))
+            || ($controller === 'shipmentform' && $action === 'tbdownload')
         ) {
             $participantParams[] = 'pid';
         }
@@ -356,10 +360,10 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         if ($controller === 'participant' && $action === 'testeredit') {
             $participantParams[] = 'psid';
         }
-        if ($controller === 'participant' && $action === 'edit-participant') {
+        if ($controller === 'participant' && $action === 'editparticipant') {
             $participantParams[] = 'id';
         }
-        if ($controller === 'common' || ($controller === 'participant' && $action === 'feed-back')) {
+        if ($controller === 'common' || ($controller === 'participant' && $action === 'feedback')) {
             $mapParams[] = 'mid';
         }
 
