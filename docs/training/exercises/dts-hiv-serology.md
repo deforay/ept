@@ -51,7 +51,7 @@ This exercise walks through a complete PT cycle for the **Dried Tube Specimen (D
 
 ### Step 2: Enroll Participants in the Scheme
 
-Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV Serology scheme before they can be enrolled in any DTS shipment.
+Scheme enrollment is a one-time setup. When you enroll participants in a DTS shipment, the participants enrolled in the HIV Serology scheme are selected by default.
 
 1. Go to **Configure → Scheme Enrollments**
 2. On the **Lists** tab, find the **Dried Tube Specimen - HIV Serology** group
@@ -97,10 +97,10 @@ Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV 
 ### Step 5: Enroll Participants in the Shipment
 
 1. On the shipment list, click the red **Enroll** button on your shipment. If you left the page, go to **Manage → PT Survey** and click **Add Participants** next to your PT Survey to reopen it.
-2. Click **Select All** to move all 8 participants to the enrolled side
+2. Check that your 8 participants are on the right-hand list. They are there because you enrolled them in the scheme in Step 2. If one is missing, find it on the left and click it.
 3. Click **Enroll**
 
-> **Don't see your participants?** They must already be enrolled in the HIV Serology scheme (Step 2). Go back and check if needed.
+> **Do not click Select All.** It moves every active participant in the system onto this shipment.
 
 ### Step 6: Ship the PT Survey
 
@@ -234,7 +234,7 @@ Use this to verify you've completed each step:
 | Problem | Solution |
 |---------|----------|
 | Participants not showing in scheme enrollment | Verify they were imported successfully in **Configure → PT Participants** and are in Active status |
-| Participants not showing in shipment enrollment | They must be enrolled in the scheme first (Step 2) |
+| Participants not on the right-hand list in Step 5 | Find them on the left and click them. To have them selected by default next time, enroll them in the scheme (Step 2) |
 | Participant can't see the shipment after login | The PT Survey must be shipped first (Step 6). Also verify the participant is enrolled in the shipment (Step 5) |
 | Evaluation shows no results | Make sure at least one participant has submitted results (Step 7) |
 | Reports not generating | Wait a moment and refresh the page. Report generation runs in the background |

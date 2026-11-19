@@ -56,9 +56,9 @@ samples, enrollments, and the due date safely.
 
 - A PT Survey with **no shipments** cannot be shipped. The
   **Ship Now** button will not appear.
-- Only participants who are already enrolled in the **scheme**
-  (Configure → Scheme Enrollments) can be enrolled in a shipment
-  of that scheme.
+- Participants enrolled in the **scheme** (Configure → Scheme
+  Enrollments) are selected by default when you click **Enroll**.
+  You can add other active participants on the same page.
 - After you ship, it is better not to change samples or
   enrollments — participants may have already started entering
   results.

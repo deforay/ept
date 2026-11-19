@@ -48,7 +48,7 @@ To start a new list, click **New list**. To start one from an existing list, ope
 
 For many participants, use **Bulk Import Enrollment**. You upload an Excel file, review what will change, then import.
 
-> **Key concept:** Participants must be enrolled in a scheme before they can be enrolled in individual shipments under that scheme.
+> **Key concept:** Scheme enrollment decides who is selected by default when you enroll participants in a shipment of that scheme. You can still add or remove participants for each shipment.
 
 ---
 

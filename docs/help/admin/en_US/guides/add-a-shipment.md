@@ -87,20 +87,18 @@ Click **Add Shipment** at the bottom to save.
 After saving, you are back on the shipment list. Your new
 shipment has a red **Enroll** button. Click it.
 
-- On the **left** are the participants **not** on this shipment
-  yet. These are the labs already enrolled in the scheme you
-  picked.
 - On the **right** are the participants who **will** get this
-  shipment.
+  shipment. The first time you open the page, the labs enrolled
+  in the scheme are already here.
+- On the **left** is every other active participant.
 
-Click a participant name to move it to the other side. To move
-everyone, click **Select All**. Click **Enroll** at the bottom to
-save.
+Click a participant name to move it to the other side. Click
+**Enroll** at the bottom to save.
 
-> If a lab you want is missing from the left side, it
-> probably is not yet enrolled in the scheme. See the guide
-> *How to enroll participants* — it explains the difference
-> between scheme enrollment and shipment enrollment.
+> **Select All** moves every active participant onto the
+> shipment. Use it only if every lab should get this shipment.
+> To change who is selected by default, see the guide *How to
+> enroll participants*.
 
 ## Step 5: Ship it
 
