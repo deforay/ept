@@ -226,11 +226,11 @@ $labInfo .= '</td>';
 $labInfo .= '</tr>';
 $labInfo .= '<tr style="background-color:#F7F7F7;">';
 $labInfo .= '<td style="text-align:left;font-weight:bold;"> Comments</td>';
-$labInfo .= '<td style="text-align:left;">' . ucfirst($this->shipment['pt_test_not_performed_comments']) . '</td>';
+$labInfo .= '<td style="text-align:left;">' . htmlspecialchars(ucfirst((string) ($this->shipment['pt_test_not_performed_comments'] ?? '')), ENT_QUOTES, 'UTF-8') . '</td>';
 $labInfo .= '</tr>';
 $labInfo .= '<tr style="background-color:#F7F7F7;">';
 $labInfo .= '<td style="text-align:left;font-weight:bold;"> Do you need any support from the PT Provider ?</td>';
-$labInfo .= '<td style="text-align:left;">' . ucfirst($this->shipment['pt_support_comments']) . '</td>';
+$labInfo .= '<td style="text-align:left;">' . htmlspecialchars(ucfirst((string) ($this->shipment['pt_support_comments'] ?? '')), ENT_QUOTES, 'UTF-8') . '</td>';
 $labInfo .= '</tr>';
 $labInfo .= '</table><br/><br/>';
 

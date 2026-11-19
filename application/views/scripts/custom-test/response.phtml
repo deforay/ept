@@ -238,7 +238,7 @@ if ($inConfirmStep) {
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-								<?php echo $this->shipment['shipment_code']; ?>
+								<?= $this->escape((string) ($this->shipment['shipment_code'])); ?>
 							</td>
 							<td style="width:20%;">
 								<?php echo $this->escape($customTestDisplayName); ?>
@@ -313,7 +313,7 @@ if ($inConfirmStep) {
 							style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
 							<td colspan="4"><label for="ptNotTestedComments"><?= $this->translate->_("Comments"); ?><span class="mandatory ptNotTestedCommentsAsterisk" style="display: none;">*</span></label> : <textarea
 									id="ptNotTestedComments" name="ptNotTestedComments" class="form-control"
-									title="<?= $this->translate->_("Please enter comments"); ?>"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
+									title="<?= $this->translate->_("Please enter comments"); ?>"><?= $this->escape((string) ($this->shipment['pt_test_not_performed_comments'])); ?></textarea>
 							</td>
 						</tr>
 					</table>
@@ -729,7 +729,7 @@ if ($inConfirmStep) {
 							<td style="vertical-align: middle;" colspan="4">
 								<?= $this->translate->_("Optional Extra Comments"); ?>
 								<textarea class="form-control" name="optionalComments"
-									id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+									id="optionalComments"><?= $this->escape((string) ($this->shipment['optional_eval_comment'])); ?></textarea>
 							</td>
 						</tr>
 						<tr>
