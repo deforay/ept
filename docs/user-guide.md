@@ -23,11 +23,13 @@ For account setup or access review, use [user management](user-management.md).
 
 1. Sign in to the participant portal.
 2. Open **PT Result Submission**.
-3. Select the correct participant and shipment.
-4. Check the displayed deadline and sample identifiers.
-5. Enter results and supporting fields using [the participant procedure](training/part3-participant.md).
-6. Complete any confirmation step shown by the form.
-7. Reopen the response or its status view to confirm the intended values were recorded.
+3. Find the shipment by its shipment code. Check the participant name on the same row.
+4. Click **Enter Response**.
+5. Check the displayed deadline and sample identifiers.
+6. Enter results and supporting fields using [the participant procedure](training/part3-participant.md).
+7. Click **Submit**.
+8. If a review page opens, check the answers. Then click the green **Confirm Response** button at the bottom. The response is not saved until you confirm.
+9. Reopen the response or its status view to confirm the intended values were recorded.
 
 If testing was not performed, use the form's not-tested declaration where available.
 Do not substitute a negative test result for a test that was never performed.

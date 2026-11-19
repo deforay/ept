@@ -23,11 +23,13 @@ Pour créer un compte ou examiner les accès, consultez la [gestion des utilisat
 
 1. Connectez-vous au portail participant.
 2. Ouvrez **Envoi des résultats du PT**.
-3. Sélectionnez le bon participant et la bonne expédition.
-4. Vérifiez la date d'échéance affichée et les identifiants des échantillons.
-5. Saisissez les résultats et champs justificatifs selon la [procédure participant, en anglais](../training/part3-participant.md).
-6. Terminez toute étape de confirmation affichée par le formulaire.
-7. Rouvrez la réponse ou son état pour confirmer l'enregistrement des valeurs prévues.
+3. Trouvez l'expédition par son code. Vérifiez le nom du participant sur la même ligne.
+4. Cliquez sur **Saisir la réponse**.
+5. Vérifiez la date d'échéance affichée et les identifiants des échantillons.
+6. Saisissez les résultats et champs justificatifs selon la [procédure participant, en anglais](../training/part3-participant.md).
+7. Cliquez sur **Envoyer**.
+8. Si une page de vérification s'ouvre, vérifiez les réponses. Cliquez ensuite sur le bouton vert **Confirmer la réponse** en bas de la page. La réponse n'est enregistrée qu'après cette confirmation.
+9. Rouvrez la réponse ou son état pour confirmer l'enregistrement des valeurs prévues.
 
 Si le test n'a pas été réalisé, utilisez la déclaration correspondante lorsqu'elle est disponible.
 Ne remplacez pas un test non réalisé par un résultat négatif.

@@ -1,7 +1,20 @@
 # How to investigate operational problems
 
-Identify the failing component before changing an ePT installation.
+Start with the first table when a participant or data manager reports a problem.
+For a server fault, capture the incident first. Identify the failing component before changing an ePT installation.
 These procedures target ePT 7.6.21 and require access appropriate to the affected component.
+
+## Fix problems participants report
+
+Most calls come from participants and data managers. Check these causes first.
+
+| Problem | Cause to check | Fix |
+| --- | --- | --- |
+| Can't sign in | Wrong password, or the account is inactive | Click **Forgot Password?** on the login page. If no email arrives, an admin resets the password on **Configure → Data Manager (Participant Login)**. On the same page, an admin can set an inactive account back to **Active** |
+| Shipment missing from **PT Result Submission** | The PT Survey is not shipped, the participant is not on the shipment, or the data manager is not mapped to the participant | Ship it on **Manage → PT Survey**. Add the participant with **Add Participants**. Map the data manager on **Configure → Participant Login Map** |
+| Response can't be changed | The response deadline has passed, the shipment is finalized, or the account has view-only access | Ask the PT provider to extend the deadline or accept a late response |
+| Shipment still shows **Enter Response** after **Submit** | The participant did not click **Confirm Response** on the review page | Click **Enter Response** again and finish with **Confirm Response** |
+| No report under **View PT Result → Individual Report** | Reports are not generated, or the shipment is not finalized | Generate the reports, then finalize the shipment on **Analyze → Finalize Reports** |
 
 ## Capture the incident
 
