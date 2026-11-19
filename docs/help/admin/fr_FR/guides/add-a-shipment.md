@@ -14,6 +14,7 @@ steps:
   - id: 3
     title: Fill in the shipment details
     target_pages: [shipment/add]
+    open_url: /admin/shipment
   - id: 4
     title: Enroll participants in this shipment
     target_pages: [shipment/index, shipment/ship-it, shipment/manage-enroll]

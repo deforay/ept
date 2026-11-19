@@ -55,10 +55,14 @@ associés à ce participant. Vous pouvez alors :
 - Voir pour chaque gestionnaire de données son nom, son
   établissement, son adresse e-mail principale, son type et son
   statut.
-- **Réinitialiser le mot de passe** d'un gestionnaire de données,
-  sans quitter la page.
-- **Modifier l'adresse e-mail principale** d'un gestionnaire de
-  données, sans quitter la page.
+- **Mot de passe** : réinitialiser le mot de passe du gestionnaire
+  de données, sans quitter la page.
+- **E-mail** : changer l'adresse e-mail principale du gestionnaire
+  de données, sans quitter la page.
+- **Modifier** : ouvrir la fiche complète du gestionnaire de données.
+- **Voir comme** : ouvrir le portail participant en tant que ce
+  gestionnaire de données. Affiché uniquement aux administrateurs qui
+  ont le privilège de voir comme un participant.
 
 Quand plus de cinq gestionnaires de données sont associés, une
 petite zone de filtre s'affiche au-dessus de la liste. Elle permet

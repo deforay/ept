@@ -92,8 +92,11 @@ définitif :
    télécharger son propre rapport.
 4. Réévaluer, Générer les rapports et Finaliser sont désactivés pour
    cette expédition. Vous pouvez encore modifier le commentaire avec
-   **Mettre à jour le commentaire** et remplacer le rapport de
-   synthèse.
+   **Mettre à jour le commentaire**. Pour remplacer le PDF du rapport
+   de synthèse, cliquez sur **Remplacer le rapport de synthèse** sur
+   l'expédition dans **Analyse → Voir les expéditions finalisées**.
+   Ce bouton s'affiche uniquement aux administrateurs qui ont le
+   privilège de remplacer les rapports de synthèse finalisés.
 
 Cette opération **est irréversible** depuis l'interface normale.
 Vérifiez que les rapports provisoires sont corrects *avant* de

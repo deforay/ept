@@ -7,8 +7,9 @@ tags: [participants, bulk-import, excel, upload]
 # Importation groupée des participants
 
 L'importation groupée ajoute ou met à jour de nombreux participants
-à partir d'un seul fichier. Elle se fait en trois étapes :
-**Téléverser**, **Vérification** et **Terminé**. Rien n'est
+à partir d'un seul fichier. La page comporte trois étapes :
+**Téléverser**, **Vérification** et **Terminé**. Préparez d'abord le
+fichier. Rien n'est
 enregistré avant que vous cliquiez sur **Importer** sur la page de
 vérification.
 

@@ -32,9 +32,10 @@ toute l'application.
   CDN.
 - **Langue** : la langue de l'interface (anglais, français,
   vietnamien).
-- **Aggregate Insights URL** : URL d'analyse facultative.
 - **E-mail de l'administrateur** : le contact administrateur
   principal.
+- **E-mail d'assistance** : facultatif. Remplit le champ de fusion
+  **E-mail d'assistance** dans les e-mails aux participants.
 - **Nom du programme PT** / **Nom abrégé du programme PT** : le nom
   complet et le nom abrégé de votre programme. Les deux apparaissent
   dans les en-têtes, les e-mails et les rapports.
@@ -45,9 +46,17 @@ toute l'application.
   confondus avec de vrais rapports.
 - **Programmes actifs** : cochez-en au moins un. Les programmes non
   cochés ici n'apparaissent pas dans les menus.
-- **Accept Responses After Finalization** : réglez sur *Oui* pour
-  accepter des réponses tardives même après la finalisation d'une
-  expédition. La valeur par défaut est *Non*.
+- **Politique relative à la date limite de réponse** : la façon dont
+  ePT décide qu'une date limite est passée. **Fuseau horaire de
+  l'application (par défaut)** ferme à l'heure locale exacte.
+  **N'importe où sur Terre (UTC-12)** garde l'expédition ouverte
+  jusqu'à ce que la date limite soit passée dans tous les fuseaux
+  horaires.
+- **Délai de grâce pour soumission tardive (minutes)** : le nombre de
+  minutes après la date limite pendant lesquelles un participant qui
+  a ouvert le formulaire de réponse avant la date limite peut encore
+  soumettre. La réponse est mise en attente pour votre vérification
+  comme soumission tardive. Saisissez *0* pour désactiver ce délai.
 - **Activer les tests personnalisés** : permet aux responsables PT de
   configurer des types de tests non standard.
 - **Réévaluer avant de finaliser** : si *Oui*, ePT réévalue

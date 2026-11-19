@@ -1,5 +1,5 @@
 ---
-title: TB Result of PT Panel per Site
+title: "TB: Result of PT Panel per Site"
 summary: The result of every TB participant in each shipment
 tags: [reports, tb, tuberculosis, results, satisfactory, unsatisfactory]
 ---
