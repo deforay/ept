@@ -159,6 +159,13 @@ final class Pt_Commons_HelpCatalog
             $stepMeta = (array) $stepMeta;
             $id = (int) ($stepMeta['id'] ?? ($i + 1));
             $bodyMd = $stepBodies[$i] ?? '';
+            // Optional link for "Open this screen", for pages outside the admin module
+            // or pages that need parameters. Site-relative paths only, so a topic file
+            // can never point the button at another site.
+            $openUrl = (string) ($stepMeta['open_url'] ?? '');
+            if (!preg_match('#^/[A-Za-z0-9/_-]*$#', $openUrl)) {
+                $openUrl = '';
+            }
             $steps[] = [
                 'id' => $id,
                 'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($stepMeta['title'] ?? "Step $id")),
@@ -166,6 +173,7 @@ final class Pt_Commons_HelpCatalog
                     fn ($s) => (string) $s,
                     (array) ($stepMeta['target_pages'] ?? [])
                 )),
+                'open_url' => $openUrl,
                 'html' => $bodyMd === '' ? '' : (string) $this->md->convert($bodyMd),
             ];
         }

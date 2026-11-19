@@ -28,15 +28,13 @@ shown:
   participants).
 - **Show UnApproved** — kits explicitly disapproved.
 - **Show Pending** — kits awaiting an approval decision. Picking
-  this option also reveals a second dropdown (**Change Status**)
-  with bulk actions:
-  - **Approve All** — approves every pending kit in the system.
-  - **Pending All** — leaves pending kits as they are. It does not
-    move approved kits back to pending.
+  this option also reveals a **Change Status** dropdown with
+  **Approve All**. It approves every pending kit in the system,
+  and they then show under **Show Approved**.
 
-**Approve All** ignores the filter and the visible rows. It
-changes every pending kit, so check the pending list first. To
-change one kit, click **Edit** on its row.
+**Approve All** ignores the other filters and the visible rows.
+It changes every pending kit, so check the pending list first.
+To change one kit, click **Edit** on its row.
 
 ## Columns
 

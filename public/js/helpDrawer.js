@@ -419,8 +419,7 @@
                     .append(document.createTextNode(t('youre_here', "You're on this screen now.")))
             );
         } else {
-            var firstTarget = s.target_pages[0];
-            var url = guessUrlFromPageKey(firstTarget);
+            var url = s.open_url || guessUrlFromPageKey(s.target_pages[0]);
             $ref.append(
                 $('<a target="_blank" rel="noopener" class="help-drawer-guide-goto btn btn-default btn-sm">')
                     .attr('href', url)

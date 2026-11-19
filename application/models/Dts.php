@@ -1493,9 +1493,21 @@ final class Application_Model_Dts
         return $out;
     }
 
+    /**
+     * Approves every kit waiting in the pending queue. Clearing the queue alone left the
+     * kits under "Show UnApproved", so the Approval flag is set at the same time. Any
+     * other status is refused: moving pending kits back to pending changed nothing.
+     */
     public function updateTestKitStatus($params)
     {
-        return $this->db->update('r_testkitnames', ['testkit_status' => $params['status']], "testkit_status = 'pending'");
+        if (($params['status'] ?? '') !== 'approve') {
+            return 0;
+        }
+        return $this->db->update(
+            'r_testkitnames',
+            ['testkit_status' => 'approve', 'Approval' => '1'],
+            "testkit_status = 'pending'"
+        );
     }
 
     public function getDtsCorrectiveActions()

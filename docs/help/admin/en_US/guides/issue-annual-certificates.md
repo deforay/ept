@@ -8,21 +8,27 @@ steps:
   - id: 1
     title: Choose the shipments
     target_pages: [certificates/index]
+    open_url: /reports/certificates
   - id: 2
     title: Check the templates
     target_pages: [certificates/index, certificate-templates/index, certificate-templates/design]
+    open_url: /reports/certificates
   - id: 3
     title: Check who gets which certificate
     target_pages: [certificates/index]
+    open_url: /reports/certificates
   - id: 4
     title: Generate
     target_pages: [certificates/index]
+    open_url: /reports/certificates
   - id: 5
     title: Review and approve
     target_pages: [certificates/index]
+    open_url: /reports/certificates
   - id: 6
     title: Check that it is done
     target_pages: [certificates/index]
+    open_url: /reports/certificates
 ---
 
 # How to issue annual certificates

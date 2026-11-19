@@ -250,20 +250,27 @@ try {
     // Step 4: Get new password
     $io->section('Setting New Password');
 
+    // Same minimum as the web forms: the global participant_login_password_length
+    // setting, or 8 when it is unset.
+    $minPasswordLength = (int) (new Application_Model_DbTable_GlobalConfig())->getValue('participant_login_password_length');
+    if ($minPasswordLength < 1) {
+        $minPasswordLength = 8;
+    }
+
     $newPassword = null;
     if ($generatePassword) {
-        $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, 12);
+        $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, max(12, $minPasswordLength));
     } elseif ($passwordArg !== null) {
         $newPassword = trim((string) $passwordArg);
-        if (strlen($newPassword) < 6) {
-            $io->error('Password must be at least 6 characters long.');
+        if (strlen($newPassword) < $minPasswordLength) {
+            $io->error("Password must be at least {$minPasswordLength} characters long.");
             exit(1);
         }
     } else {
         // Ask if user wants to auto-generate
         if ($io->confirm('Auto-generate a secure password?', true)) {
             $generatePassword = true;
-            $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, 12);
+            $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, max(12, $minPasswordLength));
         }
     }
 
@@ -274,7 +281,7 @@ try {
 
             $io->text('Password requirements:');
             $io->listing([
-                'Minimum 6 characters',
+                "Minimum {$minPasswordLength} characters",
                 'Mix of letters and numbers recommended',
                 'Special characters allowed',
             ]);
@@ -291,8 +298,8 @@ try {
             }
 
             $newPassword = trim($passwordInput);
-            if (strlen($newPassword) < 6) {
-                $io->warning('Password must be at least 6 characters long. Please try again.');
+            if (strlen($newPassword) < $minPasswordLength) {
+                $io->warning("Password must be at least {$minPasswordLength} characters long. Please try again.");
                 $newPassword = null;
                 continue;
             }

@@ -4,6 +4,24 @@ set -e
 # Generate configs from dist templates if they don't exist
 CONFIG_DIR="/var/www/ept/application/configs"
 
+# application.ini and .env hold the salt, the form secret and the saved mail settings.
+# They live in the config volume and are symlinked into place, so rebuilding the
+# container keeps them. A file already in the container (an install from before this
+# volume existed) is moved into the volume the first time.
+PERSIST_DIR="/var/ept-config"
+mkdir -p "$PERSIST_DIR"
+link_persistent_configs() {
+    for name in application.ini .env; do
+        if [ -f "$PERSIST_DIR/$name" ]; then
+            ln -sfn "$PERSIST_DIR/$name" "$CONFIG_DIR/$name"
+        elif [ -f "$CONFIG_DIR/$name" ] && [ ! -L "$CONFIG_DIR/$name" ]; then
+            mv "$CONFIG_DIR/$name" "$PERSIST_DIR/$name"
+            ln -s "$PERSIST_DIR/$name" "$CONFIG_DIR/$name"
+        fi
+    done
+}
+link_persistent_configs
+
 if [ ! -f "$CONFIG_DIR/application.ini" ]; then
     cp "$CONFIG_DIR/application.dist.ini" "$CONFIG_DIR/application.ini"
 
@@ -25,6 +43,9 @@ if [ ! -f "$CONFIG_DIR/.env" ]; then
     echo "FORM_SECRET=$(openssl rand -hex 32)" > "$CONFIG_DIR/.env"
     echo "Generated .env with FORM_SECRET."
 fi
+
+# Move anything generated above into the config volume.
+link_persistent_configs
 
 # Wait for MySQL to be ready
 echo "Waiting for MySQL..."
@@ -55,7 +76,7 @@ php bin/run-once.php 2>/dev/null || true
 # freshly-created files are covered. The volume-mounted dirs (uploads/logs/
 # backups/downloads) are re-chowned here too since the mount masks the
 # build-time ownership.
-chown -R www-data:www-data application/configs application/cache logs downloads backups public/temporary public/uploads
+chown -R www-data:www-data application/configs application/cache logs downloads backups public/temporary public/uploads "$PERSIST_DIR" scheduled-jobs/certificate-templates
 
 # Start cron
 cron

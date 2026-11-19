@@ -21,6 +21,9 @@ services:
       - logs:/var/www/ept/logs
       - backups:/var/www/ept/backups
       - downloads:/var/www/ept/downloads
+      # application.ini and .env, symlinked into application/configs by the entrypoint
+      - config:/var/ept-config
+      - certificate_templates:/var/www/ept/scheduled-jobs/certificate-templates
     depends_on:
       ept-db:
         condition: service_healthy
@@ -79,3 +82,5 @@ volumes:
   logs:
   backups:
   downloads:
+  config:
+  certificate_templates:
