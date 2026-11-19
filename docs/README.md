@@ -12,25 +12,37 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 ## All documentation
 
-The system references use ePT 7.6.21 as their baseline.
-Deployment facts, approved policies and executed validation evidence remain installation-specific.
+### Using ePT
 
 | Your goal | Read |
 | --- | --- |
 | Understand what ePT is for | [About ePT](about-ept.md) |
+| Complete common administrator and participant tasks | [User guide](user-guide.md) |
+| Learn the admin workflow end to end | [Training](training/README.md) |
+| Create, change and review account access | [User management](user-management.md) |
+| Fix a problem someone reported | [Troubleshooting](troubleshooting.md) |
+
+### Running a server
+
+| Your goal | Read |
+| --- | --- |
+| Size hardware before buying it | [Infrastructure](infrastructure.md) |
 | Install ePT on Ubuntu, Docker, or Windows | [Install](setup.md) |
 | Update a running installation | [Update](updating.md) |
 | Back up, restore, or move an instance | [Backup & recovery](backup-and-migration.md) |
-| Size hardware before buying it | [Infrastructure](infrastructure.md) |
+| Keep outgoing email and bounce handling working | [Email delivery](email.md) |
 | Check a server's health, or run maintenance with the `ept` command | [CLI tools](cli-tools.md#the-ept-command) |
 | Reset a password, run a migration, refresh translations | [CLI tools](cli-tools.md) |
-| Learn the admin workflow end to end | [Training](training/README.md) |
-| Understand how the code fits together | [Architecture](ARCHITECTURE.md) |
-| Add or change a test scheme | [Schemes](SchemeArchitecture.md) |
-| Translate the interface or add a language | [Translation](TranslationGuide.md) |
-| Get a change reviewed and merged | [Engineering standards](engineering-standards.md) |
-| Complete common administrator and participant tasks | [User guide](user-guide.md) |
-| Create, change and review account access | [User management](user-management.md) |
+| Repair missing tables or columns | [Repair missing tables](heal-schema.md) |
+| Review storage locations and cleanup rules | [Storage and retention](data-lifecycle.md) |
+| Assemble a deployment evidence package | [Deployment handover](deployment-handover.md) |
+
+### System reference
+
+These pages use ePT 7.6.21 as their baseline. Deployment facts, approved policies and executed validation evidence remain installation-specific.
+
+| Your goal | Read |
+| --- | --- |
 | Review functional requirements and use cases | [Requirements baseline](functional-requirements.md) |
 | Review security controls and non-functional requirements | [Security](security.md) |
 | Understand core records and business fields | [Data model and core dictionary](data-model.md) |
@@ -38,9 +50,15 @@ Deployment facts, approved policies and executed validation evidence remain inst
 | Identify implemented integration routes | [API inventory](api-reference.md) |
 | Review locked software packages and license metadata | [Software and licenses](software-licenses.md) |
 | Prepare acceptance tests and record evidence | [Validation package](validation.md) |
-| Investigate operational faults | [Troubleshooting](troubleshooting.md) |
-| Review storage locations and cleanup rules | [Storage and retention](data-lifecycle.md) |
-| Assemble a deployment evidence package | [Deployment handover](deployment-handover.md) |
+
+### Development
+
+| Your goal | Read |
+| --- | --- |
+| Understand how the code fits together | [Architecture](ARCHITECTURE.md) |
+| Add or change a test scheme | [Schemes](SchemeArchitecture.md) |
+| Translate the interface or add a language | [Translation](TranslationGuide.md) |
+| Get a change reviewed and merged | [Engineering standards](engineering-standards.md) |
 
 ## Supported test schemes
 
