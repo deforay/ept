@@ -22,6 +22,7 @@ if (function_exists('pcntl_signal') && function_exists('pcntl_async_signals')) {
 
 try {
     require_once __DIR__ . '/../cli-bootstrap.php';
+    require_once __DIR__ . '/lib/password-prompt.php';
     ini_set('memory_limit', '-1');
     set_time_limit(0);
 
@@ -185,68 +186,7 @@ try {
     // Step 3: Get new password
     $io->section('Setting New Password');
 
-    // Same minimum as the web forms: the global participant_login_password_length
-    // setting, or 8 when it is unset.
-    $minPasswordLength = (int) (new Application_Model_DbTable_GlobalConfig())->getValue('participant_login_password_length');
-    if ($minPasswordLength < 1) {
-        $minPasswordLength = 8;
-    }
-
-    $newPassword = null;
-    if ($generatePassword) {
-        $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, max(12, $minPasswordLength));
-        $io->text("Generated password: <comment>$newPassword</comment>");
-    } elseif ($passwordArg !== null) {
-        $newPassword = trim((string) $passwordArg);
-        if (strlen($newPassword) < $minPasswordLength) {
-            $io->error("Password must be at least {$minPasswordLength} characters long.");
-            exit(1);
-        }
-    } else {
-        $attempts = 0;
-        do {
-            $attempts++;
-
-            $io->text('Password requirements:');
-            $io->listing([
-                "Minimum {$minPasswordLength} characters",
-                'Mix of letters and numbers recommended',
-                'Special characters allowed',
-            ]);
-
-            $passwordInput = $io->askHidden('Enter new password (input hidden)');
-
-            if ($passwordInput === null || $passwordInput === '') {
-                $io->error('Password cannot be empty.');
-                if ($attempts >= 3) {
-                    $io->error('Too many failed attempts. Exiting.');
-                    exit(1);
-                }
-                continue;
-            }
-
-            $newPassword = trim($passwordInput);
-            if (strlen($newPassword) < $minPasswordLength) {
-                $io->warning("Password must be at least {$minPasswordLength} characters long. Please try again.");
-                continue;
-            }
-
-            // Confirm password
-            $confirmPassword = $io->askHidden('Confirm new password');
-            if ($confirmPassword !== $newPassword) {
-                $io->error('Passwords do not match. Please try again.');
-                $newPassword = null;
-                continue;
-            }
-
-            break;
-        } while ($attempts < 3);
-
-        if ($newPassword === null) {
-            $io->error('Failed to set password after multiple attempts.');
-            exit(1);
-        }
-    }
+    $newPassword = resolveNewPassword($io, $passwordArg, $generatePassword, false, true);
 
     // Step 4: Confirm action
     $io->section('Confirmation');

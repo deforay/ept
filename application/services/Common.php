@@ -312,6 +312,13 @@ class Application_Service_Common
         return self::getSetting($name);
     }
 
+    /** The minimum password length the web forms enforce: the global setting, or 8 when unset. */
+    public static function minimumPasswordLength(): int
+    {
+        $length = (int) self::getSetting('participant_login_password_length');
+        return $length > 0 ? $length : 8;
+    }
+
     /**
      * Where participants send questions: support_email when set, else admin_email.
      * Either may hold several addresses. Unusable entries are dropped (see
