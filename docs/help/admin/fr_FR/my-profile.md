@@ -45,6 +45,9 @@ l'enregistrement.
    L'indication sous le champ montre si les deux correspondent.
 4. Cliquez sur **Mettre à jour le profil**.
 
+Si le mot de passe actuel est incorrect, rien n'est enregistré et la
+page l'indique.
+
 Pour garder votre mot de passe actuel, laissez les champs de mot de
 passe vides.
 
