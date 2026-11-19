@@ -47,7 +47,7 @@ Cette page affiche toutes les expéditions de votre système. Vous pouvez :
 
 - **Ajouter une nouvelle expédition** : choisissez le type de test dans
   **Type de programme** en haut de cette page, puis cliquez sur
-  **New Shipment**. Ou bien allez dans **Gérer → Enquête PT** et cliquez
+  **Nouvelle expédition**. Ou bien allez dans **Gérer → Enquête PT** et cliquez
   sur **Ajouter une expédition** à côté de votre enquête. Cette page
   s'ouvre alors pour cette enquête.
 - **Ajouter ou retirer des participants** : trouvez votre expédition,

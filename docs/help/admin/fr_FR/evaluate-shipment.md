@@ -33,7 +33,7 @@ Juste sous l'en-tête se trouve un petit formulaire. Les deux champs
 s'appliquent à **tous** les participants de cette expédition et
 apparaissent tous les deux dans les rapports finaux.
 
-### Corrective Action Files
+### Fichiers d'actions correctives
 
 Un fichier (généralement un PDF) destiné aux participants qui n'ont
 pas réussi. Il explique la marche à suivre.

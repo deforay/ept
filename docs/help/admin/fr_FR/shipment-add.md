@@ -6,7 +6,7 @@ tags: [shipment, add, samples, panel]
 
 # Ajouter une expédition
 
-Vous êtes sur cette page parce que vous avez cliqué sur **New Shipment**
+Vous êtes sur cette page parce que vous avez cliqué sur **Nouvelle expédition**
 dans la liste des expéditions. Ou bien vous avez enregistré une nouvelle
 enquête PT et choisi **Ajouter et passer à l'expédition**.
 
