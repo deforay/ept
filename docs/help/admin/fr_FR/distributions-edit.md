@@ -36,7 +36,7 @@ la liste des enquêtes.
 
 ## Modifier après l'expédition
 
-Une fois l'enquête expédiée (statut **Already shipped**), elle est
+Une fois l'enquête expédiée (statut **Expédiée**), elle est
 déjà visible pour les participants. Le système protège les enquêtes
 expédiées contre les modifications qui pourraient les dérouter :
 
