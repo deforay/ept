@@ -2,13 +2,13 @@
 
 Constituez un dossier de preuves versionné pour une installation ePT.
 
-## Avant de commencer
+## Avant de commencer {#before-you-start}
 
 Utilisez un compte opérateur autorisé à examiner l'installation cible.
 Ce guide concerne ePT avec PHP 8.4.27 ou ultérieur (ou 8.5.12 ou ultérieur) et MySQL 8 ou ultérieur.
 Obtenez les noms du responsable du programme, du responsable de l'hébergement et du relecteur chargé de l'acceptation.
 
-## Enregistrer la version de référence
+## Enregistrer la version de référence {#record-the-baseline}
 
 1. Exécutez le contrôle de version depuis le répertoire d'installation :
 
@@ -24,7 +24,7 @@ Obtenez les noms du responsable du programme, du responsable de l'hébergement e
 Excluez les secrets de la copie remise. Décrivez leur fonction au lieu de reproduire les mots de passe,
 jetons, clés de chiffrement ou identifiants de connexion.
 
-## Capturer le schéma physique
+## Capturer le schéma physique {#capture-the-physical-schema}
 
 Utilisez un répertoire de sortie à accès restreint et un compte de base autorisé à exporter le schéma.
 Remplacez `ept_database` par le nom réel de la base.
@@ -37,26 +37,26 @@ mysqldump --no-data --skip-comments --no-tablespaces \
 Examinez l'export avant de le partager. Joignez la version de la base, la date de capture et la version applicative.
 Si nécessaire, ajoutez les définitions des vues, routines ou événements utilisés par l'installation mais absents de l'export.
 
-Utilisez le [dictionnaire principal](data-model.md) pour expliquer les entités principales.
+Utilisez le [dictionnaire des données principal](data-model.md) pour expliquer les entités principales.
 Consignez les définitions de champs non résolues comme des lacunes, sans en deviner le sens.
 
-## Constituer le dossier
+## Constituer le dossier {#assemble-the-package}
 
 | Livrable | Base existante | Preuve d'achèvement |
 | --- | --- | --- |
 | Exigences fonctionnelles | [Référentiel des exigences](functional-requirements.md) | Revue du programme et différences locales approuvées |
-| Conception technique | [Architecture, en anglais](../ARCHITECTURE.md), [modèle de données](data-model.md), [inventaire API](api-reference.md) | Diagramme réel du déploiement, schéma et contrats des intégrations activées |
+| Conception technique | [Architecture](ARCHITECTURE.md), [modèle de données](data-model.md), [inventaire API](api-reference.md) | Diagramme réel du déploiement, schéma et contrats des intégrations activées |
 | Exigences de sécurité | [Référentiel de sécurité](security.md) | Preuves des contrôles locaux et résultats des évaluations |
 | Manuel utilisateur | [Guide utilisateur](user-guide.md) et formation | Navigation locale et captures d'écran examinées |
 | Administration des utilisateurs | [Gestion des utilisateurs](user-management.md) | Attributions approuvées et registre de revue des accès |
-| Installation et maintenance | [Installation, en anglais](../setup.md), [mise à jour, en anglais](../updating.md), [dépannage](troubleshooting.md) | Opérateurs désignés et calendrier de maintenance |
-| Reprise | [Sauvegarde et migration, en anglais](../backup-and-migration.md) | Inventaire des sauvegardes, emplacement hors serveur et exercice de restauration réussi |
+| Installation et maintenance | [Installation](setup.md), [mise à jour](updating.md), [dépannage](troubleshooting.md) | Opérateurs désignés et calendrier de maintenance |
+| Reprise | [Sauvegarde et migration](backup-and-migration.md) | Inventaire des sauvegardes, emplacement hors serveur et exercice de restauration réussi |
 | Validation | [Dossier de validation](validation.md) | Cas exécutés, anomalies, nouveaux tests et approbation |
 | Inventaire logiciel | [Logiciels et licences](software-licenses.md) | Versions réellement installées et ressources fournies localement |
 | Code source et livraison | Référence versionnée du dépôt | Commit déployé, résumé des changements et problèmes connus |
-| Formation | [Parcours, en anglais](../training/README.md) | Dates, formateurs, présences et contrôles des compétences |
+| Formation | [Parcours de formation](training/README.md) | Dates, formateurs, présences et contrôles des compétences |
 
-## Compléter les documents opérationnels locaux
+## Compléter les documents opérationnels locaux {#complete-local-operational-records}
 
 1. Relevez les ressources du serveur ou de la machine virtuelle, les volumes de stockage et les limites réseau.
 2. En cas de virtualisation, relevez la configuration de l'hyperviseur et des sauvegardes des machines virtuelles.
@@ -68,7 +68,7 @@ Consignez les définitions de champs non résolues comme des lacunes, sans en de
 8. Joignez les contacts d'assistance, accords de service, dates des contrats et responsabilités de renouvellement.
 9. Joignez le plan de déploiement, l'évaluation du site et l'inventaire des établissements.
 
-## Vérifier la remise
+## Vérifier la remise {#verify-the-handover}
 
 1. Exécutez les [cas d'acceptation](validation.md) convenus dans l'environnement de test cible.
 2. Vérifiez chaque document par rapport à la version enregistrée et à la configuration locale.

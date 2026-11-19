@@ -3,7 +3,7 @@
 Cet inventaire consigne les métadonnées de licence du code ePT 7.6.21 au 17 septembre 2026.
 Il décrit les paquets verrouillés. Il ne résulte pas d'une inspection des logiciels installés sur un serveur.
 
-## Application et environnement d'exécution
+## Application et environnement d'exécution {#application-and-runtime}
 
 | Composant | Référence enregistrée |
 | --- | --- |
@@ -12,7 +12,7 @@ Il décrit les paquets verrouillés. Il ne résulte pas d'une inspection des log
 | Node.js | `package.json` exige Node.js 22 ou ultérieur pour produire les graphiques |
 | Base de données et serveur web | L'inventaire du déploiement fournit les versions réelles et les informations de licence des distributions |
 
-## Paquets PHP
+## Paquets PHP {#php-packages}
 
 Source : `composer.lock`. Les expressions de licence reproduisent les métadonnées des paquets.
 
@@ -106,7 +106,7 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | symfony/polyfill-php84 | v1.43.0 | MIT | Développement |
 | symfony/stopwatch | v8.1.0 | MIT | Développement |
 
-## Paquets Node
+## Paquets Node {#node-packages}
 
 Source : `package-lock.json`. Les emplacements imbriqués restent distincts lorsque le fichier contient plusieurs installations.
 
@@ -126,7 +126,7 @@ Source : `package-lock.json`. Les emplacements imbriqués restent distincts lors
 | `node_modules/proxy-agent-negotiate` | 1.1.0 | MIT |
 | `node_modules/skia-canvas` | 4.0.0 | MIT |
 
-## Limites de l'inventaire
+## Limites de l'inventaire {#inventory-boundaries}
 
 Les fichiers JavaScript, CSS, polices, images et bibliothèques anciennes intégrés manuellement nécessitent un inventaire distinct.
 Les tableaux ne démontrent ni la compatibilité des licences ni le respect des obligations de distribution.

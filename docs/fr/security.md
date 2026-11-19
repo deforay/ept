@@ -3,7 +3,7 @@
 Ce référentiel décrit les chemins d'implémentation examinés dans ePT 7.6.21.
 Il présente les contrôles et leurs limites. Il ne constitue ni un rapport de test d'intrusion ni une certification.
 
-## Contrôles applicatifs
+## Contrôles applicatifs {#application-controls}
 
 | Domaine | Comportement implémenté | Limite ou précision |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ Il présente les contrôles et leurs limites. Il ne constitue ni un rapport de t
 des requêtes et des sessions. `Application_Model_DbTable_AuditLog` définit la capture des événements d'audit.
 L'inventaire API décrit les [limites de l'authentification et des échanges](api-reference.md).
 
-## Responsabilités d'hébergement
+## Responsabilités d'hébergement {#hosting-responsibilities}
 
 Ces éléments sont des exigences de déploiement. Ils ne décrivent pas l'état vérifié d'un serveur existant.
 
@@ -40,7 +40,7 @@ Ces éléments sont des exigences de déploiement. Ils ne décrivent pas l'état
 Le chiffrement des disques, le pare-feu, les sauvegardes hors serveur et la surveillance de disponibilité
 dépendent de l'hébergement. L'installation de l'application ne les met pas en place à elle seule.
 
-## Données sensibles
+## Données sensibles {#sensitive-records}
 
 Les fichiers de configuration contiennent des secrets. Les sauvegardes peuvent contenir des identifiants,
 des informations de compte, des coordonnées et des données PT.
@@ -51,7 +51,7 @@ Ces fichiers nécessitent un accès restreint et une revue avant leur inclusion 
 Le nettoyage des lignes de la base ne prouve pas la suppression des fichiers de suivi API correspondants.
 Consultez le [référentiel de stockage et de conservation](data-lifecycle.md).
 
-## Exigences non fonctionnelles à convenir
+## Exigences non fonctionnelles à convenir {#non-functional-requirements-requiring-agreement}
 
 | Exigence | Éléments disponibles | Décision de déploiement |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ Consultez le [référentiel de stockage et de conservation](data-lifecycle.md).
 | Interopérabilité | API JSON et import/export de fichiers | Intégrations identifiées et contrats d'échange testés |
 | Conformité aux normes | Aucune évaluation de conformité fournie avec cette revue | Normes applicables et preuves d'évaluation |
 
-## Limites de validation
+## Limites de validation {#validation-limits}
 
 Aucune évaluation indépendante de sécurité n'accompagne cette documentation.
 Le [dossier de validation](validation.md) propose des contrôles de sécurité.
