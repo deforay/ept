@@ -63,7 +63,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	}
 </style>
 <section class="content-header">
-	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
+	<h1><?= $this->escape((string) ($this->shipment['scheme_name'])); ?></h1>
 </section>
 <section class="content">
 	<div class="box">
@@ -473,7 +473,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td colspan="4"><label for="ptNotTestedComments"><?= $this->translate->_("Your comments"); ?></label> <span
 									class="mandatory ptNotTestedCommentsAsterisk" style="display: none;">*</span> : <textarea id="ptNotTestedComments"
 									name="ptNotTestedComments" class="form-control"
-									title="<?= $this->htmlTranslate("Please enter comments"); ?>"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
+									title="<?= $this->htmlTranslate("Please enter comments"); ?>"><?= $this->escape((string) ($this->shipment['pt_test_not_performed_comments'])); ?></textarea>
 							</td>
 						</tr>
 						<tr class="ptNotPerformedSection"
@@ -481,7 +481,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td colspan="4">
 								<label><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></label>
 								<textarea id="ptSupportComments" name="ptSupportComments" class="form-control"
-									title="<?= $this->htmlTranslate("Please enter message to PT provider"); ?>"><?php echo $this->shipment['pt_support_comments']; ?></textarea>
+									title="<?= $this->htmlTranslate("Please enter message to PT provider"); ?>"><?= $this->escape((string) ($this->shipment['pt_support_comments'])); ?></textarea>
 							</td>
 						</tr>
 					</table>
@@ -642,7 +642,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					<td style="vertical-align: middle;" colspan="4">
 						<?= $this->translate->_("Optional Extra Comments"); ?>
 						<textarea class="form-control" name="optionalComments"
-							id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+							id="optionalComments"><?= $this->escape((string) ($this->shipment['optional_eval_comment'])); ?></textarea>
 					</td>
 				</tr>
 				<tr>
