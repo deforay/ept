@@ -110,78 +110,133 @@ php vendor/bin/db-tools purge-binlogs             # housekeeping (from the ePT d
 
 ## Migrating to a new machine
 
-`setup.sh` installs fresh code and **imports your database**, but it does **not** carry over uploads or config from the old machine. A complete move has four parts: the database, uploaded files, generated reports, and config secrets.
+Use these steps to move ePT from one Ubuntu server to another. You pack one folder on the old server, copy it across, and unpack it on the new server. Plan for one hour of downtime.
 
-> **Preserve the salt and form secret:** Two values must survive the move, or existing hashed/encrypted data and logged-in sessions will break:
->
-> - `application/configs/application.ini` → `security.salt`
-> - `application/configs/.env` → `FORM_SECRET`
->
-> A fresh `setup.sh` **regenerates both**. Copy the originals from the old machine *after* setup completes.
+### Prerequisites
 
-### 1. On the old machine
+Have all of these ready before you start.
+
+#### The new server
+
+1. A fresh install of Ubuntu 26.04 LTS, with nothing else installed. Setup installs Apache, MySQL 8 and PHP 8.4 itself.
+2. At least 2 GB of RAM if ePT is the only application on the server. 4 GB is better.
+3. At least 50 GB of disk space.
+4. Internet access. Setup downloads packages and ePT from GitHub.
+5. Ports 22 (SSH), 80 (HTTP) and 443 (HTTPS) open on the firewall.
+6. SSH enabled, with a user account that has sudo access.
+
+#### Logins and passwords
+
+1. The SSH username and password for the new server.
+2. The SSH username and password for the old server, for a user with sudo access.
+3. The MySQL root password of the old server.
+
+#### Other
+
+1. Access to the domain's DNS settings, or the contact of the person who manages them.
+2. A network path from the old server to the new server over SSH. If there is none, a USB drive large enough to hold the ePT data.
+3. A one-hour maintenance window. Tell participants and data managers in advance that ePT is unavailable during the move.
+
+The commands assume ePT is installed at `/var/www/ept`. If your installation is somewhere else, change that path in every command.
+
+### Step 1. Pack everything on the old server
+
+Run these commands on the old server:
 
 ```bash
-# Database: unencrypted and gzip-compressed, because setup.sh reads only .sql, .gz and .zip
-php vendor/bin/db-tools backup --no-encrypt --compression=gzip
+# Stop the website and scheduled jobs so nothing changes during the move.
+# They stay stopped after a reboot.
+sudo systemctl disable --now apache2 cron
 
-# Uploaded files and config secrets — copy these off the box
-#   application/configs/application.ini   (contains security.salt + DB creds)
-#   application/configs/.env              (FORM_SECRET)
-#   public/uploads/                       (participant uploads, report formats, logos)
-#   downloads/                            (generated reports and participant files)
-#   scheduled-jobs/certificate-templates/ (certificate designs)
+# Create the folder that holds everything you move
+sudo mkdir -p /var/ept-move
+
+# Back up the database into that folder
+cd /var/www/ept
+sudo php vendor/bin/db-tools backup --no-encrypt --compression=gzip --output-dir=/var/ept-move
+
+# Pack the settings, uploads, reports and certificate templates into that folder
+sudo tar --ignore-failed-read -czf /var/ept-move/ept-files.tar.gz \
+  application/configs/application.ini \
+  application/configs/.env \
+  public/uploads \
+  downloads \
+  scheduled-jobs/certificate-templates
+
+# Let your own account copy the folder
+sudo chown -R "$USER" /var/ept-move
 ```
 
-Transfer the archive and those files and folders to the new server with scp, rsync or a USB drive.
+Run `ls -lh /var/ept-move`. The folder holds two files: a database backup ending in `.sql.gz` and `ept-files.tar.gz`.
 
-### 2. On the new machine
+### Step 2. Copy the folder to the new server
 
-Run setup, pointing `--db` at the transferred archive (local path **or** URL; `.sql`, `.gz`, `.zip` supported):
+```bash
+scp -r /var/ept-move USER@NEW-SERVER:/tmp/
+```
+
+Replace `USER` with your login on the new server and `NEW-SERVER` with its IP address. If you use a USB drive instead, put the folder at `/tmp/ept-move` on the new server.
+
+### Step 3. Install ePT on the new server
+
+Run these commands on the new server:
 
 ```bash
 cd ~
-sudo wget -O ept-setup.sh https://raw.githubusercontent.com/deforay/ept/master/bin/setup.sh
-sudo chmod +x ept-setup.sh
-sudo ./ept-setup.sh --db /path/to/ept-backup.sql.gz
+wget -O ept-setup.sh https://raw.githubusercontent.com/deforay/ept/master/bin/setup.sh
+chmod +x ept-setup.sh
+sudo ./ept-setup.sh --db /tmp/ept-move/*.sql.gz
 ```
 
-This builds the LAMP stack, downloads ePT, and imports your database instead of the bundled `sql/init.sql`.
+Setup installs ePT and loads the old database. Answer its questions like this:
 
-### 3. Restore uploads and config, then verify
+| Setup asks for | Answer |
+| --- | --- |
+| Installation path | Press Enter to accept `/var/www/ept`. |
+| Domain name | Enter the domain the old server used. |
+| SSL (HTTPS) with Let's Encrypt | Answer no. You set up SSL in step 6. |
+| MySQL root password | Enter the old server's MySQL root password. |
+
+Use the old MySQL root password because the settings file from the old server contains it. If you choose a different password, edit `resources.db.params.password` in `/var/www/ept/application/configs/application.ini` after step 4.
+
+### Step 4. Unpack the files on the new server
 
 ```bash
-# Put the uploaded files back
-rsync -a /path/to/old/public/uploads/  /var/www/ept/public/uploads/
-rsync -a /path/to/old/downloads/  /var/www/ept/downloads/
-rsync -a /path/to/old/scheduled-jobs/certificate-templates/  /var/www/ept/scheduled-jobs/certificate-templates/
-
-# Restore config secrets (review DB host/creds for the new box first)
-cp /path/to/old/application.ini  /var/www/ept/application/configs/application.ini
-cp /path/to/old/.env             /var/www/ept/application/configs/.env
-
-# Fix ownership/permissions if needed, then run any pending migrations
+sudo tar -xzf /tmp/ept-move/ept-files.tar.gz -C /var/www/ept
+cd /var/www/ept
+sudo chown -R www-data:www-data application/configs public/uploads downloads scheduled-jobs
 ept post-update
 ept check
 ```
 
-> **Check DB credentials after copying application.ini:** `application.ini` carries the **old** machine's database host/user/password. If the new machine's MySQL differs, update `resources.db.params.*` before loading the app.
+Do not skip this step. Setup creates a new security salt and form secret. The old ones in `ept-files.tar.gz` replace them. Without the old salt, temporary passwords and download links that ePT already sent stop working.
 
-Finally, log in at `http://<host>/admin`, confirm participants and shipments render, and open one report that was finalized on the old machine. Then generate one new report to confirm uploads and the salt and secret came across intact.
+`ept check` lists any problem it finds. Fix each one before you continue.
 
----
+### Step 5. Point the domain to the new server
 
-## What setup.sh carries vs. what you carry
+Change the domain's DNS A record to the new server's IP address. The change can take up to a few hours to reach every user. If users reach ePT by IP address, give them the new address instead.
 
-| Item | Carried by `setup.sh` | You handle |
-| --- | --- | --- |
-| Application code | ✅ fresh from GitHub master | — |
-| Database | ✅ via `--db=<archive>` | Produce the archive with db-tools |
-| `public/uploads/` | ❌ | Copy manually |
-| `downloads/` | ❌ | Copy manually |
-| `scheduled-jobs/certificate-templates/` | ❌ | Copy manually |
-| `application.ini` / `.env` | ❌ regenerated from templates | Copy manually |
-| `security.salt` / `FORM_SECRET` | ❌ regenerated | **Must** copy from old machine |
+### Step 6. Turn on HTTPS
+
+After the domain points to the new server, run:
+
+```bash
+sudo certbot --apache -d your-domain.org
+```
+
+Replace `your-domain.org` with your domain. Skip this step if the old server did not use HTTPS.
+
+### Step 7. Confirm the move worked
+
+1. Open `https://your-domain.org/admin` and log in with your usual password.
+2. Open the participant list and a shipment. Confirm the data matches the old server.
+3. Open a report that was finalized on the old server.
+4. Generate one new report.
+
+If all four work, the move is complete. Keep the old server as it is for two weeks. Then delete `/var/ept-move` on the old server and `/tmp/ept-move` on the new server, because they hold passwords.
+
+If the move fails, run `sudo systemctl enable --now apache2 cron` on the old server and point the domain back to it. Nothing on the old server changed.
 
 ---
 
