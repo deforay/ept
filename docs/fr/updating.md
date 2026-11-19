@@ -128,7 +128,7 @@ Un serveur en bon état affiche une ligne ✅ pour chaque contrôle, par exemple
 
 ```text
 ✅ Database is reachable
-✅ Schema is up to date — Version in sync: 7.7.0
+✅ Schema is up to date — Version in sync: 7.7.1
 ```
 
 Vérifiez le commit déployé :

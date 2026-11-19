@@ -132,7 +132,7 @@ A healthy server prints a ✅ line for each check, including:
 
 ```text
 ✅ Database is reachable
-✅ Schema is up to date — Version in sync: 7.7.0
+✅ Schema is up to date — Version in sync: 7.7.1
 ```
 
 Confirm the deployed commit:
