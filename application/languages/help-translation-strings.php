@@ -335,6 +335,8 @@ _('Re-build and lock the reports — only finalized reports are visible to parti
 _('re-evaluate');
 // admin/reports-participant-response#tags, admin/reports-participant-trends#tags
 _('regions');
+// admin/email-participants#tags
+_('reminder');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
 // admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags, participant/view-reports#tags
@@ -355,6 +357,8 @@ _('roles');
 _('samples');
 // admin/reports-tb-results#tags
 _('satisfactory');
+// admin/email-participants#tags
+_('schedule');
 // admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
 _('scheme');
 // admin/enrollments#title
@@ -380,7 +384,7 @@ _('See every enrollment list per scheme, create and edit lists, and clone, archi
 // admin/testkit-standard-kit#summary
 _('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
 // admin/email-participants#summary
-_('Send a bulk email to participants, data managers, or PTCCs for a chosen shipment date range');
+_('Send or schedule an email about one or more shipments, such as a reminder to labs that have not responded');
 // admin/global-config#tags
 _('settings');
 // admin/distributions#tags
@@ -425,7 +429,7 @@ _('TB Result of PT Panel per Site');
 _('TB Settings');
 // admin/report-config#tags
 _('template');
-// admin/certificate-templates#tags, admin/email-participants#tags
+// admin/certificate-templates#tags
 _('templates');
 // admin/reports-testkit#tags
 _('test 1');
@@ -470,7 +474,7 @@ _('upload');
 // admin/enrollments-bulk-enrollment#summary
 _('Upload an Excel file of Participant IDs to fill a scheme\'s enrollment list, and review the changes before they are saved');
 // admin/participants-bulk-import#summary
-_('Upload an Excel file to add or update many participants at once');
+_('Upload an Excel or CSV file, review what will change, then import many participants at once');
 // admin/users#tags
 _('users');
 // admin/evaluate-shipment#tags

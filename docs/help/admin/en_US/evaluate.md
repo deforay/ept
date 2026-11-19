@@ -82,8 +82,7 @@ If no participant has responded yet, you will see only a disabled
   fixing rules, after late responses, or any time you want a
   fresh pass.
 - **Generate Reports** *(blue ✓)* — produces the per-participant
-  PDF reports. Disabled if the shipment date is still in the
-  future.
+  PDF reports. Disabled while a job is queued or running.
 - **VL Range** — only for **VL** shipments. Opens the manual
   reference-range editor.
 - The mail-non-responders button stays while some labs have not

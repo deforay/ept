@@ -14,13 +14,15 @@ for their mapped participants. A participant record is separate from either acco
 
 ## Add an account
 
-1. Select **Add** from the PT Managers page.
-2. Enter the person's name, primary email, initial password and required contact fields.
-3. Select the active schemes assigned to this account.
-4. Select the approved privileges.
-5. Set the account status and submit the form.
-6. Arrange secure delivery of the initial credentials.
-7. Confirm the owner can sign in and change the initial password.
+1. Click **Add New PT Manager** on the PT Managers page.
+2. Enter **First Name**, **Last Name** and **Primary Email**.
+3. Enter the initial **Password** twice.
+4. Set **Status** to **Active**.
+5. In **Choose Active Schemes**, select the schemes this person manages.
+6. Under **Privileges**, tick only the approved privileges.
+7. Click **Add**.
+8. Arrange secure delivery of the initial credentials.
+9. Confirm the owner can sign in and change the initial password.
 
 The form uses scheme assignments and individual privileges. It does not provide
 a fixed set of Super Admin, Reviewer and Read-only roles.

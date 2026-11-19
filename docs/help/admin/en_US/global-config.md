@@ -82,8 +82,10 @@ How participants log in and what they can do.
   name from their profile.
 - **Enable Feedback** — *Yes* shows the feedback / corrections
   module after a shipment is finalized.
-- **Direct Login** — *Yes* lets participants enter a password.
-  *No* sends them a one-time email link instead.
+- **Direct Login** — *Yes* gives each participant its own login.
+  Linking a data manager becomes optional, and the participant
+  forms and bulk import ask for a password. *No* means
+  participants sign in through a linked data manager account.
 - **Login Attempt Ban** — when *Yes*, three extra fields appear:
   - **Temporary Ban Duration (minutes)** — how long the account
     is locked after the first threshold.
@@ -147,8 +149,8 @@ not save and the missing field is highlighted.
 
 ## Tips
 
-- The **Home Page Settings** are set up under *Manage → Home
-  Settings* (they used to live here).
+- The **Home Page Settings** are set up under *Configure → Home
+  Page Settings* (they used to live here).
 - Turning on **Training Instance** on a real production setup
   will watermark every report — only use it on test or
   training environments.

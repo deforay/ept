@@ -17,11 +17,11 @@ after you click **Ship Now** on the surveys list.
 
 Pick the date of this PT round from the date picker.
 
-- The system allows **only one PT Survey per date**. Dates that
-  already have a survey are **disabled in the picker and marked
-  with a red circle**, so you can't accidentally clash.
-- If you need a survey on a date that is already taken, edit
-  the existing survey instead, or pick a different date.
+- A **red circle** marks a date that already has a PT Survey.
+  You can still pick it. The page then warns you about the
+  other survey.
+- If the existing survey is the same round, add your shipment
+  to it instead of creating a second survey.
 
 ### PT Survey Code
 

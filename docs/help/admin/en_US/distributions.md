@@ -14,8 +14,7 @@ you create, edit, and ship them.
 
 ## What's on the page
 
-- **Add New PT Survey** (top right) — creates a new survey for a
-  date that does not already have one.
+- **Add New PT Survey** (top right) — creates a new survey.
 - The table lists every survey, sortable and searchable, one row
   per survey.
 

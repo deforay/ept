@@ -16,10 +16,9 @@ means.
 - **PT Survey Code** is editable. The duplicate check ignores
   the *current* survey, so you can fix a typo without the form
   rejecting it.
-- **PT Survey Date** is editable too, but only to dates that
-  don't already have another survey. The current survey's own
-  date is *not* in the disabled list, so you can keep it as it
-  is or move it freely to any free date.
+- **PT Survey Date** is editable too. A red circle marks dates
+  that have another survey. You can still pick one, and the
+  page warns you about the clash.
 - The title at the top reads **Edit PT Survey** so it is clear
   you are working on an existing record.
 

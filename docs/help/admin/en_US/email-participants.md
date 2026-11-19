@@ -1,105 +1,90 @@
 ---
 title: Email Participants
-summary: Send a bulk email to participants, data managers, or PTCCs for a chosen shipment date range
-tags: [email, communication, participants, data-managers, ptcc, templates]
+summary: Send or schedule an email about one or more shipments, such as a reminder to labs that have not responded
+tags: [email, communication, reminder, participants, data-managers, ptcc, schedule]
 ---
 
 # Email Participants
 
-Sends a **bulk email** to participants, their Data Managers (PT
-Logins), or PT Country Coordinators, based on which shipments
-they took part in. Useful for reminders ("you haven't submitted
-yet"), announcements, or follow-ups after a survey closes.
+Write one email about one or more shipments. Each recipient gets
+their own copy, with their own lab names filled in.
 
-## Fields
+The page has three tabs: **Compose**, **Scheduled** and
+**History**.
 
-### Template (optional)
+## Send a reminder to labs that have not responded
 
-- **Template** — pick a saved email template (for example,
-  *Not Participated*, *Reminder*, *Final Reminder*). Picking a
-  template fills the **Subject** and **Mail Content** with its
-  pre-written text. You can edit either before sending.
+1. Under **Who should get it**, select the shipments.
+2. Under **Send to**, choose who gets the email:
+   **Participants**, **Data managers** or **PTCC managers**.
+3. Under **Which labs**, choose **Only labs that have not
+   responded**.
+4. Under **Start from a template**, choose **Not Responded
+   Reminder**. The subject and message fill in.
+5. Change the message if you need to.
+6. Click **Preview**. Check the list of recipients and the copy
+   each one gets.
+7. Click **Send now**, or **Schedule…** to send it later.
 
-> Templates are managed under *Manage → Email Templates*. If a
-> template you need isn't here, add it there first.
+To open this page with a shipment already selected, click
+**Remind** on the shipment row in **Manage → Shipments**. The
+**Email** button on a PT Survey row does the same for every
+shipment in the survey.
 
-### Date Range and Shipments
+## Choose who gets it
 
-- **Date Range** *(required)* — pick a date window. Defaults to
-  the last 180 days. This filters the **Shipment Code** dropdown
-  to shipments inside the window.
-- **Shipment Code** *(required, multi-select)* — one or more
-  shipments to limit the email to. If a recipient was on any of
-  them, they get the email.
+| Setting | Choices |
+| --- | --- |
+| **Send to** | **Participants** (each lab, at the lab's own address), **Data managers** (the people who enter results for those labs), or **PTCC managers** (country coordinators, TB shipments only) |
+| **Also Cc each lab's data managers on the lab's email** | Shown when you send to **Participants**. Copies each lab's data managers |
+| **How they get it** | Shown when you send to data managers or PTCC managers. **One email listing all their labs** (one per shipment), or **One email per lab** |
+| **Which labs** | **All labs**, or **Only labs that have not responded** |
 
-### Skip internal emails
+One email goes to one audience. After you send or schedule it,
+the page offers buttons to write a version for another audience,
+with the same shipments and labs.
 
-- **Skip emails with @{your-domain}** *(checkbox, on by
-  default)* — leaves out every recipient whose email is on your
-  own ePT domain. Stops you from spamming testers, demo
-  accounts, or internal staff who happen to be in the
-  participant list.
+**Only labs that have not responded** includes labs that saved
+only a draft. A scheduled email checks again when it goes out,
+so labs that respond before then do not get it.
 
-### Recipients (To)
+## Write the message
 
-- **To** *(required, multi-select)* — pick one or more groups:
-  - **Participants** — every participant on the chosen
-    shipments.
-  - **Data Managers** — every PT Login linked to those
-    participants.
-  - **PTCC Managers** *(only when TB is an active scheme)* — the
-    PT Country Coordinators who cover those participants.
+- **Start from a template** fills in the subject and message.
+  You can edit both.
+- **Merge fields** put each recipient's own values into the
+  email, such as the lab name, shipment code or response
+  deadline. Click **Insert field**, or click a field in the
+  **Merge fields** list, to insert it at the cursor.
+- The **Table of labs** field lists the recipient's labs and
+  whether each has responded.
 
-### Subject and content
+Older templates may use the `##NAME##` style of field. ePT still
+fills those in.
 
-- **Subject** *(required)* — the email subject line. As you
-  type, an autocomplete suggests previously-used subjects. If
-  you pick one, you will be asked whether to load that
-  subject's saved content into the editor.
-- **Mail Content** *(required, rich text)* — Summernote
-  rich-text editor. Picking a Template or auto-suggested
-  Subject pre-fills this; you can still edit freely.
+## Before you send
 
-### Personalization keys
+- **Preview** lists every recipient and shows each copy of the
+  message. You can send from the preview.
+- ePT skips addresses marked as bounced or invalid.
+- The mail job sends queued emails in batches, so delivery takes
+  a few minutes.
 
-The placeholders below, listed in the **Key** section, are
-replaced for each recipient:
+## Change or stop a scheduled email
 
-- `##NAME##` — Lab Name / Participant Name
-- `##SHIPCODE##` — Shipment Code
-- `##SHIPTYPE##` — Scheme Type
-- `##SURVEYCODE##` — PT Survey Code
-- `##SURVEYDATE##` — PT Survey Date
+Open the **Scheduled** tab. Times are in the time zone shown at
+the top. Recipients are worked out when the email goes out.
 
-Drop them anywhere in the Subject or Mail Content. Each
-recipient gets their own values in.
+| Button | What it does |
+| --- | --- |
+| **Edit** | Change the email before it goes out |
+| **Pause** | Holds the email. Messages already sent stay sent |
+| **Resume** | Continues a paused email |
+| **Send now** | Sends a scheduled or paused email straight away |
+| **Cancel** | Stops the email. Messages already sent cannot be recalled |
 
-## Sending
+## Check what was sent
 
-- **Send** — queues the email batch. The form will not let you
-  send if Shipments, To, Subject, or Mail Content are empty.
-- **Back** — returns to the admin home without sending.
-
-> **Sends cannot be undone.** Once you click *Send*, the queue
-> picks up the batch and starts. Double-check the recipient
-> list, especially if testers or internal accounts are mixed in
-> (and check *Skip emails with @{your-domain}* is ticked).
-
-## Tips
-
-- **Start from a Template, then edit.** Templates exist so you
-  don't rebuild a "you haven't submitted yet" email every
-  cycle. Pick the template, scan the content, change the
-  specifics (date, cycle, next steps), then send.
-- **Date Range first, then Shipment Code.** The Shipment
-  dropdown reloads when the date range changes — set the date
-  window before picking shipments.
-- For a *"haven't submitted yet"* reminder, send to
-  **Participants + Data Managers** — Data Managers usually do
-  the data entry, while Participants are the lab-level contact.
-- **Use personalization keys generously** — emails with the
-  lab name and shipment code feel like real correspondence and
-  get better response rates.
-- Opening this page from a specific shipment (via the envelope
-  button on *PT Surveys → Action*) pre-picks that shipment and
-  the *Not Participated* template — a one-click reminder flow.
+Open the **History** tab. It lists the latest 200 sent and
+cancelled emails. Delivery counts are kept for 30 days after
+sending.

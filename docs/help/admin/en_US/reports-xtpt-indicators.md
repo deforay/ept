@@ -6,7 +6,7 @@ tags: [reports, tb, tuberculosis, xtpt, indicators, panel statistics, excel]
 
 # XTPT Indicators & Panel Statistics
 
-**Reports → XTPT Indicators & Panel Statistics** builds an Excel workbook for one TB shipment.
+**Reports → XTPT Indicators** builds an Excel workbook for one TB shipment.
 
 ## Generate a workbook
 
