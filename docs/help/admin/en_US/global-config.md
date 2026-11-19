@@ -27,8 +27,9 @@ Branding, behaviour, and defaults for the whole app.
 - **Domain** — base URL the app is served from. Filled in for
   you, but you can edit it for proxy / CDN setups.
 - **Language** — the UI language (English, French, Vietnamese).
-- **Aggregate Insights URL** — optional analytics URL.
 - **Administrator Email** — main admin contact.
+- **Support Email** — optional. Fills the **Support email** merge
+  field in emails to participants.
 - **PT Program Name** / **PT Program Short Name** — full and
   short names of your programme. Both appear in headers, emails
   and reports.
@@ -38,9 +39,15 @@ Branding, behaviour, and defaults for the whole app.
   test reports cannot be mistaken for real ones.
 - **Active Schemes** — at least one must be ticked. Schemes that
   are not ticked here do not appear in the menus.
-- **Accept Responses After Finalization** — set to *Yes* to let
-  late responses come in even after a shipment is finalized.
-  Default is *No*.
+- **Response Deadline Cutoff Policy** — how ePT decides that a
+  deadline has passed. **Application timezone (default)** closes
+  at the exact local time. **Anywhere on Earth (UTC-12)** keeps
+  the shipment open until the deadline has passed in every time
+  zone.
+- **Late Submission Grace Window (minutes)** — minutes after the
+  deadline during which a participant who opened the response
+  form before the deadline can still submit. The response is held
+  for your review as a late submission. Enter *0* to turn it off.
 - **Enable Custom Tests** — let PT admins set up non-standard
   test types.
 - **Re-evaluate Before Finalizing** — when *Yes*, ePT

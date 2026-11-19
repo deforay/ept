@@ -493,14 +493,14 @@ _('system-admin');
 _('System-wide settings that apply across the whole ePT app');
 // admin/ptcc#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tb');
+// admin/reports-tb-results#title
+_('TB: Result of PT Panel per Site');
 // admin/reports-tb-all-sites-results#title
 _('TB All Sites\' Results');
 // admin/reports-tb-participants-per-country#summary
 _('TB participants, response rate and pass rate for each country');
 // admin/reports-tb-participants-per-country#title
 _('TB Participants per Country');
-// admin/reports-tb-results#title
-_('TB Result of PT Panel per Site');
 // admin/tb-settings#title
 _('TB Settings');
 // admin/report-config#tags

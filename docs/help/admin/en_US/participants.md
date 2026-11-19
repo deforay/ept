@@ -51,8 +51,12 @@ there you can:
 
 - See each DM's name, institute, primary email, type, and
   status.
-- **Reset password** for a DM, without leaving the page.
-- **Update primary email** for a DM, without leaving the page.
+- **Password**: reset the DM's password, without leaving the page.
+- **Email**: change the DM's primary email, without leaving the
+  page.
+- **Edit**: open the DM's full record.
+- **View as**: open the participant portal as this DM. Shown only
+  to admins with the view-as-participant privilege.
 
 When more than five DMs are linked, a small filter box appears
 above the list so you can search within just that participant's

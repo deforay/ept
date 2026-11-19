@@ -157,14 +157,14 @@ if (!empty($this->shipment)) {
         $reportFailed = ($queueStatus === 'failed');
         $reportQueue = $reportInProgress ? 'disabled' : '';
         if ($queueStatus === 'finalizing') {
-            $reportTitle = 'Finalizing Reports ...';
+            $reportTitle = $this->htmlTranslate('Finalizing Reports ...');
         } elseif ($reportInProgress) {
-            $reportTitle = 'Generating Participant Reports ...';
+            $reportTitle = $this->htmlTranslate('Generating Participant Reports ...');
         } else {
-            $reportTitle = 'Generate Participant Reports';
+            $reportTitle = $this->htmlTranslate('Generate Participant Reports');
         }
         if (!$reportInProgress && $this->shipment[0]['report_generated'] == 'yes') {
-            $reportTitle = 'Generate Reports';
+            $reportTitle = $this->htmlTranslate('Generate Reports');
         }
         // Allow report generation once the shipment is evaluated. Previously
         // gated on PT Survey Date < today; that gate has been removed. Derive the

@@ -26,13 +26,13 @@ that one shipment. From here you can:
 - A small table shows the **Scheme Type**, **PT Survey Code** and
   **Date**.
 
-## Corrective Action File and shared comment
+## Corrective Action Files and shared comment
 
 Just below the header there is a small form. Both fields apply to
 **every** participant in this shipment and both appear in the
 final reports.
 
-### Corrective Action File
+### Corrective Action Files
 
 One file (usually a PDF) for participants who did not pass. It
 explains what to do next.
@@ -66,8 +66,8 @@ times as you like, until the shipment is finalized.
 
 ## Filter to only changed results
 
-Above the table, the **Show only manually overridden results**
-dropdown lets you see only the rows you have changed by hand.
+In the filters above the table, set **Manually overridden only**
+to see only the rows you have changed by hand.
 Handy when you want a final review before generating reports.
 
 ## Participants table

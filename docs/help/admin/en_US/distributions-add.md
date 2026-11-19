@@ -48,7 +48,7 @@ next:
   set up the panels right away. This is the usual flow.
 - **Save and add shipment later** — saves the survey and
   returns you to the surveys list. The new survey will sit in
-  the *Not yet fully set up* state until you go back and add
+  the **Created** state until you go back and add
   shipments under it.
 
 Use **Cancel** to drop the changes and return to the surveys
@@ -60,8 +60,9 @@ list.
 - It does **not** become visible to participants yet. Surveys
   are hidden until you click **Ship Now** on the surveys list,
   after the shipments under them are fully set up.
-- You can edit the code or other details later from the surveys
-  list, until shipments have actually gone out.
+- You can edit the date and code later from the surveys list.
+  The code locks once one of the survey's shipments is
+  finalized.
 
 ## Tips
 

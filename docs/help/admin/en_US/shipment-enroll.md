@@ -15,8 +15,10 @@ The page has two sections side by side:
 - **Left** — participants **not** on this shipment yet.
 - **Right** — participants who **are** selected for this shipment.
 
-Click any participant name to move them from one side to the
-other. Nothing is saved until you click **Enroll** at the bottom.
+The first time you open the page, the participants enrolled in
+the scheme are already on the right. Click any participant name
+to move them from one side to the other. Nothing is saved until
+you click **Enroll** at the bottom.
 
 ## The quick way: auto-select tools
 

@@ -42,10 +42,9 @@ unless the participant is being deactivated.
 
 ## Schemes
 
-The edit form also shows the **schemes** this participant is
-enrolled in. Use this section to enrol or unenrol the
-participant from PT schemes — for example, adding them to a new
-viral load panel or removing them from a retired one.
+The **Schemes** field lists the schemes this participant is
+enrolled in. Add or remove schemes here, for example to add the
+participant to the viral load scheme.
 
 ## Password reset
 
@@ -55,7 +54,7 @@ the password fields blank keeps the old password unchanged.
 
 ## Saving
 
-Click the submit button at the bottom to save. You will go back
+Click **Update** at the bottom to save. You will go back
 to the participants list. If you change the Participant ID to
 one that already belongs to another participant, the duplicate
 check will flag it and stop the save.

@@ -7,7 +7,7 @@ tags: [participants, bulk-import, excel, upload]
 # Bulk Import Participants
 
 Bulk import adds or updates many participants from one file. It
-takes three steps: **Upload**, **Review** and **Done**. Nothing is
+takes three steps on the page: **Upload**, **Review** and **Done**. Prepare the file first. Nothing is
 saved until you click **Import** on the review page.
 
 ## Step 1: Prepare the file
