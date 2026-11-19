@@ -13,7 +13,7 @@ pour passer de l'anglais au français.
 1. Traduisez la page entière, y compris les titres, les tableaux, les libellés des diagrammes et les limites.
 2. Appliquez les mêmes règles de rédaction technique dans les deux langues : phrases courtes, instructions directes et termes constants.
 3. Conservez les commandes, les routes, les identifiants, les numéros de version, les expressions de licence et les identifiants d'exigences.
-4. Faites pointer les liens vers la version française lorsqu'elle existe. Signalez comme anglais les liens vers des pages non traduites.
+4. Faites pointer chaque lien vers la version française de la page liée.
 5. Ajoutez la page à la navigation commune et son libellé français sous `nav_translations` dans `mkdocs.yml`.
 6. Vérifiez que le sélecteur de langue de l'en-tête ouvre la page traduite correspondante.
 7. Exécutez `mkdocs build --strict` pour contrôler la navigation et les liens.
@@ -22,8 +22,8 @@ Pour l'aide intégrée à l'application, placez le corps traduit dans `docs/help
 Conservez les clés anglaises de l'en-tête (frontmatter) et les chaînes source. Traduisez les valeurs affichées
 au moyen du catalogue PO/MO français. Consultez [la référence de rédaction de l'aide](https://github.com/deforay/ept/blob/master/docs/help/README.md).
 
-La section française publique couvre actuellement les douze pages système et d'exploitation
-listées dans son index. Les guides plus anciens restent en anglais et sont signalés comme tels.
+Chaque page de documentation a une version française. Lorsque vous ajoutez ou modifiez une page anglaise,
+mettez à jour sa copie française dans la même modification.
 
 ## Avant de commencer {#before-you-start}
 
