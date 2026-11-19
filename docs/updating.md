@@ -86,11 +86,24 @@ The full flag list is in the [CLI Tools Reference](cli-tools.md#update-existing-
 
 ## Update a Docker installation
 
-`ept update` does not apply to Docker. Rebuild the containers instead:
+`ept update` does not apply to Docker. Rebuild the containers instead.
+
+Rebuilding replaces the container. `application.ini` and `.env` live inside the container, not in a volume, so the rebuild creates new ones with a new salt and form secret. The saved email settings are lost, and links ePT already sent stop working. Copy both files out before the rebuild and put them back after it:
 
 ```bash
+# Before the rebuild
+docker compose cp ept:/var/www/ept/application/configs/application.ini ./application.ini.keep
+docker compose cp ept:/var/www/ept/application/configs/.env ./env.keep
+
 git pull && docker compose up --build -d
+
+# After the rebuild
+docker compose cp ./application.ini.keep ept:/var/www/ept/application/configs/application.ini
+docker compose cp ./env.keep ept:/var/www/ept/application/configs/.env
+docker compose restart ept
 ```
+
+Uploaded certificate templates in `scheduled-jobs/certificate-templates/` are also inside the container. Copy them out and back the same way if you use them.
 
 The entrypoint runs `composer post-update` on every container start, so migrations apply themselves. Run the verification commands below inside the container with `docker compose exec ept <command>`.
 

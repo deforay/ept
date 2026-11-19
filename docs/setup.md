@@ -172,20 +172,18 @@ docker compose exec ept bash
 
 ### Updating (Docker)
 
-To update ePT to the latest version:
-
-```bash
-git pull && docker compose up --build -d
-```
+To update ePT, follow [Update a Docker installation](updating.md#update-a-docker-installation). A plain rebuild loses `application.ini` and `.env`, so copy them out first as that section shows.
 
 The entrypoint script runs `composer post-update` (migrations and collation fixes) on every container start. See [Updating an ePT installation](updating.md) for verification and rollback.
 
 ### Importing an Existing Database
 
-To import an existing SQL file instead of the bundled `init.sql`:
+This procedure is for a **new** Docker instance only. `docker compose down -v` deletes every volume: the database, uploads, generated reports, logs and backups. Do not run it on an instance that holds data you need. To load a database into a running instance, run `docker compose exec ept php vendor/bin/db-tools restore <archive>` instead. See [Backup & recovery](backup-and-migration.md).
+
+To start a new instance from an existing SQL file instead of the bundled `init.sql`:
 
 ```bash
-# Stop containers and remove old data
+# Stop containers and remove ALL data
 docker compose down -v
 
 # Replace the init file
