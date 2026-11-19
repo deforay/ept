@@ -16,6 +16,7 @@ Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès corres
 | --- | --- | --- | --- |
 | Site indisponible | Service web, connexion à la base, espace disque et certificat | Rétablissez le composant défaillant selon la procédure d'hébergement | Chargez le site et connectez-vous |
 | Versions du code et de la base différentes | `php bin/check-version-sync.php` | Suivez la [procédure de correction, en anglais](../updating.md#fix-a-version-mismatch) | Le contrôle de version réussit |
+| La page indique « ePT requires PHP 8.4.27 or later » | `php -v` sur le serveur | Exécutez `sudo ept update`, qui met PHP à jour. Sous Windows, passez WampServer à PHP 8.4.27 ou ultérieur | Le site se charge et `ept check` réussit |
 | Participants ou expéditions absents | Statut du compte, associations et inscriptions | Corrigez l'attribution par l'administration autorisée | Le compte voit uniquement les données prévues |
 | Réponse non modifiable | État de l'expédition, commutateur de réponse, échéance et droits | Demandez à l'administrateur du programme d'examiner l'état de collecte | Une réponse de test autorisée s'enregistre et se rouvre |
 | Réponse tardive en attente de revue | Parcours de soumission pris en charge et état de retard | Faites examiner la réponse par un administrateur autorisé | Le résultat approuvé apparaît dans le processus prévu |

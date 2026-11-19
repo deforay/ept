@@ -18,7 +18,7 @@ Paths are relative to the installation unless stated otherwise.
 | `public/temporary/` | Temporary exports and scratch files | Subject to cleanup |
 | `logs/` | Application logs | May contain operational and account information |
 | `backups/` | Default database archive destination | Same-host storage alone does not protect against host loss |
-| `backups/config/` | Snapshots of `application.ini` | Contains secrets and is not a full configuration backup |
+| `backups/config/` | Snapshots of `application.ini`, and `templates.*.zip` with certificate templates, report letterheads and logos | Contains secrets and is not a full configuration backup |
 
 Report-specific locations are described in [scheme architecture](SchemeArchitecture.md#file-output-locations).
 Actual configured paths and off-host destinations belong in the deployment record.
@@ -44,7 +44,7 @@ The snapshot tool skips unchanged files.
 | Target | Eligibility | Retention cutoff |
 | --- | --- | --- |
 | `track_api_requests` | Request metadata rows | 90 days by `requested_on` |
-| `temp_mail` | Terminal statuses `sent`, `failed`, `failure`, `fail` | 30 days by available sent, updated or queued timestamp |
+| `temp_mail` | Terminal statuses `sent`, `failed`, `failure`, `fail`, `cancelled` | 30 days by available sent, updated or queued timestamp |
 | `push_notification` | Status is null or is not `pending` | 90 days by `created_on` |
 | `audit_log` | Older recorded activity | 730 days before the table's newest `created_on` |
 | `user_login_history` | Older login activity | 730 days before the table's newest login timestamp |

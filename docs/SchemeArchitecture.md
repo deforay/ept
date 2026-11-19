@@ -582,10 +582,11 @@ $config = Pt_Commons_SchemeConfig::get('dts');
 // Returns: allowedAlgorithms, dtsSchemeType, rtriEnabled, etc.
 ```
 
-Configuration sources:
-1. Database: `scheme_list.user_test_config` (JSON)
-2. System config files
-3. Model defaults
+The `scheme_config` table is the only source. `sql/init.sql` seeds a row for each built-in scheme. Admins change the values on **Configure → Scheme Config**.
+
+`config.ini` is retired. On older installations, `run-once/config-migration.php` moved its values into `scheme_config`.
+
+Custom tests are different. Their field definitions live in `scheme_list.user_test_config` as JSON.
 
 ---
 

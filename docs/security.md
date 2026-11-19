@@ -9,7 +9,7 @@ It records controls and limitations, not penetration-test results or certificati
 | --- | --- | --- |
 | Web authentication | Separate administrator and data-manager sessions | Participant records are distinct from login accounts |
 | Password verification | Password hashes are checked with `password_verify()` | Account reset and access procedures also require operator controls |
-| Session inactivity | Normal authenticated web sessions have a 1,800-second idle limit | API token behaviour is separate |
+| Session inactivity | Normal authenticated web sessions end after 120 idle minutes by default. `session.idleMinutes` in `application.ini` changes the limit, within 10 to 480 minutes | API token behaviour is separate |
 | Participant impersonation | Administrator view-as-participant activity is logged, with a default 900-second idle limit | This is a privileged support function |
 | Authorization | Administrative privileges and participant mappings constrain application access | Endpoint-level access needs validation with positive and negative cases |
 | CSRF checking | Modifying web requests can require a session token and timing-safe comparison | XHR, API, CLI, error routes and absent session tokens bypass this helper |

@@ -5,7 +5,7 @@ Constituez un dossier de preuves versionné pour une installation ePT.
 ## Avant de commencer
 
 Utilisez un compte opérateur autorisé à examiner l'installation cible.
-Ce guide concerne ePT 7.6.21 avec PHP 8.4 et MySQL 8 ou ultérieur.
+Ce guide concerne ePT 7.6.21 avec PHP 8.4.27 ou ultérieur (ou 8.5.12 ou ultérieur) et MySQL 8 ou ultérieur.
 Obtenez les noms du responsable du programme, du responsable de l'hébergement et du relecteur chargé de l'acceptation.
 
 ## Enregistrer la version de référence

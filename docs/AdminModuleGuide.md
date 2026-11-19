@@ -217,7 +217,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
 ```
 
 **Session lifetime:** The remember-me cookie configuration does not override the
-30-minute authenticated web inactivity timeout in `Pt_Plugins_PreSetter`.
+authenticated web inactivity timeout in `Pt_Plugins_PreSetter`. The timeout is 120 minutes by default. `session.idleMinutes` in `application.ini` sets it, within 10 to 480 minutes.
 Participant impersonation defaults to a 15-minute idle timeout. See [security controls](security.md).
 
 ### Login Flow
@@ -694,7 +694,7 @@ Test kits are a critical component of ePT:
 
 ### Scheme-Specific Settings
 
-Non-custom schemes have dedicated configuration pages:
+Each built-in scheme has a settings page in the Scheme Config hub. Open **Configure → Scheme Config**, then pick the scheme. The settings are stored in the `scheme_config` table.
 
 | Scheme | Settings Page | Key Configurations |
 |--------|---------------|-------------------|
@@ -705,7 +705,7 @@ Non-custom schemes have dedicated configuration pages:
 | Recency | Recency Settings | RTRI cutoffs, viral load thresholds |
 | COVID-19 | COVID-19 Settings | Platform options, Ct value ranges |
 
-**Location:** Configure → {Scheme} Settings
+**Location:** Configure → Scheme Config. The old per-scheme settings URLs redirect to the hub.
 
 ### Multi-Test Algorithms (HIV Serology)
 

@@ -8,7 +8,7 @@ It describes locked packages, not an inspection of installed software on a serve
 | Component | Recorded basis |
 | --- | --- |
 | ePT | `composer.json` declares `AGPL-3.0-only`. The repository contains `LICENSE.md` |
-| PHP | `composer.json` requires PHP 8.4-compatible versions |
+| PHP | `composer.json` requires PHP 8.4.27 or later on the 8.4 branch, or PHP 8.5.12 or later |
 | Node.js | `package.json` requires Node.js 22 or later for chart rendering |
 | Database and web server | Deployment inventory supplies actual versions and distribution license records |
 
