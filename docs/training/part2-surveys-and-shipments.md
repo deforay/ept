@@ -18,18 +18,18 @@
 
 ## 2.2 Add a Shipment
 
-- From the PT Survey list, click **Add Shipment** next to your new survey
-- Select the scheme from the dropdown (e.g., Dried Tube Specimen - HIV Serology)
+- From the PT Survey list, click **Add Shipment** next to your new survey. The survey's shipment list opens.
+- Select the scheme in **Scheme Type** (e.g., Dried Tube Specimen - HIV Serology)
+- Click **New Shipment**
 - Scroll down and configure:
   - **Shipment Code** — auto-generated, can be customized
   - **Result Due Date** — deadline for participant submissions
   - **Samples** — add 3–5 samples using the **+Sample/Control** button, and set expected results for each
-- Click **Add Shipment**
+- Click **Add Shipment**. The shipment list opens again with your new shipment.
 
 ## 2.3 Enroll Participants to the Shipment
 
-- Go to **Manage → PT Survey**
-- Click **Add Participants** next to your survey
+- On the shipment list, click the red **Enroll** button on your shipment. If you left the page, go to **Manage → PT Survey** and click **Add Participants** next to your survey to reopen it.
 - Click each participant name to move it to the enrolled side
 - Click **Enroll** to save
 
