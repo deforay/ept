@@ -59,7 +59,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
         $sampleIds = $params['sample_id'];
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // The API caller is the token's data manager, not whoever has a web session.
             $data = [
                 'shipment_map_id' => $params['mapId'],
                 'sample_id' => $sampleId,
@@ -70,11 +70,11 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
                 'comments' => $params['comments']->$key ?? null,
             ];
             if (empty($res)) {
-                $data['created_by'] = $authNameSpace->dm_id;
+                $data['created_by'] = $params['dmId'] ?? null;
                 $data['created_on'] = new Zend_Db_Expr('now()');
                 $id = $this->insert($data);
             } else {
-                $data['updated_by'] = $authNameSpace->dm_id;
+                $data['updated_by'] = $params['dmId'] ?? null;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
                 $id = $this->update($data, ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }

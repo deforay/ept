@@ -81,7 +81,7 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
                     'reported_result' => $params['reported_result'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => (int) $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }

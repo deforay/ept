@@ -1068,7 +1068,7 @@ class Application_Service_Evaluation
                             'contact_person_email' => $params['contactPersonEmail'],
                             'contact_person_telephone' => $params['contactPersonTelephone'],
                         ],
-                        'map_id = ' . $params['smid']
+                        ['map_id = ?' => (int) $params['smid']]
                     );
                     /* Participant table updation */
                     $dbAdapter->update(
@@ -1080,7 +1080,7 @@ class Application_Service_Evaluation
                             'contact_person_email' => $params['contactPersonEmail'],
                             'contact_person_telephone' => $params['contactPersonTelephone'],
                         ],
-                        'participant_id = ' . $params['participantId']
+                        ['participant_id = ?' => (int) $params['participantId']]
                     );
                 }
             } elseif ($params['scheme'] == 'dts') {
@@ -1330,7 +1330,7 @@ class Application_Service_Evaluation
                         'longterm_line' => $params['longtermLine'][$i],
                         'updated_by' => $admin,
                         'updated_on' => new Zend_Db_Expr('now()'),
-                    ], 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $params['sampleId'][$i]);
+                    ], ['shipment_map_id = ?' => (int) $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
                 }
                 /* Manual result override changes */
                 if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {

@@ -160,14 +160,17 @@
 	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this response? This cannot be undone!") ?> ")) {
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'dts', 'action' => 'delete')); ?>", {
+			// The same delete endpoint as PT Result Submission. dts/delete is an empty action.
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
 					mid: mid,
 					schemeType: schemeType,
 					userConfig: userConfiguration,
 					format: "html"
 				},
 				function(data) {
-					alert("<?= $this->jsTranslate("Response removed successfully") ?>");
+					// An empty body means the response was deleted; otherwise it is the refusal reason.
+					var refusal = $('<div>').html($.trim(data || '')).text();
+					alert(refusal !== '' ? refusal : "<?= $this->jsTranslate("Response removed successfully") ?>");
 
 					dsTable.fnDraw();
 					$.unblockUI();
