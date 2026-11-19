@@ -75,7 +75,7 @@ php bin/reset-password.php -e user@example.com -p "NewPassword123" --force-reset
 | Flag | Description |
 |------|-------------|
 | `-e` / `--email` / `--input` | Email address or participant code |
-| `-p` / `--password` | Set a specific password (min 6 characters) |
+| `-p` / `--password` | Set a specific password. The minimum length is the participant password length in ePT Global Settings, or 8 |
 | `-g` / `--generate` | Generate a random 12-character password |
 | `--force-reset` | Require the user to change password on next login |
 
@@ -100,7 +100,7 @@ php bin/reset-admin-password.php -e admin@example.com -p "NewPassword123" --forc
 | Flag | Description |
 |------|-------------|
 | `-e` / `--email` | Admin email address |
-| `-p` / `--password` | Set a specific password (min 6 characters) |
+| `-p` / `--password` | Set a specific password. The minimum length is the participant password length in ePT Global Settings, or 8 |
 | `-g` / `--generate` | Generate a random 12-character password |
 | `--force-reset` | Require the admin to change password on next login |
 

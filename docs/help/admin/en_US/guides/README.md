@@ -23,6 +23,9 @@ steps:
     # The drawer matches these against the current page to show
     # "✓ You're here" vs the "Open this screen" button.
     target_pages: [distributions/index, distributions/add]
+    # open_url: optional. Where "Open this screen" goes when the first
+    # target page is outside the admin module or needs parameters.
+    # Site-relative paths only, for example /reports/certificates.
   - id: 2
     title: Click "Add Shipment"
     target_pages: [distributions/index]

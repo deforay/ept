@@ -141,6 +141,8 @@ The following data is stored in Docker volumes and survives container restarts:
 - `logs` — application logs
 - `backups` — database backups
 - `downloads` — generated downloads
+- `config` — `application.ini` and `.env`
+- `certificate_templates` — uploaded certificate templates
 
 ### Common Commands
 
@@ -172,7 +174,7 @@ docker compose exec ept bash
 
 ### Updating (Docker)
 
-To update ePT, follow [Update a Docker installation](updating.md#update-a-docker-installation). A plain rebuild loses `application.ini` and `.env`, so copy them out first as that section shows.
+To update ePT, follow [Update a Docker installation](updating.md#update-a-docker-installation).
 
 The entrypoint script runs `composer post-update` (migrations and collation fixes) on every container start. See [Updating an ePT installation](updating.md) for verification and rollback.
 

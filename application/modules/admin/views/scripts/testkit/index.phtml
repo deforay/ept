@@ -64,7 +64,6 @@ $adminSession = new Zend_Session_Namespace('administrators');
             <select id="updateStatus" name="updateStatus" onchange="updateAll(this.value);" class="form-control input-sm">
                 <option value=""><?= $this->translate->_("Change Status"); ?></option>
                 <option value="approve"><?= $this->translate->_("Approve All"); ?></option>
-                <option value="pending"><?= $this->translate->_("Pending All"); ?></option>
             </select>
         </span>
         <div style="clear:both;"></div>
