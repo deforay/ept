@@ -367,7 +367,7 @@ class Application_Model_Vl
         $refResult = $db->fetchAll($refQuery);
 
         $colNamesArray = [];
-        $colNamesArray[] = 'Participant ID';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Participant ID');
         //$colNamesArray[] = "Lab Name";
         //$colNamesArray[] = "Department Name";
         //$colNamesArray[] = "Region";
@@ -381,13 +381,13 @@ class Application_Model_Vl
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-            ->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Participant ID'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(2) . 1)
-            ->setValueExplicit(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Participant Name'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(3) . 1)
-            ->setValueExplicit(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Country'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . 1)
-            ->setValueExplicit(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Response Status'));
         //$firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . 1)
         //->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCell(Coordinate::stringFromColumnIndex(5) . 1)
@@ -415,9 +415,9 @@ class Application_Model_Vl
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
             if ($methodOfEvaluation == 'iso17043') {
-                $colNamesArray[] = 'z Score for ' . $refRow['sample_label'];
+                $colNamesArray[] = sprintf(Pt_Commons_TranslateUtility::safeTranslate('z Score for %s'), $refRow['sample_label']);
 
-                $colNamesArray[] = 'Grade for ' . $refRow['sample_label'];
+                $colNamesArray[] = sprintf(Pt_Commons_TranslateUtility::safeTranslate('Grade for %s'), $refRow['sample_label']);
             }
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
                 ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
@@ -426,85 +426,85 @@ class Application_Model_Vl
         }
 
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Final Score'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Final Score';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Final Score');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Date Received'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Date Received';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Date Received');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Date Tested'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Date Tested';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Date Tested');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Date Reported', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Date Reported'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Date Reported';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Date Reported');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Assay'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Assay';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Assay');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Institute Name', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Institute Name'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Institute Name';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Institute Name');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Department Name', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Department Name'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Department Name';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Department Name');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Region'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Region';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Region');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Site Type'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Site Type';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Site Type');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Assay Expiration Date', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Assay Expiration Date'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Assay Expiration Date';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Assay Expiration Date');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Assay Lot Number', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Assay Lot Number'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Assay Lot Number';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Assay Lot Number');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Specimen Volume', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Specimen Volume'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Specimen Volume';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Specimen Volume');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Supervisor Name', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Supervisor Name'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = 'Supervisor Name';
+        $colNamesArray[] = Pt_Commons_TranslateUtility::safeTranslate('Supervisor Name');
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode('Participant Comment', ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Participant Comment'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         // $colNameCount++;
 
@@ -838,22 +838,22 @@ class Application_Model_Vl
                 } else {
                     $newsheet->mergeCells('A10:H10');
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 10)
-                        ->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(html_entity_decode(sprintf(Pt_Commons_TranslateUtility::safeTranslate('Platform/Assay Name: %s'), $vlCal['vlAssay']), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 11)
-                        ->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Specimen ID'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(2) . 11)
-                        ->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Number Of Participants'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(3) . 11)
-                        ->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Assigned Value (log10 copies/mL)'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(4) . 11)
-                        ->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Lower limit (Q1)'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(5) . 11)
-                        ->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Upper limit (Q3)'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(6) . 11)
-                        ->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Robust SD'));
                     $newsheet->mergeCells('G11:H11');
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(7) . 11)
-                        ->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Participants with Passing Results (|z| <3.0)'));
 
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 10)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 11)->applyFromArray($borderStyle, true);
@@ -914,29 +914,29 @@ class Application_Model_Vl
                 $newsheet->mergeCells('A' . $row . ':H' . $row);
                 $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . $row)
                     // Each tab holds one platform, so its table is titled with that platform, not the pooled group
-                    ->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $assayRow['name'] . (!empty($referenceAssayName) ? ' (evaluated against ' . $referenceAssayName . ')' : ' (platform with < 18 participants)'), ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode(sprintf(Pt_Commons_TranslateUtility::safeTranslate('Platform/Assay Name: %s'), $assayRow['name']) . ' ' . (!empty($referenceAssayName) ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('(evaluated against %s)'), $referenceAssayName) : Pt_Commons_TranslateUtility::safeTranslate('(platform with < 18 participants)')), ENT_QUOTES, 'UTF-8'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(1) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Specimen ID'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(2) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Number Of Participants'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(3) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Assigned Value (log10 copies/mL)'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(4) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Lower limit (Q1)'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(5) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Upper limit (Q3)'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(6) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Robust SD'));
                 $newsheet->mergeCells('G' . ($row + 1) . ':H' . ($row + 1));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(7) . ($row + 1)
-                )->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
+                )->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Participants with Passing Results (|z| <3.0)'));
 
                 $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . $row)->applyFromArray($boldStyleArray, true);
                 $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . ($row + 1))->applyFromArray($borderStyle, true);
@@ -1020,29 +1020,29 @@ class Application_Model_Vl
                     //write in excel low and high limit title
                     $newsheet->mergeCells('A1:F1');
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-                        ->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('System Generated'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
-                        ->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Sample'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
-                        ->setValueExplicit(html_entity_decode('Q1', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Q1'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
-                        ->setValueExplicit(html_entity_decode('Q3', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Q3'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 5)
-                        ->setValueExplicit(html_entity_decode('IQR', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('IQR'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 6)
-                        ->setValueExplicit(html_entity_decode('Quartile Low', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Quartile Low'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 7)
-                        ->setValueExplicit(html_entity_decode('Quartile High', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Quartile High'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 8)
-                        ->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Mean'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 9)
-                        ->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('SD'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 10)
-                        ->setValueExplicit(html_entity_decode('CV', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('CV'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 11)
-                        ->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Low Limit'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 12)
-                        ->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('High Limit'));
 
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2)->applyFromArray($styleArray, true);
@@ -1107,29 +1107,29 @@ class Application_Model_Vl
                     if (count($manual) > 0) {
                         $newsheet->mergeCells('A15:F15');
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 15)
-                            ->setValueExplicit(html_entity_decode('Manual Generated', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Generated'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 16)
-                            ->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Sample'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 17)
-                            ->setValueExplicit(html_entity_decode('Manual Q1', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Q1'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 18)
-                            ->setValueExplicit(html_entity_decode('Manual Q3', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Q3'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 19)
-                            ->setValueExplicit(html_entity_decode('Manual IQR', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual IQR'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 20)
-                            ->setValueExplicit(html_entity_decode('Manual Quartile Low', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Quartile Low'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 21)
-                            ->setValueExplicit(html_entity_decode('Manual Quartile High', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Quartile High'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 22)
-                            ->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Mean'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 23)
-                            ->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual SD'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 24)
-                            ->setValueExplicit(html_entity_decode('Manual CV', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual CV'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 25)
-                            ->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual Low Limit'));
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 26)
-                            ->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Manual High Limit'));
 
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 15)->applyFromArray($boldStyleArray, true);
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 16)->applyFromArray($styleArray, true);
@@ -1186,21 +1186,21 @@ class Application_Model_Vl
                 } elseif ($methodOfEvaluation == 'iso17043') {
                     $newsheet->mergeCells('A1:F1');
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-                        ->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('System Generated'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
-                        ->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Sample'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
-                        ->setValueExplicit(html_entity_decode('Median', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Median'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
-                        ->setValueExplicit(html_entity_decode('Upper Limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Upper Limit (Q3)'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 5)
-                        ->setValueExplicit(html_entity_decode('Lower Limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Lower Limit (Q1)'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 6)
-                        ->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Robust SD'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 7)
-                        ->setValueExplicit(html_entity_decode('Standard Uncertainty', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Standard Uncertainty'));
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 8)
-                        ->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Is Uncertainty Acceptable?'));
 
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2)->applyFromArray($styleArray, true);
@@ -1296,13 +1296,13 @@ class Application_Model_Vl
         };
 
         $row++;
-        $writeTableRow($inputsSheet, $row++, ['Statistics Group', 'Sample', 'Results Used', 'Results Not Used'], true);
+        $writeTableRow($inputsSheet, $row++, [Pt_Commons_TranslateUtility::safeTranslate('Statistics Group'), Pt_Commons_TranslateUtility::safeTranslate('Sample'), Pt_Commons_TranslateUtility::safeTranslate('Results Used'), Pt_Commons_TranslateUtility::safeTranslate('Results Not Used')], true);
         foreach ($inputs['summary'] as $summaryRow) {
             $writeTableRow($inputsSheet, $row++, [$summaryRow['group'], $summaryRow['sample'], $summaryRow['used'], $summaryRow['not_used']], false);
         }
 
         $row++;
-        $writeTableRow($inputsSheet, $row++, ['Participant ID', 'Lab Name', 'Platform', 'Sample', 'Reported Result (log10 copies/mL)', 'Used in Statistics', 'Reason Not Used', 'Statistics Group'], true);
+        $writeTableRow($inputsSheet, $row++, [Pt_Commons_TranslateUtility::safeTranslate('Participant ID'), Pt_Commons_TranslateUtility::safeTranslate('Lab Name'), Pt_Commons_TranslateUtility::safeTranslate('Platform'), Pt_Commons_TranslateUtility::safeTranslate('Sample'), Pt_Commons_TranslateUtility::safeTranslate('Reported Result (log10 copies/mL)'), Pt_Commons_TranslateUtility::safeTranslate('Used in Statistics'), Pt_Commons_TranslateUtility::safeTranslate('Reason Not Used'), Pt_Commons_TranslateUtility::safeTranslate('Statistics Group')], true);
         foreach ($inputs['rows'] as $inputRow) {
             $writeTableRow($inputsSheet, $row++, [
                 $inputRow['lab_id'],

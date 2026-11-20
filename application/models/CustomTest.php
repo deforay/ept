@@ -453,7 +453,7 @@ class Application_Model_CustomTest
 
         //<------------ Participant List Details Start -----
 
-        $participantListHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Telephone', 'Email'];
+        $participantListHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Institute Name'), Pt_Commons_TranslateUtility::safeTranslate('Department'), Pt_Commons_TranslateUtility::safeTranslate('Country'), Pt_Commons_TranslateUtility::safeTranslate('Address'), Pt_Commons_TranslateUtility::safeTranslate('Province'), Pt_Commons_TranslateUtility::safeTranslate('District'), Pt_Commons_TranslateUtility::safeTranslate('City'), Pt_Commons_TranslateUtility::safeTranslate('Telephone'), Pt_Commons_TranslateUtility::safeTranslate('Email')];
 
         $participantListSheet = new Worksheet($excel, 'Participant List');
         $excel->addSheet($participantListSheet, 0);
@@ -500,7 +500,7 @@ class Application_Model_CustomTest
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'District', 'Shipment Receipt Date', 'Testing Date', 'Date Reported', 'Kit Name', 'Kit Lot Number', 'Kit Expiry Date'];
+        $reportHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Region'), Pt_Commons_TranslateUtility::safeTranslate('District'), Pt_Commons_TranslateUtility::safeTranslate('Shipment Receipt Date'), Pt_Commons_TranslateUtility::safeTranslate('Testing Date'), Pt_Commons_TranslateUtility::safeTranslate('Date Reported'), Pt_Commons_TranslateUtility::safeTranslate('Kit Name'), Pt_Commons_TranslateUtility::safeTranslate('Kit Lot Number'), Pt_Commons_TranslateUtility::safeTranslate('Kit Expiry Date')];
         $shipmentAttributes = Zend_Json_Decoder::decode($result['shipment_attributes'], true);
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
@@ -510,7 +510,7 @@ class Application_Model_CustomTest
         }
         // For final Results
         $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-        array_push($reportHeadings, 'Comments');
+        array_push($reportHeadings, Pt_Commons_TranslateUtility::safeTranslate('Comments'));
         $resultReportSheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($resultReportSheet, 1);
         $resultReportSheet->setTitle('Results Reported', true);
@@ -528,7 +528,7 @@ class Application_Model_CustomTest
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
         // Added after the final-result positions are worked out, which count back from Comments.
-        $reportHeadings[] = 'Not Tested Reason';
+        $reportHeadings[] = Pt_Commons_TranslateUtility::safeTranslate('Not Tested Reason');
         $reasonColumn = count($reportHeadings);
 
         /* Final Result Merge options */
@@ -552,7 +552,7 @@ class Application_Model_CustomTest
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode('Final Results', ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Final Results'));
                     $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
                     $finalCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                     $resultReportSheet->getStyle($finalCellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
@@ -592,9 +592,9 @@ class Application_Model_CustomTest
         $panelScoreSheet->setTitle('Panel Score', true);
         $panelScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $panelScoreSheet->getDefaultRowDimension()->setRowHeight(18);
-        $panelScoreHeadings = ['Participant Code', 'Participant Name'];
+        $panelScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name')];
         $panelScoreHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $panelScoreHeadings);
-        array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
+        array_push($panelScoreHeadings, Pt_Commons_TranslateUtility::safeTranslate('Test# Correct'), Pt_Commons_TranslateUtility::safeTranslate('% Correct'));
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $sheetThreeColor = 1 + $result['number_of_samples'];
@@ -619,7 +619,7 @@ class Application_Model_CustomTest
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'Region', 'District', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
+        $totalScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Region'), Pt_Commons_TranslateUtility::safeTranslate('District'), sprintf(Pt_Commons_TranslateUtility::safeTranslate('No. of Panels Correct (N=%s)'), $result['number_of_samples']), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(90% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(10% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Total Score'), Pt_Commons_TranslateUtility::safeTranslate('Overall Performance')];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
