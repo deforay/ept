@@ -1755,7 +1755,8 @@ final class Application_Model_Dts
         }
         array_push(
             $reportHeadings,
-            $this->translator->_('Comments')
+            $this->translator->_('Comments'),
+            $this->translator->_('Not Tested Reason')
         );
 
         $colNo = 0;
@@ -2258,6 +2259,9 @@ final class Application_Model_Dts
                     $panelScoreRow[] = $countCorrectResult;
                     $panelScoreRow[] = $aRow['shipment_score'];
                 }
+                // A participant who did not test has no result cells. Pad so the reason stays in the last column.
+                $resultReportRow = array_pad($resultReportRow, count($reportHeadings) - 1, '');
+                $resultReportRow[] = Application_Model_DbTable_ResponseNotTestedReasons::exportText($aRow);
 
                 $totalScoreRow[] = $countCorrectResult;
                 $totalScoreRow[] = $aRow['shipment_score'];
@@ -2423,7 +2427,8 @@ final class Application_Model_Dts
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $sql = $this->db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.is_pt_test_not_performed', 'sp.pt_test_not_performed_comments'])
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id = sp.pt_not_tested_reason', ['ntTestedReason' => 'ntr.ntr_reason'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
             ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmm.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])

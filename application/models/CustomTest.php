@@ -432,7 +432,8 @@ class Application_Model_CustomTest
 
         $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['sl.user_test_config'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result', 'sp.is_pt_test_not_performed', 'sp.pt_test_not_performed_comments'])
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id = sp.pt_not_tested_reason', ['ntTestedReason' => 'ntr.ntr_reason'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
             ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmp.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
@@ -525,6 +526,10 @@ class Application_Model_CustomTest
         $c = 1;
         /* To get the end colum cell */
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
+
+        // Added after the final-result positions are worked out, which count back from Comments.
+        $reportHeadings[] = 'Not Tested Reason';
+        $reasonColumn = count($reportHeadings);
 
         /* Final Result Merge options */
         $firstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($finalResColoumn + 1) . 1)->getColumn();
@@ -650,7 +655,7 @@ class Application_Model_CustomTest
                 // $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['district'] ?? '');
-                $kitExpiryDate = $shipmentReceiptDate = '';
+                $kitExpiryDate = $shipmentReceiptDate = $shipmentTestDate = '';
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != '') {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
@@ -664,12 +669,13 @@ class Application_Model_CustomTest
                 if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != '' && trim($attributes['kit_expiry_date']) != '0000-00-00') {
                     $kitExpiryDate = Pt_Commons_General::excelDateFormat($attributes['kit_expiry_date']);
                 }
-                $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
+                // Participants who did not test or respond have no kit saved.
+                $testKits = !empty($attributes['kit_name']) ? ($kitDb->getTestKitNameById($attributes['kit_name'])[0] ?? '') : '';
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($reportedDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($testKits);
-                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number'] ?? '');
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($kitExpiryDate);
                 /* Panel score section */
                 $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
@@ -689,11 +695,11 @@ class Application_Model_CustomTest
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['result']])));
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['result_1']])));
                     }
                     if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
+                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['result_2']])));
                         }
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
@@ -735,6 +741,9 @@ class Application_Model_CustomTest
                 $panelScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
                 $resultReportSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
                 $totalScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
+                // A participant who did not test has no result cells, so write the reason by column number.
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($reasonColumn) . $currentRow)
+                    ->setValueExplicit(Application_Model_DbTable_ResponseNotTestedReasons::exportText($aRow));
 
                 $currentRow++;
 

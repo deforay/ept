@@ -5,6 +5,26 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
     protected $_name = 'r_response_not_tested_reasons';
     protected $_primary = 'ntr_id';
 
+    /**
+     * The "Not Tested Reason" cell of a shipment Excel export.
+     * Expects is_pt_test_not_performed, pt_test_not_performed_comments and the
+     * reason name as ntTestedReason. Empty unless the participant did not test.
+     */
+    public static function exportText(array $row): string
+    {
+        if (($row['is_pt_test_not_performed'] ?? '') !== 'yes') {
+            return '';
+        }
+        $reason = trim((string) ($row['ntTestedReason'] ?? ''));
+        if ($reason !== '') {
+            $reason = Pt_Commons_TranslateUtility::safeTranslate($reason);
+        }
+        $comment = trim((string) ($row['pt_test_not_performed_comments'] ?? ''));
+        $parts = array_filter([$reason, $comment], static fn ($part) => $part !== '');
+
+        return $parts === [] ? Pt_Commons_TranslateUtility::safeTranslate('Not Tested') : implode(': ', $parts);
+    }
+
     public function fetchAllSampleNotTeastedReasonsInGrid($parameters)
     {
 
