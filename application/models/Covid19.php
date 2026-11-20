@@ -497,7 +497,7 @@ class Application_Model_Covid19
         $firstSheet->setTitle('Instructions', true);
         //$firstSheet->getDefaultColumnDimension()->setWidth(44);
         //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
-        $firstSheetHeading = ['Tab Name', 'Description'];
+        $firstSheetHeading = [Pt_Commons_TranslateUtility::safeTranslate('Tab Name'), Pt_Commons_TranslateUtility::safeTranslate('Description')];
         $firstSheetColNo = 0;
         $firstSheetRow = 1;
 
@@ -565,7 +565,7 @@ class Application_Model_Covid19
         }
         //<------------ Participant List Details Start -----
 
-        $headings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
+        $headings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Institute Name'), Pt_Commons_TranslateUtility::safeTranslate('Department'), Pt_Commons_TranslateUtility::safeTranslate('Country'), Pt_Commons_TranslateUtility::safeTranslate('Address'), Pt_Commons_TranslateUtility::safeTranslate('Province'), Pt_Commons_TranslateUtility::safeTranslate('District'), Pt_Commons_TranslateUtility::safeTranslate('City'), Pt_Commons_TranslateUtility::safeTranslate('Facility Telephone'), Pt_Commons_TranslateUtility::safeTranslate('Email')];
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
@@ -646,20 +646,20 @@ class Application_Model_Covid19
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Date Reported', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date'];
+        $reportHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Point of Contact'), Pt_Commons_TranslateUtility::safeTranslate('Region'), Pt_Commons_TranslateUtility::safeTranslate('Shipment Receipt Date'), Pt_Commons_TranslateUtility::safeTranslate('Sample Rehydration Date'), Pt_Commons_TranslateUtility::safeTranslate('Testing Date'), Pt_Commons_TranslateUtility::safeTranslate('Date Reported'), Pt_Commons_TranslateUtility::safeTranslate('Test#1 Name'), Pt_Commons_TranslateUtility::safeTranslate('Name of PCR reagent #1'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent Lot #1'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent expiry date #1'), Pt_Commons_TranslateUtility::safeTranslate('Type Lot #1'), Pt_Commons_TranslateUtility::safeTranslate('Expiry Date')];
         $maximumAllowed = $config['covid19MaximumTestAllowed'];
         if ($result['scheme_type'] == 'covid19') {
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             if ($maximumAllowed >= 2) {
-                array_push($reportHeadings, 'Test#2 Name', 'Name of PCR reagent #2', 'PCR reagent Lot #2', 'PCR reagent expiry date #2', 'Type Lot #2', 'Expiry Date');
+                array_push($reportHeadings, Pt_Commons_TranslateUtility::safeTranslate('Test#2 Name'), Pt_Commons_TranslateUtility::safeTranslate('Name of PCR reagent #2'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent Lot #2'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent expiry date #2'), Pt_Commons_TranslateUtility::safeTranslate('Type Lot #2'), Pt_Commons_TranslateUtility::safeTranslate('Expiry Date'));
                 $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             }
             if ($maximumAllowed == 3) {
-                array_push($reportHeadings, 'Test#3 Name', 'Name of PCR reagent #3', 'PCR reagent Lot #3', 'PCR reagent expiry date #3', 'Type Lot #3', 'Expiry Date');
+                array_push($reportHeadings, Pt_Commons_TranslateUtility::safeTranslate('Test#3 Name'), Pt_Commons_TranslateUtility::safeTranslate('Name of PCR reagent #3'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent Lot #3'), Pt_Commons_TranslateUtility::safeTranslate('PCR reagent expiry date #3'), Pt_Commons_TranslateUtility::safeTranslate('Type Lot #3'), Pt_Commons_TranslateUtility::safeTranslate('Expiry Date'));
                 $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             }
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Comments');
+            array_push($reportHeadings, Pt_Commons_TranslateUtility::safeTranslate('Comments'));
         }
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
@@ -674,7 +674,7 @@ class Application_Model_Covid19
         $finalResColoumn = $n - ($result['number_of_samples'] + 1);
 
         // Added after the final-result positions are worked out, which count back from Comments.
-        $reportHeadings[] = 'Not Tested Reason';
+        $reportHeadings[] = Pt_Commons_TranslateUtility::safeTranslate('Not Tested Reason');
         $n = $reasonColumn = count($reportHeadings);
         $c = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
@@ -699,7 +699,7 @@ class Application_Model_Covid19
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode('Final Results', ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Final Results'));
                     $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
@@ -731,9 +731,9 @@ class Application_Model_Covid19
         $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
-        $panelScoreHeadings = ['Participant Code', 'Participant Name'];
+        $panelScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name')];
         $panelScoreHeadings = $this->addCovid19SampleNameInArray($shipmentId, $panelScoreHeadings);
-        array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
+        array_push($panelScoreHeadings, Pt_Commons_TranslateUtility::safeTranslate('Test# Correct'), Pt_Commons_TranslateUtility::safeTranslate('% Correct'));
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $panelScoreHeadingCount = count($panelScoreHeadings);
@@ -812,7 +812,7 @@ class Application_Model_Covid19
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
+        $totalScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), sprintf(Pt_Commons_TranslateUtility::safeTranslate('No. of Panels Correct (N=%s)'), $result['number_of_samples']), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(90% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(10% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Total Score'), Pt_Commons_TranslateUtility::safeTranslate('Overall Performance')];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;

@@ -550,7 +550,7 @@ class Application_Model_Recency
 
         //<------------ Participant List Details Start -----
 
-        $headings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
+        $headings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Institute Name'), Pt_Commons_TranslateUtility::safeTranslate('Department'), Pt_Commons_TranslateUtility::safeTranslate('Country'), Pt_Commons_TranslateUtility::safeTranslate('Address'), Pt_Commons_TranslateUtility::safeTranslate('Province'), Pt_Commons_TranslateUtility::safeTranslate('District'), Pt_Commons_TranslateUtility::safeTranslate('City'), Pt_Commons_TranslateUtility::safeTranslate('Facility Telephone'), Pt_Commons_TranslateUtility::safeTranslate('Email')];
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
@@ -634,16 +634,16 @@ class Application_Model_Recency
 
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Date Reported'];
+        $reportHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Point of Contact'), Pt_Commons_TranslateUtility::safeTranslate('Region'), Pt_Commons_TranslateUtility::safeTranslate('Shipment Receipt Date'), Pt_Commons_TranslateUtility::safeTranslate('Sample Rehydration Date'), Pt_Commons_TranslateUtility::safeTranslate('Testing Date'), Pt_Commons_TranslateUtility::safeTranslate('Date Reported')];
 
         // Each sample has four columns, in the order the rows below write them.
-        $sampleColumns = ['Control Line', 'Verification Line', 'Long Term Line', 'Final Result'];
+        $sampleColumns = [Pt_Commons_TranslateUtility::safeTranslate('Control Line'), Pt_Commons_TranslateUtility::safeTranslate('Verification Line'), Pt_Commons_TranslateUtility::safeTranslate('Long Term Line'), Pt_Commons_TranslateUtility::safeTranslate('Final Result')];
         $firstSampleColumn = count($reportHeadings) + 1;
         $numberOfSamples = (int) $result['number_of_samples'];
         for ($i = 0; $i < $numberOfSamples; $i++) {
             array_push($reportHeadings, ...$sampleColumns);
         }
-        array_push($reportHeadings, 'Comments', 'Not Tested Reason');
+        array_push($reportHeadings, Pt_Commons_TranslateUtility::safeTranslate('Comments'), Pt_Commons_TranslateUtility::safeTranslate('Not Tested Reason'));
         $n = $reasonColumn = count($reportHeadings);
 
         $sheet = new Worksheet($excel, 'Results Reported');
@@ -699,9 +699,9 @@ class Application_Model_Recency
         // The sample labels sit after the two participant columns - the data rows below
         // write participant code + name first. addRecencySampleNameInArray() returns just
         // the labels (its other caller wants them on their own), so merge rather than assign.
-        $panelScoreHeadings = ['Participant Code', 'Participant Name'];
+        $panelScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name')];
         $panelScoreHeadings = array_merge($panelScoreHeadings, $this->addRecencySampleNameInArray($shipmentId));
-        array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
+        array_push($panelScoreHeadings, Pt_Commons_TranslateUtility::safeTranslate('Test# Correct'), Pt_Commons_TranslateUtility::safeTranslate('% Correct'));
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $panelScoreHeadingCount = count($panelScoreHeadings);
@@ -737,7 +737,7 @@ class Application_Model_Recency
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
         $docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
-        $docScoreHeadings = ['Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %'];
+        $docScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), Pt_Commons_TranslateUtility::safeTranslate('Supervisor signature'), Pt_Commons_TranslateUtility::safeTranslate('Panel Receipt Date'), Pt_Commons_TranslateUtility::safeTranslate('Rehydration Date'), Pt_Commons_TranslateUtility::safeTranslate('Tested Date'), Pt_Commons_TranslateUtility::safeTranslate('Rehydration Test In Specified Time'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score %')];
 
         $docScoreSheetCol = 0;
         $docScoreRow = 1;
@@ -754,7 +754,7 @@ class Application_Model_Recency
         }
         $docScoreRow = 2;
         $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(2) . $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode('Points Breakdown', ENT_QUOTES, 'UTF-8'));
+        $secondRowcellName->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Points Breakdown'));
         $docScoreSheet->getStyle(Coordinate::stringFromColumnIndex(2) . $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
@@ -777,7 +777,7 @@ class Application_Model_Recency
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
+        $totalScoreHeadings = [Pt_Commons_TranslateUtility::safeTranslate('Participant Code'), Pt_Commons_TranslateUtility::safeTranslate('Participant Name'), sprintf(Pt_Commons_TranslateUtility::safeTranslate('No. of Panels Correct (N=%s)'), $result['number_of_samples']), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Panel Score(90% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(100% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Documentation Score(10% Conv.)'), Pt_Commons_TranslateUtility::safeTranslate('Total Score'), Pt_Commons_TranslateUtility::safeTranslate('Overall Performance')];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;

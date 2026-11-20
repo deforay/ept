@@ -221,43 +221,43 @@ class Application_Model_Eid
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
-        $firstSheet->getCell('A1')->setValue(html_entity_decode('Lab ID', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('A1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Lab ID'));
 
         $firstSheet->mergeCells('B1:B2');
-        $firstSheet->getCell('B1')->setValue(html_entity_decode('Lab Name', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('B1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Lab Name'));
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->getCell('C1')->setValue(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('C1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Country'));
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->getCell('D1')->setValue(html_entity_decode('Institute', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('D1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Institute'));
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->getCell('E1')->setValue(html_entity_decode('Department', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('E1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Department'));
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->getCell('F1')->setValue(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('F1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Region'));
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->getCell('G1')->setValue(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('G1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Site Type'));
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('H1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Assay'));
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->getCell('I1')->setValue(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('I1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Date Received'));
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->getCell('J1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('J1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Date Tested'));
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode('Date Reported', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('K1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Date Reported'));
 
         $firstSheet->mergeCells('L1:L2');
-        $firstSheet->getCell('L1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('L1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Response Status'));
 
         $firstSheet->mergeCells('M1:M2');
-        $firstSheet->getCell('M1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('M1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('Final Score'));
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
@@ -274,7 +274,7 @@ class Application_Model_Eid
         $cellName2 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode('PARTICIPANT RESPONSE', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName1 . '1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('PARTICIPANT RESPONSE'));
 
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
@@ -289,7 +289,7 @@ class Application_Model_Eid
         $cellName4 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode('REFERENCE RESULTS', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName3 . '1')->setValue(Pt_Commons_TranslateUtility::safeTranslate('REFERENCE RESULTS'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
 
         $reasonColumn = $colNameCount + 1;
