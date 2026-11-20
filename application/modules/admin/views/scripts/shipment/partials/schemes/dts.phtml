@@ -146,6 +146,12 @@ function isSampleDilutedColumnVisible(?string $schemeType): bool
 }
 
 
+// Retired (status='inactive') results are left out of the expected-result picker. A row that
+// already holds a retired result still shows it, so editing an older shipment keeps its value.
+$isRetiredResult = static function ($pr) {
+    return (($pr['status'] ?? 'active') === 'inactive');
+};
+
 // Normalize possible results
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];
 $rtriPossibleResults = $this->rtriPossibleResults ?? [];
@@ -174,7 +180,7 @@ $allGeenius = array_column($geeniusData, 'sample_id');
 // Test results (for individual tests - DTS_TEST)
 $testResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+    if ($pr['scheme_sub_group'] == 'DTS_TEST' && !$isRetiredResult($pr)) {
         $testResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -182,7 +188,7 @@ foreach ($dtsPossibleResults as $pr) {
 // Final results (for sample final result - DTS_FINAL)
 $finalResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+    if ($pr['scheme_sub_group'] == 'DTS_FINAL' && !$isRetiredResult($pr)) {
         $finalResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -190,7 +196,7 @@ foreach ($dtsPossibleResults as $pr) {
 // Syphilis results (DTS_SYP_FINAL)
 $syphilisResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
+    if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL' && !$isRetiredResult($pr)) {
         $syphilisResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -198,7 +204,7 @@ foreach ($dtsPossibleResults as $pr) {
 // RTRI results (RECENCY_FINAL)
 $rtriResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($rtriPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL' && !$isRetiredResult($pr)) {
         $rtriResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -546,7 +552,7 @@ if ($renderTestPanelTypeSection) { ?>
                         <select name="possibleResults[]" class="isRequired form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($editPossibleResults as $pr):
-                                if ($pr['scheme_sub_group'] == 'DTS_FINAL'): ?>
+                                if ($pr['scheme_sub_group'] == 'DTS_FINAL' && (!$isRetiredResult($pr) || $referenceResult == $pr['id'])): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
@@ -558,7 +564,7 @@ if ($renderTestPanelTypeSection) { ?>
                         <select name="possibleSyphilisResults[]" class="form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($editPossibleResults as $pr):
-                                if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL'): ?>
+                                if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL' && (!$isRetiredResult($pr) || $syphilisResult == $pr['id'])): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
@@ -570,7 +576,7 @@ if ($renderTestPanelTypeSection) { ?>
                         <select name="possibleRTRIResults[]" class="form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($rtriPossibleResults as $pr):
-                                if ($pr['scheme_sub_group'] == 'RECENCY_FINAL'): ?>
+                                if ($pr['scheme_sub_group'] == 'RECENCY_FINAL' && (!$isRetiredResult($pr) || $rtriResult == $pr['id'])): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>

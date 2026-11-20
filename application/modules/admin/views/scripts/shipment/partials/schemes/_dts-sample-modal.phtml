@@ -63,7 +63,7 @@
                                 <select class="form-control" name="eia[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($eia['result'] ?? ''))): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $eia['result']) ? "selected='selected'" : ""; ?>>
                                             <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
@@ -94,7 +94,7 @@
                                 <select class="form-control" name="eia[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && !$isRetiredResult($pr)): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo $this->htmlTranslate($pr['response']); ?></option>
                                     <?php endif; endforeach; ?>
                                 </select>
@@ -162,7 +162,7 @@
                                 <select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][result][]" style="width:100px;"> 
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($wb['result'] ?? ''))): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $wb['result']) ? "selected='selected'" : ""; ?>>
                                             <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
@@ -200,7 +200,7 @@
                                 <select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && !$isRetiredResult($pr)): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo $this->htmlTranslate($pr['response']); ?></option>
                                     <?php endif; endforeach; ?>
                                 </select>
@@ -254,7 +254,7 @@
                                 <select class="form-control" name="rhiv[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($rhiv['result'] ?? ''))): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $rhiv['result']) ? "selected='selected'" : ""; ?>>
                                             <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
@@ -327,7 +327,7 @@
                                 <select class="form-control" name="geenius[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
-                                        if ($pr['scheme_sub_group'] == 'DTS_TEST'):
+                                        if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($geenius['result'] ?? ''))):
                                             $selected = ($pr['id'] == $geenius['result']) ? "selected='selected'" : "";
                                     ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo $selected; ?>>

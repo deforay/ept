@@ -28080,6 +28080,10 @@ msgstr ""
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
 
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml
+msgid "Inactive results are hidden from new response entry and the expected-result picker"
+msgstr "Kết quả không hoạt động sẽ bị ẩn khi nhập phản hồi mới và trong danh sách chọn kết quả mong đợi"
+
 #~ msgid "Add PT Participant"
 #~ msgstr "Thêm đơn vị tham gia PT"
 

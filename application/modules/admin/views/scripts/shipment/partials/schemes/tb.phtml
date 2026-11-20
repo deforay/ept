@@ -31,10 +31,16 @@ if ($isEditMode && isset($this->shipmentData['shipment']['shipment_attributes'])
 }
 
 // Normalize possible results - categorize by type
+// Retired (status='inactive') results are left out of the expected-result picker. A sample that
+// already holds a retired result still shows it. TB options are keyed by result_code.
 $possibleMicroscopeResults = [];
 $possibleResults = [];
+$retiredResultCodes = [];
 $tbPossibleResults = $this->tbPossibleResults ?? [];
 foreach ($tbPossibleResults as $pr) {
+    if (($pr['status'] ?? 'active') === 'inactive') {
+        $retiredResultCodes[] = $pr['result_code'];
+    }
     if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
         $possibleResults[$pr['result_code']] = $pr['response'];
     }
@@ -432,7 +438,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
                             class="isRequired microscopyfield form-control input-sm"
                             title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>"
                             placeholder="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>">
-                            <?php $this->dropdownSelection($possibleMicroscopeResults, $reference['mtb_detected'] ?? null, true); ?>
+                            <?php $this->dropdownSelection($possibleMicroscopeResults, $reference['mtb_detected'] ?? null, true, false, $retiredResultCodes); ?>
                         </select>
                     </td>
                     <td>
@@ -486,7 +492,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
                     <select name="mtbDetected[1]" class="isRequired microscopyfield form-control input-sm"
                         title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>"
                         placeholder="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>">
-                        <?php $this->dropdownSelection($possibleMicroscopeResults, null, true); ?>
+                        <?php $this->dropdownSelection($possibleMicroscopeResults, null, true, false, $retiredResultCodes); ?>
                     </select>
                 </td>
                 <td>
@@ -583,7 +589,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
                             class="isRequired molecularfield tb-mirror-src form-control input-sm"
                             data-mirror="mtbDetectedUltra<?php echo $rowNo; ?>"
                             title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>">
-                            <?php $this->dropdownSelection($possibleResults, $mtbPrimary, true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $mtbPrimary, true, false, $retiredResultCodes); ?>
                         </select>
                         <input type="hidden" name="mtbDetectedUltra[<?php echo htmlspecialchars($sampleId); ?>]"
                             id="mtbDetectedUltra<?php echo $rowNo; ?>" class="molecularfield"
@@ -724,7 +730,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
                     <select name="mtbDetected[1]" id="mtbDetected1"
                         class="isRequired molecularfield tb-mirror-src form-control input-sm"
                         data-mirror="mtbDetectedUltra1" title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample") ?>">
-                        <?php $this->dropdownSelection($possibleResults, null, true); ?>
+                        <?php $this->dropdownSelection($possibleResults, null, true, false, $retiredResultCodes); ?>
                     </select>
                     <input type="hidden" name="mtbDetectedUltra[1]" id="mtbDetectedUltra1" class="molecularfield" value="" />
                 </div>
@@ -866,7 +872,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
             </td>\
             <td> \
                 <select name="mtbDetected[' + sampleCounter + ']" id="mtbDetected' + sampleCounter + '" class="isRequired form-control microscopyfield input-sm"  title="<?= $this->jsTranslate("Please enter the MTB Detected for this sample") ?>" placeholder="<?= $this->jsTranslate("Please enter the MTB Detected for this sample") ?>"> \
-                <?php $this->dropdownSelection($possibleMicroscopeResults, null, true); ?>\
+                <?php $this->dropdownSelection($possibleMicroscopeResults, null, true, false, $retiredResultCodes); ?>\
                 </select> \
             </td> \
             <td> \
@@ -921,7 +927,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
             <div class="tb-result-field tb-result-lead">\
                 <label class="tb-field-label"><?= $this->jsTranslate("MTB Detected"); ?> (<?= $this->jsTranslate("Level"); ?>)</label>\
                 <select name="mtbDetected[' + sampleCounter + ']" id="mtbDetected' + sampleCounter + '" class="isRequired molecularfield tb-mirror-src form-control input-sm" data-mirror="mtbDetectedUltra' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the MTB Detected for this sample") ?>">\
-                <?php $this->dropdownSelection($possibleResults, null, true); ?>\
+                <?php $this->dropdownSelection($possibleResults, null, true, false, $retiredResultCodes); ?>\
                 </select>\
                 <input type="hidden" name="mtbDetectedUltra[' + sampleCounter + ']" id="mtbDetectedUltra' + sampleCounter + '" class="molecularfield" value="" />\
             </div>\

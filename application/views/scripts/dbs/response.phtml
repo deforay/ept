@@ -218,7 +218,13 @@ if ($this->reqFrom == "admin") {
                     <hr>
                     <?php
                     $possibleFinalResults = [];
+                    // Retired (status='inactive') results are left out of new entry. A dropdown still
+                    // shows a retired result when it is the value this participant saved.
+                    $retiredResultIds = [];
                     foreach ($this->possibleResults as $pr) {
+                        if (($pr['status'] ?? 'active') === 'inactive') {
+                            $retiredResultIds[] = $pr['id'];
+                        }
                         if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
                             $possibleFinalResults[$pr['id']] = $pr['response'];
                         }
@@ -436,7 +442,7 @@ if ($this->reqFrom == "admin") {
                                         <select class="form-control" name="reported_result[]"
                                             id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?>
                                             title="<?= $this->htmlTranslate("Please enter the result"); ?>">
-                                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true, false, $retiredResultIds); ?>
                                         </select>
                                     </td>
                                     <?php if ($adminAccess) { ?>

@@ -260,8 +260,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                     // result just hides it from new entry; history keeps it).
                                     $upd = [
                                         'status'     => $status,
-                                        'sort_order' => (($params[$test]['sortOrder'][$key][$ikey] ?? '') === '')
-                                            ? null : $params[$test]['sortOrder'][$key][$ikey],
+                                        'sort_order' => self::sortOrderValue($params[$test]['sortOrder'][$key][$ikey] ?? null),
                                     ];
                                     $ctx = $params[$test]['displayContext'][$key][$ikey] ?? '';
                                     if (in_array($ctx, ['participant', 'admin', 'all', 'none'], true)) {
@@ -280,7 +279,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                         'response'          => $params[$test]['expectedResult'][$key][$ikey],
                                         'result_code'       => $params[$test]['resultCode'][$key][$ikey],
                                         'display_context'   => $params[$test]['displayContext'][$key][$ikey],
-                                        'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
+                                        'sort_order'        => self::sortOrderValue($params[$test]['sortOrder'][$key][$ikey] ?? null),
                                         'status'            => $status,
                                     ]);
                                 }
@@ -515,6 +514,11 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
 
         $allowedContexts = ['participant', 'admin', 'all', 'none'];
+        // Inactive = retired: hidden from new response entry and the expected-result picker,
+        // but kept for shipments that already use it. Anything else posted reads as active.
+        $statusOf = static function ($value) {
+            return ($value === 'inactive') ? 'inactive' : 'active';
+        };
 
         // Pre-defined sub-tests (scheme_sub_group richer than the plain "{SCHEME}_TEST/FINAL" or
         // bare "TEST/FINAL" forms -- e.g. DTS_SYP_TEST, RECENCY_FINAL) cannot be represented by
@@ -540,16 +544,19 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 }
             }
 
-            // Refuse to rewrite an in-use row's code / response / grouping. Only its sort order
-            // and display context may change (same two columns the locked* path below allows).
+            // Refuse to rewrite an in-use row's code / response / grouping. Only its sort order,
+            // display context and status may change (same columns the locked* path below allows).
             if ($rowId !== null && isset($usedIds[(int) $rowId])) {
                 $frozen = [];
                 if (array_key_exists($key, $params['sortOrder'] ?? [])) {
-                    $frozen['sort_order'] = ($params['sortOrder'][$key] === '') ? null : $params['sortOrder'][$key];
+                    $frozen['sort_order'] = self::sortOrderValue($params['sortOrder'][$key]);
                 }
                 if (isset($params['displayContext'][$key])) {
                     $ctx = $params['displayContext'][$key];
                     $frozen['display_context'] = in_array($ctx, $allowedContexts, true) ? $ctx : 'all';
+                }
+                if (isset($params['status'][$key])) {
+                    $frozen['status'] = $statusOf($params['status'][$key]);
                 }
                 if (!empty($frozen)) {
                     $db->update('r_possibleresult', $frozen, ['id = ?' => $rowId]);
@@ -571,8 +578,12 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 'response'        => $params['response'][$key],
                 'result_code'     => $params['resultCode'][$key],
                 'display_context' => $displayContext,
-                'sort_order'      => $params['sortOrder'][$key],
+                'sort_order'      => self::sortOrderValue($params['sortOrder'][$key] ?? null),
             ];
+            // A form that posts no status leaves an existing row's status alone; new rows are active.
+            if (isset($params['status'][$key]) || $rowId === null) {
+                $data['status'] = $statusOf($params['status'][$key] ?? 'active');
+            }
 
             if ($rowId !== null) {
                 $db->update('r_possibleresult', $data, ['id = ?' => $rowId]);
@@ -582,14 +593,15 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
 
         // In-use rows (results belonging to a not-yet-finalized shipment) are locked in the
-        // form except for sort order and "displayed to". They are submitted under separate
-        // `locked*` arrays keyed by the base64 row id, and ONLY those two columns are updated
+        // form except for sort order, "displayed to" and status. They are submitted under separate
+        // `locked*` arrays keyed by the base64 row id, and ONLY those three columns are updated
         // here -- never scheme_sub_group / response / result_code. Routing them through the
         // main loop above would rebuild scheme_sub_group from the TEST/FINAL select and clobber
         // multi-subgroup grouping (e.g. DTS_SYP_TEST -> dts-TEST).
         $lockedSort = $params['lockedSortOrder'] ?? [];
         $lockedCtx  = $params['lockedDisplayContext'] ?? [];
-        $lockedIds  = array_unique(array_merge(array_keys($lockedSort), array_keys($lockedCtx)));
+        $lockedStat = $params['lockedStatus'] ?? [];
+        $lockedIds  = array_unique(array_merge(array_keys($lockedSort), array_keys($lockedCtx), array_keys($lockedStat)));
 
         foreach ($lockedIds as $encId) {
             $rowId = base64_decode((string) $encId);
@@ -599,11 +611,14 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
             $update = [];
             if (array_key_exists($encId, $lockedSort)) {
-                $update['sort_order'] = ($lockedSort[$encId] === '') ? null : $lockedSort[$encId];
+                $update['sort_order'] = self::sortOrderValue($lockedSort[$encId]);
             }
             if (array_key_exists($encId, $lockedCtx)) {
                 $ctx = $lockedCtx[$encId];
                 $update['display_context'] = in_array($ctx, $allowedContexts, true) ? $ctx : 'all';
+            }
+            if (array_key_exists($encId, $lockedStat)) {
+                $update['status'] = $statusOf($lockedStat[$encId]);
             }
 
             if (!empty($update)) {
@@ -637,7 +652,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 ->joinLeft(
                     ['rp' => 'r_possibleresult'],
                     'rp.scheme_id = sl.scheme_id',
-                    ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.display_context', 'rp.sort_order']
+                    ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.display_context', 'rp.sort_order', 'rp.status']
                 )
                 ->where('sl.scheme_id = ?', $id)
                 // Group Test Results first, then Final Interpretations; within each group order
@@ -682,6 +697,15 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
      *
      * @return array{0: ?string, 1: string[]} [table, columns]; [null, []] when unknown.
      */
+    /**
+     * A blank Sort Order means "not set" and is stored as NULL. Writing '' to the int column
+     * stores 0 instead, which moves the row ahead of every other unset row in the dropdowns.
+     */
+    private static function sortOrderValue($value)
+    {
+        return (is_null($value) || trim((string) $value) === '') ? null : trim((string) $value);
+    }
+
     private function responseTableAndColumns($schemeId, $isUserConfigured)
     {
         if ($isUserConfigured) {

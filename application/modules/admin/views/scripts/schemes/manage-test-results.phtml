@@ -291,6 +291,15 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 	.floating-buttons.dirty .unsaved-dot {
 		display: inline-block;
 	}
+	/* Retired results stay listed (and editable) but read as dimmed */
+	#rowsBody tr.row-inactive td {
+		opacity: 0.6;
+	}
+
+	#rowsBody tr.row-inactive td:last-child,
+	#rowsBody tr.row-inactive td.status-cell {
+		opacity: 1;
+	}
 </style>
 
 <div class="scheme-results-container">
@@ -374,6 +383,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 								<th style="width:16%;"><?= $this->translate->_("Result Code"); ?></th>
 								<th style="width:14%;"><?= $this->translate->_("Displayed To"); ?></th>
 								<th style="width:9%;"><?= $this->translate->_("Sort Order"); ?></th>
+								<th style="width:11%;"><?= $this->translate->_("Status"); ?></th>
 								<th style="width:70px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
 							</tr>
 						</thead>
@@ -436,8 +446,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 									$disable = $locked ? 'disabled' : '';
 									$encId   = base64_encode($row['id']);
+									$rowStatus = (($row['status'] ?? 'active') === 'inactive') ? 'inactive' : 'active';
 								?>
-									<tr class="<?= $rowTypeClass; ?>">
+									<tr class="<?= $rowTypeClass; ?><?= $rowStatus === 'inactive' ? ' row-inactive' : ''; ?>">
 										<td class="row-num"><?= $i + 1; ?></td>
 										<td>
 											<input type="hidden" name="rId[<?php echo $i; ?>]" value="<?php echo $encId; ?>" <?php echo $disable; ?> />
@@ -497,6 +508,19 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 											<?php $soName = $locked ? 'lockedSortOrder[' . $encId . ']' : 'sortOrder[' . $i . ']'; ?>
 											<input type="text" name="<?= $soName; ?>" class="form-control js-sort"
 												value="<?= htmlspecialchars((string) ($row['sort_order'] ?? '')); ?>" placeholder="0" />
+										</td>
+										<td class="status-cell">
+											<?php
+											// Status stays editable on locked rows, like Displayed To and Sort Order:
+											// a result in use can still be retired. Inactive hides it from new
+											// response entry and the expected-result picker only.
+											$stName = $locked ? 'lockedStatus[' . $encId . ']' : 'status[' . $i . ']';
+											?>
+											<select name="<?= $stName; ?>" class="form-control js-status"
+												title="<?= $this->translate->_("Inactive results are hidden from new response entry and the expected-result picker"); ?>">
+												<option value="active" <?= ($rowStatus === 'active') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Active"); ?></option>
+												<option value="inactive" <?= ($rowStatus === 'inactive') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Inactive"); ?></option>
+											</select>
 										</td>
 										<td class="action-cell">
 											<?php if ($locked) : ?>
@@ -665,6 +689,12 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			'</select>' +
 			'</td>' +
 			'<td><input type="text" name="sortOrder[]" class="form-control js-sort" placeholder="0" /></td>' +
+			'<td class="status-cell">' +
+			'<select name="status[]" class="form-control js-status">' +
+			'<option value="active"><?= $this->jsTranslate("Active"); ?></option>' +
+			'<option value="inactive"><?= $this->jsTranslate("Inactive"); ?></option>' +
+			'</select>' +
+			'</td>' +
 			'<td class="action-cell">' +
 			'<button type="button" class="btn-row-remove" title="<?= $this->jsTranslate("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
 			'</td>';
@@ -797,6 +827,10 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		var tr = $(this).closest('tr')[0];
 		applyTypeClass(tr);
 		insertSorted(tr);
+	});
+
+	$(document).on('change', '#rowsBody .js-status', function() {
+		$(this).closest('tr').toggleClass('row-inactive', this.value === 'inactive');
 	});
 
 	$(document).on('change', '#rowsBody .js-sort', function() {

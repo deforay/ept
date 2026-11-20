@@ -23,6 +23,12 @@
 
 $isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
 
+// Retired (status='inactive') results are left out of the expected-result picker. A row that
+// already holds a retired result still shows it, so editing an older shipment keeps its value.
+$isRetiredResult = static function ($pr) {
+    return (($pr['status'] ?? 'active') === 'inactive');
+};
+
 // Normalize possible results (for final result dropdown)
 $possibleResultsSource = $isEditMode
     ? ($this->shipmentData['possibleResults'] ?? [])
@@ -48,7 +54,7 @@ $dtFormat = $vHelper->getDateFormat();
 // Build final result dropdown HTML (COVID19_FINAL)
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResultsSource as $pr) {
-    if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
+    if ($pr['scheme_sub_group'] == 'COVID19_FINAL' && !$isRetiredResult($pr)) {
         $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -60,7 +66,7 @@ $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $
 // Build test results dropdown HTML (COVID19_TEST) for modal
 $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($testResultsSource as $pr) {
-    if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
+    if ($pr['scheme_sub_group'] == 'COVID19_TEST' && !$isRetiredResult($pr)) {
         $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -196,7 +202,7 @@ foreach ($savedSettings as $key => $savedValue) {
                         <select name="possibleResults[]" class="isRequired form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($possibleResultsSource as $pr):
-                                if ($pr['scheme_sub_group'] == 'COVID19_FINAL'):
+                                if ($pr['scheme_sub_group'] == 'COVID19_FINAL' && (!$isRetiredResult($pr) || $referenceResult == $pr['id'])):
                             ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo $this->htmlTranslate($pr['response']); ?>

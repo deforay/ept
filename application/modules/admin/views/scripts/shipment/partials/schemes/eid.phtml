@@ -20,6 +20,12 @@
 
 $isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
 
+// Retired (status='inactive') results are left out of the expected-result picker. A row that
+// already holds a retired result still shows it, so editing an older shipment keeps its value.
+$isRetiredResult = static function ($pr) {
+    return (($pr['status'] ?? 'active') === 'inactive');
+};
+
 // Normalize possible results
 $possibleResults = $isEditMode
     ? $this->shipmentData['possibleResults']
@@ -37,6 +43,9 @@ $dtFormat = $vHelper->getDateFormat();
 // Build possible results dropdown HTML for JavaScript row addition
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
+    if ($isRetiredResult($pr)) {
+        continue;
+    }
     $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $possibleResultsHtml .= '</select>';
@@ -129,7 +138,10 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                 <td>
                     <select name="possibleResults[]" class="isRequired form-control input-sm">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <?php foreach ($possibleResults as $pr): ?>
+                        <?php foreach ($possibleResults as $pr):
+                            if ($isRetiredResult($pr) && $referenceResult != $pr['id']) {
+                                continue;
+                            } ?>
                             <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
                                 <?php echo $this->htmlTranslate($pr['response']); ?>
                             </option>

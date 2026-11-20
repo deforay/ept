@@ -26,6 +26,12 @@ $isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
 // Normalize assay choices
 $recencyAssayOptions = $this->recencyAssay ?? [];
 
+// Retired (status='inactive') results are left out of the expected-result picker. A row that
+// already holds a retired result still shows it, so editing an older shipment keeps its value.
+$isRetiredResult = static function ($pr) {
+    return (($pr['status'] ?? 'active') === 'inactive');
+};
+
 // Normalize possible results - filter for RECENCY_FINAL
 $possibleResultsRaw = $isEditMode
     ? ($this->shipmentData['possibleResults'] ?? $this->recencyPossibleResults ?? [])
@@ -68,6 +74,9 @@ $assayChoicesJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $ass
 // Build possible results dropdown HTML for JavaScript row addition
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
+    if ($isRetiredResult($pr)) {
+        continue;
+    }
     $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $possibleResultsHtml .= '</select>';
@@ -78,6 +87,9 @@ $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $
 // Build test results dropdown HTML for JavaScript (assay modals)
 $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
+    if ($isRetiredResult($pr)) {
+        continue;
+    }
     $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $testResultsHtml);
@@ -164,7 +176,10 @@ foreach ($savedSettings as $key => $savedValue) {
                     <td>
                         <select name="possibleResults[]" class="isRequired form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                            <?php foreach ($possibleResults as $pr): ?>
+                            <?php foreach ($possibleResults as $pr):
+                                if ($isRetiredResult($pr) && $referenceResult != $pr['id']) {
+                                    continue;
+                                } ?>
                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                     <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
                                     <?php echo $this->htmlTranslate($pr['response']); ?>
@@ -333,7 +348,7 @@ foreach ($savedSettings as $key => $savedValue) {
                                                 // Build selected results dropdown
                                                 $testSelectedResults = '<option value="">--' . $this->translate->_("Select") . '--</option>';
                                                 foreach ($this->recencyPossibleResults as $pr) {
-                                                    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+                                                    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL' && (!$isRetiredResult($pr) || $pr['id'] == $recencyAssay['result'])) {
                                                         $selected = ($pr['id'] == $recencyAssay['result']) ? "selected='selected'" : "";
                                                         $testSelectedResults .= '<option value="' . htmlspecialchars($pr['id']) . '" ' . $selected . '>' . $this->htmlTranslate($pr['response']) . '</option>';
                                                     }
