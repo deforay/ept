@@ -28363,6 +28363,10 @@ msgstr ""
 msgid "No participants"
 msgstr "Aucun participant"
 
+#: application/modules/admin/views/scripts/schemes/manage-test-results.phtml
+msgid "Inactive results are hidden from new response entry and the expected-result picker"
+msgstr "Les résultats inactifs sont masqués lors de la saisie de nouvelles réponses et dans la liste des résultats attendus"
+
 #~ msgid "Add PT Participant"
 #~ msgstr "Ajouter un participant PT"
 

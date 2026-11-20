@@ -27,6 +27,12 @@
 
 $isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
 
+// Retired (status='inactive') results are left out of the expected-result picker. A row that
+// already holds a retired result still shows it, so editing an older shipment keeps its value.
+$isRetiredResult = static function ($pr) {
+    return (($pr['status'] ?? 'active') === 'inactive');
+};
+
 // Normalize possible results
 $possibleResults = $isEditMode
     ? ($this->shipmentData['possibleResults'] ?? [])
@@ -67,7 +73,7 @@ $reportType = $this->reportType ?? '';
 // Build possible results dropdown HTML for main table
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
+    if ($pr['scheme_sub_group'] == 'DBS_FINAL' && !$isRetiredResult($pr)) {
         $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -89,7 +95,7 @@ foreach ($wbOptions as $wbId => $wbName) {
 $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];
 foreach ($dtsPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+    if ($pr['scheme_sub_group'] == 'DTS_TEST' && !$isRetiredResult($pr)) {
         $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
@@ -178,7 +184,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <select name="possibleResults[]" class="isRequired form-control input-sm">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($possibleResults as $pr):
-                                if ($pr['scheme_sub_group'] == 'DBS_FINAL'):
+                                if ($pr['scheme_sub_group'] == 'DBS_FINAL' && (!$isRetiredResult($pr) || $referenceResult == $pr['id'])):
                             ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                         <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
@@ -298,7 +304,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         name="eia[<?php echo htmlspecialchars($eia['sample_id']); ?>][result][]">
                                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                                         <?php foreach ($dtsPossibleResults as $pr):
-                                                                            if ($pr['scheme_sub_group'] == 'DTS_TEST'):
+                                                                            if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($eia['result'] ?? ''))):
                                                                         ?>
                                                                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                                                                     <?php echo (isset($pr['id']) && $pr['id'] == ($eia['result'] ?? '')) ? 'selected="selected"' : ''; ?>>
@@ -348,7 +354,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                 name="eia[<?php echo htmlspecialchars($sampleId); ?>][result][]">
                                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                                 <?php foreach ($dtsPossibleResults as $pr):
-                                                                    if ($pr['scheme_sub_group'] == 'DTS_TEST'):
+                                                                    if ($pr['scheme_sub_group'] == 'DTS_TEST' && !$isRetiredResult($pr)):
                                                                 ?>
                                                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>">
                                                                             <?php echo $this->htmlTranslate($pr['response']); ?>
@@ -456,7 +462,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         name="wb[<?php echo htmlspecialchars($wb['sample_id']); ?>][result][]">
                                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                                         <?php foreach ($dtsPossibleResults as $pr):
-                                                                            if ($pr['scheme_sub_group'] == 'DTS_TEST'):
+                                                                            if ($pr['scheme_sub_group'] == 'DTS_TEST' && (!$isRetiredResult($pr) || $pr['id'] == ($wb['result'] ?? ''))):
                                                                         ?>
                                                                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                                                                     <?php echo (isset($pr['id']) && $pr['id'] == ($wb['result'] ?? '')) ? 'selected="selected"' : ''; ?>>

@@ -5,7 +5,13 @@ $possibleMicrosopeResults = $possibleResults = [];
 
 $isLoggedInAsAdmin = isset($this->reqFrom) && $this->reqFrom == 'admin';
 $isMicroscopy = false;
+// Retired (status='inactive') results are left out of new entry. A dropdown still shows a
+// retired result when it is the value this participant saved. TB options are keyed by result_code.
+$retiredResultCodes = [];
 foreach ($this->tbPossibleResults as $pr) {
+    if (($pr['status'] ?? 'active') === 'inactive') {
+        $retiredResultCodes[] = $pr['result_code'];
+    }
     if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
         $possibleResults[$pr['result_code']] = $pr['response'];
     }
@@ -91,7 +97,7 @@ if ($isLoggedInAsAdmin) {
                     </th>
                     <td>
                         <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control tb-field input-sm mtbcDetected" title="<?= $this->htmlTranslate("Please choose one"); ?>" placeholder="<?= $this->htmlTranslate("Please enter the Rif Resistance for this sample"); ?>" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true, false, $retiredResultCodes); ?>
                         </select>
                     </td>
                     <?php if ($isLoggedInAsAdmin) { ?>
@@ -208,7 +214,7 @@ if ($isLoggedInAsAdmin) {
                         </th>
                         <td>
                             <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>  form-control tb-field input-sm mtbcDetected" title="<?= $this->htmlTranslate("Please choose one"); ?>" placeholder="<?= $this->htmlTranslate("Please enter the Rif Resistance for this sample"); ?>" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                                <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                                <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true, false, $retiredResultCodes); ?>
                             </select>
                         </td>
                         <?php if ($isLoggedInAsAdmin) { ?>
@@ -467,7 +473,7 @@ if ($isLoggedInAsAdmin) {
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample"); ?>" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true, false, $retiredResultCodes); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -663,7 +669,7 @@ if ($isLoggedInAsAdmin) {
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="<?= $this->htmlTranslate("Please enter the MTB Detected for this sample"); ?>" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true, false, $retiredResultCodes); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -834,7 +840,7 @@ if ($isLoggedInAsAdmin) {
                         } else {
                             $mtbResults = $possibleResults;
                         }
-                        $this->dropdownSelection($mtbResults, $sample['mtb_detected'], true); ?>
+                        $this->dropdownSelection($mtbResults, $sample['mtb_detected'], true, false, $retiredResultCodes); ?>
                     </select>
                 </td>
                 <?php if ($isLoggedInAsAdmin) { ?>
