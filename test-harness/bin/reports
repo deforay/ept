@@ -43,6 +43,11 @@ require_once $root . '/src/Evaluator.php';
 require_once $root . '/src/Reports/Sandbox.php';
 require_once $root . '/src/Reports/PdfFacts.php';
 
+/** How far from its group's median a PDF's page count or size may be: more than this many times, or less than one this-many-th */
+const OUTLIER_FACTOR = 2;
+/** The fewest PDFs a group needs before its median is used */
+const OUTLIER_MIN_GROUP = 5;
+
 $shipmentIds = [];
 $base = 'HEAD';
 $keep = false;
@@ -275,6 +280,36 @@ if ((glob("$work/*/*/*.pdf") ?: []) === []) {
 }
 
 fwrite(STDOUT, "Reading PDFs...\n");
+
+// Which participant and layout each PDF belongs to. A participant report's
+// name ends in its map_id, a summary's in "-summary".
+$in = implode(',', array_map('intval', $shipmentIds));
+$labIds = [];
+foreach ($db->all("SELECT map_id, p.unique_identifier FROM shipment_participant_map m JOIN participant p ON p.participant_id = m.participant_id WHERE m.shipment_id IN ($in)") as $row) {
+    $labIds[(int) $row['map_id']] = (string) $row['unique_identifier'];
+}
+$layoutSetting = (string) ($db->scalar("SELECT value FROM global_config WHERE name = 'report-layout' AND context = 'report'") ?? '');
+$layoutOf = [];
+// Some layouts, such as ILB's, name the shipment by its distribution code
+$shipmentNames = [];
+foreach ($db->all("SELECT s.shipment_code, s.scheme_type, sl.is_user_configured, d.distribution_code FROM shipment s LEFT JOIN scheme_list sl ON sl.scheme_id = s.scheme_type LEFT JOIN distributions d ON d.distribution_id = s.distribution_id WHERE s.shipment_id IN ($in)") as $row) {
+    $shipmentNames[$row['shipment_code']] = array_values(array_filter([(string) $row['shipment_code'], (string) $row['distribution_code']]));
+    $scheme = $row['is_user_configured'] === 'yes' ? 'generic-test' : (string) $row['scheme_type'];
+    foreach (['participant', 'summary'] as $type) {
+        // As generate-shipment-reports picks it: the country's file if it has one
+        $custom = "$repoRoot/scheduled-jobs/report-layouts/$type-layouts/$layoutSetting/$scheme.phtml";
+        $layoutOf[$row['shipment_code']][$type] = ($layoutSetting !== '' && is_file($custom) ? $layoutSetting : 'default') . "/$scheme $type";
+    }
+}
+$groupOf = [];
+$identify = static function (string $name) use ($labIds, $layoutOf, $shipmentNames): array {
+    [$code, $file] = explode('/', $name, 2);
+    if (preg_match('/-(\d+)\.pdf$/', $file, $m) && isset($labIds[(int) $m[1]])) {
+        return [$layoutOf[$code]['participant'], ['Lab ID' => [$labIds[(int) $m[1]]], 'shipment or distribution code' => $shipmentNames[$code]]];
+    }
+    return [str_ends_with($file, '-summary.pdf') ? $layoutOf[$code]['summary'] : "other $code", []];
+};
+
 $pairs = [];
 $missing = [];
 foreach ($codes as $code) {
@@ -296,23 +331,30 @@ foreach ($pairs as $name => [$baseFile, $newFile]) {
 $aspects = ['pages', 'words', 'positions', 'images', 'placements', 'links', 'fields', 'problems'];
 $differing = array_fill_keys($aspects, 0);
 $examples = [];
-// Problem kind => side => PDFs with it, and the first PDF the new side has it in
-$problems = [];
+// Side => PDF => its problems, and its group, page count and size for
+// finding the ones far from the rest of their group
+$found = ['base' => [], 'new' => []];
+$measures = ['base' => [], 'new' => []];
 // A batch at a time: the word positions of a few thousand PDFs do not fit
 // in memory at once.
 foreach (array_chunk($pairs, 100, true) as $batch) {
-    $facts = PdfFacts::collect(array_merge(...array_values(array_map('array_values', $batch))), $procs);
+    $expected = [];
+    foreach ($batch as $name => [$baseFile, $newFile]) {
+        [$groupOf[$name], $values] = $identify($name);
+        if ($values !== []) {
+            $expected[$baseFile] = $expected[$newFile] = $values;
+        }
+    }
+    $facts = PdfFacts::collect(array_merge(...array_values(array_map('array_values', $batch))), $procs, $expected);
     foreach ($batch as $name => [$baseFile, $newFile]) {
         foreach (['base' => $baseFile, 'new' => $newFile] as $label => $file) {
-            $kinds = array_unique(array_map(static fn (string $p): string => (string) preg_replace('/^page \d+/', 'page', $p), $facts[$file]['problems']));
-            foreach ($kinds as $kind) {
-                $problems[$kind][$label] = ($problems[$kind][$label] ?? 0) + 1;
-                if ($label === 'new') {
-                    $problems[$kind]['example'] ??= $name;
-                }
-            }
+            $found[$label][$name] = $facts[$file]['problems'];
+            $measures[$label][$name] = ['pages' => $facts[$file]['pages'], 'size' => (int) filesize($file)];
         }
         foreach ($aspects as $aspect) {
+            if ($aspect === 'problems') {
+                continue;
+            }
             $a = $facts[$baseFile][$aspect];
             $b = $facts[$newFile][$aspect];
             if ($a === $b) {
@@ -325,6 +367,59 @@ foreach (array_chunk($pairs, 100, true) as $batch) {
         }
     }
     unset($facts);
+}
+
+// A PDF far from the median of its layout and report type, on each side by
+// itself: a participant report three times the usual length, or a fraction of
+// the usual size, has lost or repeated a section. A group needs a few PDFs
+// for its median to mean anything.
+foreach ($measures as $label => $byName) {
+    $groups = [];
+    foreach ($byName as $name => $measure) {
+        $groups[$groupOf[$name]][$name] = $measure;
+    }
+    foreach ($groups as $members) {
+        if (count($members) < OUTLIER_MIN_GROUP) {
+            continue;
+        }
+        foreach (['pages' => 'page count', 'size' => 'file size'] as $key => $what) {
+            $median = median(array_column($members, $key));
+            if ($median <= 0) {
+                continue;
+            }
+            foreach ($members as $name => $measure) {
+                if ($measure[$key] <= 0) {
+                    // No pages is reported already
+                    continue;
+                }
+                if ($measure[$key] > $median * OUTLIER_FACTOR) {
+                    $found[$label][$name][] = sprintf('%s over %s times the median of its layout', $what, OUTLIER_FACTOR);
+                } elseif ($measure[$key] < $median / OUTLIER_FACTOR) {
+                    $found[$label][$name][] = sprintf('%s under 1/%s of the median of its layout', $what, OUTLIER_FACTOR);
+                }
+            }
+        }
+    }
+}
+
+// Problem kind => side => PDFs with it, and the first PDF the new side has it in
+$problems = [];
+foreach ($pairs as $name => $pair) {
+    foreach (['base', 'new'] as $label) {
+        $kinds = array_unique(array_map(static fn (string $p): string => (string) preg_replace('/^page \d+/', 'page', $p), $found[$label][$name]));
+        foreach ($kinds as $kind) {
+            $problems[$kind][$label] = ($problems[$kind][$label] ?? 0) + 1;
+            if ($label === 'new') {
+                $problems[$kind]['example'] ??= $name;
+            }
+        }
+    }
+    if ($found['base'][$name] !== $found['new'][$name]) {
+        $differing['problems']++;
+        if (count($examples['problems'] ?? []) < 3) {
+            $examples['problems'][] = "$name: " . describe($found['base'][$name], $found['new'][$name]);
+        }
+    }
 }
 
 fwrite(STDOUT, sprintf("\n%d PDFs compared\n", count($pairs)));
@@ -397,6 +492,17 @@ function describe(mixed $a, mixed $b): string
         }
     }
     return sprintf('item %d: base (none), new "%s"', count($a) + 1, $b[count($a)] ?? '');
+}
+
+/**
+ * @param list<int> $values
+ */
+function median(array $values): float
+{
+    sort($values);
+    $count = count($values);
+    $middle = intdiv($count, 2);
+    return $count % 2 === 1 ? (float) $values[$middle] : ($values[$middle - 1] + $values[$middle]) / 2;
 }
 
 /**
