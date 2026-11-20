@@ -23,10 +23,16 @@ final class PdfFacts
     private const STANDARD_FONTS = '/^(Helvetica|Times|Courier)(-(Bold|Oblique|BoldOblique|Roman|Italic|BoldItalic))?$|^(Symbol|ZapfDingbats)$/';
 
     /**
+     * $expected names, for each file that has any, the text a reader must
+     * find in it, such as the participant's Lab ID, with any other text that
+     * will do instead. The keys name the value in the problem:
+     * ['Lab ID' => ['LAB-12']] gives "Lab ID not in the text".
+     *
      * @param string[] $files
+     * @param array<string, array<string, list<string>>> $expected
      * @return array<string, array{pages:int, words:list<string>, positions:list<string>, images:list<string>, placements:list<string>, links:list<string>, fields:int, problems:list<string>}>
      */
-    public static function collect(array $files, int $procs): array
+    public static function collect(array $files, int $procs, array $expected = []): array
     {
         $facts = [];
         $queue = $files;
@@ -51,7 +57,7 @@ final class PdfFacts
                 }
                 proc_close($process);
                 unset($running[$i]);
-                $facts[$file] = self::parse((string) file_get_contents($out), $file);
+                $facts[$file] = self::parse((string) file_get_contents($out), $file, $expected[$file] ?? []);
                 unlink($out);
             }
             usleep(2000);
@@ -59,16 +65,29 @@ final class PdfFacts
         return $facts;
     }
 
-    /** @return array{pages:int, words:list<string>, positions:list<string>, images:list<string>, placements:list<string>, links:list<string>, fields:int, problems:list<string>} */
-    private static function parse(string $output, string $file): array
+    /**
+     * @param array<string, list<string>> $expected
+     * @return array{pages:int, words:list<string>, positions:list<string>, images:list<string>, placements:list<string>, links:list<string>, fields:int, problems:list<string>}
+     */
+    private static function parse(string $output, string $file, array $expected): array
     {
         [$info, $bbox, $images, $fonts] = array_pad(explode("@@@\n", $output, 4), 4, '');
 
         $words = [];
         $positions = [];
-        preg_match_all('#<word xMin="([\d.]+)" yMin="([\d.]+)"[^>]*>([^<]*)</word>#', $bbox, $matches, PREG_SET_ORDER);
+        // Unmasked, for finding the expected text
+        $plain = [];
+        $lastPage = [];
+        $wordPattern = '#<word xMin="([\d.]+)" yMin="([\d.]+)"[^>]*>([^<]*)</word>#';
+        $pageStart = strrpos($bbox, '<page ');
+        if ($pageStart !== false) {
+            preg_match_all($wordPattern, substr($bbox, $pageStart), $last);
+            $lastPage = array_map(static fn (string $w): string => html_entity_decode($w, ENT_QUOTES | ENT_HTML5, 'UTF-8'), $last[3]);
+        }
+        preg_match_all($wordPattern, $bbox, $matches, PREG_SET_ORDER);
         foreach ($matches as [, $x, $y, $text]) {
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $plain[] = $text;
             if (preg_match(self::TIMESTAMP, $text)) {
                 $text = '<time>';
             }
@@ -116,7 +135,10 @@ final class PdfFacts
             'placements' => $placements,
             'links'     => $links,
             'fields'    => preg_match_all('#/FT\s*/#', $raw),
-            'problems'  => self::problems($raw, $pages, $words, $fonts),
+            'problems'  => array_merge(
+                self::problems($raw, $pages, $words, $fonts),
+                self::textProblems($pages, $plain, $lastPage, $expected)
+            ),
         ];
     }
 
@@ -182,6 +204,43 @@ final class PdfFacts
         }
 
         return array_values(array_unique($problems));
+    }
+
+    /**
+     * Text a reader must see and does not: an expected value missing, or a
+     * last page with nothing on it, which is usually a page break written
+     * after the footer.
+     *
+     * Values are matched without spaces and case, since a long Lab ID can
+     * wrap and pdftotext splits words at each space.
+     *
+     * @param list<string> $words
+     * @param list<string> $lastPage
+     * @param array<string, list<string>> $expected
+     * @return list<string>
+     */
+    private static function textProblems(int $pages, array $words, array $lastPage, array $expected): array
+    {
+        $squash = static fn (string $text): string => mb_strtolower((string) preg_replace('/\s+/u', '', $text));
+        $withoutTcpdf = static fn (array $words): string => trim(str_replace('Powered by TCPDF (www.tcpdf.org)', '', implode(' ', $words)));
+        $text = $withoutTcpdf($words);
+        if ($pages <= 0 || $text === '') {
+            // Already "no pages" or "no text"
+            return [];
+        }
+        $problems = [];
+        $squashed = $squash($text);
+        foreach ($expected as $what => $values) {
+            $values = array_filter($values, static fn (string $v): bool => trim($v) !== '');
+            $seen = array_filter($values, static fn (string $v): bool => str_contains($squashed, $squash($v)));
+            if ($values !== [] && $seen === []) {
+                $problems[] = "$what not in the text";
+            }
+        }
+        if ($pages > 1 && $withoutTcpdf($lastPage) === '') {
+            $problems[] = 'last page has no text';
+        }
+        return $problems;
     }
 
     /**
