@@ -901,6 +901,7 @@ class Application_Model_Tb
 
             $excel->setActiveSheetIndex(0);
 
+            Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
@@ -2219,12 +2220,7 @@ class Application_Model_Tb
                 ['<', '>', ':', '"', '/', '\\', '|', '?', '*']
             ), '', $shipmentResult['shipment_code']));
 
-            // The sheets above are inserted in front of the empty default sheet.
-            $defaultSheet = $excel->getSheetByName('Worksheet');
-            if ($defaultSheet !== null && $excel->getSheetCount() > 1) {
-                $excel->removeSheetByIndex($excel->getIndex($defaultSheet));
-            }
-            $excel->setActiveSheetIndex(0);
+            Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR . $filename);

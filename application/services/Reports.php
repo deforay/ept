@@ -3746,6 +3746,7 @@ class Application_Service_Reports
                     }
                 }
 
+                Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
                 $writer = IOFactory::createWriter($excel, 'Xlsx');
                 $shipmentCode = (string) ($resultSet[0]['shipment_code'] ?? '');
                 $filename = $shipmentCode . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';

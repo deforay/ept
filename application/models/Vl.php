@@ -1315,6 +1315,7 @@ class Application_Model_Vl
         $excel->setActiveSheetIndex(0);
 
         // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);

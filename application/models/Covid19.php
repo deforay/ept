@@ -803,7 +803,7 @@ class Application_Model_Covid19
         //<-------- Total Score Sheet Heading (Sheet Four)-------
 
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
-        $excel->addSheet($totalScoreSheet, 4);
+        $excel->addSheet($totalScoreSheet, 5);
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
@@ -1119,6 +1119,7 @@ class Application_Model_Covid19
 
         $excel->setActiveSheetIndex(0);
 
+        Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);

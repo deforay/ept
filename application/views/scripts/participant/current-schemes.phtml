@@ -357,6 +357,10 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					csTable.fnDraw();
 
 					$.unblockUI();
+				}).fail(function() {
+					// A server error or a lost connection must not leave the page blocked.
+					alert("<?= $this->jsTranslate("Unable to delete. Please try again later or contact system admin for help") ?>");
+					$.unblockUI();
 				});
 		}
 

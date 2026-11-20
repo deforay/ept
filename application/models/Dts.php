@@ -2410,6 +2410,7 @@ final class Application_Model_Dts
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS Rapid HIV report - ' . ($shipmentCode ?? '?'), 'shipment');
 
+        Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
