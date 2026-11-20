@@ -638,7 +638,7 @@ class Application_Model_Tb
                 'Assay Expiration',
                 'Response Status',
                 'Is PT Panel Not Tested?',
-                'Reason for Not Testing',
+                'Not Tested Reason',
             ];
 
             $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);

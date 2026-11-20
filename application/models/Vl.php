@@ -508,6 +508,12 @@ class Application_Model_Vl
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         // $colNameCount++;
 
+        // OVERALL only. The assay sheets leave out participants who did not test.
+        $reasonColumn = $colNameCount + 1;
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex($reasonColumn) . 1)
+            ->setValueExplicit(Pt_Commons_TranslateUtility::safeTranslate('Not Tested Reason'));
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($reasonColumn) . 1)->applyFromArray($borderStyle, true);
+
         $firstSheet->setTitle('OVERALL', true);
 
         $queryOverAll = $db->select()->from(['s' => 'shipment'])
@@ -515,6 +521,7 @@ class Application_Model_Vl
             ->joinLeft(['p' => 'participant'], 'p.participant_id = spm.participant_id')
             ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'iso_name'])
             ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id = spm.pt_not_tested_reason', ['ntTestedReason' => 'ntr.ntr_reason'])
             ->where('s.shipment_id = ?', $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
@@ -678,6 +685,8 @@ class Application_Model_Vl
                 ->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex($reasonColumn) . $row)
+                ->setValueExplicit(Application_Model_DbTable_ResponseNotTestedReasons::exportText($rowOverAll));
 
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['institute_name'];
