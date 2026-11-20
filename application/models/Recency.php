@@ -557,7 +557,8 @@ class Application_Model_Recency
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.is_pt_test_not_performed', 'sp.pt_test_not_performed_comments'])
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id = sp.pt_not_tested_reason', ['ntTestedReason' => 'ntr.ntr_reason'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
             ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmp.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
@@ -635,12 +636,15 @@ class Application_Model_Recency
         //<-------- Second sheet start
         $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Date Reported'];
 
-        if ($result['scheme_type'] == 'recency') {
-            for ($i = 0; $i <= (int) $result['number_of_samples']; $i++) {
-                array_push($reportHeadings, 'Control Line', 'Verification Line', 'Long Term Line');
-            }
-            array_push($reportHeadings, 'Comments');
+        // Each sample has four columns, in the order the rows below write them.
+        $sampleColumns = ['Control Line', 'Verification Line', 'Long Term Line', 'Final Result'];
+        $firstSampleColumn = count($reportHeadings) + 1;
+        $numberOfSamples = (int) $result['number_of_samples'];
+        for ($i = 0; $i < $numberOfSamples; $i++) {
+            array_push($reportHeadings, ...$sampleColumns);
         }
+        array_push($reportHeadings, 'Comments', 'Not Tested Reason');
+        $n = $reasonColumn = count($reportHeadings);
 
         $sheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
@@ -648,75 +652,29 @@ class Application_Model_Recency
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-        $colNo = 0;
         $currentRow = 2;
-        $n = count($reportHeadings);
-        $finalResColoumn = $n - (($result['number_of_samples'] + 1) * 3);
-        $finalResColoumn--;
-        $c = 0;
+        $yellow = 'FFFFFF00';
+        foreach ($reportHeadings as $index => $value) {
+            $cell = Coordinate::stringFromColumnIndex($index + 1);
+            $sheet->getCell($cell . $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle($cell . $currentRow)->getFont()->setBold(true);
+            $sheet->getStyle($cell . $currentRow)->applyFromArray($borderStyle, true);
+            $sheet->getStyle($cell . '3')->applyFromArray($borderStyle, true);
+            $sheet->getStyle($cell . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $sheet->getStyle($cell . '3')->getFont()->getColor()->setARGB($yellow);
+        }
 
-        // To get the sample list
-        $samples = $this->addRecencySampleNameInArray($shipmentId);
-        foreach ($reportHeadings as $value) {
-
-            $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
-
-            $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-
-            $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
-                ->getColumn();
-            $sheet->getStyle($cellName . '3')->applyFromArray($borderStyle, true);
-
-            if ($colNo >= $finalResColoumn) {
-                if ($c <= $result['number_of_samples']) {
-                    $col = 7;
-                    foreach ($samples as $sample) {
-                        $firstCellName = $sheet->getCell(Coordinate::stringFromColumnIndex($col + 1) . 1)
-                            ->getColumn();
-                        $secondCellName = $sheet->getCell(Coordinate::stringFromColumnIndex(($col + 3)) . 1)
-                            ->getColumn();
-
-                        $sheet->mergeCells($firstCellName . '1:' . $secondCellName . '1');
-                        $sheet->getStyle($firstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                        $sheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
-                        $sheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($col + 1) . 1)
-                            ->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'));
-
-                        $colorCol = $col;
-                        $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-                            ->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                        $colorCol = $colorCol + 1;
-
-                        $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-                            ->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                        $colorCol = $colorCol + 1;
-
-                        $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-                            ->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
-                        $col = $col + 3;
-                    }
-                    $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                        ->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                    $l = $c - 1;
-                    $c++;
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
-                        ->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'));
-                }
-            }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
-            $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
-
-            $colNo++;
+        // Row 1 names the sample over its four columns.
+        $samples = array_values($this->addRecencySampleNameInArray($shipmentId));
+        for ($i = 0; $i < $numberOfSamples; $i++) {
+            $groupStart = $firstSampleColumn + ($i * count($sampleColumns));
+            $first = Coordinate::stringFromColumnIndex($groupStart);
+            $last = Coordinate::stringFromColumnIndex($groupStart + count($sampleColumns) - 1);
+            $sheet->mergeCells($first . '1:' . $last . '1');
+            $sheet->getCell($first . '1')->setValueExplicit(html_entity_decode((string) ($samples[$i] ?? ''), ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle($first . '1:' . $last . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($yellow);
+            $sheet->getStyle($first . '1:' . $last . '1')->applyFromArray($borderStyle, true);
+            $sheet->getStyle($first . '2:' . $last . '2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($yellow);
         }
 
         $sheet->getStyle('A2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
@@ -834,19 +792,13 @@ class Application_Model_Recency
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
-        $ktr = 9;
-        $kitId = 7; //Test Kit coloumn count
-        if (isset($refResult) && count($refResult) > 0) {
-            foreach ($refResult as $keyv => $row) {
-                $keyv = $keyv + 1;
-                $ktr = $ktr + $keyv;
-                //In Excel Third row added the Test kit name1,kit lot,exp date
-                $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++) . 3)->setValueExplicit($row['reference_control_line']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++) . 3)->setValueExplicit($row['reference_diagnosis_line']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++) . 3)->setValueExplicit($row['reference_longterm_line']);
-
-                $sheet->getCell(Coordinate::stringFromColumnIndex($ktr + 1) . 3)->setValueExplicit($row['response']);
-                $ktr = 5;
+        // Row 3 holds the expected lines and result under each sample's four columns.
+        foreach (array_values($refResult) as $i => $row) {
+            $groupStart = $firstSampleColumn + ($i * count($sampleColumns));
+            $expected = [$row['reference_control_line'], $row['reference_diagnosis_line'], $row['reference_longterm_line'], $row['response']];
+            foreach ($expected as $offset => $value) {
+                $sheet->getCell(Coordinate::stringFromColumnIndex($groupStart + $offset) . 3)
+                    ->setValueExplicit(html_entity_decode((string) ($value ?? ''), ENT_QUOTES, 'UTF-8'));
             }
         }
         $currentRow = 4;
@@ -1010,6 +962,10 @@ class Application_Model_Recency
                         ->getColumn();
                     $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
+
+                // A participant who did not test has no result cells, so write the reason by column number.
+                $sheet->getCell(Coordinate::stringFromColumnIndex($reasonColumn) . $currentRow)
+                    ->setValueExplicit(Application_Model_DbTable_ResponseNotTestedReasons::exportText($aRow));
 
                 for ($i = 0; $i < $n; $i++) {
                     $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $currentRow)
