@@ -8,7 +8,7 @@
  * ADD mode variables:
  * - $this->covid19PossibleResults - Possible result options (COVID19_FINAL for final, COVID19_TEST for test)
  * - $this->allTestKits - Test kit/platform options
- * - $this->reportType - Optional report type (e.g., 'malawi')
+ * - $this->isMalawiInstance - Shows the Malawi-only fields
  *
  * EDIT mode variables:
  * - $this->shipmentData['reference'] - Existing sample/control data
@@ -114,7 +114,7 @@ foreach ($savedSettings as $key => $savedValue) {
     }
 </style>
 
-<?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
+<?php if (!empty($this->isMalawiInstance)): ?>
     <div class="form-group">
         <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">

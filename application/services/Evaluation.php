@@ -2710,8 +2710,6 @@ class Application_Service_Evaluation
         $mapRes = [];
         $shipmentResult = [];
         $vlGraphResult = [];
-        $reportService = new Application_Service_Reports();
-        $layout = $reportService->getReportConfigValue('report-layout');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $schemeService = new Application_Service_Schemes();
         $sql = $db->select()->from(['s' => 'shipment'], ['s.*'])
@@ -2807,7 +2805,7 @@ class Application_Service_Evaluation
         $meanScore = [];
         $tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
 
-        if (isset($layout) && !empty($layout) && $layout == 'malawi') {
+        if (Application_Service_Common::isInstance('malawi')) {
             $q = $db->select()->from(['spm' => 'shipment_participant_map'], [
                 'mean_score' => new Zend_Db_Expr('AVG(spm.shipment_score + spm.documentation_score)'),
             ])
@@ -2845,8 +2843,8 @@ class Application_Service_Evaluation
             }
         }
 
-        // Some layouts (e.g., Zimbabwe) don't use these analytics fields and computing them is expensive.
-        $includeAnalytics = (string) $layout !== 'zimbabwe';
+        // The Zimbabwe reports don't use these analytics fields and computing them is expensive.
+        $includeAnalytics = !Application_Service_Common::isInstance('zimbabwe');
         $shipmentStatistics = [];
         $shipmentPerformance3 = [];
         if ($includeAnalytics) {

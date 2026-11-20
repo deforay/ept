@@ -312,6 +312,23 @@ class Application_Service_Common
         return self::getSetting($name);
     }
 
+    /**
+     * Whether this deployment is $name (for example 'zimbabwe', 'malawi',
+     * 'mtbept'), read from the instance setting in global_config. Use this,
+     * not report-layout, to decide country behaviour: report-layout only picks
+     * the PDF template folder and an admin may change it freely. When instance
+     * is empty, report-layout is compared instead so servers that were never
+     * migrated keep working.
+     */
+    public static function isInstance(string $name): bool
+    {
+        $instance = trim((string) self::getSetting('instance'));
+        if ($instance === '') {
+            $instance = trim((string) self::getSetting('report-layout'));
+        }
+        return $instance === $name;
+    }
+
     /** Whether participants may pick only approved test kits (ePT Global Settings, off by default). */
     public static function participantTestkitsApprovedOnly(): bool
     {
