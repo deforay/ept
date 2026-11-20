@@ -9,7 +9,7 @@
  * - $this->dtsPossibleResults - Possible result options (DBS_FINAL for main results, DTS_TEST for EIA/WB results)
  * - $this->eia - EIA test kit options
  * - $this->wb - Western Blot test kit options
- * - $this->reportType - Optional report type (e.g., 'malawi')
+ * - $this->isMalawiInstance - Shows the Malawi-only fields
  *
  * EDIT mode variables:
  * - $this->shipmentData['reference'] - Existing sample/control data
@@ -67,8 +67,8 @@ foreach ($wbData as $wb) {
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
 
-// Report type (for Malawi-specific fields)
-$reportType = $this->reportType ?? '';
+// Malawi-only fields
+$isMalawiInstance = !empty($this->isMalawiInstance);
 
 // Build possible results dropdown HTML for main table
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
@@ -122,7 +122,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
     }
 </style>
 
-<?php if (!empty($reportType) && $reportType == 'malawi'): ?>
+<?php if ($isMalawiInstance): ?>
     <div class="form-group">
         <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">

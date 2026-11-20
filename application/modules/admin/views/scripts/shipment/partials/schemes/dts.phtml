@@ -14,7 +14,7 @@
  * - $this->eia - EIA kit options
  * - $this->wb - Western Blot kit options
  * - $this->allTestKits - All test kit options for Rapid HIV
- * - $this->reportType - Report type (e.g., 'malawi')
+ * - $this->isMalawiInstance - Shows the Malawi-only fields
  *
  * EDIT mode variables:
  * - $this->shipmentData['reference'] - Existing sample/control data
@@ -301,7 +301,7 @@ $showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType);
 // ============================================================================
 // PT CO-ORDINATOR FIELDS (Malawi report type only) - ADD MODE ONLY
 // ============================================================================
-if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi') { ?>
+if (!$isEditMode && !empty($this->isMalawiInstance)) { ?>
     <div class="form-group">
         <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">

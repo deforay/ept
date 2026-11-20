@@ -7,7 +7,7 @@
  * Variables expected:
  * - $this->shipmentData (optional) - Present in EDIT mode, absent in ADD mode
  * - $this->selectedDistribution - Distribution ID
- * - $this->reportType (optional) - For malawi-specific fields
+ * - $this->isMalawiInstance (optional) - Shows the Malawi-only fields
  * - $this->dtsConfig (optional) - DTS configuration
  */
 
@@ -152,7 +152,7 @@ $formAction = $isEditMode
                 </div>
             </div>
 
-            <?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
+            <?php if (!empty($this->isMalawiInstance)): ?>
                 <!-- PT Co-ordinator Email (Malawi only) -->
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>

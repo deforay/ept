@@ -120,6 +120,7 @@ class ReportConfig
 
     // Instance settings
     public ?string $instance;
+    public bool $isZimbabweInstance = false;
     public ?string $passPercentage;
     public ?string $trainingInstance;
     public ?string $watermark;
@@ -182,6 +183,7 @@ class ReportConfig
 
         // Instance settings
         $reportsConfig->instance = $reportsConfig->commonService->getConfig('instance');
+        $reportsConfig->isZimbabweInstance = Application_Service_Common::isInstance('zimbabwe');
         $reportsConfig->passPercentage = $reportsConfig->commonService->getConfig('pass_percentage');
         // Absent key = OFF. Controls whether excluded submissions get individual reports.
         // Set on /admin/report-config (context='report').
@@ -762,9 +764,9 @@ class ReportGenerator
             $this->opts->debug
         );
 
-        // Get distribution shipments for Zimbabwe layout
+        // Get distribution shipments for the Zimbabwe instance
         $shipmentsUnderDistro = null;
-        if ($this->config->layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
+        if ($this->config->isZimbabweInstance && isset($totParticipantsRes['distribution_id'])) {
             $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
         }
 
@@ -860,7 +862,7 @@ class ReportGenerator
         $baseContext = $this->buildParticipantLayoutContext($evalRow, $totParticipantsRes, $resultStatus, $allGeneTypes);
 
         $shipmentsUnderDistro = null;
-        if ($this->config->layout === 'zimbabwe') {
+        if ($this->config->isZimbabweInstance) {
             $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports(
                 $totParticipantsRes['distribution_id'],
                 $evalRow['shipment_id']
@@ -1073,9 +1075,9 @@ class ReportGenerator
             Pt_Commons_MiscUtility::console()->writeln("  Generating summary report...");
         }
 
-        // Get distribution shipments for Zimbabwe layout
+        // Get distribution shipments for the Zimbabwe instance
         $shipmentsUnderDistro = null;
-        if ($this->config->layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
+        if ($this->config->isZimbabweInstance && isset($totParticipantsRes['distribution_id'])) {
             $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0] ?? null;
         }
 

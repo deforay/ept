@@ -122,8 +122,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } elseif ($sid == 'dts') {
-                $reportService = new Application_Service_Reports();
-                $this->view->reportType = $reportService->getReportConfigValue('report-layout');
+                $this->view->isMalawiInstance = Application_Service_Common::isInstance('malawi');
                 $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dts', 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
@@ -313,8 +312,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
     {
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
-        $reportService = new Application_Service_Reports();
-        $this->view->reportType = $reportService->getReportConfigValue('report-layout');
+        $this->view->isMalawiInstance = Application_Service_Common::isInstance('malawi');
         $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
         $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
         if ($response == null || $response == '' || $response === false) {
