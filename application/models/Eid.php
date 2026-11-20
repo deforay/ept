@@ -329,24 +329,25 @@ class Application_Model_Eid
             $resultResponse = $db->fetchAll($queryResponse);
 
             $attributes = Pt_Commons_JsonUtility::safeDecode($rowOverAll['attributes']);
-            $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : '';
+            $extractionAssay = $attributes['extraction_assay'] ?? '';
+            $extraction = (array_key_exists($extractionAssay, $extractionAssayList)) ? $extractionAssayList[$extractionAssay] : '';
             // $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
             // $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";
 
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['unique_identifier'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . ' ' . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(3) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['country_name'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(4) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords((string) ($rowOverAll['institute_name'] ?? '')), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords((string) ($rowOverAll['department_name'] ?? '')), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(6) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['region'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(7) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['site_type'] ?? ''), ENT_QUOTES, 'UTF-8'));
 
             $col = 8;
 
@@ -376,11 +377,11 @@ class Application_Model_Eid
             }
 
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['shipment_score'] ?? ''), ENT_QUOTES, 'UTF-8'));
 
             foreach ($resultResponse as $responseRow) {
                 $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
-                    ->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode((string) ($responseRow['response'] ?? ''), ENT_QUOTES, 'UTF-8'));
             }
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($reasonColumn) . $row)
                 ->setValueExplicit(Application_Model_DbTable_ResponseNotTestedReasons::exportText($rowOverAll));

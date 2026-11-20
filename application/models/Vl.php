@@ -550,11 +550,12 @@ class Application_Model_Vl
             $resultResponse = $db->fetchAll($queryResponse);
 
             $attributes = Pt_Commons_JsonUtility::safeDecode($rowOverAll['attributes']);
+            $vlAssay = $attributes['vl_assay'] ?? '';
 
             if (isset($attributes['other_assay']) && $attributes['other_assay'] != '') {
                 $assayName = 'Other - ' . $attributes['other_assay'];
             } else {
-                $assayName = (array_key_exists($attributes['vl_assay'], $assayList)) ? $assayList[$attributes['vl_assay']] : '';
+                $assayName = (array_key_exists($vlAssay, $assayList)) ? $assayList[$vlAssay] : '';
             }
 
             $assayExpirationDate = '';
@@ -572,17 +573,17 @@ class Application_Model_Vl
                 $specimenVolume = ($attributes['specimen_volume']);
             }
             // we are also building the data required for other Assay Sheets
-            if ($attributes['vl_assay'] > 0) {
-                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['unique_identifier'];
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['first_name']." ".$rowOverAll['last_name'];
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = ucwords($rowOverAll['institute_name']);
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = ucwords($rowOverAll['department_name']);
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['region'];
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['site_type'];
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayExpirationDate;
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayLotNumber;
-                //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $specimenVolume;
+            if ($vlAssay > 0) {
+                $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['unique_identifier'];
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['first_name']." ".$rowOverAll['last_name'];
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = ucwords($rowOverAll['institute_name']);
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = ucwords($rowOverAll['department_name']);
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['region'];
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['site_type'];
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayName;
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayExpirationDate;
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayLotNumber;
+                //$assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $specimenVolume;
             }
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(1) . $row)
@@ -621,10 +622,10 @@ class Application_Model_Vl
                     $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                         ->setValueExplicit(html_entity_decode($yrResult, ENT_QUOTES, 'UTF-8'));
                     // we are also building the data required for other Assay Sheets
-                    if ($attributes['vl_assay'] > 0) {
-                        $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $yrResult;
+                    if ($vlAssay > 0) {
+                        $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $yrResult;
                         if ($methodOfEvaluation == 'iso17043') {
-                            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
+                            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
                             if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'pass') {
                                 $grade = 'Acceptable';
                             } elseif (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'fail') {
@@ -634,7 +635,7 @@ class Application_Model_Vl
                             } else {
                                 $grade = 'N.A.';
                             }
-                            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $grade;
+                            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $grade;
                         }
                     }
                 }
@@ -658,49 +659,49 @@ class Application_Model_Vl
                 ->setValueExplicit(html_entity_decode($reportedDate, ENT_QUOTES, 'UTF-8'));
 
             // we are also building the data required for other Assay Sheets
-            if ($attributes['vl_assay'] > 0) {
-                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['shipment_score'];
-                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
-                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
-                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $reportedDate;
+            if ($vlAssay > 0) {
+                $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['shipment_score'];
+                $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $receiptDate;
+                $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $testDate;
+                $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $reportedDate;
             }
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($assayName ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords((string) ($rowOverAll['institute_name'] ?? '')), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords((string) ($rowOverAll['department_name'] ?? '')), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['region'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['site_type'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($assayExpirationDate ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) $assayLotNumber, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) $specimenVolume, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['participant_supervisor'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode((string) ($rowOverAll['user_comment'] ?? ''), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($reasonColumn) . $row)
                 ->setValueExplicit(Application_Model_DbTable_ResponseNotTestedReasons::exportText($rowOverAll));
 
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['institute_name'];
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['department_name'];
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['region'];
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['site_type'];
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayExpirationDate;
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayLotNumber;
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $specimenVolume;
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['participant_supervisor'];
-            $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['user_comment'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayName;
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['institute_name'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['department_name'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['region'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['site_type'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayExpirationDate;
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $assayLotNumber;
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $specimenVolume;
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['participant_supervisor'];
+            $assayWiseData[$vlAssay][$rowOverAll['unique_identifier']][] = $rowOverAll['user_comment'];
 
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
-                unset($assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']]);
+                unset($assayWiseData[$vlAssay][$rowOverAll['unique_identifier']]);
             }
         }
 
@@ -821,11 +822,13 @@ class Application_Model_Vl
 
                         if (isset($val['median'])) {
 
+                            $sample[$k]['response'] ??= 0;
                             $sample[$k]['response'] += (int) ($val['participants_on_platform'] ?? $val['no_of_responses']);
                             $sample[$k]['median'] = $val['median'];
                             $sample[$k]['lowLimit'] = $val['low_limit'];
                             $sample[$k]['highLimit'] = $val['high_limit'];
                             $sample[$k]['sd'] = $val['sd'];
+                            $sample[$k]['NumberPassed'] ??= 0;
                             $sample[$k]['NumberPassed'] += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
                             $sample[$t]['label'] = $val['sample_label'];
                             $t++;
@@ -981,7 +984,7 @@ class Application_Model_Vl
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
-                    )->setValueExplicit(html_entity_decode($label['NumberPassed'], ENT_QUOTES, 'UTF-8'));
+                    )->setValueExplicit(html_entity_decode((string) $label['NumberPassed'], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
@@ -1249,7 +1252,7 @@ class Application_Model_Vl
                 $noOfCols = count($assayRow);
                 for ($c = 0; $c < $noOfCols; $c++) {
                     $newsheet->getCell(Coordinate::stringFromColumnIndex($c + 1) . $row)
-                        ->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(html_entity_decode((string) ($assayRow[$c] ?? ''), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex($c + 1) . $row)->applyFromArray($vlBorderStyle, true);
                 }
             }
