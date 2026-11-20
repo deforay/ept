@@ -1042,6 +1042,7 @@ class Application_Model_Recency
 
         $excel->setActiveSheetIndex(0);
 
+        Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);

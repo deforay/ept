@@ -104,24 +104,29 @@ class CommonController extends Zend_Controller_Action
                     return;
                 }
 
-                if ($schemeType == 'dts') {
-                    $this->view->result = $shipmentService->removeDtsResults($mapId);
-                } elseif ($schemeType == 'eid') {
-                    $this->view->result = $shipmentService->removeDtsEidResults($mapId);
-                } elseif ($schemeType == 'vl') {
-                    $this->view->result = $shipmentService->removeDtsVlResults($mapId);
-                } elseif ($schemeType == 'recency') {
-                    $this->view->result = $shipmentService->removeRecencyResults($mapId);
-                } elseif ($schemeType == 'covid19') {
-                    $this->view->result = $shipmentService->removeCovid19Results($mapId);
-                } elseif ($schemeType == 'tb') {
-                    $this->view->result = $shipmentService->removeTbResults($mapId);
-                } elseif ($schemeType == 'dbs') {
-                    $this->view->result = $shipmentService->removeDbsResults($mapId);
-                } elseif ($schemeType == 'generic-test' || $userConfig == 'yes') {
-                    $this->view->result = $shipmentService->removeGenericTestResults($mapId);
-                } else {
-                    // An empty reply reads as success, so an unknown scheme must say it did nothing.
+                try {
+                    if ($schemeType == 'dts') {
+                        $this->view->result = $shipmentService->removeDtsResults($mapId);
+                    } elseif ($schemeType == 'eid') {
+                        $this->view->result = $shipmentService->removeDtsEidResults($mapId);
+                    } elseif ($schemeType == 'vl') {
+                        $this->view->result = $shipmentService->removeDtsVlResults($mapId);
+                    } elseif ($schemeType == 'recency') {
+                        $this->view->result = $shipmentService->removeRecencyResults($mapId);
+                    } elseif ($schemeType == 'covid19') {
+                        $this->view->result = $shipmentService->removeCovid19Results($mapId);
+                    } elseif ($schemeType == 'tb') {
+                        $this->view->result = $shipmentService->removeTbResults($mapId);
+                    } elseif ($schemeType == 'dbs') {
+                        $this->view->result = $shipmentService->removeDbsResults($mapId);
+                    } elseif ($schemeType == 'generic-test' || $userConfig == 'yes') {
+                        $this->view->result = $shipmentService->removeGenericTestResults($mapId);
+                    } else {
+                        // An empty reply reads as success, so an unknown scheme must say it did nothing.
+                        $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
+                    }
+                } catch (Throwable $e) {
+                    // The remove methods log the error and roll back. Tell the participant it failed.
                     $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
                 }
             }
