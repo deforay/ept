@@ -10682,7 +10682,7 @@ msgstr "Précédent"
 #: application/views/scripts/partial/paginate.phtml:32
 #: public/js/main.js.php:213
 msgid "Next"
-msgstr "Suivante"
+msgstr "Suivant"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:487
 msgid ""
