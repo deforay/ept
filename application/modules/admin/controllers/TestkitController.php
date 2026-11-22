@@ -53,11 +53,15 @@ class Admin_TestkitController extends Zend_Controller_Action
         $this->view->schemeList = $schemeService->getFullSchemeList();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $schemeService->addTestkit($params);
+            $testkitId = $schemeService->addTestkit($params);
+            if ($testkitId === '') {
+                $this->redirect('/admin/testkit');
+                return;
+            }
 
             $name = trim((string) ($params['testKitName'] ?? ''));
             Application_Model_DbTable_AuditLog::record('Added a new test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config', [
-                'entity' => ['type' => 'testkit', 'label' => $name],
+                'entity' => ['type' => 'testkit', 'id' => $testkitId, 'label' => $name],
                 'facts' => [
                     'Scheme' => implode(', ', (array) ($params['scheme'] ?? [])),
                     'Choose a Test Number to map test kit' => implode(', ', (array) ($params['testStages'] ?? [])),

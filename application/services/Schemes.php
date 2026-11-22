@@ -590,14 +590,16 @@ class Application_Service_Schemes
         }
     }
 
-    public function addTestkit($params)
+    /** @return string the new kit's id, or '' when the save failed */
+    public function addTestkit($params): string
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
             $testkitsDb = new Application_Model_DbTable_Testkitnames();
-            $testkitsDb->addTestkitDetails($params);
+            $testkitId = $testkitsDb->addTestkitDetails($params);
             $db->commit();
+            return $testkitId;
         } catch (Exception $e) {
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError($e->getMessage(), [
@@ -606,6 +608,7 @@ class Application_Service_Schemes
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+        return '';
     }
 
     public function updateTestkit($params)

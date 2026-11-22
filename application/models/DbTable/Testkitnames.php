@@ -29,6 +29,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         return $retval;
     }
 
+    /** @return string the new kit's TestKitName_ID */
     public function addTestkitDetails($params)
     {
         $randomStr = Application_Service_Common::generateRandomString(13);
@@ -61,7 +62,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $db->insert('scheme_testkit_map', $mapData);
             }
         }
-        return $this->insert($data);
+        $this->insert($data);
+        return (string) $tkId;
     }
 
     public function updateTestkitDetails($params)
