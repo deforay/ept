@@ -96,7 +96,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
     public function updateConfigDetails($params)
     {
-        $changedSections = [];
+        $before = $this->auditSnapshot(self::CONTEXT_GLOBAL);
 
         $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
         if (!is_dir($logosDir)) {
@@ -105,12 +105,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         if (isset($params['delete_home_left_logo']) && !empty($params['delete_home_left_logo'])) {
             unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_left_logo']);
             $this->update(['value' => null], "name = 'home_left_logo'");
-            $changedSections[] = 'home left logo';
         }
         if (isset($params['delete_home_right_logo']) && !empty($params['delete_home_right_logo'])) {
             unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_right_logo']);
             $this->update(['value' => null], "name = 'home_right_logo'");
-            $changedSections[] = 'home right logo';
         }
         foreach (['home_left_logo', 'home_right_logo'] as $field) {
             if (isset($_FILES[$field]) && !empty($_FILES[$field]['name'])) {
@@ -121,7 +119,6 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]['tmp_name'], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->saveConfigByName($fileName, $field);
-                    $changedSections[] = str_replace('_', ' ', $field);
                 }
             }
         }
@@ -131,27 +128,22 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         if (isset($params['covid19']) && !empty($params['covid19'])) {
             $this->saveConfigByName(json_encode($params['covid19'], true), 'covid19');
             unset($params['covid19']);
-            $changedSections[] = 'COVID-19 config';
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
             $this->saveConfigByName(json_encode($params['vl'], true), 'vl');
             unset($params['vl']);
-            $changedSections[] = 'VL config';
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
             $this->saveConfigByName(json_encode($params['recency'], true), 'recency');
             unset($params['recency']);
-            $changedSections[] = 'Recency config';
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
             $this->saveConfigByName(json_encode($params['tb'], true), 'tb');
             unset($params['tb']);
-            $changedSections[] = 'TB config';
         }
         if (isset($params['home']) && !empty($params['home'])) {
             $this->saveConfigByName(json_encode($params['home'], true), 'home');
             unset($params['home']);
-            $changedSections[] = 'home page';
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
             $faqResponse = [];
@@ -161,14 +153,12 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $this->saveConfigByName(json_encode($faqResponse, true), 'faqs');
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
-            $changedSections[] = 'FAQs';
         }
 
         // Request plumbing that leaks in from the POST form but is not a real
         // global_config row — never persist or audit-log these.
         $ignoreFields = ['module', 'controller', 'action', 'csrf_token', 'submit'];
 
-        $individualFields = [];
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
                 $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -176,15 +166,13 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 foreach ($params['schemeId'] as $schemeId) {
                     $schemeDb->update(['status' => 'active'], ['scheme_id = ?' => $schemeId]);
                 }
-                $changedSections[] = 'active schemes';
                 continue;
             }
             // (A) Drop form plumbing so it never reaches the config table or log.
             if (in_array($fieldName, $ignoreFields, true)) {
                 continue;
             }
-            // (B) Only persist + log a field when its value actually changed, so
-            // a no-op Save no longer produces a wall of "changed" field names.
+            // (B) Only persist a field when its value actually changed.
             $currentValue = $this->getAdapter()->fetchOne(
                 $this->select()->from($this->_name, ['value'])->where('name = ?', $fieldName)
             );
@@ -193,18 +181,51 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 continue;
             }
             $this->saveConfigByName(is_array($fieldValue) ? json_encode($fieldValue) : $fieldValue, $fieldName);
-            $individualFields[] = $fieldName;
-        }
-        if (!empty($individualFields)) {
-            $changedSections[] = count($individualFields) . ' setting' . (count($individualFields) === 1 ? '' : 's') . ' (' . implode(', ', $individualFields) . ')';
         }
 
         // Covers the direct update()s above (logos) alongside saveConfigByName().
         self::clearCache();
 
-        $detail = empty($changedSections) ? '' : ' — ' . implode(', ', array_unique($changedSections));
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Updated global config' . $detail, 'config');
+        $this->auditSave('Updated global settings', 'global', $before, self::CONTEXT_GLOBAL);
+    }
+
+    /**
+     * Settings of one context as name => value, with JSON values decoded so
+     * their fields compare one by one. The active schemes are included for
+     * the global context, since that form switches them on and off.
+     *
+     * @return array<string, mixed>
+     */
+    private function auditSnapshot(string $context): array
+    {
+        $db = $this->getAdapter();
+        $values = [];
+        foreach ($db->fetchPairs($db->select()->from($this->_name, ['name', 'value'])->where('context = ?', $context)) as $name => $value) {
+            $decoded = is_string($value) && $value !== '' && ($value[0] === '{' || $value[0] === '[') ? json_decode($value, true) : null;
+            $values[(string) $name] = is_array($decoded) ? $decoded : $value;
+        }
+        if ($context === self::CONTEXT_GLOBAL) {
+            $values['activeSchemes'] = $db->fetchCol(
+                $db->select()->from('scheme_list', ['scheme_name'])->where('status = ?', 'active')->order('scheme_name')
+            );
+        }
+        return $values;
+    }
+
+    /** @param array<string, mixed> $before from auditSnapshot() */
+    private function auditSave(string $statement, string $entityId, array $before, string $context): void
+    {
+        $labels = [
+            'activeSchemes' => 'Active schemes',
+            'instance' => 'Instance',
+            'report-layout' => 'Report Layout',
+        ];
+        Application_Model_DbTable_AuditLog::record($statement, 'config', [
+            'entity' => ['type' => 'config', 'id' => $entityId, 'label' => $entityId === 'report' ? 'Report settings' : 'Global settings'],
+            'changes' => Application_Model_DbTable_AuditLog::changes($before, $this->auditSnapshot($context), $labels),
+            'importantFields' => ['activeSchemes', 'instance'],
+            'reason' => 'Changes which schemes run or which instance rules apply',
+        ]);
     }
 
     /** WHERE fragment pinning a statement to a single report-context row. */
@@ -218,7 +239,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     public function updateReportDetails($params)
     {
         $data = ['value' => $params['content']];
-        $changedSections = ['report header'];
+        $before = $this->auditSnapshot(self::CONTEXT_REPORT);
 
         if (isset($_FILES['logo_image']['tmp_name']) && file_exists($_FILES['logo_image']['tmp_name']) && is_uploaded_file($_FILES['logo_image']['tmp_name'])) {
 
@@ -238,31 +259,25 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                     $resizeObj->saveImage($uploadDirectory . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $imageName, 100);
                 }
                 $this->update(['value' => $imageName], $this->reportRow('logo'));
-                $changedSections[] = 'logo';
             }
         }
         if (isset($params['reportLayout']) && !empty($params['reportLayout'])) {
             $this->update(['value' => $params['reportLayout']], $this->reportRow('report-layout'));
-            $changedSections[] = 'layout';
         }
 
         if (isset($params['instituteAddressPosition'])) {
             $this->update(['value' => $params['instituteAddressPosition']], $this->reportRow('institute-address-postition'));
-            $changedSections[] = 'institute address position';
         }
         if (isset($params['templateTopMargin'])) {
             $this->update(['value' => $params['templateTopMargin']], $this->reportRow('template-top-margin'));
-            $changedSections[] = 'top margin';
         }
         if (isset($params['generate_reports_for_excluded'])) {
             $value = $params['generate_reports_for_excluded'] === 'yes' ? 'yes' : 'no';
             $this->update(['value' => $value], $this->reportRow('generate_reports_for_excluded'));
-            $changedSections[] = 'reports for excluded submissions';
         }
 
         if (isset($params['reportApproverName'])) {
             $this->update(['value' => trim((string) $params['reportApproverName'])], $this->reportRow('report-approver-name'));
-            $changedSections[] = 'default approver name';
         }
 
         //$imageName ="logo_example.jpg";
@@ -278,13 +293,11 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
         if (isset($params['deleteTemplate']) && !empty($params['deleteTemplate']) && $params['deleteTemplate'] == 'yes') {
             $this->update(['value' => null], $this->reportRow('report-format'));
-            $changedSections[] = 'PDF template removed';
         }
         if (isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])) {
             if (in_array($extension, $pdfFormatAllowedExtensions)) {
                 if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(['value' => $fileName], $this->reportRow('report-format'));
-                    $changedSections[] = 'PDF template';
                 }
             } else {
                 $alertMsg->message = 'Unable to upload file. Please upload only PDF files';
@@ -294,12 +307,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
         $alertMsg->message = 'PDF Config Updated';
 
-        $detail = ' — ' . implode(', ', array_unique($changedSections));
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Updated report config' . $detail, 'config');
         $result = $this->update($data, $this->reportRow('report-header'));
 
         self::clearCache();
+        $this->auditSave('Updated report settings', 'report', $before, self::CONTEXT_REPORT);
         return $result;
     }
 

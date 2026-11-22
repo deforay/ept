@@ -41,18 +41,30 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                     $this->view->appDomainSaved = $commonServices->updateApplicationDomain($emailConfig['domain']);
                     unset($emailConfig['domain']);
                 }
+                $mailBefore = Application_Service_Common::getMailSettings();
                 $this->view->mailSaveResult = $commonServices->updateMailSettings($emailConfig);
                 if ($this->view->mailSaveResult['ok']) {
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog('Updated email settings', 'config');
+                    Application_Model_DbTable_AuditLog::record('Updated email settings', 'config', [
+                        'entity' => ['type' => 'config', 'id' => 'mail', 'label' => 'Email settings'],
+                        'changes' => Application_Model_DbTable_AuditLog::changes($mailBefore, Application_Service_Common::getMailSettings(), [
+                            'host' => 'SMTP Host', 'port' => 'SMTP Port', 'ssl' => 'Encryption', 'auth' => 'Authentication Type',
+                            'username' => 'Username', 'fromName' => 'From Name', 'fromEmail' => 'From Email', 'cc' => 'CC', 'bcc' => 'BCC',
+                        ]),
+                    ]);
                 }
                 unset($params['emailConfig']);
             }
             if (isset($params['bounceConfig']) && is_array($params['bounceConfig'])) {
+                $bounceBefore = Application_Service_Common::getBounceSettings();
                 $this->view->bounceSaveResult = $commonServices->updateBounceSettings($params['bounceConfig']);
                 if ($this->view->bounceSaveResult['ok'] && $this->view->bounceSaveResult['message'] !== '') {
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog('Updated bounce inbox settings', 'config');
+                    Application_Model_DbTable_AuditLog::record('Updated bounce inbox settings', 'config', [
+                        'entity' => ['type' => 'config', 'id' => 'bounce', 'label' => 'Bounce inbox settings'],
+                        'changes' => Application_Model_DbTable_AuditLog::changes($bounceBefore, Application_Service_Common::getBounceSettings(), [
+                            'host' => 'IMAP Host', 'port' => 'IMAP Port', 'ssl' => 'Encryption',
+                            'folder' => 'Folder or Gmail Label', 'username' => 'Username',
+                        ]),
+                    ]);
                 }
                 unset($params['bounceConfig']);
             }
@@ -99,7 +111,9 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $result = Application_Service_Common::verifyMailSetup($recipient, $adminEmail);
         Application_Service_Common::forgetMailDeliveryProblem();
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog($result['ok'] ? 'Verified email setup: passed' : 'Verified email setup: failed', 'config');
+        $auditDb->addNewAuditLog($result['ok'] ? 'Verified email setup: passed' : 'Verified email setup: failed', 'config', null, [
+            'entity' => ['type' => 'config', 'id' => 'mail', 'label' => 'Email settings'],
+        ]);
         $result['atText'] = Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', $result['at']), true);
         $this->_helper->json($result);
     }

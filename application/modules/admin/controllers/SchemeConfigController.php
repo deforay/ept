@@ -101,6 +101,7 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
     {
         $common = new Application_Service_Common();
         $params = $this->getAllParams();
+        $before = $this->settingsSnapshot($scheme);
 
         switch ($scheme) {
             case 'dts':
@@ -117,7 +118,7 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
                 if (!empty($params['dts'])) {
                     $common->saveSchemeConfigByName(json_encode($params['dts']), 'dts');
                 }
-                $this->audit('Updated HIV serology settings');
+                $this->audit('Updated HIV serology settings', $scheme, $before);
                 break;
 
             case 'covid19':
@@ -131,7 +132,7 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
                 if (!empty($params['covid19'])) {
                     $common->saveSchemeConfigByName(json_encode($params['covid19']), 'covid19');
                 }
-                $this->audit('Updated SARS-CoV-2 settings');
+                $this->audit('Updated SARS-CoV-2 settings', $scheme, $before);
                 break;
 
             case 'eid':
@@ -147,7 +148,7 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
                     $eid['passPercentage'] = ($passingScore >= 1 && $passingScore <= 100) ? $passingScore : '';
                 }
                 $common->saveSchemeConfigByName(json_encode($eid), 'eid');
-                $this->audit('Updated EID settings');
+                $this->audit('Updated EID settings', $scheme, $before);
                 break;
 
             default:
@@ -155,7 +156,7 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
                 if (!empty($params[$scheme])) {
                     $common->saveSchemeConfigByName(json_encode($params[$scheme]), $scheme);
                 }
-                $this->audit('Updated ' . strtoupper($scheme) . ' settings');
+                $this->audit('Updated ' . strtoupper($scheme) . ' settings', $scheme, $before);
                 break;
         }
 
@@ -166,9 +167,112 @@ class Admin_SchemeConfigController extends Zend_Controller_Action
         $this->view->reEvalShipmentIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds($scheme);
     }
 
-    private function audit(string $message): void
+    /**
+     * Log a settings save with what changed. Scoring changes are flagged and
+     * list the already-scored shipments that still hold scores from the old
+     * settings.
+     *
+     * @param array{values: array<string, string>, labels: array<string, string>} $before
+     */
+    private function audit(string $message, string $scheme, array $before): void
     {
-        (new Application_Model_DbTable_AuditLog())->addNewAuditLog($message, 'config');
+        $after = $this->settingsSnapshot($scheme);
+        $labels = $before['labels'] + $after['labels'] + Application_Model_DbTable_SchemeConfig::FIELD_LABELS;
+        $changes = Application_Model_DbTable_AuditLog::changes($before['values'], $after['values'], $labels);
+
+        $scoringKeys = Application_Model_DbTable_SchemeConfig::SCORING_FIELDS;
+        foreach (array_keys($after['values'] + $before['values']) as $key) {
+            // Recommended kits decide whether a result can pass, so they count as scoring.
+            if (str_starts_with((string) $key, 'recommended')) {
+                $scoringKeys[] = (string) $key;
+            }
+        }
+
+        $extra = [
+            'entity' => ['type' => 'scheme', 'id' => $scheme, 'label' => self::SCHEME_LABELS[$scheme] ?? strtoupper($scheme)],
+            'changes' => $changes,
+            'importantFields' => $scoringKeys,
+        ];
+        if ($changes !== []) {
+            $codes = $this->reEvaluatableShipmentCodes($scheme);
+            if ($codes !== []) {
+                $extra['list'] = ['title' => 'Shipments scored with the earlier settings', 'rows' => $codes];
+            }
+        }
+        Application_Model_DbTable_AuditLog::record($message, 'config', $extra);
+    }
+
+    /**
+     * The scheme's settings and recommended kits as flat key => text pairs,
+     * with a readable label for each generated key.
+     *
+     * @return array{values: array<string, string>, labels: array<string, string>}
+     */
+    private function settingsSnapshot(string $scheme): array
+    {
+        $values = [];
+        $labels = [];
+        $config = Pt_Commons_SchemeConfig::get($scheme, false);
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+        }
+        if (is_array($config)) {
+            foreach ($config as $key => $value) {
+                $values[(string) $key] = is_array($value) ? implode(', ', array_map('strval', array_filter($value, 'is_scalar'))) : (string) $value;
+            }
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if ($scheme === 'dts') {
+            $panels = ['dts' => 'Standard DTS Panel', 'dts+syphilis' => 'DTS + Syphilis Combined Panel', 'dts+rtri' => 'DTS + RTRI Combined Panel'];
+            $rows = $db->fetchAll(
+                $db->select()
+                    ->from(['r' => 'dts_recommended_testkits'], ['test_no', 'dts_test_mode'])
+                    ->joinLeft(['k' => 'r_testkitnames'], 'k.TestKitName_ID = r.testkit', ['name' => new Zend_Db_Expr('COALESCE(k.TestKit_Name, r.testkit)')])
+                    ->order(['r.dts_test_mode', 'r.test_no', 'name'])
+            );
+            foreach ($rows as $row) {
+                $key = 'recommendedKits.' . $row['dts_test_mode'] . '.' . $row['test_no'];
+                $values[$key] = isset($values[$key]) ? $values[$key] . ', ' . $row['name'] : (string) $row['name'];
+                $labels[$key] = ($panels[$row['dts_test_mode']] ?? $row['dts_test_mode']) . ' › Test ' . $row['test_no'];
+            }
+            foreach ($panels as $mode => $panel) {
+                foreach ([1, 2, 3] as $testNo) {
+                    $key = 'recommendedKits.' . $mode . '.' . $testNo;
+                    $values += [$key => ''];
+                    $labels[$key] = $panel . ' › Test ' . $testNo;
+                }
+            }
+        } elseif ($scheme === 'covid19') {
+            $rows = $db->fetchAll(
+                $db->select()
+                    ->from(['r' => 'covid19_recommended_test_types'], ['test_no'])
+                    ->joinLeft(['t' => 'r_test_type_covid19'], 't.test_type_id = r.test_type', ['name' => new Zend_Db_Expr('COALESCE(t.test_type_name, r.test_type)')])
+                    ->order(['r.test_no', 'name'])
+            );
+            foreach ([1, 2, 3] as $testNo) {
+                $values['recommendedTestTypes.' . $testNo] = '';
+                $labels['recommendedTestTypes.' . $testNo] = 'Recommended TestType › ' . $testNo;
+            }
+            foreach ($rows as $row) {
+                $key = 'recommendedTestTypes.' . $row['test_no'];
+                $values[$key] = $values[$key] === '' ? (string) $row['name'] : $values[$key] . ', ' . $row['name'];
+            }
+        }
+        return ['values' => $values, 'labels' => $labels];
+    }
+
+    /** @return string[] codes of scored, unfinalized shipments of this scheme */
+    private function reEvaluatableShipmentCodes(string $scheme): array
+    {
+        $ids = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds($scheme);
+        if (empty($ids)) {
+            return [];
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return array_map('strval', $db->fetchCol(
+            $db->select()->from('shipment', ['shipment_code'])->where('shipment_id IN (?)', array_map('intval', (array) $ids))->order('shipment_code')
+        ));
     }
 
     /**

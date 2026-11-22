@@ -264,15 +264,18 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $watchedSet = array_flip($watched);
             $hits = [];
             foreach ($changes as $change) {
+                // Match the full field, its first part ("tests") or its last part
+                // ("passPercentage" inside "dts.passPercentage").
                 $top = strtok($change['field'], '.');
-                if (isset($watchedSet[$change['field']]) || isset($watchedSet[$top])) {
+                $leaf = substr((string) strrchr('.' . $change['field'], '.'), 1);
+                if (isset($watchedSet[$change['field']]) || isset($watchedSet[$top]) || isset($watchedSet[$leaf])) {
                     $hits[] = $change['label'];
                 }
             }
             if ($hits !== []) {
                 $important = true;
                 if ($reason === '') {
-                    $reason = 'Changes scoring: ' . implode(', ', $hits);
+                    $reason = 'Affects scores or results: ' . implode(', ', $hits);
                 }
             }
         }
@@ -1017,19 +1020,27 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         } catch (Throwable $e) {
             $translate = null;
         }
-        return static function (string $text) use ($translate): string {
-            return ($translate !== null && $text !== '') ? (string) $translate->_($text) : $text;
+        // Composite labels ("Panel › Test 1") are translated part by part.
+        $one = static fn (string $text): string => ($translate !== null && $text !== '') ? (string) $translate->_($text) : $text;
+        return static function (string $text) use ($one): string {
+            if (!str_contains($text, ' › ')) {
+                return $one($text);
+            }
+            return implode(' › ', array_map(static function (string $part) use ($one): string {
+                // "Test 1" translates as "Test" plus the number.
+                return preg_match('/^(.*\D) (\d+)$/u', $part, $m) ? $one($m[1]) . ' ' . $m[2] : $one($part);
+            }, explode(' › ', $text)));
         };
     }
 
-    /** "Changes scoring: A, B" translates the prefix and each label. */
+    /** "Affects scores or results: A, B" translates the prefix and each label. */
     private function translateReason(string $reason): string
     {
         $t = $this->translator();
-        $prefix = 'Changes scoring: ';
+        $prefix = 'Affects scores or results: ';
         if (str_starts_with($reason, $prefix)) {
             $labels = array_map($t, explode(', ', substr($reason, strlen($prefix))));
-            return $t('Changes scoring') . ': ' . implode(', ', $labels);
+            return $t('Affects scores or results') . ': ' . implode(', ', $labels);
         }
         return $t($reason);
     }

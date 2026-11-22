@@ -56,8 +56,13 @@ class Admin_TestkitController extends Zend_Controller_Action
             $schemeService->addTestkit($params);
 
             $name = trim((string) ($params['testKitName'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            Application_Model_DbTable_AuditLog::record('Added a new test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config', [
+                'entity' => ['type' => 'testkit', 'label' => $name],
+                'facts' => [
+                    'Scheme' => implode(', ', (array) ($params['scheme'] ?? [])),
+                    'Choose a Test Number to map test kit' => implode(', ', (array) ($params['testStages'] ?? [])),
+                ],
+            ]);
 
             $this->redirect('/admin/testkit');
         }
@@ -71,11 +76,23 @@ class Admin_TestkitController extends Zend_Controller_Action
         $this->view->schemeList = $schemeService->getFullSchemeList();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $testkitId = trim((string) ($params['testkitId'] ?? ''));
+            $kits = new Application_Model_DbTable_Testkitnames();
+            $before = $kits->auditSnapshot($testkitId);
             $schemeService->updateTestkit($params);
+            $after = $kits->auditSnapshot($testkitId);
 
             $name = trim((string) ($params['testKitName'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            $testFields = array_values(array_filter(
+                array_keys($after['labels'] + $before['labels']),
+                static fn (string $key) => str_starts_with($key, 'tests.')
+            ));
+            Application_Model_DbTable_AuditLog::record('Updated test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config', [
+                'entity' => ['type' => 'testkit', 'id' => $testkitId, 'label' => $after['name']],
+                'changes' => Application_Model_DbTable_AuditLog::changes($before['values'], $after['values'], $after['labels'] + $before['labels']),
+                // Which tests a kit counts for, and whether it is active, decide what labs can report.
+                'importantFields' => array_merge($testFields, ['Approval']),
+            ]);
 
             $this->redirect('/admin/testkit');
         } elseif ($this->hasParam('53s5k85_8d')) {
@@ -93,10 +110,25 @@ class Admin_TestkitController extends Zend_Controller_Action
         $schemeService = new Application_Service_Schemes();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $stage = trim((string) ($params['testKitStage'] ?? ''));
+            $kits = new Application_Model_DbTable_Testkitnames();
+            $before = $stage !== '' ? $kits->stageKitNames($stage) : [];
             $schemeService->updateTestkitStage($params);
+            $after = $stage !== '' ? $kits->stageKitNames($stage) : [];
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated test kit stage settings', 'config');
+            $added = array_values(array_diff($after, $before));
+            $removed = array_values(array_diff($before, $after));
+            $rows = array_merge(
+                array_map(static fn ($kit) => '+ ' . $kit, $added),
+                array_map(static fn ($kit) => '− ' . $kit, $removed)
+            );
+            Application_Model_DbTable_AuditLog::record('Updated test kit stage settings' . ($stage !== '' ? ' - ' . $stage : ''), 'config', [
+                'entity' => ['type' => 'config', 'id' => 'testkit-stage-' . $stage, 'label' => $stage],
+                'facts' => ['Added' => count($added), 'Removed' => count($removed)],
+                'list' => ['title' => 'Test kits added (+) and removed (−)', 'rows' => $rows],
+                'important' => $removed !== [],
+                'reason' => $removed !== [] ? 'Removes test kits that labs could report' : '',
+            ]);
 
             $this->redirect('/admin/testkit/standard-kit');
         }
@@ -120,13 +152,19 @@ class Admin_TestkitController extends Zend_Controller_Action
         if ($request->isPost()) {
             $stage = $this->_getParam('stage');
             $params = $request->getPost();
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            // updateTestKitStatus() approves every pending kit, so list them first.
+            $pending = array_map('strval', $db->fetchCol(
+                $db->select()->from('r_testkitnames', ['TestKit_Name'])->where('testkit_status = ?', 'pending')->order('TestKit_Name')
+            ));
             $dtsModel = new Application_Model_Dts();
             $this->view->testkitList = $dtsModel->updateTestKitStatus($params);
             $this->view->testkitStage = $stage;
 
             $status = (string) ($params['status'] ?? '');
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Changed test kit status' . ($status !== '' ? " to '{$status}'" : ''), 'config');
+            Application_Model_DbTable_AuditLog::record('Changed test kit status' . ($status !== '' ? " to '{$status}'" : ''), 'config', [
+                'list' => $status === 'approve' ? ['title' => 'Test kits approved', 'rows' => $pending] : null,
+            ]);
         }
     }
 }

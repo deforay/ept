@@ -66,6 +66,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
     public function updateConfigDetails($params)
     {
         $changedSchemes = [];
+        $before = $this->auditValues();
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
             $this->insertOrUpdate('mail', json_encode($params['emailConfig'], true));
             $changedSchemes[] = 'email';
@@ -103,9 +104,22 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
             $changedSchemes[] = 'FAQs';
         }
 
-        $detail = empty($changedSchemes) ? '' : ' — ' . implode(', ', $changedSchemes);
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Updated scheme config' . $detail, 'config');
+        $detail = empty($changedSchemes) ? '' : ' - ' . implode(', ', $changedSchemes);
+        Application_Model_DbTable_AuditLog::record('Updated scheme config' . $detail, 'config', [
+            'changes' => Application_Model_DbTable_AuditLog::changes($before, $this->auditValues(), self::FIELD_LABELS),
+            'importantFields' => self::SCORING_FIELDS,
+        ]);
+    }
+
+    /** @return array<string, mixed> every scheme_config row, JSON decoded */
+    private function auditValues(): array
+    {
+        $values = [];
+        foreach ($this->getAdapter()->fetchPairs($this->select()->from($this->_name, ['scheme_config_name', 'scheme_config_value'])) as $name => $json) {
+            $decoded = json_decode((string) $json, true);
+            $values[(string) $name] = is_array($decoded) ? $decoded : $json;
+        }
+        return $values;
     }
 
     public function saveSchemeConfigByName($value, $name)
