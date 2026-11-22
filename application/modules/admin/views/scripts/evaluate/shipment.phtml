@@ -1,10 +1,6 @@
 <?php
 
 $adminSession = new Zend_Session_Namespace('administrators');
-foreach ($this->shipmentsUnderDistro as $shipment) {
-	$auditDb = new Application_Model_DbTable_AuditLog();
-	$auditDb->addNewAuditLog("Evaluated shipment " . $shipment['shipment_code'], "shipment");
-}
 if ($adminSession->privileges != "") {
 	$pstatus = false;
 	$privileges = explode(',', $adminSession->privileges);

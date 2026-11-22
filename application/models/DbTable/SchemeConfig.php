@@ -2,6 +2,36 @@
 
 class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 {
+    /**
+     * Audit log labels for scheme settings keys. They match the labels on the
+     * scheme settings pages, so they are already in the translation catalogs.
+     */
+    public const FIELD_LABELS = [
+        'passPercentage' => 'Passing Score',
+        'panelScore' => 'Panel/Shipment Score',
+        'documentationScore' => 'Documentation Score',
+        'dtsAlgorithmScore' => 'Algorithm Score',
+        'allowedAlgorithms' => 'Allowed Algorithms',
+        'dtsRequireTest3' => 'Require Test 3 to Confirm Positive',
+        'dtsSchemeType' => 'DTS Scheme Type',
+        'rtriEnabled' => 'Enable RTRI',
+        'sampleRehydrateDays' => 'Days for Sample Rehydration',
+        'allowRepeatTests' => 'Display Repeat Test Fields',
+        'displaySampleConditionFields' => 'Display Sample Condition Fields',
+        'disableOtherTestkit' => 'Disable Other Test Kit Option',
+        'covid19MaximumTestAllowed' => 'Maximum Tests Allowed',
+        'shipment.enableSyphilis' => 'Enable Syphilis',
+        'shipment.enableRtri' => 'Enable RTRI',
+    ];
+
+    /** Settings keys that change how results are scored. */
+    public const SCORING_FIELDS = [
+        'passPercentage', 'panelScore', 'documentationScore', 'dtsAlgorithmScore',
+        'allowedAlgorithms', 'dtsRequireTest3', 'dtsOptionalTest3', 'dtsSchemeType',
+        'dtsEnforceAlgorithmCheck', 'covid19EnforceAlgorithmCheck', 'sampleRehydrateDays',
+        'covid19MaximumTestAllowed', 'rtriEnabled',
+    ];
+
     protected $_name = 'scheme_config';
 
     public function getSchemeConfig(?string $name = null)

@@ -68,15 +68,25 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
      * feedback answers and other per-shipment rows first, then the map rows.
      * Runs inside the caller's transaction when there is one.
      *
+     * Writes one audit entry per shipment listing the participants removed.
+     *
      * @param int[] $mapIds
+     * @param string $how where the removal came from, recorded in the audit entry
      * @return int number of shipment_participant_map rows deleted
      */
-    public static function deleteMapsWithData(Zend_Db_Adapter_Abstract $db, array $mapIds): int
+    public static function deleteMapsWithData(Zend_Db_Adapter_Abstract $db, array $mapIds, string $how = ''): int
     {
         $mapIds = array_values(array_unique(array_filter(array_map('intval', $mapIds))));
         if ($mapIds === []) {
             return 0;
         }
+        $removed = $db->fetchAll(
+            $db->select()
+                ->from(['m' => 'shipment_participant_map'], ['map_id', 'shipment_id', 'response_status', 'shipment_test_report_date'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id = m.shipment_id', ['shipment_code'])
+                ->joinLeft(['p' => 'participant'], 'p.participant_id = m.participant_id', ['unique_identifier', 'lab_name', 'first_name', 'last_name'])
+                ->where('m.map_id IN (?)', $mapIds)
+        );
         $pairs = $db->fetchAll(
             $db->select()->from('shipment_participant_map', ['participant_id', 'shipment_id'])->where('map_id IN (?)', $mapIds)
         );
@@ -93,9 +103,62 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     ]);
                 }
             }
-            return (int) $db->delete('shipment_participant_map', $db->quoteInto('map_id IN (?)', $mapIds));
+            $deleted = (int) $db->delete('shipment_participant_map', $db->quoteInto('map_id IN (?)', $mapIds));
         } finally {
             $db->query('SET FOREIGN_KEY_CHECKS = 1');
+        }
+        self::auditRemoval($removed, $how);
+        return $deleted;
+    }
+
+    /**
+     * One audit entry per shipment for participants removed from it.
+     *
+     * @param array<int, array<string, mixed>> $removed
+     */
+    private static function auditRemoval(array $removed, string $how): void
+    {
+        $byShipment = [];
+        foreach ($removed as $row) {
+            $byShipment[(string) $row['shipment_id']][] = $row;
+        }
+        foreach ($byShipment as $shipmentId => $rows) {
+            $code = (string) ($rows[0]['shipment_code'] ?? $shipmentId);
+            $withResults = 0;
+            $list = [];
+            foreach ($rows as $row) {
+                $name = trim((string) ($row['lab_name'] ?? ''));
+                if ($name === '') {
+                    $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                }
+                $hadResults = in_array($row['response_status'] ?? '', ['responded', 'nottested'], true)
+                    || !empty($row['shipment_test_report_date']);
+                if ($hadResults) {
+                    $withResults++;
+                }
+                $list[] = trim(($row['unique_identifier'] ?? '') . ' - ' . $name, ' -')
+                    . ($hadResults ? ' (had submitted results)' : '');
+            }
+            $count = count($rows);
+            $facts = [];
+            if ($how !== '') {
+                $facts['Removed through'] = $how;
+            }
+            $facts['Removed'] = $count;
+            $facts['Had submitted results'] = $withResults;
+            Application_Model_DbTable_AuditLog::record(
+                sprintf('Removed %d participant%s from shipment %s', $count, $count === 1 ? '' : 's', $code),
+                'shipment',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                    'facts' => $facts,
+                    'list' => ['title' => 'Participants removed', 'rows' => $list],
+                    'important' => $withResults > 0,
+                    'reason' => $withResults > 0
+                        ? sprintf('%d of the removed participants had submitted results, which were deleted', $withResults)
+                        : '',
+                ]
+            );
         }
     }
 
@@ -144,7 +207,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 }
             }
             if (!empty($mapIdsToRemove)) {
-                self::deleteMapsWithData($db, $mapIdsToRemove);
+                self::deleteMapsWithData($db, $mapIdsToRemove, 'Shipment participant list saved');
             }
             // "Save as a list": adds the selected participants to that list of this
             // scheme. It no longer removes anyone from the preset lists that were applied.

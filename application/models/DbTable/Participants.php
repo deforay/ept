@@ -2838,7 +2838,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=0");
                 if ($pmmCheck['mapCount'] <= 1) {
                     $mapIds = $db->fetchCol($db->select()->from('shipment_participant_map', ['map_id'])->where('participant_id = ?', $participantId));
-                    Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, $mapIds);
+                    Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, $mapIds, 'Participant deleted');
                     $id = $db->delete('participant_manager_map', $db->quoteInto('participant_id = ?', $participantId));
                     if ($pmmCheck['mapCount'] == 1 && $pmmCheck['dm_id'] > 0) {
                         $id = $db->delete('data_manager', ['dm_id' => $pmmCheck['dm_id']]);
@@ -3160,7 +3160,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where('password = ?', $params['password'])->limit(1);
             $verify = $db->fetchRow($pQuery);
             if ($verify) {
-                Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [(int) $params['smid']]);
+                Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [(int) $params['smid']], 'Exclude');
                 return true;
             }
             return false;
