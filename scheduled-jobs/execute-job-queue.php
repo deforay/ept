@@ -87,7 +87,12 @@ try {
             $fullCommand = escapeshellarg($phpPath) . " " . $jobsDir . DIRECTORY_SEPARATOR . $validatedCommand;
             $output = [];
             $returnCode = 0;
+            // The job inherits these, so its audit entries name the admin who queued it.
+            putenv(Application_Model_DbTable_AuditLog::ENV_JOB_ADMIN_ID . '=' . (int) ($sj['requested_by'] ?? 0));
+            putenv(Application_Model_DbTable_AuditLog::ENV_JOB_ID . '=' . $jobId);
             exec($fullCommand . ' 2>&1', $output, $returnCode);
+            putenv(Application_Model_DbTable_AuditLog::ENV_JOB_ADMIN_ID);
+            putenv(Application_Model_DbTable_AuditLog::ENV_JOB_ID);
 
             // Honor the child's exit code: a non-zero status means the job script failed
             // (e.g. an exception during evaluation). Marking it 'completed' regardless hid

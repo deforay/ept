@@ -29,7 +29,7 @@ try {
     // The TZ-aware "has it actually passed?" test is done in PHP below so we
     // reuse the exact cutoff logic the rest of the app uses.
     $candidates = $db->fetchAll(
-        "SELECT shipment_id, response_deadline
+        "SELECT shipment_id, shipment_code, response_deadline
            FROM shipment
           WHERE response_switch = 'on'
             AND auto_close_at_deadline = 'yes'
@@ -44,12 +44,14 @@ try {
 
     $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     $expiredIds = [];
+    $expiredRows = [];
 
     foreach ($candidates as $row) {
         $cutoff = Pt_Commons_DateUtility::shipmentCutoff($row['response_deadline']);
         // Strictly after the cutoff instant => the deadline day is over.
         if ($cutoff !== null && $now > $cutoff) {
             $expiredIds[] = (int) $row['shipment_id'];
+            $expiredRows[(int) $row['shipment_id']] = $row;
         }
     }
 
@@ -70,15 +72,26 @@ try {
         // are ready for human review. Reports and finalization stay manual. Re-evaluation is
         // intentional — it captures responses that landed before the deadline. System context:
         // no admin session, so requested_by is null. execute-job-queue.php drains the eval job.
-        if (!$skipEval) {
-            $evalService = new Application_Service_Evaluation();
-            foreach ($expiredIds as $sid) {
+        $evalService = new Application_Service_Evaluation();
+        foreach ($expiredIds as $sid) {
+            $queued = false;
+            if (!$skipEval) {
                 try {
                     $evalService->scheduleEvaluation($sid, null);
+                    $queued = true;
                 } catch (Exception $evalErr) {
                     Pt_Commons_LoggerUtility::logError('auto-eval enqueue failed for shipment ' . $sid . ': ' . $evalErr->getMessage());
                 }
             }
+            // The audit log shows why the System evaluation that follows ran.
+            $code = (string) ($expiredRows[$sid]['shipment_code'] ?? $sid);
+            Application_Model_DbTable_AuditLog::record('Closed responses at the deadline - ' . $code, 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => $sid, 'label' => $code],
+                'facts' => [
+                    'Result Due Date & Time' => (string) ($expiredRows[$sid]['response_deadline'] ?? ''),
+                    'Evaluation queued' => $queued ? 'yes' : 'no',
+                ],
+            ]);
         }
     }
 } catch (Throwable $e) {
