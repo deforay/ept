@@ -4578,14 +4578,21 @@ class Application_Service_Evaluation
             $emailStatsQuery->where('DATE(tm.queued_on) >= ?', $dateFrom);
             $emailStatsQuery->where('DATE(tm.queued_on) <= ?', $dateTo);
 
-            // Apply status filter for email jobs
+            // Apply status filter for email jobs. Each condition matches the
+            // status the loop below gives the day, so a filter shows the same
+            // rows the Status column labels that way.
             if (!empty($filterStatus)) {
                 if ($filterStatus === 'pending') {
-                    $emailStatsQuery->having('pending_count > 0');
-                } elseif ($filterStatus === 'completed') {
-                    $emailStatsQuery->having('pending_count = 0 AND failed_count = 0');
+                    $emailStatsQuery->having('pending_count > 0 AND sent_count = 0');
                 } elseif ($filterStatus === 'processing') {
                     $emailStatsQuery->having('pending_count > 0 AND sent_count > 0');
+                } elseif ($filterStatus === 'failed') {
+                    $emailStatsQuery->having('pending_count = 0 AND failed_count > 0 AND sent_count = 0');
+                } elseif ($filterStatus === 'completed') {
+                    $emailStatsQuery->having('pending_count = 0 AND NOT (failed_count > 0 AND sent_count = 0)');
+                } else {
+                    // Any other status (cancelled, ...) never applies to an email day.
+                    $emailStatsQuery->having('1 = 0');
                 }
             }
 
