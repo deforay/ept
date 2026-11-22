@@ -4,10 +4,11 @@ Dev-only tools. Each provisions a synthetic shipment, fills bulk responses (corr
 
 Lives in `test-harness/` at the repo root and is **architecturally independent** of the app: it does not load any class from `application/` or `library/`. It reads `application/configs/application.ini` as plain text, opens its own PDO connection, writes synthetic rows by raw SQL, and shells out to `scheduled-jobs/evaluate-shipments.php` for evaluation.
 
-Five entry points:
+Six entry points:
 
 - `bin/dts` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests). Provisions its own synthetic shipment + asserts against declared expectations.
 - `bin/workbook` — Vietnam only, no database. Checks the NIHE accepted-interpretation matrix (every row of the assessment workbook, verdict **and** feedback text) directly against `algoVietnam`, in about a second. This is the one place the harness loads a class from `application/`; see **Spec coverage** below for why that exception is drawn where it is.
+- `bin/algorithms` — no database. Checks the DTS algorithms written as rules in `Pt_Evaluation_Dts_Algorithm`: the combinations that pass must be exactly those in `expectations/dts-algorithms.php`. `--print <algorithm>` lists every combination with its verdict, warnings and corrective actions, for a country programme to confirm. About a second. Like `bin/workbook`, it loads the classes from the app directly.
 - `bin/pdf-html` — no database. Checks `Pt_Reports_BasePdf`, the class every report PDF renders HTML through. Each blocked pattern (remote images and stylesheets, server files, SVG, list image bullets, script links, form tags) must leave no trace in the PDF and make no request. Each image and link kind the report layouts use must still render. About two seconds. Like `bin/workbook`, it loads the class from the app directly.
 - `bin/reports` — shows whether a code change alters the reports a reader sees. Generates every report of the named shipments with the code at `--base` (default `HEAD`, in a temporary git worktree) and with the working tree, then compares each pair of PDFs on pages, words, word positions, images and where they are drawn, links and form fields. Dates and times are masked. It puts the database rows and `downloads/reports` back afterwards, even when interrupted, and one run per database at a time. Needs poppler.
 - `bin/custom-test` — qualitative custom (user-configured) tests. You pick an **existing** scheme at startup (HBV, HCV, SYP, …); it provisions a shipment against that scheme using its own FINAL result codes, fills correct/incorrect responses, and asserts per-sample correctness from `response_result_generic_test.calculated_score`. It never creates or alters a scheme.
@@ -30,6 +31,10 @@ Both refuse to run unless `APPLICATION_ENV` is `development` or `testing`. There
 # Vietnam workbook matrix only — no DB, no provisioning, ~1s:
 php test-harness/bin/workbook
 php test-harness/bin/workbook --sheet screening
+
+# DTS algorithm rules — no DB, ~1s:
+php test-harness/bin/algorithms
+php test-harness/bin/algorithms --print sierraLeone
 
 # Report PDF HTML check — no DB, ~2s:
 php test-harness/bin/pdf-html

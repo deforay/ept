@@ -303,8 +303,8 @@ if (!empty($resultArray['shipment'])) {
             $correctiveActionStuff .= '</tr>';
             foreach ($warnings as $warning) {
                 $correctiveActionStuff .= '<tr>';
-                $correctiveActionStuff .= '<td style="text-align:left;">' . (isset($warning['warning']) ? $warning['warning'] : $warning) . '</td>';
-                $correctiveActionStuff .= '<td style="text-align:center;">' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>';
+                $correctiveActionStuff .= '<td style="text-align:left;">' . Pt_Evaluation_FailureReason::warningHtml($warning) . '</td>';
+                $correctiveActionStuff .= '<td style="text-align:center;">' . Pt_Evaluation_FailureReason::correctiveActionHtml($warning) . '</td>';
 
                 $correctiveActionStuff .= '</tr>';
             }

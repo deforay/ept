@@ -4,7 +4,7 @@
  * Independent expected verdicts for "Updated 3-tests" with Test 3 required
  * (scheme_config.dts.dtsRequireTest3 = 'yes', Zimbabwe national algorithm).
  *
- * Declared from the algorithm spec, NOT computed from algoUpdatedThreeTests.
+ * Declared from the algorithm spec, NOT computed from the 3-test rules.
  * A Positive needs Test 1, Test 2 and Test 3 all reactive; see
  * src/Aberrations/ZimbabweThreeTests.php for the full rule table.
  *

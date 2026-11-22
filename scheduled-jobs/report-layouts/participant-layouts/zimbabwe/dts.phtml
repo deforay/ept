@@ -484,8 +484,8 @@ if (!empty($resultArray['shipment'])) {
                 $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>
-                        <td>' . ($warning['warning'] ?? '') . '</td>
-                        <td>' . ($warning['correctiveAction'] ?? '') . '</td>
+                        <td>' . Pt_Evaluation_FailureReason::warningHtml($warning) . '</td>
+                        <td>' . Pt_Evaluation_FailureReason::correctiveActionHtml($warning) . '</td>
                     </tr>';
                 }
                 $failRes .= '</table>';

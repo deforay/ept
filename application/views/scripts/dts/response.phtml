@@ -1588,9 +1588,9 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                     foreach ($warnings as $warning) { ?>
                                         <tr>
                                             <td class="text-danger">
-                                                <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?>
+                                                <?php echo Pt_Evaluation_FailureReason::warningHtml($warning); ?>
                                             </td>
-                                            <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?>
+                                            <td><?php echo Pt_Evaluation_FailureReason::correctiveActionHtml($warning); ?>
                                             </td>
                                             <!-- Manual result override changes -->
                                             <td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox"
