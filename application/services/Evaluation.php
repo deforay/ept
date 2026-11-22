@@ -427,6 +427,145 @@ class Application_Service_Evaluation
         echo json_encode($output);
     }
 
+    /**
+     * Audit one finished shipment evaluation: the scoring settings the
+     * evaluator read and the outcome. Flags the entry when the settings differ
+     * from the previous evaluation of the same shipment, because the scores
+     * are then not comparable. Called only after scoring runs, never on a
+     * page view.
+     *
+     * @param array<string, string> $settings from evaluationSettings(), read before scoring
+     */
+    public function auditEvaluation(int $shipmentId, array $settings): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $shipment = $db->fetchRow(
+                $db->select()
+                    ->from(['s' => 'shipment'], ['shipment_id', 'shipment_code'])
+                    ->where('s.shipment_id = ?', $shipmentId)
+            );
+            if (empty($shipment)) {
+                return;
+            }
+            $counts = $db->fetchRow(
+                $db->select()
+                    ->from('shipment_participant_map', [
+                        'participants' => new Zend_Db_Expr('COUNT(*)'),
+                        'responses' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
+                        'passed' => new Zend_Db_Expr('SUM(final_result = 1)'),
+                    ])
+                    ->where('shipment_id = ?', $shipmentId)
+            );
+
+            $code = (string) $shipment['shipment_code'];
+            $auditLog = new Application_Model_DbTable_AuditLog();
+            $previous = $auditLog->latestSnapshot('shipment', (string) $shipmentId, 'Evaluated shipment');
+            $labels = Application_Model_DbTable_SchemeConfig::FIELD_LABELS;
+            $changes = $previous !== null
+                ? Application_Model_DbTable_AuditLog::changes($previous, $settings, $labels)
+                : [];
+
+            $facts = [
+                'Participants' => (int) ($counts['participants'] ?? 0),
+                'Responses' => (int) ($counts['responses'] ?? 0),
+                'Passed' => (int) ($counts['passed'] ?? 0),
+            ];
+            foreach ($settings as $key => $value) {
+                $facts[$labels[$key] ?? Application_Model_DbTable_AuditLog::humanize($key)] = $value;
+            }
+
+            $auditLog->addNewAuditLog('Evaluated shipment ' . $code, 'shipment', null, [
+                'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                'facts' => $facts,
+                'snapshot' => $settings,
+                'changes' => $changes !== [] ? $changes : null,
+                'important' => $changes !== [],
+                'reason' => $changes !== [] ? 'Evaluated with different settings than the previous evaluation of this shipment' : '',
+            ]);
+        } catch (Throwable $e) {
+            // The audit must never fail an evaluation that already finished.
+            Pt_Commons_LoggerUtility::logWarning('auditEvaluation failed: ' . $e->getMessage(), [
+                'shipmentId' => $shipmentId,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        }
+    }
+
+    /**
+     * The scoring settings an evaluation of this shipment reads: the scheme
+     * settings, the shipment's own overrides and, for custom tests, the
+     * test's configuration. Report text and display options are left out,
+     * since they would flag evaluations that score the same.
+     *
+     * @param array<string, mixed> $shipment a shipment row with scheme_type and shipment_attributes
+     * @return array<string, string>
+     */
+    private function evaluationSettings(array $shipment): array
+    {
+        try {
+            $schemeType = (string) ($shipment['scheme_type'] ?? '');
+            $settings = array_intersect_key(
+                self::scalarSettings(Pt_Commons_SchemeConfig::get($schemeType)),
+                array_flip(Application_Model_DbTable_SchemeConfig::SCORING_FIELDS)
+            );
+            // Shipment attributes override the scheme default for this shipment.
+            $attributes = Pt_Commons_JsonUtility::safeDecode((string) ($shipment['shipment_attributes'] ?? ''));
+            if (is_array($attributes)) {
+                if (!empty($attributes['dtsSchemeType'])) {
+                    $settings['dtsSchemeType'] = (string) $attributes['dtsSchemeType'];
+                }
+                foreach (['enableSyphilis', 'enableRtri'] as $key) {
+                    if (isset($attributes[$key]) && is_scalar($attributes[$key])) {
+                        $settings['shipment.' . $key] = (string) $attributes[$key];
+                    }
+                }
+            }
+            // Custom tests keep their scoring settings on the scheme itself.
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $custom = json_decode((string) $db->fetchOne(
+                $db->select()->from('scheme_list', ['user_test_config'])->where('scheme_id = ?', $schemeType)
+            ), true);
+            foreach (self::scalarSettings(is_array($custom) ? $custom : null) as $key => $value) {
+                $settings['customTest.' . $key] = $value;
+            }
+            ksort($settings);
+            return $settings;
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('evaluationSettings failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return [];
+        }
+    }
+
+    /**
+     * Settings flattened to key => string, with lists joined. Nested objects
+     * are skipped because evaluators read top-level keys.
+     *
+     * @return array<string, string>
+     */
+    private static function scalarSettings($config): array
+    {
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+        }
+        $out = [];
+        if (!is_array($config)) {
+            return $out;
+        }
+        foreach ($config as $key => $value) {
+            if (is_scalar($value) || $value === null) {
+                $out[(string) $key] = (string) $value;
+            } elseif (is_array($value) && array_is_list($value)) {
+                $out[(string) $key] = implode(', ', array_map('strval', array_filter($value, 'is_scalar')));
+            }
+        }
+        return $out;
+    }
+
     public function getShipments($distributionId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -488,6 +627,10 @@ class Application_Service_Evaluation
         // aliases the shipment status as 'shipment_status'; the joined 'status' key actually resolves
         // to participant.status, so that term was always false and silently dead. Dropped to make the
         // queue-driven intent explicit.)
+        // Read the scoring settings before scoring. The evaluators read the same
+        // per-request cache, so the audit records exactly what they used.
+        $auditSettings = $reEvaluate == true ? $this->evaluationSettings($shipmentResult[0]) : [];
+
         if ($shipmentResult[0]['scheme_type'] == 'eid') {
             if ($reEvaluate == true) {
                 // Set processing state
@@ -751,6 +894,9 @@ class Application_Service_Evaluation
                 $genericTestModel = new Application_Model_CustomTest();
                 $shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
             }
+        }
+        if ($reEvaluate == true) {
+            $this->auditEvaluation((int) $shipmentId, $auditSettings);
         }
         return $shipmentResult;
     }

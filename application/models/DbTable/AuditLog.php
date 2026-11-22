@@ -66,6 +66,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
      *   important        true for changes that can alter scores or results
      *   reason           why the entry is important, shown next to the flag
      *   importantFields  field names that make the entry important when changed
+     *   snapshot         ['key' => 'value', ...] kept for later comparison, not shown
      *
      * When `changes` is given but empty, the entry still records the save and
      * says that nothing changed.
@@ -306,11 +307,43 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         if ($reason !== '') {
             $details['reason'] = $reason;
         }
+        if (!empty($extra['snapshot']) && is_array($extra['snapshot'])) {
+            $details['snapshot'] = array_map(static fn ($v) => self::clip(self::display($v)), $extra['snapshot']);
+        }
         if ($details === []) {
             return null;
         }
         $json = json_encode($details, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         return $json === false ? null : $json;
+    }
+
+    /**
+     * The snapshot stored with the latest entry about one record whose
+     * statement starts with $statementPrefix, or null when there is none.
+     *
+     * @return array<string, string>|null
+     */
+    public function latestSnapshot(string $entityType, string $entityId, string $statementPrefix): ?array
+    {
+        if (!$this->hasColumn('details')) {
+            return null;
+        }
+        $db = $this->getAdapter();
+        $json = $db->fetchOne(
+            $db->select()
+                ->from($this->_name, ['details'])
+                ->where('entity_type = ?', $entityType)
+                ->where('entity_id = ?', $entityId)
+                ->where('statement LIKE ?', addcslashes($statementPrefix, '%_\\') . '%')
+                ->where("JSON_EXTRACT(details, '$.snapshot') IS NOT NULL")
+                ->order('audit_log_id DESC')
+                ->limit(1)
+        );
+        if (!$json) {
+            return null;
+        }
+        $decoded = json_decode((string) $json, true);
+        return is_array($decoded['snapshot'] ?? null) ? $decoded['snapshot'] : null;
     }
 
     /** Same id for every entry written during one PHP request. */

@@ -3958,7 +3958,7 @@ class Application_Service_Shipments
             $db->beginTransaction();
         }
         try {
-            $rows = Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [$mapId]);
+            $rows = Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [$mapId], 'Remove button');
             if ($ownTx) {
                 $db->commit();
             }
