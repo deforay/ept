@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 17:27+0530\n"
+"POT-Creation-Date: 2026-11-22 17:50+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -447,7 +447,7 @@ msgstr ""
 
 #: application/languages/db-translation-strings.php:47
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2308 application/models/Eid.php:236
+#: application/models/Dts.php:2322 application/models/Eid.php:236
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:12
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:176
@@ -471,8 +471,8 @@ msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 #: application/languages/db-translation-strings.php:55
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/CustomTest.php:503 application/models/CustomTest.php:622
-#: application/models/Dts.php:1609 application/models/Dts.php:1627
-#: application/models/Dts.php:2312 application/models/Dts.php:2389
+#: application/models/Dts.php:1620 application/models/Dts.php:1638
+#: application/models/Dts.php:2326 application/models/Dts.php:2403
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/data-managers/index.phtml:233
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:80
@@ -571,7 +571,7 @@ msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/DbTable/DataManagers.php:599
 #: application/models/DbTable/Distribution.php:156
-#: application/models/Dts.php:2315 application/models/Recency.php:553
+#: application/models/Dts.php:2329 application/models/Recency.php:553
 #: application/modules/admin/views/scripts/audit-log/index.phtml:951
 #: application/modules/admin/views/scripts/email-participants/index.phtml:464
 #: application/modules/admin/views/scripts/login/index.phtml:190
@@ -624,6 +624,7 @@ msgstr ""
 "hiện."
 
 #: application/languages/db-translation-strings.php:95
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:89
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 "Đảm bảo tên bộ sinh phẩm được ghi lại cho tất cả các xét nghiệm đã thực hiện."
@@ -1032,6 +1033,7 @@ msgid "negative"
 msgstr "âm tính"
 
 #: application/languages/db-translation-strings.php:263
+#: library/Pt/Evaluation/Dts/Reason.php:73
 msgid "Negative"
 msgstr "Âm tính"
 
@@ -1331,9 +1333,9 @@ msgstr "Bệnh viện tư nhân"
 
 #: application/languages/db-translation-strings.php:377
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:1608 application/models/Dts.php:1626
-#: application/models/Dts.php:2311 application/models/Dts.php:2341
-#: application/models/Dts.php:2361 application/models/Dts.php:2388
+#: application/models/Dts.php:1619 application/models/Dts.php:1637
+#: application/models/Dts.php:2325 application/models/Dts.php:2355
+#: application/models/Dts.php:2375 application/models/Dts.php:2402
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:70
 #: application/modules/admin/views/scripts/enrollments/add.phtml:40
@@ -1408,6 +1410,7 @@ msgid "recent"
 msgstr "nhiễm mới"
 
 #: application/languages/db-translation-strings.php:403
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:149
 msgid ""
 "Record the date the panel was actually rehydrated. A panel can only be "
 "rehydrated after it has been received."
@@ -1434,8 +1437,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:332
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:335
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:383
-#: application/services/Reports.php:498 application/services/Reports.php:3410
-#: application/services/Reports.php:4266
+#: application/services/Reports.php:498 application/services/Reports.php:3414
+#: application/services/Reports.php:4270
 #: application/views/partials/participant-response-report.phtml:22
 #: application/views/partials/report-filters.phtml:27
 #: application/views/scripts/participant/add-participant.phtml:61
@@ -3308,7 +3311,7 @@ msgstr "vòng ngoại kiểm"
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:154
 #: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:59
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:351
-#: application/services/Reports.php:2773 application/services/Reports.php:4254
+#: application/services/Reports.php:2773 application/services/Reports.php:4258
 #: application/views/partials/participant-performance-report.phtml:270
 #: application/views/partials/spotlight.phtml:397
 #: application/views/partials/spotlight.phtml:637
@@ -4326,9 +4329,9 @@ msgstr "Mô tả"
 #: application/models/Covid19.php:734 application/models/Covid19.php:815
 #: application/models/CustomTest.php:456 application/models/CustomTest.php:503
 #: application/models/CustomTest.php:595 application/models/CustomTest.php:622
-#: application/models/Dts.php:1605 application/models/Dts.php:1623
-#: application/models/Dts.php:2305 application/models/Dts.php:2338
-#: application/models/Dts.php:2358 application/models/Dts.php:2385
+#: application/models/Dts.php:1616 application/models/Dts.php:1634
+#: application/models/Dts.php:2319 application/models/Dts.php:2352
+#: application/models/Dts.php:2372 application/models/Dts.php:2399
 #: application/models/Recency.php:553 application/models/Recency.php:637
 #: application/models/Recency.php:702 application/models/Recency.php:740
 #: application/models/Recency.php:780
@@ -4346,9 +4349,9 @@ msgstr "Mã đơn vị tham gia"
 #: application/models/Covid19.php:734 application/models/Covid19.php:815
 #: application/models/CustomTest.php:456 application/models/CustomTest.php:503
 #: application/models/CustomTest.php:595 application/models/CustomTest.php:622
-#: application/models/Dts.php:1606 application/models/Dts.php:1624
-#: application/models/Dts.php:2306 application/models/Dts.php:2339
-#: application/models/Dts.php:2359 application/models/Dts.php:2386
+#: application/models/Dts.php:1617 application/models/Dts.php:1635
+#: application/models/Dts.php:2320 application/models/Dts.php:2353
+#: application/models/Dts.php:2373 application/models/Dts.php:2400
 #: application/models/Recency.php:553 application/models/Recency.php:637
 #: application/models/Recency.php:702 application/models/Recency.php:740
 #: application/models/Recency.php:780 application/models/Vl.php:386
@@ -4366,9 +4369,9 @@ msgid "Participant Name"
 msgstr "Tên đơn vị tham gia"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:1607 application/models/Dts.php:1625
-#: application/models/Dts.php:2307 application/models/Dts.php:2340
-#: application/models/Dts.php:2360 application/models/Dts.php:2387
+#: application/models/Dts.php:1618 application/models/Dts.php:1636
+#: application/models/Dts.php:2321 application/models/Dts.php:2354
+#: application/models/Dts.php:2374 application/models/Dts.php:2401
 #: application/models/Recency.php:553 application/models/Vl.php:459
 #: application/models/Vl.php:463
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:128
@@ -4380,7 +4383,7 @@ msgstr "Tên đơn vị tham gia"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:120
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:160
 #: application/services/Reports.php:2769 application/services/Reports.php:3039
-#: application/services/Reports.php:3409
+#: application/services/Reports.php:3413
 #: application/views/scripts/participant/add-participant.phtml:35
 #: application/views/scripts/participant/add.phtml:34
 #: application/views/scripts/participant/edit-participant.phtml:37
@@ -4392,7 +4395,7 @@ msgstr "Tên đơn vị"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/DbTable/Enrollments.php:718
-#: application/models/Dts.php:2309 application/models/Dts.php:2391
+#: application/models/Dts.php:2323 application/models/Dts.php:2405
 #: application/models/Eid.php:230 application/models/Recency.php:553
 #: application/models/Vl.php:388
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
@@ -4440,7 +4443,7 @@ msgstr "Tên đơn vị"
 #: application/services/Participants.php:1791
 #: application/services/Reports.php:1258 application/services/Reports.php:2772
 #: application/services/Reports.php:3042 application/services/Reports.php:3148
-#: application/services/Reports.php:3411
+#: application/services/Reports.php:3415
 #: application/views/partials/report-filters.phtml:26
 #: application/views/partials/tb-participants-per-country-report.phtml:52
 #: application/views/scripts/custom-test/response.phtml:256
@@ -4460,7 +4463,7 @@ msgid "Country"
 msgstr "Quốc gia"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2310 application/models/Recency.php:553
+#: application/models/Dts.php:2324 application/models/Recency.php:553
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:13
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:177
 #: library/Pt/Commons/ImportTemplate.php:82
@@ -4468,7 +4471,7 @@ msgid "Address"
 msgstr "Địa chỉ"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2313 application/models/Dts.php:2390
+#: application/models/Dts.php:2327 application/models/Dts.php:2404
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:11
@@ -4495,7 +4498,7 @@ msgid "Point of Contact"
 msgstr "Người liên hệ"
 
 #: application/models/Covid19.php:649 application/models/CustomTest.php:503
-#: application/models/Dts.php:1610 application/models/Dts.php:1628
+#: application/models/Dts.php:1621 application/models/Dts.php:1639
 #: application/models/Recency.php:637
 #: application/views/scripts/eid/response.phtml:260
 #: application/views/scripts/recency/response.phtml:168
@@ -4506,8 +4509,8 @@ msgstr "Người liên hệ"
 msgid "Shipment Receipt Date"
 msgstr "Ngày nhận bộ mẫu"
 
-#: application/models/Covid19.php:649 application/models/Dts.php:1612
-#: application/models/Dts.php:2364 application/models/Recency.php:637
+#: application/models/Covid19.php:649 application/models/Dts.php:1623
+#: application/models/Dts.php:2378 application/models/Recency.php:637
 #: application/views/scripts/covid19/response.phtml:236
 #: application/views/scripts/dts/response.phtml:258
 #: application/views/scripts/recency/response.phtml:182
@@ -4519,7 +4522,7 @@ msgid "Sample Rehydration Date"
 msgstr "Ngày hoàn nguyên mẫu"
 
 #: application/models/Covid19.php:649 application/models/CustomTest.php:503
-#: application/models/Dts.php:1613 application/models/Dts.php:1630
+#: application/models/Dts.php:1624 application/models/Dts.php:1641
 #: application/models/Recency.php:637
 #: application/views/scripts/covid19/response.phtml:255
 #: application/views/scripts/shipment-form/download.phtml:216
@@ -4606,7 +4609,7 @@ msgid "Type Lot #3"
 msgstr "Số lô loại xét nghiệm #3"
 
 #: application/models/Covid19.php:662 application/models/CustomTest.php:513
-#: application/models/Dts.php:1751 application/models/Recency.php:646
+#: application/models/Dts.php:1762 application/models/Recency.php:646
 #: application/modules/admin/views/scripts/test-platform/add.phtml:75
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:82
 #: application/modules/admin/views/scripts/testkit/add.phtml:147
@@ -4628,7 +4631,7 @@ msgid "Comments"
 msgstr "Ghi chú"
 
 #: application/models/Covid19.php:677 application/models/CustomTest.php:531
-#: application/models/Dts.php:1752 application/models/Eid.php:298
+#: application/models/Dts.php:1763 application/models/Eid.php:298
 #: application/models/Recency.php:646 application/models/Vl.php:514
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:10
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:13
@@ -4646,7 +4649,7 @@ msgid "Test# Correct"
 msgstr "Số xét nghiệm đúng"
 
 #: application/models/Covid19.php:736 application/models/CustomTest.php:597
-#: application/models/Dts.php:2344 application/models/Recency.php:704
+#: application/models/Dts.php:2358 application/models/Recency.php:704
 msgid "% Correct"
 msgstr "% Đúng"
 
@@ -4677,16 +4680,16 @@ msgid "Documentation Score(10% Conv.)"
 msgstr "Điểm đánh giá tài liệu (quy đổi 10%)"
 
 #: application/models/Covid19.php:815 application/models/CustomTest.php:622
-#: application/models/Dts.php:2395 application/models/Recency.php:780
+#: application/models/Dts.php:2409 application/models/Recency.php:780
 msgid "Total Score"
 msgstr "Tổng điểm"
 
 #: application/models/Covid19.php:815 application/models/CustomTest.php:622
-#: application/models/Dts.php:2396 application/models/Recency.php:780
+#: application/models/Dts.php:2410 application/models/Recency.php:780
 msgid "Overall Performance"
 msgstr "Hiệu suất tổng thể"
 
-#: application/models/CustomTest.php:456 application/models/Dts.php:2314
+#: application/models/CustomTest.php:456 application/models/Dts.php:2328
 msgid "Telephone"
 msgstr "Điện thoại"
 
@@ -4964,7 +4967,7 @@ msgstr "Mặc định"
 #: application/services/Participants.php:1789
 #: application/services/Reports.php:1253 application/services/Reports.php:2768
 #: application/services/Reports.php:2805 application/services/Reports.php:3038
-#: application/services/Reports.php:3408
+#: application/services/Reports.php:3412
 #: application/views/scripts/capa/index.phtml:60
 #: application/views/scripts/custom-test/response.phtml:255
 #: application/views/scripts/participant/add-participant.phtml:16
@@ -5173,7 +5176,7 @@ msgstr "Đơn vị tham gia không thể thực hiện xét nghiệm"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:326
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:284
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:390
-#: application/services/Reports.php:4235
+#: application/services/Reports.php:4239
 #: application/views/partials/tb-results-report.phtml:26
 #: application/views/scripts/participant/report.phtml:152
 msgid "Satisfactory"
@@ -5184,7 +5187,7 @@ msgstr "Đạt yêu cầu"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:327
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:285
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:391
-#: application/services/Reports.php:4236
+#: application/services/Reports.php:4240
 #: application/views/partials/tb-results-report.phtml:27
 #: application/views/scripts/participant/report.phtml:153
 msgid "Unsatisfactory"
@@ -5222,7 +5225,7 @@ msgstr "Phản hồi muộn"
 #: application/services/Evaluation.php:2556
 #: application/services/Participants.php:1756
 #: application/services/Reports.php:508 application/services/Reports.php:2774
-#: application/services/Reports.php:3151 application/services/Reports.php:4227
+#: application/services/Reports.php:3151 application/services/Reports.php:4231
 #: application/views/partials/shipment-response-report.phtml:103
 #: application/views/partials/shipment-response-report.phtml:121
 #: application/views/partials/tb-participants-per-country-report.phtml:55
@@ -5298,7 +5301,7 @@ msgstr "Thay thế báo cáo tổng hợp"
 #: application/services/Dashboard.php:1023 application/services/Reports.php:515
 #: application/services/Reports.php:1227 application/services/Reports.php:1606
 #: application/services/Reports.php:2777 application/services/Reports.php:3022
-#: application/services/Reports.php:3154 application/services/Reports.php:4232
+#: application/services/Reports.php:3154 application/services/Reports.php:4236
 #: application/views/partials/participant-performance-report.phtml:272
 #: application/views/partials/participant-response-report.phtml:316
 #: application/views/partials/shipment-response-report.phtml:106
@@ -5360,102 +5363,102 @@ msgstr "Đã hết hạn"
 msgid "Held by the development mail trap"
 msgstr "Bị giữ bởi bẫy thư phát triển"
 
-#: application/models/Dts.php:1611 application/models/Dts.php:1629
+#: application/models/Dts.php:1622 application/models/Dts.php:1640
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:269
 msgid "Test Type"
 msgstr "Loại xét nghiệm"
 
-#: application/models/Dts.php:1614 application/models/Dts.php:1631
+#: application/models/Dts.php:1625 application/models/Dts.php:1642
 msgid "Reported On"
 msgstr "Ngày báo cáo"
 
-#: application/models/Dts.php:1615 application/models/Dts.php:1635
+#: application/models/Dts.php:1626 application/models/Dts.php:1646
 msgid "Test #1 Kit Name"
 msgstr "Tên bộ sinh phẩm xét nghiệm #1"
 
-#: application/models/Dts.php:1616 application/models/Dts.php:1636
+#: application/models/Dts.php:1627 application/models/Dts.php:1647
 msgid "Kit Lot #1"
 msgstr "Số lô bộ sinh phẩm #1"
 
-#: application/models/Dts.php:1617 application/models/Dts.php:1637
+#: application/models/Dts.php:1628 application/models/Dts.php:1648
 msgid "Expiry Date #1"
 msgstr "Ngày hết hạn #1"
 
-#: application/models/Dts.php:1618 application/models/Dts.php:1638
+#: application/models/Dts.php:1629 application/models/Dts.php:1649
 msgid "QC Done #1"
 msgstr "Đã thực hiện QC #1"
 
-#: application/models/Dts.php:1619 application/models/Dts.php:1639
+#: application/models/Dts.php:1630 application/models/Dts.php:1650
 msgid "QC Expiry Date #1"
 msgstr "Ngày hết hạn QC #1"
 
-#: application/models/Dts.php:1632
+#: application/models/Dts.php:1643
 #: application/views/scripts/dts/response.phtml:343
 msgid "Condition Of PT Samples"
 msgstr "Tình trạng của các mẫu PT"
 
-#: application/models/Dts.php:1633
+#: application/models/Dts.php:1644
 #: application/views/scripts/dts/response.phtml:355
 #: application/views/scripts/dts/response.phtml:359
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:286
 msgid "Room Temperature"
 msgstr "Nhiệt độ phòng"
 
-#: application/models/Dts.php:1634
+#: application/models/Dts.php:1645
 #: application/views/scripts/dts/response.phtml:365
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:290
 msgid "Stop Watch"
 msgstr "Đồng hồ bấm giờ"
 
-#: application/models/Dts.php:1655
+#: application/models/Dts.php:1666
 msgid "Test #2 Kit Name"
 msgstr "Tên bộ sinh phẩm xét nghiệm #2"
 
-#: application/models/Dts.php:1656
+#: application/models/Dts.php:1667
 msgid "Kit Lot #2"
 msgstr "Số lô bộ sinh phẩm #2"
 
-#: application/models/Dts.php:1657
+#: application/models/Dts.php:1668
 msgid "Expiry Date #2"
 msgstr "Ngày hết hạn #2"
 
-#: application/models/Dts.php:1658
+#: application/models/Dts.php:1669
 msgid "QC Done #2"
 msgstr "Đã thực hiện QC #2"
 
-#: application/models/Dts.php:1659
+#: application/models/Dts.php:1670
 msgid "QC Expiry Date #2"
 msgstr "Ngày hết hạn QC #2"
 
-#: application/models/Dts.php:1690
+#: application/models/Dts.php:1701
 msgid "Test#3 Kit Name"
 msgstr "Tên sinh phẩm xét nghiệm #3"
 
-#: application/models/Dts.php:1691
+#: application/models/Dts.php:1702
 msgid "Kit Lot #3"
 msgstr "Số lô bộ sinh phẩm #3"
 
-#: application/models/Dts.php:1692
+#: application/models/Dts.php:1703
 msgid "Expiry Date #3"
 msgstr "Ngày hết hạn #3"
 
-#: application/models/Dts.php:1693
+#: application/models/Dts.php:1704
 msgid "QC Done #3"
 msgstr "Đã thực hiện QC #3"
 
-#: application/models/Dts.php:1694
+#: application/models/Dts.php:1705
 msgid "QC Expiry Date #3"
 msgstr "Ngày hết hạn QC #3"
 
-#: application/models/Dts.php:2344
+#: application/models/Dts.php:2358
 msgid "No. of Correct Responses"
 msgstr "Số phản hồi đúng"
 
-#: application/models/Dts.php:2362 application/models/Recency.php:740
+#: application/models/Dts.php:2376 application/models/Recency.php:740
 msgid "Supervisor signature"
 msgstr "Chữ ký của người giám sát"
 
-#: application/models/Dts.php:2363 application/models/Recency.php:740
+#: application/models/Dts.php:2377 application/models/Recency.php:740
 #: application/views/scripts/custom-test/response.phtml:338
 #: application/views/scripts/dts/response.phtml:225
 #: application/views/scripts/tb/response.phtml:245
@@ -5463,27 +5466,27 @@ msgstr "Chữ ký của người giám sát"
 msgid "Panel Receipt Date"
 msgstr "Ngày nhận bộ mẫu"
 
-#: application/models/Dts.php:2365 application/models/Recency.php:740
+#: application/models/Dts.php:2379 application/models/Recency.php:740
 msgid "Tested Date"
 msgstr "Ngày xét nghiệm"
 
-#: application/models/Dts.php:2366 application/models/Recency.php:740
+#: application/models/Dts.php:2380 application/models/Recency.php:740
 msgid "Rehydration Test In Specified Time"
 msgstr "Hoàn nguyên mẫu đúng thời gian quy định"
 
-#: application/models/Dts.php:2367 application/models/Recency.php:740
+#: application/models/Dts.php:2381 application/models/Recency.php:740
 msgid "Documentation Score %"
 msgstr "Điểm đánh giá tài liệu %"
 
-#: application/models/Dts.php:2392
+#: application/models/Dts.php:2406
 msgid "No. of Correct Samples"
 msgstr "Số mẫu đúng"
 
-#: application/models/Dts.php:2393
+#: application/models/Dts.php:2407
 msgid "Panel Score"
 msgstr "Điểm bộ mẫu"
 
-#: application/models/Dts.php:2394
+#: application/models/Dts.php:2408
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:338
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:120
 #: application/modules/admin/views/scripts/scheme-config/partials/recency.phtml:35
@@ -5501,7 +5504,7 @@ msgstr "Điểm bộ mẫu"
 msgid "Documentation Score"
 msgstr "Điểm đánh giá tài liệu"
 
-#: application/models/Dts.php:2397
+#: application/models/Dts.php:2411
 msgid "Warnings and/or Reasons for Failure"
 msgstr "Cảnh báo và/hoặc lý do không đạt"
 
@@ -7710,7 +7713,7 @@ msgstr "Tên trường cho biểu mẫu PDF"
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:65
 #: application/services/Reports.php:544 application/services/Reports.php:1427
 #: application/services/Reports.php:2707 application/services/Reports.php:2808
-#: application/services/Reports.php:4255
+#: application/services/Reports.php:4259
 #: application/views/partials/participant-response-report.phtml:276
 #: application/views/partials/participant-response-report.phtml:278
 #: application/views/partials/report-filters.phtml:91
@@ -8848,7 +8851,7 @@ msgstr "Biện luận cuối cùng"
 #: application/services/Reports.php:1169 application/services/Reports.php:1254
 #: application/services/Reports.php:2767 application/services/Reports.php:2804
 #: application/services/Reports.php:2978 application/services/Reports.php:3037
-#: application/services/Reports.php:3407
+#: application/services/Reports.php:3411
 #: application/views/partials/participant-performance-report.phtml:268
 #: application/views/partials/shipment-response-report.phtml:135
 #: application/views/partials/tb-results-report.phtml:90
@@ -11126,8 +11129,8 @@ msgstr "Các vòng ngoại kiểm thuộc khảo sát PT này"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:42
 #: application/services/Reports.php:544 application/services/Reports.php:1428
 #: application/services/Reports.php:2806 application/services/Reports.php:3043
-#: application/services/Reports.php:3412 application/services/Reports.php:4255
-#: application/services/Reports.php:4266
+#: application/services/Reports.php:3416 application/services/Reports.php:4259
+#: application/services/Reports.php:4270
 #: application/views/scripts/capa/index.phtml:64
 #: application/views/scripts/custom-test/response.phtml:234
 #: application/views/scripts/participant/corrective.phtml:84
@@ -11149,7 +11152,7 @@ msgstr "Mã vòng ngoại kiểm"
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:47
 #: application/services/Reports.php:544 application/services/Reports.php:1260
 #: application/services/Reports.php:2807 application/services/Reports.php:3044
-#: application/services/Reports.php:3413 application/services/Reports.php:4255
+#: application/services/Reports.php:3417 application/services/Reports.php:4259
 #: application/views/partials/participant-response-report.phtml:270
 #: application/views/partials/participant-response-report.phtml:273
 #: application/views/partials/report-filters.phtml:82
@@ -13255,7 +13258,7 @@ msgstr "Điểm đánh giá"
 #: application/services/Reports.php:1174 application/services/Reports.php:1262
 #: application/services/Reports.php:2710 application/services/Reports.php:2812
 #: application/services/Reports.php:2982 application/services/Reports.php:3046
-#: application/services/Reports.php:3416
+#: application/services/Reports.php:3420
 #: application/views/partials/shipment-response-report.phtml:140
 #: application/views/partials/tb-results-report.phtml:81
 #: application/views/partials/tb-results-report.phtml:94
@@ -13272,7 +13275,7 @@ msgstr "Kết quả"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:388
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:397
 #: application/services/Reports.php:2708 application/services/Reports.php:2809
-#: application/services/Reports.php:3414
+#: application/services/Reports.php:3418
 #: application/views/partials/shipment-response-report.phtml:139
 msgid "Responded On"
 msgstr "Đã phản hồi vào"
@@ -16005,7 +16008,7 @@ msgstr "không thuộc vòng này"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:92
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:122
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:141
-#: application/services/Reports.php:1793 application/services/Reports.php:3405
+#: application/services/Reports.php:1793 application/services/Reports.php:3409
 #: application/views/partials/tb-results-report.phtml:72
 msgid "Results"
 msgstr "Kết quả"
@@ -19302,7 +19305,7 @@ msgstr "Điều này có bắt buộc không?"
 #: application/services/Reports.php:1173 application/services/Reports.php:1261
 #: application/services/Reports.php:2709 application/services/Reports.php:2811
 #: application/services/Reports.php:2981 application/services/Reports.php:3045
-#: application/services/Reports.php:3415
+#: application/services/Reports.php:3419
 #: application/views/partials/tb-results-report.phtml:93
 #: application/views/scripts/participant/dashboard.phtml:455
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:459
@@ -20452,6 +20455,7 @@ msgstr "-- Chọn vị trí xét nghiệm --"
 #: application/modules/reports/views/scripts/testkit/index.phtml:166
 #: application/modules/reports/views/scripts/testkit/index.phtml:181
 #: application/services/Reports.php:1223
+#: library/Pt/Evaluation/Dts/Reason.php:60
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:276
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:279
 msgid "Test 1"
@@ -20467,6 +20471,7 @@ msgstr "Xét nghiệm 1"
 #: application/modules/reports/views/scripts/testkit/index.phtml:167
 #: application/modules/reports/views/scripts/testkit/index.phtml:182
 #: application/services/Reports.php:1224
+#: library/Pt/Evaluation/Dts/Reason.php:61
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:279
 msgid "Test 2"
 msgstr "Xét nghiệm 2"
@@ -20481,6 +20486,7 @@ msgstr "Xét nghiệm 2"
 #: application/modules/reports/views/scripts/testkit/index.phtml:168
 #: application/modules/reports/views/scripts/testkit/index.phtml:183
 #: application/services/Reports.php:1225
+#: library/Pt/Evaluation/Dts/Reason.php:62
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:279
 msgid "Test 3"
 msgstr "Xét nghiệm 3"
@@ -21937,7 +21943,7 @@ msgstr "Xem báo cáo"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:356
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:101
 #: application/services/Reports.php:507 application/services/Reports.php:3150
-#: application/services/Reports.php:4226
+#: application/services/Reports.php:4230
 #: application/views/partials/participant-response-report.phtml:335
 #: application/views/partials/shipment-response-report.phtml:102
 #: application/views/partials/tb-participants-per-country-report.phtml:54
@@ -21948,7 +21954,7 @@ msgstr "Đã đăng ký"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:386
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:88
 #: application/services/Reports.php:509 application/services/Reports.php:3152
-#: application/services/Reports.php:4228
+#: application/services/Reports.php:4232
 msgid "Response rate"
 msgstr "Tỷ lệ phản hồi"
 
@@ -21956,8 +21962,8 @@ msgstr "Tỷ lệ phản hồi"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:336
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:358
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:387
-#: application/services/Reports.php:510 application/services/Reports.php:4229
-#: application/services/Reports.php:4230
+#: application/services/Reports.php:510 application/services/Reports.php:4233
+#: application/services/Reports.php:4234
 #: application/views/partials/participant-response-report.phtml:331
 msgid "On time"
 msgstr "Đúng hạn"
@@ -21975,7 +21981,7 @@ msgstr "Đúng hạn"
 #: application/services/Reports.php:516 application/services/Reports.php:1228
 #: application/services/Reports.php:1607 application/services/Reports.php:1795
 #: application/services/Reports.php:2778 application/services/Reports.php:3155
-#: application/services/Reports.php:4233
+#: application/services/Reports.php:4237
 #: application/views/partials/participant-performance-report.phtml:271
 #: application/views/partials/participant-response-report.phtml:315
 #: application/views/partials/shipment-response-report.phtml:105
@@ -22051,7 +22057,7 @@ msgid "in 1 shipment"
 msgstr "trong 1 đợt gửi mẫu"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:382
-#: application/services/Reports.php:4272
+#: application/services/Reports.php:4276
 msgid "No region"
 msgstr "Không có vùng"
 
@@ -22060,7 +22066,7 @@ msgid "No participants in this shipment match the filters."
 msgstr "Không có người tham gia nào trong đợt gửi mẫu này khớp với bộ lọc."
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:389
-#: application/services/Reports.php:4234
+#: application/services/Reports.php:4238
 msgid "Excellent"
 msgstr "Xuất sắc"
 
@@ -22099,7 +22105,7 @@ msgstr "Chưa có đơn vị tham gia nào đăng ký vòng ngoại kiểm này.
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:12
 #: application/services/Reports.php:514 application/services/Reports.php:1226
 #: application/services/Reports.php:1605 application/services/Reports.php:2776
-#: application/services/Reports.php:3153 application/services/Reports.php:4231
+#: application/services/Reports.php:3153 application/services/Reports.php:4235
 msgid "Passed"
 msgstr "Đạt"
 
@@ -23196,7 +23202,7 @@ msgstr "Không có điểm"
 msgid "Countries"
 msgstr "Quốc gia"
 
-#: application/services/Reports.php:4265
+#: application/services/Reports.php:4269
 msgid "Regions"
 msgstr "Khu vực"
 
@@ -23797,6 +23803,34 @@ msgstr "Kết quả cuối cùng:"
 #: application/views/scripts/capa/capa.phtml:62
 msgid "Score:"
 msgstr "Điểm:"
+
+#: application/views/scripts/common/get-corrective-actions.ajax.phtml:2
+msgid "No Warnings or Corrective Actions"
+msgstr "Không có cảnh báo hoặc hành động khắc phục"
+
+#: application/views/scripts/common/get-corrective-actions.ajax.phtml:7
+#: application/views/scripts/covid19/response.phtml:889
+#: application/views/scripts/custom-test/response.phtml:690
+#: application/views/scripts/dts/response.phtml:1584
+#: application/views/scripts/eid/response.phtml:700
+#: application/views/scripts/recency/response.phtml:609
+#: application/views/scripts/tb/response.phtml:540
+#: application/views/scripts/vl/response.phtml:977
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:767
+msgid "Failure Reasons (or) Warnings"
+msgstr "Nguyên nhân lỗi (hoặc) Cảnh báo"
+
+#: application/views/scripts/common/get-corrective-actions.ajax.phtml:8
+#: application/views/scripts/covid19/response.phtml:890
+#: application/views/scripts/custom-test/response.phtml:691
+#: application/views/scripts/dts/response.phtml:1585
+#: application/views/scripts/eid/response.phtml:701
+#: application/views/scripts/recency/response.phtml:610
+#: application/views/scripts/tb/response.phtml:541
+#: application/views/scripts/vl/response.phtml:978
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:767
+msgid "Corrective Actions (if any)"
+msgstr "Các hành động khắc phục (nếu có)"
 
 #: application/views/scripts/contact-us/index.phtml:3
 #: application/views/scripts/index/index.phtml:321
@@ -24628,28 +24662,6 @@ msgstr "Vui lòng nhập điểm đánh giá tài liệu"
 #: application/views/scripts/vl/response.phtml:973
 msgid "Notes"
 msgstr "Ghi chú"
-
-#: application/views/scripts/covid19/response.phtml:889
-#: application/views/scripts/custom-test/response.phtml:690
-#: application/views/scripts/dts/response.phtml:1584
-#: application/views/scripts/eid/response.phtml:700
-#: application/views/scripts/recency/response.phtml:609
-#: application/views/scripts/tb/response.phtml:540
-#: application/views/scripts/vl/response.phtml:977
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:767
-msgid "Failure Reasons (or) Warnings"
-msgstr "Nguyên nhân lỗi (hoặc) Cảnh báo"
-
-#: application/views/scripts/covid19/response.phtml:890
-#: application/views/scripts/custom-test/response.phtml:691
-#: application/views/scripts/dts/response.phtml:1585
-#: application/views/scripts/eid/response.phtml:701
-#: application/views/scripts/recency/response.phtml:610
-#: application/views/scripts/tb/response.phtml:541
-#: application/views/scripts/vl/response.phtml:978
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:767
-msgid "Corrective Actions (if any)"
-msgstr "Các hành động khắc phục (nếu có)"
 
 #: application/views/scripts/covid19/response.phtml:920
 #: application/views/scripts/custom-test/response.phtml:721
@@ -27253,6 +27265,7 @@ msgstr "Không phát hiện"
 
 #: application/views/scripts/tb/assay-formats.ajax.phtml:563
 #: application/views/scripts/tb/assay-formats.ajax.phtml:780
+#: library/Pt/Evaluation/Dts/Reason.php:74
 msgid "Indeterminate"
 msgstr "Không xác định"
 
@@ -27734,23 +27747,23 @@ msgstr "Tên đơn vị tham gia (HOẶC) tên phòng xét nghiệm"
 msgid "Participant Last Name"
 msgstr "Họ của người tham gia"
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:62
-msgid "Submit your response before the response deadline."
-msgstr "Nộp kết quả trước hạn nộp kết quả."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:65
+msgid "Please submit your response before the last date."
+msgstr "Vui lòng gửi phản hồi trước hạn nộp kết quả."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:63
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
 msgid "The laboratory submitted the response after the response deadline."
 msgstr "Phòng xét nghiệm đã nộp kết quả sau hạn nộp kết quả."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:69
 msgid ""
-"Review the SOP and test every sample as the National HIV Testing algorithm "
-"requires."
+"Review and refer to the SOP for testing. Ensure each sample is tested as per "
+"the National HIV Testing algorithm."
 msgstr ""
-"Xem lại quy trình thao tác chuẩn (SOP) và xét nghiệm từng mẫu theo đúng "
-"thuật toán xét nghiệm HIV quốc gia."
+"Xem lại và tham khảo Quy trình tiêu chuẩn (SOP) về xét nghiệm. Đảm bảo mỗi "
+"mẫu được xét nghiệm theo thuật toán xét nghiệm HIV quốc gia."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:67
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:70
 msgid ""
 "The laboratory did not follow the National HIV Testing algorithm for a "
 "sample."
@@ -27758,110 +27771,110 @@ msgstr ""
 "Phòng xét nghiệm không tuân theo thuật toán xét nghiệm HIV quốc gia đối với "
 "một mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:70
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:73
 msgid ""
-"Review all testing procedures before you test client samples again. Your "
-"result does not match the expected result."
+"Review all testing procedures before client testing, as the reported result "
+"does not match the expected result."
 msgstr ""
-"Xem lại toàn bộ quy trình xét nghiệm trước khi tiếp tục xét nghiệm mẫu của "
-"khách hàng. Kết quả của bạn không khớp với kết quả mong đợi."
+"Xem xét lại toàn bộ quy trình xét nghiệm trước khi tiến hành xét nghiệm cho "
+"khách hàng, vì kết quả báo cáo không khớp với kết quả dự kiến."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:71
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
 msgid "The reported result for a sample does not match the expected result."
 msgstr "Kết quả báo cáo của một mẫu không khớp với kết quả mong đợi."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
-msgid "Test every sample in the PT panel."
-msgstr "Xét nghiệm tất cả các mẫu trong bộ mẫu PT."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:77
+msgid "You are required to test all samples in the PT panel."
+msgstr "Bạn phải tiến hành xét nghiệm tất cả các mẫu trong bộ mẫu ngoại kiểm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:75
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
 msgid "The laboratory did not report a result for every sample."
 msgstr "Phòng xét nghiệm không báo cáo kết quả cho tất cả các mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:81
 msgid ""
-"Do not test with expired test kits. If no valid test kits are available, "
-"contact your supervisor."
+"Ensure expired test kits are not used for testing. If no valid test kits are "
+"available, please contact your supervisor."
 msgstr ""
-"Không sử dụng bộ sinh phẩm đã hết hạn để xét nghiệm. Nếu không có bộ sinh "
-"phẩm còn hạn sử dụng, hãy liên hệ với người giám sát."
+"Đảm bảo không sử dụng sinh phẩm xét nghiệm đã hết hạn để xét nghiệm. Nếu "
+"không có sinh phẩm xét nghiệm còn hạn sử dụng, vui lòng liên hệ với nhà cung "
+"cấp (NIHE)."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:79
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
 msgid "The laboratory tested with an expired test kit."
 msgstr "Phòng xét nghiệm đã sử dụng bộ sinh phẩm hết hạn để xét nghiệm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
-msgid "Report the expiry date of every test kit you use."
-msgstr "Báo cáo ngày hết hạn của từng bộ sinh phẩm bạn sử dụng."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:85
+msgid "Ensure the expiry date is reported for all performed tests."
+msgstr "Đảm bảo cung cấp ngày hết hạn cho tất cả các xét nghiệm đã thực hiện."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:83
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
 msgid "The laboratory did not report a test kit expiry date."
 msgstr "Phòng xét nghiệm không báo cáo ngày hết hạn của một bộ sinh phẩm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
-msgid "Report the name of every test kit you use."
-msgstr "Báo cáo tên của từng bộ sinh phẩm bạn sử dụng."
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:87
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
 msgid "The laboratory did not report a test kit name."
 msgstr "Phòng xét nghiệm không báo cáo tên của một bộ sinh phẩm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:93
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:97
 msgid ""
-"Use a different approved test kit for each test, as the SOP and the National "
-"HIV Testing algorithm require."
+"Please use a different approved test kit for each test, as per the SOP and "
+"the National HIV Testing algorithm."
 msgstr ""
-"Sử dụng một bộ sinh phẩm được phê duyệt khác nhau cho mỗi xét nghiệm, theo "
-"đúng SOP và thuật toán xét nghiệm HIV quốc gia."
+"Vui lòng sử dụng một bộ sinh phẩm đã được phê duyệt khác nhau cho mỗi xét "
+"nghiệm, theo Quy trình tiêu chuẩn (SOP) và Thuật toán xét nghiệm HIV quốc "
+"gia."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:91
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
 msgid "The laboratory reported the same test kit for all three tests."
 msgstr "Phòng xét nghiệm báo cáo cùng một bộ sinh phẩm cho cả ba xét nghiệm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:95
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
 msgid "The laboratory reported the same test kit for two tests."
 msgstr "Phòng xét nghiệm báo cáo cùng một bộ sinh phẩm cho hai xét nghiệm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
-msgid "Report the lot number of every test kit you use."
-msgstr "Báo cáo số lô của từng bộ sinh phẩm bạn sử dụng."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:101
+msgid "Ensure the lot number is reported for all performed tests."
+msgstr "Đảm bảo ghi lại số lô cho tất cả các xét nghiệm đã thực hiện."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:99
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
 msgid "The laboratory did not report a test kit lot number."
 msgstr "Phòng xét nghiệm không báo cáo số lô của một bộ sinh phẩm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
-msgid "Get supervisor approval and report the supervisor's name."
-msgstr "Xin phê duyệt của người giám sát và báo cáo tên người giám sát."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:105
+msgid "Ensure the supervisor's approval and name are provided."
+msgstr "Hãy đảm bảo cung cấp sự phê duyệt và tên của người giám sát."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:103
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
 msgid "The laboratory did not report supervisor approval."
 msgstr "Phòng xét nghiệm không báo cáo sự phê duyệt của người giám sát."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
-msgid "Report the date you rehydrated the PT panel."
-msgstr "Báo cáo ngày bạn hoàn nguyên bộ mẫu PT."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:109
+msgid "Ensure the panel rehydration date is provided."
+msgstr "Hãy đảm bảo cung cấp ngày hoàn nguyên bộ mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:107
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
 msgid "The laboratory did not report the rehydration date."
 msgstr "Phòng xét nghiệm không báo cáo ngày hoàn nguyên."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
-msgid "Report the date you tested the PT panel."
-msgstr "Báo cáo ngày bạn xét nghiệm bộ mẫu PT."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:113
+msgid "Ensure the panel testing date is provided."
+msgstr "Hãy đảm bảo cung cấp ngày xét nghiệm bộ mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:111
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
 msgid "The laboratory did not report the testing date."
 msgstr "Phòng xét nghiệm không báo cáo ngày xét nghiệm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
-msgid "Test the PT panel within the time after rehydration that the SOP sets."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:117
+msgid ""
+"Ensure DTS testing is done within the specified hours of rehydration, as per "
+"the SOP."
 msgstr ""
-"Xét nghiệm bộ mẫu PT trong khoảng thời gian sau khi hoàn nguyên mà SOP quy "
-"định."
+"Đảm bảo việc xét nghiệm DTS được thực hiện trong khoảng thời gian quy định "
+"sau khi hoàn nguyên theo quy trình tiêu chuẩn (SOP)."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:115
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
 msgid ""
 "The laboratory did not test within the time after rehydration that the SOP "
 "sets."
@@ -27869,83 +27882,160 @@ msgstr ""
 "Phòng xét nghiệm không xét nghiệm trong khoảng thời gian sau khi hoàn nguyên "
 "mà SOP quy định."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:121
 msgid ""
-"Review all testing procedures before you test client samples again. Contact "
-"your supervisor to plan improvements."
+"Review all testing procedures before client testing, and contact your "
+"supervisor for improvement."
 msgstr ""
-"Xem lại toàn bộ quy trình xét nghiệm trước khi tiếp tục xét nghiệm mẫu của "
-"khách hàng. Liên hệ với người giám sát để lập kế hoạch cải thiện."
+"Hãy rà soát lại tất cả các quy trình xét nghiệm trước khi tiến hành xét "
+"nghiệm cho khách hàng và liên hệ với người quản lý của bạn để đề xuất các "
+"biện pháp cải thiện."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:119
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
 msgid "The participant score is below the pass mark."
 msgstr "Điểm của đơn vị tham gia thấp hơn điểm đạt."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
-msgid "Report the date you received the PT panel."
-msgstr "Báo cáo ngày bạn nhận bộ mẫu PT."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:125
+msgid "Ensure the panel receipt date is provided."
+msgstr "Hãy đảm bảo cung cấp ngày nhận bộ mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:123
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
 msgid "The laboratory did not report the panel receipt date."
 msgstr "Phòng xét nghiệm không báo cáo ngày nhận bộ mẫu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:129
 msgid ""
-"Test with the country-approved test kits, as the National HIV Testing "
-"algorithm and the SOP require."
+"Please use country-approved test kits as per the National HIV Testing "
+"algorithm. Review and refer to the SOP."
 msgstr ""
-"Xét nghiệm bằng các bộ sinh phẩm được quốc gia phê duyệt, theo đúng thuật "
-"toán xét nghiệm HIV quốc gia và SOP."
+"Vui lòng sử dụng các bộ sinh phẩm được quốc gia phê duyệt theo thuật toán "
+"xét nghiệm HIV quốc gia. Hãy xem xét và tham khảo Quy trình tiêu chuẩn (SOP)."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:127
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
 msgid "The laboratory tested with a test kit that is not country-approved."
 msgstr ""
 "Phòng xét nghiệm đã sử dụng bộ sinh phẩm chưa được quốc gia phê duyệt để xét "
 "nghiệm."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
-msgid "Report the condition of the PT samples."
-msgstr "Báo cáo tình trạng của các mẫu PT."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:133
+msgid "Please ensure the condition of the PT samples is reported."
+msgstr "Vui lòng đảm bảo rằng tình trạng của các mẫu PT được báo cáo."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:131
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
 msgid "The laboratory did not report the condition of the PT samples."
 msgstr "Phòng xét nghiệm không báo cáo tình trạng của các mẫu PT."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
-msgid "Report whether a refrigerator is available."
-msgstr "Báo cáo phòng xét nghiệm có tủ lạnh hay không."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:137
+msgid "Please ensure refrigerator availability is reported."
+msgstr ""
+"Vui lòng đảm bảo thông tin về tình trạng sẵn có của tủ lạnh được báo cáo."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:135
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
 msgid "The laboratory did not report refrigerator availability."
 msgstr "Phòng xét nghiệm không báo cáo có tủ lạnh hay không."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
-msgid "Report the room temperature."
-msgstr "Báo cáo nhiệt độ phòng."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:141
+msgid "Please ensure the room temperature is reported."
+msgstr "Vui lòng đảm bảo rằng nhiệt độ phòng được báo cáo."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:139
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
 msgid "The laboratory did not report the room temperature."
 msgstr "Phòng xét nghiệm không báo cáo nhiệt độ phòng."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
-msgid "Report whether a stopwatch is available."
-msgstr "Báo cáo phòng xét nghiệm có đồng hồ bấm giờ hay không."
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:145
+msgid "Please ensure stopwatch availability is reported."
+msgstr ""
+"Vui lòng đảm bảo rằng tình trạng sẵn có của đồng hồ bấm giờ được báo cáo."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:143
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
 msgid "The laboratory did not report stopwatch availability."
 msgstr "Phòng xét nghiệm không báo cáo có đồng hồ bấm giờ hay không."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
-msgid ""
-"Report the actual rehydration date. It cannot be earlier than the date you "
-"received the panel."
-msgstr ""
-"Báo cáo ngày hoàn nguyên thực tế. Ngày này không thể sớm hơn ngày bạn nhận "
-"bộ mẫu."
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:147
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:150
 msgid "The reported rehydration date is earlier than the panel receipt date."
 msgstr "Ngày hoàn nguyên được báo cáo sớm hơn ngày nhận bộ mẫu."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:153
+msgid ""
+"Review and refer to the SOP. Ensure every test required by the National HIV "
+"Testing algorithm is performed."
+msgstr ""
+"Xem lại và tham khảo Quy trình tiêu chuẩn (SOP). Đảm bảo thực hiện mọi xét "
+"nghiệm mà thuật toán xét nghiệm HIV quốc gia yêu cầu."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:154
+msgid "The laboratory did not report a test that the algorithm needs."
+msgstr "Phòng xét nghiệm không báo cáo một xét nghiệm mà thuật toán yêu cầu."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:157
+msgid ""
+"Review and refer to the SOP. Ensure testing stops when the National HIV "
+"Testing algorithm gives a final result."
+msgstr ""
+"Xem lại và tham khảo Quy trình tiêu chuẩn (SOP). Đảm bảo dừng xét nghiệm khi "
+"thuật toán xét nghiệm HIV quốc gia đã cho kết quả cuối cùng."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:158
+msgid "The laboratory ran tests after the algorithm gave a final result."
+msgstr ""
+"Phòng xét nghiệm đã thực hiện xét nghiệm sau khi thuật toán đã cho kết quả "
+"cuối cùng."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:161
+msgid ""
+"Review and refer to the SOP. Ensure the final result reported is the one the "
+"National HIV Testing algorithm gives."
+msgstr ""
+"Xem lại và tham khảo Quy trình tiêu chuẩn (SOP). Đảm bảo kết quả cuối cùng "
+"được báo cáo đúng với kết quả mà thuật toán xét nghiệm HIV quốc gia cho ra."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:162
+msgid "The reported final result is not the one the test results give."
+msgstr ""
+"Kết quả cuối cùng được báo cáo không khớp với kết quả mà các xét nghiệm cho "
+"ra."
+
+#: library/Pt/Evaluation/Dts/Reason.php:37
+msgid ""
+"For %sample%, the reported results do not follow the National HIV Testing "
+"algorithm."
+msgstr ""
+"Đối với %sample%, các kết quả được báo cáo không tuân theo thuật toán xét "
+"nghiệm HIV quốc gia."
+
+#: library/Pt/Evaluation/Dts/Reason.php:38
+msgid "For %sample%, the algorithm needs %test%, but it was not reported."
+msgstr ""
+"Đối với %sample%, thuật toán yêu cầu %test%, nhưng kết quả này không được "
+"báo cáo."
+
+#: library/Pt/Evaluation/Dts/Reason.php:39
+msgid "For %sample%, the %test% result does not fit the algorithm."
+msgstr "Đối với %sample%, kết quả %test% không phù hợp với thuật toán."
+
+#: library/Pt/Evaluation/Dts/Reason.php:40
+msgid ""
+"For %sample%, testing stops after %last%, which gives %expected%. %extra% "
+"should not have been done."
+msgstr ""
+"Đối với %sample%, việc xét nghiệm dừng sau %last%, cho kết quả %expected%. "
+"Lẽ ra không cần thực hiện %extra%."
+
+#: library/Pt/Evaluation/Dts/Reason.php:41
+msgid ""
+"For %sample%, the test results give %expected%, which differs from the "
+"reported final result."
+msgstr ""
+"Đối với %sample%, các kết quả xét nghiệm cho ra %expected%, khác với kết quả "
+"cuối cùng được báo cáo."
+
+#: library/Pt/Evaluation/Dts/Reason.php:63
+msgid "Repeat Test 1"
+msgstr "Làm lại xét nghiệm 1"
+
+#: library/Pt/Evaluation/Dts/Reason.php:72
+msgid "Positive"
+msgstr "Dương tính"
 
 #: library/Pt/Helper/View/AuditHistoryLink.php:31
 msgid "Show every audit log entry for this item"
@@ -28541,6 +28631,79 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
+
+#~ msgid "Submit your response before the response deadline."
+#~ msgstr "Nộp kết quả trước hạn nộp kết quả."
+
+#~ msgid ""
+#~ "Review all testing procedures before you test client samples again. Your "
+#~ "result does not match the expected result."
+#~ msgstr ""
+#~ "Xem lại toàn bộ quy trình xét nghiệm trước khi tiếp tục xét nghiệm mẫu "
+#~ "của khách hàng. Kết quả của bạn không khớp với kết quả mong đợi."
+
+#~ msgid "Test every sample in the PT panel."
+#~ msgstr "Xét nghiệm tất cả các mẫu trong bộ mẫu PT."
+
+#~ msgid ""
+#~ "Do not test with expired test kits. If no valid test kits are available, "
+#~ "contact your supervisor."
+#~ msgstr ""
+#~ "Không sử dụng bộ sinh phẩm đã hết hạn để xét nghiệm. Nếu không có bộ sinh "
+#~ "phẩm còn hạn sử dụng, hãy liên hệ với người giám sát."
+
+#~ msgid "Report the expiry date of every test kit you use."
+#~ msgstr "Báo cáo ngày hết hạn của từng bộ sinh phẩm bạn sử dụng."
+
+#~ msgid "Report the name of every test kit you use."
+#~ msgstr "Báo cáo tên của từng bộ sinh phẩm bạn sử dụng."
+
+#~ msgid "Report the lot number of every test kit you use."
+#~ msgstr "Báo cáo số lô của từng bộ sinh phẩm bạn sử dụng."
+
+#~ msgid "Get supervisor approval and report the supervisor's name."
+#~ msgstr "Xin phê duyệt của người giám sát và báo cáo tên người giám sát."
+
+#~ msgid "Report the date you rehydrated the PT panel."
+#~ msgstr "Báo cáo ngày bạn hoàn nguyên bộ mẫu PT."
+
+#~ msgid "Report the date you tested the PT panel."
+#~ msgstr "Báo cáo ngày bạn xét nghiệm bộ mẫu PT."
+
+#~ msgid ""
+#~ "Test the PT panel within the time after rehydration that the SOP sets."
+#~ msgstr ""
+#~ "Xét nghiệm bộ mẫu PT trong khoảng thời gian sau khi hoàn nguyên mà SOP "
+#~ "quy định."
+
+#~ msgid ""
+#~ "Review all testing procedures before you test client samples again. "
+#~ "Contact your supervisor to plan improvements."
+#~ msgstr ""
+#~ "Xem lại toàn bộ quy trình xét nghiệm trước khi tiếp tục xét nghiệm mẫu "
+#~ "của khách hàng. Liên hệ với người giám sát để lập kế hoạch cải thiện."
+
+#~ msgid "Report the date you received the PT panel."
+#~ msgstr "Báo cáo ngày bạn nhận bộ mẫu PT."
+
+#~ msgid "Report the condition of the PT samples."
+#~ msgstr "Báo cáo tình trạng của các mẫu PT."
+
+#~ msgid "Report whether a refrigerator is available."
+#~ msgstr "Báo cáo phòng xét nghiệm có tủ lạnh hay không."
+
+#~ msgid "Report the room temperature."
+#~ msgstr "Báo cáo nhiệt độ phòng."
+
+#~ msgid "Report whether a stopwatch is available."
+#~ msgstr "Báo cáo phòng xét nghiệm có đồng hồ bấm giờ hay không."
+
+#~ msgid ""
+#~ "Report the actual rehydration date. It cannot be earlier than the date "
+#~ "you received the panel."
+#~ msgstr ""
+#~ "Báo cáo ngày hoàn nguyên thực tế. Ngày này không thể sớm hơn ngày bạn "
+#~ "nhận bộ mẫu."
 
 #~ msgid "EIA 1"
 #~ msgstr "EIA 1"
