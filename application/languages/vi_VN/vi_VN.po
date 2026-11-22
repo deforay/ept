@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 18:29+0530\n"
+"POT-Creation-Date: 2026-11-22 18:38+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -1034,7 +1034,7 @@ msgid "negative"
 msgstr "âm tính"
 
 #: application/languages/db-translation-strings.php:263
-#: library/Pt/Evaluation/Dts/Reason.php:73
+#: library/Pt/Evaluation/Dts/Reason.php:80
 msgid "Negative"
 msgstr "Âm tính"
 
@@ -27279,7 +27279,7 @@ msgstr "Không phát hiện"
 
 #: application/views/scripts/tb/assay-formats.ajax.phtml:563
 #: application/views/scripts/tb/assay-formats.ajax.phtml:780
-#: library/Pt/Evaluation/Dts/Reason.php:74
+#: library/Pt/Evaluation/Dts/Reason.php:81
 msgid "Indeterminate"
 msgstr "Không xác định"
 
@@ -28047,7 +28047,15 @@ msgstr ""
 msgid "Repeat Test 1"
 msgstr "Làm lại xét nghiệm 1"
 
-#: library/Pt/Evaluation/Dts/Reason.php:72
+#: library/Pt/Evaluation/Dts/Reason.php:64
+msgid "Repeat Test 2"
+msgstr "Làm lại xét nghiệm 2"
+
+#: library/Pt/Evaluation/Dts/Reason.php:78
+msgid "Positive or Indeterminate"
+msgstr "Dương tính hoặc Không xác định"
+
+#: library/Pt/Evaluation/Dts/Reason.php:79
 msgid "Positive"
 msgstr "Dương tính"
 

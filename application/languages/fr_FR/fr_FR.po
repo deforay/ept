@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 18:29+0530\n"
+"POT-Creation-Date: 2026-11-22 18:38+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -1036,7 +1036,7 @@ msgid "negative"
 msgstr "négatif"
 
 #: application/languages/db-translation-strings.php:263
-#: library/Pt/Evaluation/Dts/Reason.php:73
+#: library/Pt/Evaluation/Dts/Reason.php:80
 msgid "Negative"
 msgstr "Négatif"
 
@@ -27563,7 +27563,7 @@ msgstr "Non détecté"
 
 #: application/views/scripts/tb/assay-formats.ajax.phtml:563
 #: application/views/scripts/tb/assay-formats.ajax.phtml:780
-#: library/Pt/Evaluation/Dts/Reason.php:74
+#: library/Pt/Evaluation/Dts/Reason.php:81
 msgid "Indeterminate"
 msgstr "Indéterminé"
 
@@ -28338,7 +28338,15 @@ msgstr ""
 msgid "Repeat Test 1"
 msgstr "test 1 répété"
 
-#: library/Pt/Evaluation/Dts/Reason.php:72
+#: library/Pt/Evaluation/Dts/Reason.php:64
+msgid "Repeat Test 2"
+msgstr "test 2 répété"
+
+#: library/Pt/Evaluation/Dts/Reason.php:78
+msgid "Positive or Indeterminate"
+msgstr "Positif ou Indéterminé"
+
+#: library/Pt/Evaluation/Dts/Reason.php:79
 msgid "Positive"
 msgstr "Positif"
 

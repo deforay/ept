@@ -56,6 +56,17 @@ foreach ($args as $i => $arg) {
 $expectations = require "$root/expectations/dts-algorithms.php";
 
 /**
+ * The results to try for one test. Test 3 also gets the "not recorded" results of an
+ * algorithm that has them, such as X.
+ *
+ * @return list<string>
+ */
+function values_for(Pt_Evaluation_Dts_Algorithm $algorithm, string $test, array $testValues): array
+{
+    return $test === 'test3' ? array_values(array_unique([...$testValues, ...$algorithm->notDone()])) : $testValues;
+}
+
+/**
  * Every combination of results the algorithm reads, as [results by test, final].
  *
  * @return list<array{0: array<string, string>, 1: string}>
@@ -66,7 +77,7 @@ function combinations(Pt_Evaluation_Dts_Algorithm $algorithm, array $testValues,
     foreach ($algorithm->tests() as $test) {
         $next = [];
         foreach ($combos as $combo) {
-            foreach ($testValues as $value) {
+            foreach (values_for($algorithm, $test, $testValues) as $value) {
                 $next[] = $combo + [$test => $value];
             }
         }
@@ -109,17 +120,20 @@ if ($printName !== null) {
     exit(0);
 }
 
+$checkValues = ['-', 'R', 'NR', 'I', 'IND', 'WR'];
+$checkFinals = ['P', 'N', 'IND', 'X'];
 $failed = false;
 foreach (Pt_Evaluation_Dts_Algorithm::cases() as $algorithm) {
     $expected = [];
     foreach ($expectations[$algorithm->value] ?? [] as $row) {
-        $final = array_pop($row);
-        $expected[key_of(array_combine($algorithm->tests(), $row), $final)] = true;
+        foreach (expand_row($algorithm, $row, $checkValues, $checkFinals) as [$results, $final]) {
+            $expected[key_of($results, $final)] = true;
+        }
     }
     $passing = [];
     $total = 0;
     $messageProblems = [];
-    foreach (combinations($algorithm, ['-', 'R', 'NR', 'I', 'IND', 'WR'], ['P', 'N', 'IND', 'X']) as [$results, $final]) {
+    foreach (combinations($algorithm, $checkValues, $checkFinals) as [$results, $final]) {
         $total++;
         $pass = Pt_Evaluation_Dts_AlgorithmCheck::check($algorithm, $results, $final)['pass'];
         if ($pass) {
@@ -175,6 +189,34 @@ foreach ($caseFailures as $line) {
 $failed = $failed || $caseFailures !== [];
 
 exit($failed ? 1 : 0);
+
+/**
+ * The combinations one expectations row stands for. A '*' cell stands for every
+ * value of that test, and a '*' final for every final.
+ *
+ * @return list<array{0: array<string, string>, 1: string}>
+ */
+function expand_row(Pt_Evaluation_Dts_Algorithm $algorithm, array $row, array $testValues, array $finals): array
+{
+    $final = array_pop($row);
+    $combos = [[]];
+    foreach (array_combine($algorithm->tests(), $row) as $test => $cell) {
+        $next = [];
+        foreach ($combos as $combo) {
+            foreach ($cell === '*' ? values_for($algorithm, $test, $testValues) : [$cell] as $value) {
+                $next[] = $combo + [$test => $value];
+            }
+        }
+        $combos = $next;
+    }
+    $out = [];
+    foreach ($combos as $combo) {
+        foreach ($final === '*' ? $finals : [$final] as $f) {
+            $out[] = [$combo, $f];
+        }
+    }
+    return $out;
+}
 
 /**
  * What is wrong with the warnings for one combination, or null when they are right:
