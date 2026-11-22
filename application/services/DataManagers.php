@@ -68,8 +68,10 @@ class Application_Service_DataManagers
             return ['error' => 'Failed to create Data Manager.'];
         }
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Quick-created data manager - {$email}", 'participants');
+        Application_Model_DbTable_AuditLog::record("Quick-created data manager - {$email}", 'participants', [
+            'entity' => ['type' => 'data-manager', 'id' => $dmId, 'label' => $email],
+            'facts' => array_filter(['Name' => trim($firstName . ' ' . $lastName), 'Institute' => $institute], static fn ($v) => $v !== ''),
+        ]);
 
         $labelParts = [];
         $name = trim($firstName . ' ' . $lastName);
@@ -109,7 +111,10 @@ class Application_Service_DataManagers
                 $this->datamanagersDb->updateForceProfileCheckByEmail(base64_encode((string) $own['primary_email']));
             }
         }
-        return $this->datamanagersDb->updateOwnInfo($dmId, $params);
+        $before = $this->datamanagersDb->auditSnapshot($dmId);
+        $rows = $this->datamanagersDb->updateOwnInfo($dmId, $params);
+        $this->datamanagersDb->auditDataManager('Updated own user info', $dmId, $before);
+        return $rows;
     }
 
     public function updateUser($params)
@@ -372,8 +377,16 @@ class Application_Service_DataManagers
             $priorHistory = $this->getRecentAccountActivity((string) $params['primaryMail']);
         }
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Reset password for {$params['primaryMail']}", 'password-reset');
+        // The reset history looks entries up by the email in the statement.
+        $db = $this->datamanagersDb->getAdapter();
+        $dmId = $db->fetchOne($db->select()->from('data_manager', ['dm_id'])->where('primary_email = ?', (string) $params['primaryMail']));
+        Application_Model_DbTable_AuditLog::record("Reset password for {$params['primaryMail']}", 'password-reset', [
+            'entity' => ['type' => 'data-manager', 'id' => $dmId ?: null, 'label' => (string) $params['primaryMail']],
+            'facts' => [
+                'Credentials emailed' => ($params['mode'] ?? '') === 'email' ? 'yes' : 'no',
+                'Must change password at next login' => $forcePasswordReset ? 'yes' : 'no',
+            ],
+        ]);
 
         // If admin chose "Reset & Email", queue a credentials email via temp_mail.
         // Login refuses inactive accounts, so they get no credentials email.
@@ -930,7 +943,11 @@ class Application_Service_DataManagers
             // lists history only, not the reset we just did (matches single-user flow).
             $priorHistory = $sendEmail ? $this->getRecentAccountActivity($email) : [];
 
-            $auditDb->addNewAuditLog("Reset password for {$email} (bulk)", 'password-reset', $actor);
+            // One entry per account, because the reset history looks entries up by email.
+            $auditDb->addNewAuditLog("Reset password for {$email} (bulk)", 'password-reset', $actor, [
+                'entity' => ['type' => 'data-manager', 'id' => (int) $row['dm_id'], 'label' => $email],
+                'facts' => ['Credentials emailed' => $sendEmail ? 'yes' : 'no'],
+            ]);
 
             if ($sendEmail) {
                 $this->queueBulkCredentialsEmail($common, $email, $name, $newPassword, $loginUrl, $cc, $bcc, $priorHistory);
