@@ -11,12 +11,12 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $schemes = [];
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
             foreach (explode(',', $authNameSpace->activeScheme) as $scheme) {
-                $schemes[] = sprintf("'%s'", $scheme);
+                $schemes[] = trim($scheme);
             }
         }
         $sQuery = $this->getAdapter()->select()->from(['s' => $this->_name], ['*'])->where("status='active'")->order('scheme_name');
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
-            $sQuery = $sQuery->where('scheme_id IN(' . implode(',', $schemes) . ')');
+            $sQuery = $sQuery->where('scheme_id IN (?)', $schemes);
         }
         return $this->getAdapter()->fetchAll($sQuery);
     }

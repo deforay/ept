@@ -98,7 +98,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             ->from(['rfq' => 'r_feedback_questions'], ['*'])
             ->joinLeft(
                 ['rpfq' => 'r_participant_feedback_form_question_map'],
-                'rfq.question_id=rpfq.question_id AND rpfq.shipment_id = ' . $id,
+                'rfq.question_id=rpfq.question_id AND rpfq.shipment_id = ' . (int) $id,
                 ['questionId' => 'question_id', '*']
             )
             ->joinLeft(

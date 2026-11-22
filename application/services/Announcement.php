@@ -24,7 +24,7 @@ class Application_Service_Announcement
                     // cleared on purpose when a lab declares it could not test, and a late or
                     // date-less submission is still a submission. Ask response_status instead.
                     ->where("IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested')")
-                    ->where('sp.participant_id IN(' . implode(',', $params['participants']) . ')')
+                    ->where('sp.participant_id IN (?)', array_map('intval', (array) $params['participants']))
                     ->group('sp.participant_id');
                 $participantEmails = $db->fetchAll($sQuery);
                 foreach ($participantEmails as $participantDetails) {
@@ -48,7 +48,7 @@ class Application_Service_Announcement
                     ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                     ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['dm_id'])
                     ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email', 'push_notify_token'])
-                    ->where('sp.participant_id IN(' . implode(',', $params['participants']) . ')')
+                    ->where('sp.participant_id IN (?)', array_map('intval', (array) $params['participants']))
                     ->group('dm.dm_id');
                 // die($pushQuery);
                 $dmDetails = $db->fetchAll($pushQuery);
