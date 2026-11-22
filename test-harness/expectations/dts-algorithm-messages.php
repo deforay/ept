@@ -55,6 +55,7 @@ return [
     ['ghana', ['test1' => 'R', 'test2' => 'NR', 'test3' => '-', 'repeat1' => 'R', 'repeat2' => '-'], 'P', [['dts.test_not_reported', 23]]],
     // Ghana: repeats are not read after Test 1 is non-reactive.
     ['ghana', ['test1' => 'NR', 'test2' => '-', 'test3' => '-', 'repeat1' => 'R', 'repeat2' => 'R'], 'N', []],
-    // Ghana: Repeat Test 1 non-reactive and Repeat Test 2 reactive has no path.
-    ['ghana', ['test1' => 'R', 'test2' => 'NR', 'test3' => '-', 'repeat1' => 'NR', 'repeat2' => 'R'], 'IND', [['dts.result_not_accepted', 2]]],
+    // Ghana: repeats that disagree give Indeterminate, whichever one is reactive.
+    ['ghana', ['test1' => 'R', 'test2' => 'NR', 'test3' => '-', 'repeat1' => 'NR', 'repeat2' => 'R'], 'IND', []],
+    ['ghana', ['test1' => 'R', 'test2' => 'NR', 'test3' => '-', 'repeat1' => 'NR', 'repeat2' => 'R'], 'N', [['dts.final_result_mismatch', 25]]],
 ];
