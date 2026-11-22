@@ -59,6 +59,8 @@ if ($this->reqFrom == "admin") {
 // Per-sample verdicts from the last evaluation. The controller sets them for the
 // admin view only, so a participant never sees them.
 $sampleVerdicts = $adminAccess ? ($this->sampleVerdicts ?? []) : [];
+// Admin view-only mode: the same page with every field locked and no Submit.
+$viewOnly = $adminAccess && !empty($this->viewOnly);
 // The samples with a coded algorithm warning (stored since the rule tables). An
 // expired or unapproved test kit also fails algorithm_result, so without such a
 // warning the badge cannot say which of the two failed.
@@ -158,6 +160,43 @@ foreach ($this->allTestKits as $kit) {
 
     .result-section-table tr.sample-failed > th:first-child {
         box-shadow: inset 4px 0 0 #c0392b;
+    }
+
+    /* View-only mode: locked fields read as plain text, not as disabled inputs. */
+    .response-view-only .form-control:disabled,
+    .response-view-only select:disabled,
+    .response-view-only input[readonly] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        color: #212529 !important;
+        opacity: 1;
+        cursor: default;
+    }
+
+    .response-view-only ::placeholder {
+        color: transparent !important;
+    }
+
+    .response-view-only .mandatory,
+    .response-view-only .pull-right {
+        display: none;
+    }
+
+    .response-view-only-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding: 10px 14px;
+        border: 1px solid #b6d4e3;
+        border-radius: 4px;
+        background-color: #eef6fb;
+        color: #1f4e66;
     }
 
     .sample-verdict {
@@ -262,9 +301,17 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 </section>
 <section class="content">
     <div class="box">
-        <form name="dtsResponseForm" id="dtsResponseForm" method="post"
+        <form name="dtsResponseForm" id="dtsResponseForm" method="post"<?= $viewOnly ? ' class="response-view-only"' : ''; ?>
             action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true); ?>">
             <div class="box-body">
+                <?php if ($viewOnly) { ?>
+                    <div class="response-view-only-bar">
+                        <span><i class="icon-eye-open"></i> <?= $this->htmlTranslate('You are viewing this response. Nothing on this page can be changed.'); ?></span>
+                        <?php if (!empty($this->canEditResponse)) { ?>
+                            <a class="btn btn-primary btn-sm" href="/dts/response/sid/<?= (int) $this->shipId; ?>/pid/<?= (int) $this->participantId; ?>/eid/<?= $this->escape((string) $this->eID); ?>/from/admin"><i class="icon-pencil"></i> <?= $this->htmlTranslate('Edit Response'); ?></a>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
                 <?php if ($inConfirmStep && $this->isEditable) { ?>
                     <div id="confirmResponseBanner">
                         <div class="crb-row">
@@ -1814,7 +1861,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                     </tr>
                 </table>
             <?php }
-            if ($this->isEditable || $adminAccess) { ?>
+            if (($this->isEditable || $adminAccess) && !$viewOnly) { ?>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
                     <p>
                         <?php $submitText = $this->htmlTranslate("Submit");
@@ -1834,7 +1881,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             <?php } ?>
         </form>
 
-        <?php if (!$this->isEditable) { ?>
+        <?php if (!$this->isEditable || $viewOnly) { ?>
             <div id="respond" style="margin: 0 auto; text-align: center;padding:10px;">
                 <!--<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="<?= $this->translate->_("Back"); ?>" onclick="javascript:goto_dashboard()" />-->
                 <a href="javascript:void(0)" id="reset" tabindex="8" class="btn btn-info"
@@ -1959,9 +2006,17 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
         $(".datepicker,.expDatepicker").datepicker({
             dateFormat: <?php echo json_encode($dtFormat ?? ''); ?>
         });
-        <?php if (!$this->isEditable && !$adminAccess) {
+        <?php if ((!$this->isEditable && !$adminAccess) || $viewOnly) {
             ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+            <?php if ($viewOnly) { ?>
+                // An empty field reads as blank, not as a "Select" prompt.
+                $("#dtsResponseForm select").each(function () {
+                    if (!$(this).val()) {
+                        $(this).find("option:selected").text("");
+                    }
+                });
+            <?php } ?>
             $(".icon-remove-sign").remove();
             <?php
         }
@@ -2315,10 +2370,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             $('.test' + row + 'RepeatSpan').attr('colspan', 2);
         }
         if (info == '1') {
-            $('.test' + row + 'Head').after('<th scope="col" \
-            class="testKit' + row + 'Head kitAddionalInput">\
-            ' + label + '-' + col + mandatoryText + '\
-            </th>');
+            $('.test' + row + 'Head').after(
+                $('<th scope="col">').addClass('testKit' + row + 'Head kitAddionalInput')
+                    .text(label + '-' + col).append(mandatoryText)
+            );
 
             <?php foreach ($this->allSamples as $sample) { ?>
                 var sampleId = <?php echo json_encode($sample['sample_id'] ?? ''); ?>;
@@ -2330,10 +2385,16 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                 var valInfo = infoJson['test' + no];
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
-                $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                                                                                                    class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                                                                                                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="<?= $this->htmlTranslate("Enter the ' + label + '"); ?>">\
-                                                                                                                                                                                                    </td>');
+                var $kitInfoInput = $('<input type="text" class="form-control">')
+                    .attr('name', 'additionalInfoKit[' + sampleId + '][test' + no + ']')
+                    .attr('id', 'additionalInfoKit' + no + sampleId)
+                    .attr('placeholder', <?= json_encode($this->translate->_('Enter %s')); ?>.replace('%s', label))
+                    .addClass(mandatoryClass)
+                    .val(valInfo)
+                    .prop('disabled', <?= $viewOnly ? 'true' : 'false'; ?>);
+                $('.test' + row + 'Input' + sampleId).after(
+                    $('<td>').addClass('testKit' + row + 'Input kitAddionalInput').append($kitInfoInput)
+                );
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {

@@ -44,6 +44,12 @@ class DtsController extends Zend_Controller_Action
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts', $uc);
                 $this->view->sampleVerdicts = $dtsModel->getSampleVerdicts($sID, $pID);
                 $this->view->verdictsOutdated = $dtsModel->responseChangedSinceEvaluation($sID, $pID);
+                // Read-only when asked for (mode/view), or when the administrator may not
+                // edit responses: the evaluate list shows them only the View button.
+                $adminSession = new Zend_Session_Namespace('administrators');
+                $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+                $this->view->canEditResponse = in_array('edit-participant-response', $privileges, true);
+                $this->view->viewOnly = $request->getParam('mode') === 'view' || !$this->view->canEditResponse;
                 $this->_helper->layout()->setLayout('admin');
             } else {
                 if (isset($pID) && !empty($pID)) {

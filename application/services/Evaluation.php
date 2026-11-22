@@ -2608,9 +2608,13 @@ class Application_Service_Evaluation
 
         // Action cell.
         $actionParts = [];
+        $responseUrl = '/' . $rowSchemeType . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id'] . '/eid/' . htmlspecialchars((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
+        // The response page has a read-only mode for DTS so far. It needs no edit privilege.
+        if ($rowSchemeType === 'dts') {
+            $actionParts[] = '<a class="btn btn-default btn-xs" href="' . $responseUrl . '/mode/view"><span><i class="icon-eye-open"></i> ' . $translator->_('View') . '</span></a>';
+        }
         if ($canEdit && $rowSchemeType !== '') {
-            $editUrl = '/' . $rowSchemeType . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id'] . '/eid/' . htmlspecialchars((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
-            $actionParts[] = '<a class="btn btn-primary btn-xs" href="' . $editUrl . '"><span><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</span></a>';
+            $actionParts[] = '<a class="btn btn-primary btn-xs" href="' . $responseUrl . '"><span><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</span></a>';
         }
 
         $shipmentStatus = $shipment['shipment_status'] ?? '';

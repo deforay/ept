@@ -72,13 +72,30 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         // reqAccessFrom=admin lets a response save skip the shipment lock (finalized,
         // closed or cancelled). It comes from the form, so a POST that claims it without
         // an administrator session is rejected here, before any response form handles it.
-        if (!$loggedInAsAdmin && $request->isPost() && $request->getPost('reqAccessFrom') === 'admin') {
+        //
+        // Saving a response as an administrator also needs the edit-participant-response
+        // privilege. The response page shows a read-only view to an administrator
+        // without it, and this check is what enforces that on the server. An
+        // administrator in View as acts as the data manager, so that save is allowed.
+        $adminCanEditResponses = $loggedInAsAdmin && in_array(
+            'edit-participant-response',
+            explode(',', (string) ($adminAuthNameSpace->privileges ?? '')),
+            true
+        );
+        $actingAsDataManager = !empty((new Zend_Session_Namespace('datamanagers'))->dm_id);
+        $adminResponseSave = $loggedInAsAdmin && $request->isPost()
+            && in_array($request->getActionName(), ['response', 'assay-formats'], true)
+            && ($request->getPost('reqAccessFrom') === 'admin' || !$actingAsDataManager);
+        if (
+            ($request->isPost() && $request->getPost('reqAccessFrom') === 'admin' && !$loggedInAsAdmin)
+            || ($adminResponseSave && !$adminCanEditResponses)
+        ) {
             $translate = Zend_Registry::get('translate');
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = $translate->_('You are not allowed to update the response for this participant.');
 
             $response = $this->getResponse();
-            $response->setRedirect('/participant/dashboard', 302);
+            $response->setRedirect($loggedInAsAdmin ? '/admin/evaluate' : '/participant/dashboard', 302);
             $response->sendResponse();
             exit;
         }
