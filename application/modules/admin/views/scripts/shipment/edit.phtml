@@ -37,6 +37,9 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 		<legend>
 			<?= $cloneMode ? $this->translate->_("Clone Shipment — review and save as a new shipment") : $this->translate->_("Update Shipment Sample Details"); ?>
 			- <?php echo $shipmentData['shipment']['shipment_code']; ?>
+			<?php if (!$cloneMode) { ?>
+				<?= $this->auditHistoryLink('shipment', $shipmentData['shipment']['shipment_id'], (string) $shipmentData['shipment']['shipment_code']); ?>
+			<?php } ?>
 		</legend>
 		<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post"
 			action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => ($cloneMode ? 'add' : 'edit'))); ?>"
