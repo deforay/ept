@@ -188,7 +188,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         ];
 
         if (isset($params['ntrId']) && !empty($params['ntrId'])) {
-            return  $this->update($data, 'ntr_id = ' . base64_decode($params['ntrId']));
+            return $this->update($data, ['ntr_id = ?' => (int) base64_decode((string) $params['ntrId'])]);
         }
         return $this->insert($data);
     }
