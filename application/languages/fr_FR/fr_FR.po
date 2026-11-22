@@ -1,10 +1,11 @@
 #
 #: application/views/partials/help-drawer.phtml:112
+#: application/views/scripts/common/admin-evaluation-panel.phtml:45
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 20:46+0530\n"
+"POT-Creation-Date: 2026-11-22 21:09+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -695,7 +696,6 @@ msgstr "erreur"
 #: application/views/partials/participant-performance-report.phtml:33
 #: application/views/partials/participant-response-report.phtml:317
 #: application/views/partials/tb-results-report.phtml:28
-#: application/views/scripts/common/admin-evaluation-panel.phtml:36
 #: application/views/scripts/participant/dashboard.phtml:434
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:800
 msgid "Excluded"
@@ -715,7 +715,6 @@ msgstr "exclus"
 #: application/services/Evaluation.php:2634
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:30
-#: application/views/scripts/common/admin-evaluation-panel.phtml:35
 #: application/views/scripts/dts/response.phtml:103
 #: application/views/scripts/participant/dashboard.phtml:438
 msgid "Fail"
@@ -1109,7 +1108,6 @@ msgstr "non détecté"
 #: application/services/Evaluation.php:2298
 #: application/services/Evaluation.php:2305
 #: application/services/Evaluation.php:2572
-#: application/views/scripts/common/admin-evaluation-panel.phtml:37
 #: application/views/scripts/participant/dashboard.phtml:440
 msgid "Not Evaluated"
 msgstr "Non évalué"
@@ -1227,7 +1225,6 @@ msgstr ""
 #: application/services/Evaluation.php:2535
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:29
-#: application/views/scripts/common/admin-evaluation-panel.phtml:34
 #: application/views/scripts/dts/response.phtml:98
 #: application/views/scripts/participant/dashboard.phtml:436
 msgid "Pass"
@@ -5264,7 +5261,7 @@ msgid "Unsatisfactory"
 msgstr "Insatisfaisant"
 
 #: application/models/DbTable/Shipments.php:1409
-#: application/views/scripts/common/admin-evaluation-panel.phtml:337
+#: application/views/scripts/common/admin-evaluation-panel.phtml:359
 #: application/views/scripts/participant/report.phtml:154
 msgid "Excluded from evaluation"
 msgstr "Exclue de l'évaluation"
@@ -5562,8 +5559,8 @@ msgstr "Score du panel"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:400
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:382
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:391
-#: application/views/scripts/common/admin-evaluation-panel.phtml:270
-#: application/views/scripts/common/admin-evaluation-panel.phtml:281
+#: application/views/scripts/common/admin-evaluation-panel.phtml:378
+#: application/views/scripts/common/admin-evaluation-panel.phtml:389
 msgid "Documentation Score"
 msgstr "Score de documentation"
 
@@ -6080,10 +6077,9 @@ msgstr "Motif de non-utilisation"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:266
 #: application/services/Reports.php:2827
 #: application/views/partials/collapsible-filters.phtml:181
-#: application/views/scripts/common/admin-evaluation-panel.phtml:320
-#: application/views/scripts/common/admin-evaluation-panel.phtml:360
-#: application/views/scripts/common/admin-evaluation-panel.phtml:378
-#: application/views/scripts/common/admin-evaluation-panel.phtml:386
+#: application/views/scripts/common/admin-evaluation-panel.phtml:478
+#: application/views/scripts/common/admin-evaluation-panel.phtml:496
+#: application/views/scripts/common/admin-evaluation-panel.phtml:504
 #: application/views/scripts/covid19/response.phtml:309
 #: application/views/scripts/custom-test/response.phtml:610
 #: application/views/scripts/dts/response.phtml:689
@@ -6299,7 +6295,7 @@ msgstr "Profil mis à jour."
 #: application/modules/admin/controllers/SpotlightController.php:72
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:94
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:132
-#: application/services/Shipments.php:5466
+#: application/services/Shipments.php:5465
 msgid "Evaluate"
 msgstr "Évaluer"
 
@@ -6697,7 +6693,7 @@ msgstr "État"
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/finalize/index.phtml:32
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:33
-#: application/services/Shipments.php:5025
+#: application/services/Shipments.php:5024
 #: application/views/scripts/capa/index.phtml:69
 #: application/views/scripts/covid19/response.phtml:1213
 #: application/views/scripts/data-managers/index.phtml:28
@@ -8224,7 +8220,7 @@ msgstr "Veuillez choisir ici le pays d'adaptation"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:351
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:364
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:652
-#: application/views/scripts/common/admin-evaluation-panel.phtml:376
+#: application/views/scripts/common/admin-evaluation-panel.phtml:494
 #: application/views/scripts/contact-us/index.phtml:42
 #: application/views/scripts/covid19/response.phtml:293
 #: application/views/scripts/covid19/response.phtml:375
@@ -8602,10 +8598,9 @@ msgstr "Désactiver l'autre kit de test"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:310
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:268
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:264
-#: application/views/scripts/common/admin-evaluation-panel.phtml:321
-#: application/views/scripts/common/admin-evaluation-panel.phtml:364
-#: application/views/scripts/common/admin-evaluation-panel.phtml:377
-#: application/views/scripts/common/admin-evaluation-panel.phtml:385
+#: application/views/scripts/common/admin-evaluation-panel.phtml:482
+#: application/views/scripts/common/admin-evaluation-panel.phtml:495
+#: application/views/scripts/common/admin-evaluation-panel.phtml:503
 #: application/views/scripts/covid19/response.phtml:312
 #: application/views/scripts/custom-test/response.phtml:612
 #: application/views/scripts/dts/response.phtml:692
@@ -12781,7 +12776,7 @@ msgstr "En traitement.."
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:459
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:71
-#: application/services/Reports.php:230 application/services/Shipments.php:5456
+#: application/services/Reports.php:230 application/services/Shipments.php:5455
 #: application/views/partials/shipments-report-grid.phtml:348
 msgid "Finalized"
 msgstr "Finalisé"
@@ -13067,7 +13062,7 @@ msgstr "En cours"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:91
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:160
-#: application/services/Shipments.php:5466
+#: application/services/Shipments.php:5465
 msgid "Re-Evaluate"
 msgstr "Réévaluer"
 
@@ -13178,7 +13173,7 @@ msgstr "Remplacement manuel uniquement"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:261
-#: application/views/scripts/common/admin-evaluation-panel.phtml:375
+#: application/views/scripts/common/admin-evaluation-panel.phtml:493
 #: application/views/scripts/partials/evaluate-form.phtml:18
 msgid "Please choose manual override yes or no"
 msgstr "Veuillez indiquer « oui » ou « non » pour le remplacement manuel"
@@ -16333,7 +16328,7 @@ msgid "Completed"
 msgstr "Terminé"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:461
-#: application/services/Shipments.php:5458
+#: application/services/Shipments.php:5457
 msgid "Reports Generated"
 msgstr "Rapports générés"
 
@@ -21753,7 +21748,7 @@ msgstr "Date d'échéance de l'expédition"
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:17
 #: application/services/Reports.php:1279 application/services/Reports.php:1611
 #: application/services/Reports.php:3062
-#: application/services/Shipments.php:5019
+#: application/services/Shipments.php:5018
 #: application/views/partials/participant-performance-report.phtml:34
 #: application/views/partials/tb-results-report.phtml:31
 #: application/views/scripts/capa/capa.phtml:61
@@ -23265,7 +23260,7 @@ msgstr "Non expédié"
 msgid "Open for responses"
 msgstr "Ouvert aux réponses"
 
-#: application/services/Reports.php:228 application/services/Shipments.php:5460
+#: application/services/Reports.php:228 application/services/Shipments.php:5459
 #: application/views/partials/shipments-report-grid.phtml:346
 msgid "Evaluated"
 msgstr "Évalué"
@@ -23482,11 +23477,11 @@ msgstr ""
 msgid "Feedback Off"
 msgstr "Feedback désactivé"
 
-#: application/services/Shipments.php:5094
+#: application/services/Shipments.php:5093
 msgid "Saved successfully"
 msgstr "Enregistré avec succès"
 
-#: application/services/Shipments.php:5538
+#: application/services/Shipments.php:5537
 msgid ""
 "This shipment collects participant feedback but no feedback form has been "
 "created yet. Create the feedback form before finalizing."
@@ -24041,99 +24036,103 @@ msgstr "Résultat final :"
 msgid "Score:"
 msgstr "Score :"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:250
+#: application/views/scripts/common/admin-evaluation-panel.phtml:343
 msgid "Evaluation result"
 msgstr "Résultat de l'évaluation"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:256
+#: application/views/scripts/common/admin-evaluation-panel.phtml:356
+msgid "Manually overridden"
+msgstr "Modifié manuellement"
+
+#: application/views/scripts/common/admin-evaluation-panel.phtml:364
 msgid "This response has not been evaluated yet."
 msgstr "Cette réponse n'a pas encore été évaluée."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:259
+#: application/views/scripts/common/admin-evaluation-panel.phtml:367
 msgid "Total score"
 msgstr "Score total"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:262
+#: application/views/scripts/common/admin-evaluation-panel.phtml:370
 #, php-format
 msgid "Pass mark %s"
 msgstr "Seuil de réussite %s"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:266
-#: application/views/scripts/common/admin-evaluation-panel.phtml:275
+#: application/views/scripts/common/admin-evaluation-panel.phtml:374
+#: application/views/scripts/common/admin-evaluation-panel.phtml:383
 #: application/views/scripts/partials/evaluate-form.phtml:34
 msgid "Shipment Score"
 msgstr "Score de l'expédition"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:277
+#: application/views/scripts/common/admin-evaluation-panel.phtml:385
 #: application/views/scripts/partials/evaluate-form.phtml:38
 msgid "Enter the shipment score"
 msgstr "Entrez le score de l'expédition"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:278
+#: application/views/scripts/common/admin-evaluation-panel.phtml:386
 #: application/views/scripts/partials/evaluate-form.phtml:39
 msgid "Please enter the shipment score"
 msgstr "Veuillez saisir le score de l'expédition"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:284
+#: application/views/scripts/common/admin-evaluation-panel.phtml:392
 msgid "Enter the documentation score"
 msgstr "Entrez la note attribuée à la documentation"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:284
+#: application/views/scripts/common/admin-evaluation-panel.phtml:392
 msgid "Please enter the documentation score"
 msgstr "Veuillez saisir le score de la documentation"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:289
+#: application/views/scripts/common/admin-evaluation-panel.phtml:397
 msgid "Findings and corrective actions"
 msgstr "Constats et mesures correctives"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:290
+#: application/views/scripts/common/admin-evaluation-panel.phtml:398
 msgid "Untick a finding to leave it out of the report."
 msgstr "Décochez un constat pour le retirer du rapport."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:312
+#: application/views/scripts/common/admin-evaluation-panel.phtml:404
+msgid "General"
+msgstr "Général"
+
+#: application/views/scripts/common/admin-evaluation-panel.phtml:433
 msgid "No findings for this response."
 msgstr "Aucun constat pour cette réponse."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:327
-#: application/views/scripts/common/admin-evaluation-panel.phtml:343
+#: application/views/scripts/common/admin-evaluation-panel.phtml:444
+#: application/views/scripts/common/admin-evaluation-panel.phtml:461
 msgid "Feedback to the participant"
 msgstr "Retour au participant"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:329
-#: application/views/scripts/common/admin-evaluation-panel.phtml:345
+#: application/views/scripts/common/admin-evaluation-panel.phtml:446
+msgid "No feedback was written for the participant."
+msgstr "Aucun retour n'a été rédigé pour le participant."
+
+#: application/views/scripts/common/admin-evaluation-panel.phtml:455
+msgid "Follow-up for corrective action"
+msgstr "Suivi d'une action corrective"
+
+#: application/views/scripts/common/admin-evaluation-panel.phtml:463
 #: application/views/scripts/partials/evaluate-form.phtml:43
 msgid "Evaluation Comment"
 msgstr "Commentaire d'évaluation"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:331
-#: application/views/scripts/common/admin-evaluation-panel.phtml:351
+#: application/views/scripts/common/admin-evaluation-panel.phtml:469
 #: application/views/scripts/partials/evaluate-form.phtml:52
 msgid "Optional Extra Comments"
 msgstr "Commentaires supplémentaires facultatifs"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:333
-msgid "Follow-up comment"
-msgstr "Commentaire de suivi"
-
-#: application/views/scripts/common/admin-evaluation-panel.phtml:335
-#: application/views/scripts/common/admin-evaluation-panel.phtml:373
-#: application/views/scripts/partials/evaluate-form.phtml:16
-msgid "Manually Override Results"
-msgstr "Remplacer manuellement les résultats"
-
-#: application/views/scripts/common/admin-evaluation-panel.phtml:356
+#: application/views/scripts/common/admin-evaluation-panel.phtml:474
 msgid "Is the above a follow up comment for corrective action?"
 msgstr "S'agit-il d'un commentaire de suivi en vue d'une action corrective ?"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:359
+#: application/views/scripts/common/admin-evaluation-panel.phtml:477
 msgid "Please choose whether this is a follow up comment or not"
 msgstr "Veuillez indiquer s'il s'agit d'un commentaire de suivi ou non"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:370
+#: application/views/scripts/common/admin-evaluation-panel.phtml:488
 msgid "Admin actions"
 msgstr "Actions d'administration"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:371
+#: application/views/scripts/common/admin-evaluation-panel.phtml:489
 msgid ""
 "Change these only to correct an evaluation. Both change the participant's "
 "result."
@@ -24141,12 +24140,17 @@ msgstr ""
 "Ne modifiez ces options que pour corriger une évaluation. Elles changent "
 "toutes deux le résultat du participant."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:382
+#: application/views/scripts/common/admin-evaluation-panel.phtml:491
+#: application/views/scripts/partials/evaluate-form.phtml:16
+msgid "Manually Override Results"
+msgstr "Remplacer manuellement les résultats"
+
+#: application/views/scripts/common/admin-evaluation-panel.phtml:500
 #: application/views/scripts/partials/evaluate-form.phtml:5
 msgid "Do you want to exclude this response from evaluation?"
 msgstr "Souhaitez-vous exclure cette réponse de l'évaluation ?"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:384
+#: application/views/scripts/common/admin-evaluation-panel.phtml:502
 #: application/views/scripts/partials/evaluate-form.phtml:9
 msgid "Please choose whether this response is excluded from evaluation or not"
 msgstr ""
@@ -28915,6 +28919,9 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Aucun participant"
+
+#~ msgid "Follow-up comment"
+#~ msgstr "Commentaire de suivi"
 
 #~ msgid "Notes"
 #~ msgstr "Notes"
