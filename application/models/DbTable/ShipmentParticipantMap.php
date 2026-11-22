@@ -5,6 +5,60 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     protected $_name = 'shipment_participant_map';
     protected $_primary = 'map_id';
 
+    /** @var array<string, string>|null table => map-id column, cached per request */
+    private static $childTables = null;
+
+    /**
+     * Every table that stores data for one participant in one shipment,
+     * with the column that holds the shipment_participant_map id. Read from
+     * the schema, so new result tables are covered without a code change.
+     *
+     * @return array<string, string>
+     */
+    public static function childTables(Zend_Db_Adapter_Abstract $db): array
+    {
+        if (self::$childTables !== null) {
+            return self::$childTables;
+        }
+        $rows = $db->fetchAll(
+            "SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND COLUMN_NAME IN ('shipment_map_id', 'map_id')
+               AND TABLE_NAME <> 'shipment_participant_map'"
+        );
+        $tables = [];
+        foreach ($rows as $row) {
+            $tables[(string) $row['TABLE_NAME']] = (string) $row['COLUMN_NAME'];
+        }
+        self::$childTables = $tables;
+        return $tables;
+    }
+
+    /**
+     * Remove participants from shipments: their results, corrective actions,
+     * feedback answers and other per-shipment rows first, then the map rows.
+     * Runs inside the caller's transaction when there is one.
+     *
+     * @param int[] $mapIds
+     * @return int number of shipment_participant_map rows deleted
+     */
+    public static function deleteMapsWithData(Zend_Db_Adapter_Abstract $db, array $mapIds): int
+    {
+        $mapIds = array_values(array_unique(array_filter(array_map('intval', $mapIds))));
+        if ($mapIds === []) {
+            return 0;
+        }
+        $db->query('SET FOREIGN_KEY_CHECKS = 0');
+        try {
+            foreach (self::childTables($db) as $table => $column) {
+                $db->delete($table, $db->quoteInto($db->quoteIdentifier($column) . ' IN (?)', $mapIds));
+            }
+            return (int) $db->delete('shipment_participant_map', $db->quoteInto('map_id IN (?)', $mapIds));
+        } finally {
+            $db->query('SET FOREIGN_KEY_CHECKS = 1');
+        }
+    }
+
     public function shipItNow($params)
     {
 
@@ -50,14 +104,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 }
             }
             if (!empty($mapIdsToRemove)) {
-                $idList = implode(',', array_map('intval', $mapIdsToRemove));
-                $responseTables = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
-                $db->query('SET FOREIGN_KEY_CHECKS = 0');
-                foreach ($responseTables as $tbl) {
-                    $db->delete($tbl, 'shipment_map_id IN (' . $idList . ')');
-                }
-                $db->delete('shipment_participant_map', 'map_id IN (' . $idList . ')');
-                $db->query('SET FOREIGN_KEY_CHECKS = 1');
+                self::deleteMapsWithData($db, $mapIdsToRemove);
             }
             // "Save as a list": adds the selected participants to that list of this
             // scheme. It no longer removes anyone from the preset lists that were applied.

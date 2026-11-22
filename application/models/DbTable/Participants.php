@@ -2830,7 +2830,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $pmmCheck = $this->getAdapter()->fetchRow($sQuery);
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=0");
                 if ($pmmCheck['mapCount'] <= 1) {
-                    $id = $db->delete('shipment_participant_map', $db->quoteInto('participant_id = ?', $participantId));
+                    $mapIds = $db->fetchCol($db->select()->from('shipment_participant_map', ['map_id'])->where('participant_id = ?', $participantId));
+                    Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, $mapIds);
                     $id = $db->delete('participant_manager_map', $db->quoteInto('participant_id = ?', $participantId));
                     if ($pmmCheck['mapCount'] == 1 && $pmmCheck['dm_id'] > 0) {
                         $id = $db->delete('data_manager', ['dm_id' => $pmmCheck['dm_id']]);
@@ -3143,12 +3144,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where('password = ?', $params['password'])->limit(1);
             $verify = $db->fetchRow($pQuery);
             if ($verify) {
-                $db->query('SET FOREIGN_KEY_CHECKS = 0;'); // Disable foreign key checks
-                $allowedTestTypes = ['dts', 'dbs', 'vl', 'eid', 'recency', 'generic', 'covid19'];
-                $testType = in_array($params['testType'], $allowedTestTypes) ? $params['testType'] : 'dts';
-                $db->delete('response_result_' . $testType, $db->quoteInto('shipment_map_id = ?', $params['smid']));
-                $db->delete('shipment_participant_map', $db->quoteInto('map_id = ?', $params['smid']));
-                $db->query('SET FOREIGN_KEY_CHECKS = 1;'); // Enable foreign key checks
+                Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [(int) $params['smid']]);
                 return true;
             }
             return false;
