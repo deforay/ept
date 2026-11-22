@@ -79,7 +79,7 @@ class Application_Model_Recency
                         } else {
                             if ($result['sample_score'] > 0) {
                                 $this->failureReason[] = [
-                                    'warning' => 'Final interpretation for sample <strong>' . $result['sample_label'] . '</strong> reported wrongly',
+                                    'warning' => 'Final interpretation for sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> reported wrongly',
                                     'correctiveAction' => 'Final interpretation not matching with the expected results. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately.',
                                 ];
                             }
@@ -130,7 +130,7 @@ class Application_Model_Recency
                     if ($isAlgoWrong) {
                         $score = 'Fail';
                         $this->failureReason[] = [
-                            'warning' => 'Algorithm reported wrongly for sample <strong>' . $result['sample_label'] . '</strong>',
+                            'warning' => 'Algorithm reported wrongly for sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong>',
                             'correctiveAction' => 'Identification of the presence or absence of RTRI lines/bands do not match the Final Interpretation reported. Please follow the RTRI SOP and/or job aide to report the presence or absence of RTRI lines/bands correctly.',
                         ];
                     }

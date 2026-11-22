@@ -119,7 +119,7 @@ class Application_Model_Tb
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
                                         $totalScore += $calculatedScore;
-                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                     }
                                 }
                             } else {
@@ -132,7 +132,7 @@ class Application_Model_Tb
                                     $awardedScore = 0.5;
                                     if (!in_array($result['reference_mtb_detected'], $positiveResults)) {
                                         $calculatedScore = 0;
-                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                     } elseif ($result['mtb_detected'] == $result['reference_mtb_detected']) {
                                         // if they report the same result as the reference, then they should be awarded 1
                                         $awardedScore = 1;
@@ -156,7 +156,7 @@ class Application_Model_Tb
                                 } else {
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
-                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                     }
                                 }
                                 $totalScore += $calculatedScore;
@@ -165,7 +165,7 @@ class Application_Model_Tb
                             if ($result['sample_score'] > 0) {
                                 $calculatedScore = 0;
                                 $totalScore += $calculatedScore;
-                                $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                             }
                         }
                     } else {
@@ -187,12 +187,12 @@ class Application_Model_Tb
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                     }
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                 }
                             }
                         } else {
@@ -269,7 +269,7 @@ class Application_Model_Tb
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                 }
                             }
                         }
@@ -840,7 +840,7 @@ class Application_Model_Tb
                             ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                         $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']) : '';
-                        $warning = (isset($warning) && !empty($warning)) ? str_replace(['<strong>', '</strong>'], ['', ''], $warning[0]['warning']) : '';
+                        $warning = (isset($warning) && !empty($warning)) ? html_entity_decode(strip_tags((string) $warning[0]['warning']), ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($warning);

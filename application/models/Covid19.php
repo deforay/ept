@@ -205,7 +205,7 @@ class Application_Model_Covid19
             } elseif (($testPlatform1 != '') && ($testPlatform2 != '') && ($testPlatform3 != '') && ($testPlatform1 == $testPlatform2) && ($testPlatform2 == $testPlatform3)) {
                 //$testPlatformRepeatResult = 'Fail';
                 $failureReason[] = [
-                    'warning' => "<strong>$testPlatform1</strong> repeated for all three Test Platforms",
+                    'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testPlatform1) . '</strong> repeated for all three Test Platforms',
                     'correctiveAction' => $correctiveActions[8],
                 ];
                 $correctiveActionList[] = 8;
@@ -213,7 +213,7 @@ class Application_Model_Covid19
                 if (($testPlatform1 != '') && ($testPlatform2 != '') && ($testPlatform1 == $testPlatform2) && $testPlatform1 != '' && $testPlatform2 != '') {
                     //$testPlatformRepeatResult = 'Fail';
                     $failureReason[] = [
-                        'warning' => "<strong>$testPlatform1</strong> repeated as Test Platform 1 and Test Platform 2",
+                        'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testPlatform1) . '</strong> repeated as Test Platform 1 and Test Platform 2',
                         'correctiveAction' => $correctiveActions[9],
                     ];
                     $correctiveActionList[] = 9;
@@ -221,7 +221,7 @@ class Application_Model_Covid19
                 if (($testPlatform2 != '') && ($testPlatform3 != '') && ($testPlatform2 == $testPlatform3) && $testPlatform2 != '' && $testPlatform3 != '') {
                     //$testPlatformRepeatResult = 'Fail';
                     $failureReason[] = [
-                        'warning' => "<strong>$testPlatform2</strong> repeated as Test Platform 2 and Test Platform 3",
+                        'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testPlatform2) . '</strong> repeated as Test Platform 2 and Test Platform 3',
                         'correctiveAction' => $correctiveActions[9],
                     ];
                     $correctiveActionList[] = 9;
@@ -229,7 +229,7 @@ class Application_Model_Covid19
                 if (($testPlatform1 != '') && ($testPlatform3 != '') && ($testPlatform1 == $testPlatform3) && $testPlatform1 != '' && $testPlatform3 != '') {
                     //$testPlatformRepeatResult = 'Fail';
                     $failureReason[] = [
-                        'warning' => "<strong>$testPlatform1</strong> repeated as Test Platform 1 and Test Platform 3",
+                        'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testPlatform1) . '</strong> repeated as Test Platform 1 and Test Platform 3',
                         'correctiveAction' => $correctiveActions[9],
                     ];
                     $correctiveActionList[] = 9;
@@ -281,7 +281,7 @@ class Application_Model_Covid19
                         $score = 'Pass';
                     } else {
                         if ($result['sample_score'] > 0) {
-                            /* $this->failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly"; */
+                            /* $this->failureReason[]['warning'] = "Control/Sample <strong>" . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong> was reported wrongly"; */
                         }
                         $score = 'Fail';
                     }
