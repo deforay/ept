@@ -47,13 +47,21 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         $homeSectionService = new Application_Service_HomeSection();
         if ($request->isPost()) {
             $params = $request->getPost();
-            if ($homeSectionService->saveHomeSection($params) === false) {
+            $newId = $homeSectionService->saveHomeSection($params);
+            if ($newId === false) {
                 $this->redirect('/admin/home-section-links/add');
             }
 
-            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config');
+            $heading = $this->linkHeading($params);
+            $after = $this->linkAuditFields((string) $newId);
+            $facts = [];
+            foreach ($after ?? [] as $field => $value) {
+                $facts[self::AUDIT_LABELS[$field]] = $value;
+            }
+            Application_Model_DbTable_AuditLog::record('Added a new home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config', [
+                'entity' => ['type' => 'config', 'id' => $newId ?: null, 'label' => 'Resource link: ' . $heading],
+                'facts' => $facts,
+            ]);
 
             $this->redirect('/admin/home-section-links');
         }
@@ -70,13 +78,19 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         $homeSectionService = new Application_Service_HomeSection();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $linkId = trim((string) ($params['homeSectionId'] ?? ''));
+            $before = $this->linkAuditFields($linkId);
             if ($homeSectionService->saveHomeSection($params) === false) {
-                $this->redirect('/admin/home-section-links/edit/id/' . base64_encode((string) ($params['homeSectionId'] ?? '')));
+                $this->redirect('/admin/home-section-links/edit/id/' . base64_encode($linkId));
             }
 
-            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config');
+            $heading = $this->linkHeading($params);
+            $after = $this->linkAuditFields($linkId);
+            $extra = ['entity' => ['type' => 'config', 'id' => $linkId, 'label' => 'Resource link: ' . $heading]];
+            if ($before !== null && $after !== null) {
+                $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_LABELS);
+            }
+            Application_Model_DbTable_AuditLog::record('Updated home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config', $extra);
 
             $this->redirect('/admin/home-section-links');
         }
@@ -101,6 +115,46 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $this->_helper->json([
                 'maxSortOrder' => $maxSortOrder,
             ]);
+        }
+    }
+
+    private const AUDIT_LABELS = [
+        'section' => 'Resource Section',
+        'type' => 'Type',
+        'link' => 'Link',
+        'section_file' => 'File',
+        'text' => 'Display Text',
+        'icon' => 'Icon',
+        'display_order' => 'Display Order',
+        'status' => 'Status',
+    ];
+
+    /** @param array<string, mixed> $params */
+    private function linkHeading(array $params): string
+    {
+        foreach (['heading', 'displayText', 'link'] as $key) {
+            $value = trim((string) ($params[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+        return '';
+    }
+
+    /** @return array<string, string>|null */
+    private function linkAuditFields(string $id): ?array
+    {
+        if ($id === '' || !ctype_digit($id)) {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()->from('home_sections', array_keys(self::AUDIT_LABELS))->where('id = ?', (int) $id)
+            );
+            return $row ?: null;
+        } catch (Throwable $e) {
+            return null;
         }
     }
 }

@@ -43,11 +43,13 @@ class Admin_VlAssayController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $vlAssayService = new Application_Service_VlAssay();
-            $vlAssayService->addVlAssay($params);
+            $newId = $vlAssayService->addVlAssay($params);
 
             $name = trim((string) ($params['name'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new VL assay - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            Application_Model_DbTable_AuditLog::record('Added a new VL assay - ' . ($name !== '' ? $name : '(unnamed)'), 'config', [
+                'entity' => ['type' => 'config', 'id' => $newId ?: null, 'label' => 'VL assay: ' . $name],
+                'facts' => ['Short Name' => $params['shortName'] ?? ''],
+            ]);
 
             $this->redirect('/admin/vl-assay');
         }
@@ -60,11 +62,17 @@ class Admin_VlAssayController extends Zend_Controller_Action
         $vlAssayService = new Application_Service_VlAssay();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $assayId = trim((string) ($params['vlAssayId'] ?? ''));
+            $before = $this->assayAuditFields($assayId);
             $vlAssayService->updateVlAssay($params);
 
             $name = trim((string) ($params['name'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated VL assay - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            $after = $this->assayAuditFields($assayId);
+            $extra = ['entity' => ['type' => 'config', 'id' => $assayId, 'label' => 'VL assay: ' . $name]];
+            if ($before !== null && $after !== null) {
+                $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_LABELS);
+            }
+            Application_Model_DbTable_AuditLog::record('Updated VL assay - ' . ($name !== '' ? $name : '(unnamed)'), 'config', $extra);
 
             $this->redirect('/admin/vl-assay');
         }
@@ -73,6 +81,28 @@ class Admin_VlAssayController extends Zend_Controller_Action
             $this->view->vlAssay = $vlAssayService->getVlAssay($id);
         } else {
             $this->redirect('/admin/vl-assay');
+        }
+    }
+
+    private const AUDIT_LABELS = [
+        'name' => 'Name',
+        'short_name' => 'Short Name',
+    ];
+
+    /** @return array<string, string>|null */
+    private function assayAuditFields(string $id): ?array
+    {
+        if ($id === '') {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()->from('r_vl_assay', array_keys(self::AUDIT_LABELS))->where('id = ?', $id)
+            );
+            return $row ?: null;
+        } catch (Throwable $e) {
+            return null;
         }
     }
 }

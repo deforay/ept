@@ -43,11 +43,13 @@ class Admin_PartnersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $partnerService = new Application_Service_Partner();
-            $partnerService->addPartner($params);
+            $newId = $partnerService->addPartner($params);
 
             $name = trim((string) ($params['partnerName'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            Application_Model_DbTable_AuditLog::record('Added a new partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config', [
+                'entity' => ['type' => 'config', 'id' => $newId ?: null, 'label' => 'Partner: ' . $name],
+                'facts' => ['Link' => $params['link'] ?? ''],
+            ]);
 
             $this->redirect('/admin/partners');
         }
@@ -60,11 +62,17 @@ class Admin_PartnersController extends Zend_Controller_Action
         $partnerService = new Application_Service_Partner();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $partnerId = trim((string) ($params['partnerId'] ?? ''));
+            $before = $this->partnerAuditFields($partnerId);
             $partnerService->updatePartner($params);
 
             $name = trim((string) ($params['partnerName'] ?? ''));
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+            $after = $this->partnerAuditFields($partnerId);
+            $extra = ['entity' => ['type' => 'config', 'id' => $partnerId, 'label' => 'Partner: ' . $name]];
+            if ($before !== null && $after !== null) {
+                $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_LABELS);
+            }
+            Application_Model_DbTable_AuditLog::record('Updated partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config', $extra);
 
             $this->redirect('/admin/partners');
         }
@@ -73,6 +81,31 @@ class Admin_PartnersController extends Zend_Controller_Action
             $this->view->partner = $partnerService->getPartner($partnerId);
         } else {
             $this->redirect('/admin/partners');
+        }
+    }
+
+    private const AUDIT_LABELS = [
+        'partner_name' => 'Partner Name',
+        'link' => 'Link',
+        'logo_image' => 'Logo',
+        'sort_order' => 'Sort Order',
+        'status' => 'Status',
+    ];
+
+    /** @return array<string, string>|null */
+    private function partnerAuditFields(string $id): ?array
+    {
+        if ($id === '') {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()->from('partners', array_keys(self::AUDIT_LABELS))->where('partner_id = ?', $id)
+            );
+            return $row ?: null;
+        } catch (Throwable $e) {
+            return null;
         }
     }
 }

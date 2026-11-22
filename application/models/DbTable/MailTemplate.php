@@ -13,6 +13,17 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
         return in_array($audience, self::AUDIENCES, true) ? $audience : 'participant';
     }
 
+    /** Form labels of the fields an admin edits, for the audit log. */
+    private const AUDIT_LABELS = [
+        'from_name' => 'From Name',
+        'mail_from' => 'From Email',
+        'mail_cc' => 'Cc',
+        'mail_bcc' => 'Bcc',
+        'mail_subject' => 'Subject',
+        'mail_content' => 'Message',
+        'mail_footer' => 'Footer',
+    ];
+
     public function updateMailTemplateDetails($params)
     {
         $data = [
@@ -34,13 +45,42 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
                 $params['mailId'] = $existing['mail_temp_id'];
             }
         }
+        $before = null;
         if (isset($params['mailId']) && $params['mailId'] != '') {
+            $before = $this->auditFields($params['mailId']);
             $this->update($data, ['mail_temp_id = ?' => $params['mailId']]);
+            $templateId = $params['mailId'];
         } else {
-            $this->insert($data);
+            $templateId = $this->insert($data);
         }
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Updated mail template - ' . $params['mailPurpose'] . ' (' . $data['audience'] . ')', 'mail-template');
+        $extra = [
+            'entity' => [
+                'type' => 'mail-template',
+                'id' => $templateId,
+                'label' => $data['mail_purpose'] . ' (' . $data['audience'] . ')',
+            ],
+        ];
+        if ($before !== null) {
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $this->auditFields($templateId), self::AUDIT_LABELS);
+        } else {
+            $extra['facts'] = ['Written for' => $data['audience'], 'Subject' => $data['mail_subject']];
+        }
+        Application_Model_DbTable_AuditLog::record('Updated mail template - ' . $params['mailPurpose'] . ' (' . $data['audience'] . ')', 'mail-template', $extra);
+    }
+
+    /** @return array<string, string>|null */
+    private function auditFields($templateId): ?array
+    {
+        try {
+            $row = $this->getAdapter()->fetchRow(
+                $this->getAdapter()->select()
+                    ->from($this->_name, array_keys(self::AUDIT_LABELS))
+                    ->where('mail_temp_id = ?', $templateId)
+            );
+            return $row ?: null;
+        } catch (Throwable $e) {
+            return null;
+        }
     }
     public function getEmailTemplateDetails($mailPurpose, string $audience = 'participant')
     {

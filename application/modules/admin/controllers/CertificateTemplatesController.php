@@ -35,8 +35,18 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $service->saveCertificateTemplate($params);
 
             $schemeCount = isset($params['scheme']) && is_array($params['scheme']) ? count($params['scheme']) : 0;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated certificate template config ({$schemeCount} schemes)", 'certificate');
+            $uploaded = [];
+            foreach (isset($params['scheme']) && is_array($params['scheme']) ? $params['scheme'] : [] as $key => $schemeId) {
+                foreach (['pCertificate' => 'Participation certificate', 'eCertificate' => 'Excellence certificate'] as $field => $label) {
+                    if (!empty($_FILES[$field]['name'][$key])) {
+                        $uploaded[] = $this->schemeName((string) $schemeId) . ': ' . $label . ' (' . $_FILES[$field]['name'][$key] . ')';
+                    }
+                }
+            }
+            Application_Model_DbTable_AuditLog::record("Updated certificate template config ({$schemeCount} schemes)", 'certificate', [
+                'entity' => ['type' => 'certificate', 'id' => 'templates', 'label' => 'Certificate templates'],
+                'list' => ['title' => 'Templates uploaded', 'rows' => $uploaded],
+            ]);
 
             $this->redirect('/admin/certificate-templates');
         }
@@ -141,8 +151,13 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         }
 
         $layout = Application_Service_CertificateTemplates::cleanLayout($decoded);
-        (new Application_Model_DbTable_CertificateTemplates())->saveLayout($scheme, $type, $layout);
-        (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Saved {$type} certificate design for scheme {$scheme}", 'certificate');
+        $templatesDb = new Application_Model_DbTable_CertificateTemplates();
+        $before = $this->layoutAuditFields($templatesDb, $scheme, $type);
+        $templatesDb->saveLayout($scheme, $type, $layout);
+        Application_Model_DbTable_AuditLog::record("Saved {$type} certificate design for scheme {$scheme}", 'certificate', [
+            'entity' => $this->certificateEntity($scheme, $type),
+            'changes' => Application_Model_DbTable_AuditLog::changes($before, $this->layoutAuditFields($templatesDb, $scheme, $type)),
+        ]);
 
         $this->_helper->json([
             'success' => true,
@@ -307,11 +322,17 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         }
 
         $service = new Application_Service_CertificateTemplates();
+        $hadTemplate = $service->getTemplateFilePath((string) $scheme, (string) $type) !== null;
         $result = $service->uploadTemplate($scheme, $type, $_FILES['template']);
 
         if (!empty($result['success'])) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Uploaded {$type} certificate template for scheme {$scheme}", 'certificate');
+            Application_Model_DbTable_AuditLog::record("Uploaded {$type} certificate template for scheme {$scheme}", 'certificate', [
+                'entity' => $this->certificateEntity((string) $scheme, (string) $type),
+                'facts' => [
+                    'File' => (string) ($_FILES['template']['name'] ?? ''),
+                    'Replaced the previous template' => $hadTemplate ? 'Yes' : 'No',
+                ],
+            ]);
         }
 
         $this->_helper->json($result);
@@ -362,13 +383,70 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         $success = $service->removeTemplate($scheme, $type);
 
         if ($success) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Removed {$type} certificate template for scheme {$scheme}", 'certificate');
+            Application_Model_DbTable_AuditLog::record("Removed {$type} certificate template for scheme {$scheme}", 'certificate', [
+                'entity' => $this->certificateEntity((string) $scheme, (string) $type),
+            ]);
         }
 
         $this->_helper->json([
             'success' => $success,
             'message' => $success ? 'Template removed successfully' : 'Failed to remove template',
         ]);
+    }
+
+    private function schemeName(string $scheme): string
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $name = $db->fetchOne($db->select()->from('scheme_list', ['scheme_name'])->where('scheme_id = ?', $scheme));
+            return $name !== false && $name !== null && $name !== '' ? (string) $name : $scheme;
+        } catch (Throwable $e) {
+            return $scheme;
+        }
+    }
+
+    /** @return array{type: string, id: string, label: string} */
+    private function certificateEntity(string $scheme, string $type): array
+    {
+        $label = $type === 'excellence' ? 'Excellence certificate' : 'Participation certificate';
+        return ['type' => 'certificate', 'id' => $scheme . '-' . $type, 'label' => $label . ': ' . $this->schemeName($scheme)];
+    }
+
+    /**
+     * One line per text box of a designer layout, so a change shows which box moved or changed.
+     *
+     * @return array<string, string>
+     */
+    private function layoutAuditFields(Application_Model_DbTable_CertificateTemplates $templatesDb, string $scheme, string $type): array
+    {
+        try {
+            $layout = $templatesDb->getLayout($scheme, $type);
+        } catch (Throwable $e) {
+            return [];
+        }
+        $fields = [];
+        foreach (array_values((array) ($layout['elements'] ?? [])) as $index => $element) {
+            if (!is_array($element)) {
+                continue;
+            }
+            $style = array_filter([
+                (string) ($element['font'] ?? ''),
+                ($element['size'] ?? '') . 'pt',
+                !empty($element['bold']) ? 'bold' : '',
+                !empty($element['italic']) ? 'italic' : '',
+                (string) ($element['color'] ?? ''),
+                (string) ($element['align'] ?? ''),
+            ], static fn ($part) => $part !== '' && $part !== 'pt');
+            $fields['Text ' . ($index + 1)] = sprintf(
+                '%s | x %s, y %s, %s x %s | %s',
+                (string) ($element['text'] ?? ''),
+                (string) ($element['x'] ?? ''),
+                (string) ($element['y'] ?? ''),
+                (string) ($element['w'] ?? ''),
+                (string) ($element['h'] ?? ''),
+                implode(', ', $style)
+            );
+        }
+        return $fields;
     }
 }

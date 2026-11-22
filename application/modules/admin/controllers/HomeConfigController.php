@@ -38,6 +38,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $request = $this->getRequest();
             if ($request->isPost()) {
                 $params = $this->getAllParams();
+                $before = $this->homeAuditFields();
 
                 // Handle logo deletions
                 $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
@@ -103,9 +104,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 if (!empty($params['faqQuestions'])) {
                     $changedSections[] = 'FAQs';
                 }
-                $detail = empty($changedSections) ? '' : ' — ' . implode(', ', $changedSections);
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Updated home page config{$detail}", 'config');
+                $detail = empty($changedSections) ? '' : ' - ' . implode(', ', $changedSections);
+                $this->recordHomeConfigUpdate($detail, $before);
             }
 
             $this->view->home = json_decode($common->getConfig('home'));
@@ -146,5 +146,79 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $this->view->search = $section;
             $this->view->section = $homeSection->getActiveHtmlHomePage($section);
         }
+    }
+
+    private const HOME_LABELS = [
+        'home.heading1' => 'Line 1 (Main Title)',
+        'home.heading2' => 'Line 2 (Subtitle)',
+        'home.heading3' => 'Line 3 (Description)',
+        'home.videoUrl' => 'Video URL',
+        'home.title' => 'Page Title',
+        'home.additionalLink' => 'Additional Link URL',
+        'home.additionalLinkText' => 'Additional Link Text',
+        'home.icon1' => 'Resource Section 1 › Icon',
+        'home.subHeading1' => 'Resource Section 1 › Section Heading',
+        'home.icon2' => 'Resource Section 2 › Icon',
+        'home.subHeading2' => 'Resource Section 2 › Section Heading',
+        'home.icon3' => 'Resource Section 3 › Icon',
+        'home.subHeading3' => 'Resource Section 3 › Section Heading',
+        'home_left_logo' => 'Logo 1 (Left)',
+        'home_right_logo' => 'Logo 2 (Right)',
+    ];
+
+    /**
+     * The saved home page settings, flattened to the fields the form edits.
+     *
+     * @return array<string, string>|null
+     */
+    private function homeAuditFields(): ?array
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $config = $db->fetchPairs(
+                $db->select()
+                    ->from('global_config', ['name', 'value'])
+                    ->where('name IN (?)', ['home', 'faqs', 'home_left_logo', 'home_right_logo'])
+            );
+        } catch (Throwable $e) {
+            return null;
+        }
+        $fields = [];
+        $home = json_decode((string) ($config['home'] ?? ''), true);
+        foreach (array_keys(self::HOME_LABELS) as $field) {
+            if (str_starts_with($field, 'home.')) {
+                $value = is_array($home) ? ($home[substr($field, 5)] ?? '') : '';
+                $fields[$field] = is_scalar($value) ? (string) $value : '';
+            } else {
+                $fields[$field] = (string) ($config[$field] ?? '');
+            }
+        }
+        $faqs = json_decode((string) ($config['faqs'] ?? ''), true);
+        foreach (is_array($faqs) ? $faqs : [] as $question => $answer) {
+            $fields['faq.' . $question] = is_scalar($answer) ? (string) $answer : '';
+        }
+        return $fields;
+    }
+
+    /** @param array<string, string>|null $before */
+    private function recordHomeConfigUpdate(string $detail, ?array $before): void
+    {
+        $after = $this->homeAuditFields();
+        $extra = ['entity' => ['type' => 'config', 'id' => 'home', 'label' => 'Home Page Settings']];
+        if ($before !== null && $after !== null) {
+            $labels = self::HOME_LABELS;
+            foreach (array_keys($before + $after) as $field) {
+                if (str_starts_with($field, 'faq.')) {
+                    $labels[$field] = 'FAQ › ' . substr($field, 4);
+                }
+            }
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, $labels);
+        }
+        if (!empty($_FILES['home_banner']['name'])) {
+            // A new banner keeps the same stored file name, so the comparison above cannot see it.
+            $extra['changes'] ??= [];
+            $extra['changes'][] = ['field' => 'home_banner', 'label' => 'Home Banner Image', 'from' => '', 'to' => (string) $_FILES['home_banner']['name']];
+        }
+        Application_Model_DbTable_AuditLog::record("Updated home page config{$detail}", 'config', $extra);
     }
 }
