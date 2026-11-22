@@ -3934,26 +3934,31 @@ class Application_Service_Shipments
         return $resultArray;
     }
 
-    public function removeShipmentParticipant($mapId, $sId = '')
+    /**
+     * Remove one participant from a shipment, with all of their results and
+     * other per-shipment data.
+     *
+     * @param int $mapId shipment_participant_map id
+     * @param int|null $shipmentId when given, the row must belong to this shipment
+     * @return int rows removed from shipment_participant_map (0 or 1)
+     */
+    public function removeShipmentParticipant($mapId, $shipmentId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $responseTables = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
+        $mapId = (int) $mapId;
+        $check = $db->select()->from('shipment_participant_map', ['map_id'])->where('map_id = ?', $mapId);
+        if (!empty($shipmentId)) {
+            $check->where('shipment_id = ?', (int) $shipmentId);
+        }
+        if ($mapId <= 0 || !$db->fetchOne($check)) {
+            return 0;
+        }
         $ownTx = !$db->getConnection()->inTransaction();
         if ($ownTx) {
             $db->beginTransaction();
         }
-        $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         try {
-            foreach ($responseTables as $response) {
-                $sql = $db->select()->from($response, ['shipment_map_id'])->where('shipment_map_id =?', $mapId);
-                if (!empty($sId)) {
-                    $sql = $sql->where('sample_id =?', $sId);
-                }
-                if ($db->fetchRow($sql)) {
-                    $db->delete($response, ['shipment_map_id = ?' => $mapId]);
-                }
-            }
-            $rows = $db->delete('shipment_participant_map', ['map_id = ?' => $mapId]);
+            $rows = Application_Model_DbTable_ShipmentParticipantMap::deleteMapsWithData($db, [$mapId]);
             if ($ownTx) {
                 $db->commit();
             }
@@ -3964,17 +3969,12 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeShipmentParticipant rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'sId' => $sId,
+                'shipmentId' => $shipmentId,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
-        } finally {
-            try {
-                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
-            } catch (Throwable $ignore) { /* best-effort restore */
-            }
         }
     }
 
