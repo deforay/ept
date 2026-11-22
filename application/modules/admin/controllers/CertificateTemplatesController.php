@@ -436,6 +436,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
                 !empty($element['italic']) ? 'italic' : '',
                 (string) ($element['color'] ?? ''),
                 (string) ($element['align'] ?? ''),
+                ($element['fit'] ?? '') === 'wrap' ? 'wrap' : 'shrink',
             ], static fn ($part) => $part !== '' && $part !== 'pt');
             $fields['Text ' . ($index + 1)] = sprintf(
                 '%s | x %s, y %s, %s x %s | %s',
