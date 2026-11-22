@@ -43,65 +43,366 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         return isset($cols[strtolower($name)]);
     }
 
-    public function addNewAuditLog($stateMent, $type = null, $actor = null)
+    /** Keys whose values are never written to the log, only that they changed. */
+    private const SECRET_KEY_PATTERN = '/(password|passwd|passphrase|secret|token|api[_-]?key|private[_-]?key|dsn)$/i';
+
+    /** Longest value kept for one before or after value. */
+    private const MAX_VALUE_LENGTH = 2000;
+
+    /** Most rows kept in one details list. */
+    private const MAX_LIST_ROWS = 1000;
+
+    /** @var string|null one id per PHP request, shared by every entry it writes */
+    private static $requestId = null;
+
+    /**
+     * Write one audit log entry.
+     *
+     * $extra keys, all optional:
+     *   entity           ['type' => 'shipment', 'id' => 12, 'label' => 'DTS0826-1']
+     *   changes          list from self::changes(): what changed, before and after
+     *   facts            ['Pass mark' => '100', ...] context worth keeping
+     *   list             ['title' => 'Participants removed', 'rows' => ['SLPT86 - Lab', ...]]
+     *   important        true for changes that can alter scores or results
+     *   reason           why the entry is important, shown next to the flag
+     *   importantFields  field names that make the entry important when changed
+     *
+     * When `changes` is given but empty, the entry still records the save and
+     * says that nothing changed.
+     *
+     * @param array{email?: string, role?: string, id?: int|null}|null $actor
+     * @param array<string, mixed> $extra
+     */
+    public function addNewAuditLog($stateMent, $type = null, $actor = null, array $extra = [])
     {
         if (!isset($stateMent) || $stateMent === '') {
             return null;
         }
+        $context = $this->resolveActor();
         if (is_array($actor) && !empty($actor['email'])) {
-            $email = $actor['email'];
-            $role = $actor['role'] ?? 'system';
-        } else {
-            [$email, $role] = $this->resolveActor();
+            $context['email'] = $actor['email'];
+            $context['role'] = $actor['role'] ?? 'system';
+            $context['id'] = $actor['id'] ?? null;
+            $context['onBehalfOf'] = null;
         }
+
+        $changes = $extra['changes'] ?? null;
+        if (is_array($changes) && $changes === [] && array_key_exists('changes', $extra)) {
+            $stateMent .= ' (no changes)';
+        }
+        [$important, $reason] = $this->importance($extra, is_array($changes) ? $changes : []);
+
         $data = [
             'statement' => $stateMent,
-            'created_by' => $email,
+            'created_by' => $context['email'],
             'created_on' => new Zend_Db_Expr('now()'),
             'type' => $type,
         ];
-        if ($this->hasColumn('created_by_role')) {
-            $data['created_by_role'] = $role;
+        $optional = [
+            'created_by_role' => $context['role'],
+            'ip_address' => $this->captureIp(),
+            'user_agent' => $this->captureUserAgent(),
+            'session_hash' => Pt_Commons_General::sessionHash(),
+            'actor_id' => $context['id'],
+            'on_behalf_of' => $context['onBehalfOf'],
+            'request_id' => self::requestId(),
+            'route' => $this->captureRoute(),
+            'channel' => $this->captureChannel(),
+            'important' => $important ? 1 : 0,
+        ];
+        $entity = $extra['entity'] ?? null;
+        if (is_array($entity)) {
+            $optional['entity_type'] = isset($entity['type']) ? substr((string) $entity['type'], 0, 32) : null;
+            $optional['entity_id'] = isset($entity['id']) && $entity['id'] !== '' ? substr((string) $entity['id'], 0, 64) : null;
+            $optional['entity_label'] = isset($entity['label']) && $entity['label'] !== '' ? mb_substr((string) $entity['label'], 0, 255) : null;
         }
-        if ($this->hasColumn('ip_address')) {
-            $data['ip_address'] = $this->captureIp();
+        $details = $this->buildDetails($extra, is_array($changes) ? $changes : [], $reason);
+        if ($details !== null) {
+            $optional['details'] = $details;
         }
-        if ($this->hasColumn('user_agent')) {
-            $data['user_agent'] = $this->captureUserAgent();
-        }
-        if ($this->hasColumn('session_hash')) {
-            $data['session_hash'] = Pt_Commons_General::sessionHash();
+        foreach ($optional as $column => $value) {
+            if ($this->hasColumn($column)) {
+                $data[$column] = $value;
+            }
         }
         return $this->insert($data);
     }
 
-    private function resolveActor()
+    /**
+     * Static shorthand for addNewAuditLog() with the current user as actor.
+     *
+     * @param array<string, mixed> $extra see addNewAuditLog()
+     */
+    public static function record(string $statement, ?string $type = null, array $extra = [])
+    {
+        try {
+            return (new self())->addNewAuditLog($statement, $type, null, $extra);
+        } catch (Throwable $e) {
+            // The audit log must never break the action it records.
+            Pt_Commons_LoggerUtility::logWarning('AuditLog::record failed: ' . $e->getMessage(), [
+                'statement' => $statement,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Compare two versions of a record and list what changed.
+     *
+     * Nested arrays are compared field by field with dotted names, lists as a
+     * whole. Values are compared as display strings, so "100" and 100 are the
+     * same. Secret fields (passwords, tokens, keys) record that they changed,
+     * never their values.
+     *
+     * @param array<string, mixed>|null $before
+     * @param array<string, mixed>|null $after
+     * @param array<string, string> $labels field => readable label
+     * @param string[] $ignore fields to skip, such as timestamps
+     * @return list<array{field: string, label: string, from: string, to: string}>
+     */
+    public static function changes(?array $before, ?array $after, array $labels = [], array $ignore = []): array
+    {
+        $old = self::flatten($before ?? []);
+        $new = self::flatten($after ?? []);
+        $ignoreSet = array_flip($ignore);
+        $out = [];
+        foreach (array_unique(array_merge(array_keys($old), array_keys($new))) as $field) {
+            $field = (string) $field;
+            if (isset($ignoreSet[$field]) || isset($ignoreSet[strtok($field, '.')])) {
+                continue;
+            }
+            $from = $old[$field] ?? '';
+            $to = $new[$field] ?? '';
+            if ($from === $to) {
+                continue;
+            }
+            if (preg_match(self::SECRET_KEY_PATTERN, (string) substr((string) strrchr('.' . $field, '.'), 1))) {
+                $from = $from === '' ? '' : '(hidden)';
+                $to = $to === '' ? '' : '(hidden)';
+            }
+            $out[] = [
+                'field' => $field,
+                'label' => $labels[$field] ?? self::humanize($field),
+                'from' => self::clip($from),
+                'to' => self::clip($to),
+            ];
+        }
+        return $out;
+    }
+
+    /**
+     * @param array<mixed> $values
+     * @return array<string, string>
+     */
+    private static function flatten(array $values, string $prefix = ''): array
+    {
+        $out = [];
+        foreach ($values as $key => $value) {
+            $name = $prefix === '' ? (string) $key : $prefix . '.' . $key;
+            if (is_array($value) && $value !== [] && !array_is_list($value)) {
+                $out += self::flatten($value, $name);
+                continue;
+            }
+            $out[$name] = self::display($value);
+        }
+        return $out;
+    }
+
+    private static function display($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        if (is_bool($value)) {
+            return $value ? 'yes' : 'no';
+        }
+        if (is_array($value)) {
+            $parts = [];
+            foreach ($value as $item) {
+                $parts[] = is_array($item) ? (string) json_encode($item) : self::display($item);
+            }
+            return implode(', ', $parts);
+        }
+        if (is_object($value)) {
+            return (string) json_encode($value);
+        }
+        return trim((string) $value);
+    }
+
+    private static function clip(string $value): string
+    {
+        return mb_strlen($value) > self::MAX_VALUE_LENGTH
+            ? mb_substr($value, 0, self::MAX_VALUE_LENGTH) . '…'
+            : $value;
+    }
+
+    /** "passPercentage" or "pass_percentage" becomes "Pass percentage". */
+    public static function humanize(string $field): string
+    {
+        $last = substr((string) strrchr('.' . $field, '.'), 1);
+        $words = preg_replace(['/([a-z0-9])([A-Z])/', '/[_\-]+/'], ['$1 $2', ' '], $last);
+        $words = strtolower(trim((string) $words));
+        $label = ucfirst($words);
+        $parent = strpos($field, '.') !== false ? substr($field, 0, (int) strrpos($field, '.')) : '';
+        return $parent !== '' ? self::humanize($parent) . ' › ' . $label : $label;
+    }
+
+    /**
+     * @param array<string, mixed> $extra
+     * @param list<array{field: string, label: string, from: string, to: string}> $changes
+     * @return array{0: bool, 1: string}
+     */
+    private function importance(array $extra, array $changes): array
+    {
+        $important = !empty($extra['important']);
+        $reason = isset($extra['reason']) ? (string) $extra['reason'] : '';
+        $watched = $extra['importantFields'] ?? [];
+        if (is_array($watched) && $watched !== [] && $changes !== []) {
+            $watchedSet = array_flip($watched);
+            $hits = [];
+            foreach ($changes as $change) {
+                $top = strtok($change['field'], '.');
+                if (isset($watchedSet[$change['field']]) || isset($watchedSet[$top])) {
+                    $hits[] = $change['label'];
+                }
+            }
+            if ($hits !== []) {
+                $important = true;
+                if ($reason === '') {
+                    $reason = 'Changes scoring: ' . implode(', ', $hits);
+                }
+            }
+        }
+        return [$important, $important ? $reason : ''];
+    }
+
+    /**
+     * @param array<string, mixed> $extra
+     * @param list<array{field: string, label: string, from: string, to: string}> $changes
+     */
+    private function buildDetails(array $extra, array $changes, string $reason): ?string
+    {
+        $details = [];
+        if ($changes !== []) {
+            $details['changes'] = array_values($changes);
+        }
+        if (!empty($extra['facts']) && is_array($extra['facts'])) {
+            $facts = [];
+            foreach ($extra['facts'] as $label => $value) {
+                $facts[] = ['label' => (string) $label, 'value' => self::clip(self::display($value))];
+            }
+            $details['facts'] = $facts;
+        }
+        if (!empty($extra['list']['rows']) && is_array($extra['list']['rows'])) {
+            $rows = array_map(static fn ($row) => self::clip(self::display($row)), array_values($extra['list']['rows']));
+            $details['list'] = [
+                'title' => (string) ($extra['list']['title'] ?? ''),
+                'total' => count($rows),
+                'rows' => array_slice($rows, 0, self::MAX_LIST_ROWS),
+            ];
+        }
+        if ($reason !== '') {
+            $details['reason'] = $reason;
+        }
+        if ($details === []) {
+            return null;
+        }
+        $json = json_encode($details, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        return $json === false ? null : $json;
+    }
+
+    /** Same id for every entry written during one PHP request. */
+    public static function requestId(): string
+    {
+        if (self::$requestId === null) {
+            self::$requestId = bin2hex(random_bytes(8));
+        }
+        return self::$requestId;
+    }
+
+    private function captureChannel(): string
+    {
+        if (php_sapi_name() === 'cli') {
+            return 'cli';
+        }
+        $module = $this->currentRequest()?->getModuleName();
+        return $module === 'api' ? 'api' : 'web';
+    }
+
+    private function captureRoute(): ?string
+    {
+        if (php_sapi_name() === 'cli') {
+            $script = $_SERVER['argv'][0] ?? ($_SERVER['SCRIPT_NAME'] ?? '');
+            return $script !== '' ? substr(basename((string) $script), 0, 255) : null;
+        }
+        $request = $this->currentRequest();
+        $method = $_SERVER['REQUEST_METHOD'] ?? '';
+        if ($request !== null && $request->getControllerName() !== null) {
+            $path = implode('/', array_filter([
+                $request->getModuleName(),
+                $request->getControllerName(),
+                $request->getActionName(),
+            ], static fn ($part) => $part !== null && $part !== '' && $part !== 'default'));
+        } else {
+            $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+        }
+        $route = trim($method . ' ' . $path);
+        return $route !== '' ? substr($route, 0, 255) : null;
+    }
+
+    private function currentRequest(): ?Zend_Controller_Request_Abstract
+    {
+        try {
+            return Zend_Controller_Front::getInstance()->getRequest();
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * The signed-in user, from the session namespaces. During View as, the
+     * admin is the actor and the data manager account goes in onBehalfOf.
+     *
+     * @return array{email: ?string, role: string, id: ?int, onBehalfOf: ?string}
+     */
+    private function resolveActor(): array
     {
         // CLI runs (scheduled jobs) have no session; starting one here throws
         // once any output has been emitted. Attribute these to the system.
         if (php_sapi_name() === 'cli') {
-            return [null, 'system'];
+            return ['email' => null, 'role' => 'system', 'id' => null, 'onBehalfOf' => null];
         }
         $admin = new Zend_Session_Namespace('administrators');
-        if (!empty($admin->primary_email)) {
-            return [$admin->primary_email, 'admin'];
-        }
+        $dm = new Zend_Session_Namespace('datamanagers');
         // DM login (AuthController) sets ->email, not ->primary_email. Honor
         // either so response-submission rows get the actor attached.
-        $dm = new Zend_Session_Namespace('datamanagers');
         $dmEmail = !empty($dm->primary_email) ? $dm->primary_email : ($dm->email ?? null);
+        if (!empty($admin->primary_email)) {
+            $onBehalfOf = (!empty($dm->impersonatedBy) && !empty($dmEmail)) ? (string) $dmEmail : null;
+            return [
+                'email' => $admin->primary_email,
+                'role' => 'admin',
+                'id' => !empty($admin->admin_id) ? (int) $admin->admin_id : null,
+                'onBehalfOf' => $onBehalfOf,
+            ];
+        }
         if (!empty($dmEmail)) {
             $role = ($dm->data_manager_type ?? null) === 'ptcc' ? 'ptcc' : 'datamanager';
-            return [$dmEmail, $role];
+            return [
+                'email' => $dmEmail,
+                'role' => $role,
+                'id' => !empty($dm->dm_id) ? (int) $dm->dm_id : null,
+                'onBehalfOf' => null,
+            ];
         }
         $participant = new Zend_Session_Namespace('participants');
-        if (!empty($participant->primary_email)) {
-            return [$participant->primary_email, 'participant'];
+        $participantEmail = !empty($participant->primary_email) ? $participant->primary_email : ($participant->email ?? null);
+        if (!empty($participantEmail)) {
+            return ['email' => $participantEmail, 'role' => 'participant', 'id' => null, 'onBehalfOf' => null];
         }
-        if (!empty($participant->email)) {
-            return [$participant->email, 'participant'];
-        }
-        return [null, 'system'];
+        return ['email' => null, 'role' => 'system', 'id' => null, 'onBehalfOf' => null];
     }
 
     private function captureIp()
@@ -132,7 +433,31 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
     private function classifyAction($statement)
     {
         $s = strtolower(trim($statement));
-        if (strpos($s, 'deleted') === 0 || strpos($s, 'removed') === 0) {
+        $prefixes = [
+            'evaluated' => 'evaluate',
+            're-evaluated' => 'evaluate',
+            'finalized' => 'finalize',
+            'unfinalized' => 'finalize',
+            'submitted' => 'submit',
+            'started view-as' => 'impersonate',
+            'ended view-as' => 'impersonate',
+            'logged in' => 'login',
+            'logged out' => 'logout',
+            'changed password' => 'password',
+            'reset password' => 'password',
+            'requested password' => 'password',
+            'set new password' => 'password',
+            'cancelled' => 'cancel',
+            'shipped' => 'ship',
+            'generated' => 'generate',
+            'queued' => 'generate',
+        ];
+        foreach ($prefixes as $prefix => $kind) {
+            if (str_starts_with($s, $prefix)) {
+                return $kind;
+            }
+        }
+        if (strpos($s, 'deleted') === 0 || strpos($s, 'removed') === 0 || strpos($s, 'discarded') === 0) {
             return 'delete';
         }
         if (strpos($s, 'bulk imported') === 0 || strpos($s, 'imported') === 0) {
@@ -243,7 +568,14 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         return $out;
     }
 
-    public function fetchAuditLogFeed($parameters)
+    /** Most rows one CSV export returns. */
+    public const EXPORT_LIMIT = 50000;
+
+    /**
+     * @param array<string, mixed> $parameters filters from the Audit Log page
+     * @param bool $export true returns up to EXPORT_LIMIT rows on one page
+     */
+    public function fetchAuditLogFeed($parameters, bool $export = false)
     {
         $page = isset($parameters['page']) ? max(1, (int) $parameters['page']) : 1;
         $pageSize = isset($parameters['pageSize']) ? (int) $parameters['pageSize'] : 25;
@@ -252,6 +584,10 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
         if ($pageSize > 200) {
             $pageSize = 200;
+        }
+        if ($export) {
+            $page = 1;
+            $pageSize = self::EXPORT_LIMIT;
         }
         $offset = ($page - 1) * $pageSize;
 
@@ -263,6 +599,11 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $sessionHash = isset($parameters['sessionHash']) ? trim($parameters['sessionHash']) : '';
         $startDate = isset($parameters['startDate']) ? trim($parameters['startDate']) : '';
         $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
+        $entityType = isset($parameters['entityType']) ? trim((string) $parameters['entityType']) : '';
+        $entityId = isset($parameters['entityId']) ? trim((string) $parameters['entityId']) : '';
+        $importantOnly = !empty($parameters['important']) && $parameters['important'] !== 'false';
+        $onBehalfOf = isset($parameters['onBehalfOf']) ? trim((string) $parameters['onBehalfOf']) : '';
+        $requestId = isset($parameters['requestId']) ? trim((string) $parameters['requestId']) : '';
 
         // Which streams to show: 'actions' (audit_log only, the default and
         // historical behaviour), 'logins' (user_login_history only), or 'all'
@@ -279,6 +620,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $hasIp = $this->hasColumn('ip_address');
         $hasUa = $this->hasColumn('user_agent');
         $hasSess = $this->hasColumn('session_hash');
+        // The 7.7.3 columns arrive together, so one check covers them all.
+        $hasStructured = $this->hasColumn('details');
 
         // Source-aware FROM. The default ('actions') reads audit_log directly,
         // leaving the long-standing behaviour byte-for-byte unchanged. When
@@ -299,9 +642,12 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             if ($hasSess) {
                 $alCols[] = 'session_hash';
             }
+            if ($hasStructured) {
+                array_push($alCols, ...self::STRUCTURED_COLUMNS);
+            }
             $fromSource = $this->_name;
         } else {
-            [$fromSource, $alCols] = $this->buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess);
+            [$fromSource, $alCols] = $this->buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess, $hasStructured);
         }
 
         $select = $db->select()
@@ -373,6 +719,24 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $select->where('al.type = ?', $type);
         }
 
+        if ($hasStructured) {
+            if ($entityType !== '') {
+                $select->where('al.entity_type = ?', $entityType);
+            }
+            if ($entityId !== '') {
+                $select->where('al.entity_id = ?', $entityId);
+            }
+            if ($importantOnly) {
+                $select->where('al.important = 1');
+            }
+            if ($onBehalfOf !== '') {
+                $select->where('al.on_behalf_of LIKE ?', '%' . $onBehalfOf . '%');
+            }
+            if ($requestId !== '') {
+                $select->where('al.request_id = ?', $requestId);
+            }
+        }
+
         if ($search !== '') {
             $like = '%' . $search . '%';
             $q = $db->quote($like);
@@ -381,6 +745,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 . "OR sa.first_name LIKE $q OR sa.last_name LIKE $q OR CONCAT_WS(' ', sa.first_name, sa.last_name) LIKE $q "
                 . "OR dm.first_name LIKE $q OR dm.last_name LIKE $q OR CONCAT_WS(' ', dm.first_name, dm.last_name) LIKE $q "
                 . "OR p.first_name LIKE $q OR p.last_name LIKE $q OR p.lab_name LIKE $q OR p.unique_identifier LIKE $q"
+                . ($hasStructured ? " OR al.entity_label LIKE $q OR al.on_behalf_of LIKE $q OR CAST(al.details AS CHAR) LIKE $q" : '')
             );
         }
 
@@ -446,14 +811,14 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 'time' => $ts ? date('g:i a', $ts) : '',
                 'dateKey' => $ts ? date('Y-m-d', $ts) : '',
                 'dateLabel' => $ts ? date('D, d M Y', $ts) : '',
-            ];
+            ] + $this->structuredFields($row);
         }
 
         return [
             'page' => $page,
             'pageSize' => $pageSize,
             'total' => $total,
-            'totalPages' => $pageSize > 0 ? (int) ceil($total / $pageSize) : 1,
+            'totalPages' => max(1, (int) ceil($total / $pageSize)),
             'items' => $items,
         ];
     }
@@ -466,7 +831,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
      *
      * @return array{0: Zend_Db_Expr, 1: string[]}
      */
-    private function buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess)
+    private function buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess, $hasStructured = false)
     {
         $includeActions = ($source !== 'logins');
         $includeLogins = ($source === 'logins' || $source === 'all');
@@ -517,6 +882,12 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $action['session_hash'] = 'a.session_hash';
             $login['session_hash'] = $loginHasSess ? 'l.session_hash' : 'NULL';
         }
+        if ($hasStructured) {
+            foreach (self::STRUCTURED_COLUMNS as $column) {
+                $action[$column] = 'a.' . $column;
+                $login[$column] = $column === 'important' ? '0' : 'NULL';
+            }
+        }
         // Union-only columns: which stream a row came from, plus the login
         // display bits (browser/OS are already split in user_login_history;
         // audit rows derive them from user_agent client-side, so NULL here).
@@ -549,6 +920,105 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             new Zend_Db_Expr('(' . implode(' UNION ALL ', $branches) . ')'),
             array_keys($action),
         ];
+    }
+
+    /** Columns added in 7.7.3, read by the feed. */
+    private const STRUCTURED_COLUMNS = [
+        'entity_type', 'entity_id', 'entity_label', 'details', 'important',
+        'actor_id', 'on_behalf_of', 'request_id', 'route', 'channel',
+    ];
+
+    /**
+     * The 7.7.3 fields of one feed row, shaped for the page.
+     *
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function structuredFields(array $row): array
+    {
+        $details = [];
+        if (!empty($row['details'])) {
+            $decoded = json_decode((string) $row['details'], true);
+            $details = is_array($decoded) ? $decoded : [];
+        }
+        $entityType = (string) ($row['entity_type'] ?? '');
+        $entityId = (string) ($row['entity_id'] ?? '');
+        // Labels are stored in English and translated for the reader.
+        $t = $this->translator();
+        $changes = [];
+        foreach (($details['changes'] ?? []) as $change) {
+            $change['label'] = $t((string) ($change['label'] ?? ''));
+            $changes[] = $change;
+        }
+        $facts = [];
+        foreach (($details['facts'] ?? []) as $fact) {
+            $fact['label'] = $t((string) ($fact['label'] ?? ''));
+            $facts[] = $fact;
+        }
+        $list = $details['list'] ?? null;
+        if (is_array($list)) {
+            $list['title'] = $t((string) ($list['title'] ?? ''));
+        }
+        return [
+            'entityType' => $entityType,
+            'entityId' => $entityId,
+            'entityLabel' => (string) ($row['entity_label'] ?? ''),
+            'entityTypeLabel' => $entityType !== '' ? $t(self::entityTypeLabel($entityType)) : '',
+            'changes' => $changes,
+            'facts' => $facts,
+            'list' => $list,
+            'important' => !empty($row['important']),
+            'reason' => $this->translateReason((string) ($details['reason'] ?? '')),
+            'onBehalfOf' => (string) ($row['on_behalf_of'] ?? ''),
+            'requestId' => (string) ($row['request_id'] ?? ''),
+            'route' => (string) ($row['route'] ?? ''),
+            'channel' => (string) ($row['channel'] ?? ''),
+        ];
+    }
+
+    /** @return callable(string): string */
+    private function translator(): callable
+    {
+        try {
+            $translate = Zend_Registry::isRegistered('translate') ? Zend_Registry::get('translate') : null;
+        } catch (Throwable $e) {
+            $translate = null;
+        }
+        return static function (string $text) use ($translate): string {
+            return ($translate !== null && $text !== '') ? (string) $translate->_($text) : $text;
+        };
+    }
+
+    /** "Changes scoring: A, B" translates the prefix and each label. */
+    private function translateReason(string $reason): string
+    {
+        $t = $this->translator();
+        $prefix = 'Changes scoring: ';
+        if (str_starts_with($reason, $prefix)) {
+            $labels = array_map($t, explode(', ', substr($reason, strlen($prefix))));
+            return $t('Changes scoring') . ': ' . implode(', ', $labels);
+        }
+        return $t($reason);
+    }
+
+    /** Readable name for an entity_type value. */
+    public static function entityTypeLabel(string $type): string
+    {
+        $labels = [
+            'shipment' => 'Shipment',
+            'participant' => 'Participant',
+            'data-manager' => 'Data manager',
+            'scheme' => 'Scheme',
+            'testkit' => 'Test kit',
+            'admin' => 'Admin',
+            'config' => 'Settings',
+            'enrollment-list' => 'Enrollment list',
+            'distribution' => 'PT Survey',
+            'certificate' => 'Certificate',
+            'mail-template' => 'Mail template',
+            'email' => 'Email',
+        ];
+        return $labels[$type] ?? self::humanize($type);
     }
 
     private function initials($name)
