@@ -12,9 +12,32 @@
  *
  * It also adds a toggle that hides the preset list. The browser remembers the
  * choice. Styles live in public/css/common.css.
+ *
+ * eptParseDbDate("2026-11-22 11:46:15") reads a DATETIME from the server as the
+ * right instant. Server times carry no zone, and new Date() would read them as
+ * the browser's local time, which put job times hours off for admins outside
+ * the server's zone.
+ *
+ * It uses the database's current offset for every value. That is exact when
+ * MySQL runs in UTC or another zone without daylight saving, as ePT servers
+ * do. In a zone with daylight saving, times from the other season would be an
+ * hour off.
  */
 ?>
 <script type="text/javascript">
+    window.eptDbUtcOffset = "<?= Pt_Commons_DateUtility::dbUtcOffset(); ?>";
+    window.eptParseDbDate = function (value) {
+        if (!value) {
+            return null;
+        }
+        var text = String(value).trim().replace(' ', 'T');
+        if (!/[zZ]|[+-]\d{2}:\d{2}$/.test(text)) {
+            text += window.eptDbUtcOffset;
+        }
+        var date = new Date(text);
+        return isNaN(date.getTime()) ? null : date;
+    };
+
     window.eptDateRanges = function () {
         var m = window.moment;
         var ranges = {};

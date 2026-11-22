@@ -62,6 +62,30 @@ final class Pt_Commons_DateUtility
         return null;
     }
 
+    /**
+     * The database session's offset from UTC, such as "+00:00" or "+05:30".
+     * DATETIME columns filled with now() hold times in this zone, so the
+     * browser needs it to read them as the right instant.
+     */
+    public static function dbUtcOffset(): string
+    {
+        static $offset = null;
+        if ($offset !== null) {
+            return $offset;
+        }
+        try {
+            $value = (string) Zend_Db_Table_Abstract::getDefaultAdapter()->fetchOne(
+                "SELECT TIME_FORMAT(TIMEDIFF(NOW(), UTC_TIMESTAMP()), '%H:%i')"
+            );
+        } catch (Throwable $e) {
+            $value = '';
+        }
+        if (!preg_match('/^(-?)(\d{1,2}):(\d{2})$/', $value, $m)) {
+            return $offset = '+00:00';
+        }
+        return $offset = ($m[1] === '-' ? '-' : '+') . str_pad($m[2], 2, '0', STR_PAD_LEFT) . ':' . $m[3];
+    }
+
     public static function getCurrentTimestamp(): int
     {
         return (new DateTimeImmutable())->getTimestamp();

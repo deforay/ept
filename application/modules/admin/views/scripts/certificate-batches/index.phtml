@@ -354,7 +354,8 @@
     function formatDateTime(dateStr) {
         if (!dateStr) return '<span class="text-muted">-</span>';
 
-        var date = new Date(dateStr.replace(' ', 'T'));
+        var date = window.eptParseDbDate(dateStr);
+        if (!date) return '<span class="text-muted">-</span>';
         var now = new Date();
         var diff = Math.floor((now - date) / 1000);
 

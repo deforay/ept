@@ -210,7 +210,9 @@ var JobProgressTracker = (function () {
     }
 
     function calculateElapsed(startTime) {
-        var start = new Date(startTime.replace(' ', 'T')); // Handle MySQL datetime format
+        // Server DATETIMEs carry no zone; eptParseDbDate (date-range-presets.phtml) reads them right.
+        var start = window.eptParseDbDate ? window.eptParseDbDate(startTime) : new Date(startTime.replace(' ', 'T'));
+        if (!start) return '';
         var now = new Date();
         var diff = Math.floor((now - start) / 1000);
 
