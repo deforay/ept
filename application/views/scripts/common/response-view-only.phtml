@@ -1,0 +1,115 @@
+<?php
+/**
+ * The read-only mode of a scheme response page, for administrators. Render it right
+ * after the page's opening <form> tag when the controller set viewOnly. It adds the
+ * read-only bar, styles the locked fields as plain text and locks every field in the
+ * form, including fields that the page's scripts add after it loads.
+ *
+ * Needs on the view: canEditResponse (shows the Edit Response link).
+ */
+$request = Zend_Controller_Front::getInstance()->getRequest();
+$editUrl = $request instanceof Zend_Controller_Request_Http
+    ? preg_replace('#/mode/view(?=/|$)#', '', (string) $request->getRequestUri())
+    : '';
+?>
+<style>
+    /* Locked fields read as plain text, not as disabled inputs. */
+    .response-view-only .form-control:disabled,
+    .response-view-only select:disabled,
+    .response-view-only textarea:disabled,
+    .response-view-only input[readonly] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        color: #212529 !important;
+        opacity: 1;
+        cursor: default;
+    }
+
+    .response-view-only ::placeholder {
+        color: transparent !important;
+    }
+
+    /* Mandatory stars, date Clear icons and select widgets mean nothing when nothing can change. */
+    /* The bar has Back and Edit Response, so the page's own button row is not needed. */
+    .response-view-only .mandatory,
+    .response-view-only .icon-remove-sign,
+    .response-view-only input[type="file"],
+    .response-view-only #respond {
+        display: none !important;
+    }
+
+    .response-view-only .select2-container,
+    .response-view-only .bootstrap-select,
+    .response-view-only a[href^="javascript"]:not(.response-view-only-bar a) {
+        pointer-events: none;
+    }
+
+    .response-view-only-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding: 10px 14px;
+        border: 1px solid #b6d4e3;
+        border-radius: 4px;
+        background-color: #eef6fb;
+        color: #1f4e66;
+    }
+
+    .response-view-only-bar .response-view-only-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+</style>
+<div class="response-view-only-bar">
+    <span><i class="icon-eye-open"></i> <?= $this->htmlTranslate('You are viewing this response. Nothing on this page can be changed.'); ?></span>
+    <span class="response-view-only-actions">
+        <a class="btn btn-default btn-sm" href="javascript:history.back()"><?= $this->htmlTranslate('Back'); ?></a>
+        <?php if (!empty($this->canEditResponse) && $editUrl !== '') { ?>
+            <a class="btn btn-primary btn-sm" href="<?= $this->escape($editUrl); ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate('Edit Response'); ?></a>
+        <?php } ?>
+    </span>
+</div>
+<script>
+    (function () {
+        var form = document.currentScript.closest('form');
+        if (!form) {
+            return;
+        }
+        form.classList.add('response-view-only');
+
+        // Locks every field and shows an empty select as blank, not as its "Select" prompt.
+        // It runs again whenever the page's scripts add or re-enable a field.
+        function lock() {
+            form.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+                if (!el.disabled) {
+                    el.disabled = true;
+                }
+            });
+            form.querySelectorAll('select').forEach(function (select) {
+                var option = select.options[select.selectedIndex];
+                if (!select.value && option && option.text !== '') {
+                    option.text = '';
+                }
+            });
+        }
+
+        new MutationObserver(lock).observe(form, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['disabled']
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(lock, 0);
+        });
+        window.addEventListener('load', lock);
+        lock();
+    })();
+</script>

@@ -2609,8 +2609,8 @@ class Application_Service_Evaluation
         // Action cell.
         $actionParts = [];
         $responseUrl = '/' . $rowSchemeType . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id'] . '/eid/' . htmlspecialchars((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
-        // The response page has a read-only mode for DTS so far. It needs no edit privilege.
-        if ($rowSchemeType === 'dts') {
+        // The response pages of these schemes have a read-only mode. It needs no edit privilege.
+        if (in_array($rowSchemeType, ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19', 'custom-test'], true)) {
             $actionParts[] = '<a class="btn btn-default btn-xs" href="' . $responseUrl . '/mode/view"><span><i class="icon-eye-open"></i> ' . $translator->_('View') . '</span></a>';
         }
         if ($canEdit && $rowSchemeType !== '') {

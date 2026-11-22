@@ -44,6 +44,7 @@ class Covid19Controller extends Zend_Controller_Action
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
+                [$this->view->canEditResponse, $this->view->viewOnly] = Application_Service_Shipments::adminResponseMode($request->getParam('mode'));
                 $this->_helper->layout()->setLayout('admin');
             } elseif (!$access) {
                 $this->redirect('/participant/current-schemes');

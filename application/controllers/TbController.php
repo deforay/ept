@@ -44,6 +44,7 @@ class TbController extends Zend_Controller_Action
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb', $uc);
+                [$this->view->canEditResponse, $this->view->viewOnly] = Application_Service_Shipments::adminResponseMode($request->getParam('mode'));
                 $this->_helper->layout()->setLayout('admin');
             } else {
                 // Record when the participant first opened the form - the "started the

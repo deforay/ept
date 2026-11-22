@@ -217,6 +217,22 @@ class Application_Service_Shipments
      * reqAccessFrom comes from the POST body, so it is never trusted on its own: an admin
      * edit skips the shipment lock and late-submission capture.
      */
+    /**
+     * How an administrator opens a response page from evaluate: whether they may edit
+     * responses, and whether the page is read-only. It is read-only when asked for
+     * (mode/view) or when the administrator lacks the edit-participant-response
+     * privilege, because the evaluate list shows them only the View button.
+     *
+     * @return array{0: bool, 1: bool} [canEditResponse, viewOnly]
+     */
+    public static function adminResponseMode(?string $mode): array
+    {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+        $canEdit = in_array('edit-participant-response', $privileges, true);
+        return [$canEdit, $mode === 'view' || !$canEdit];
+    }
+
     public static function isAdminEdit(array $params): bool
     {
         if (($params['reqAccessFrom'] ?? '') !== 'admin') {
