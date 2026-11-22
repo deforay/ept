@@ -1742,6 +1742,14 @@ class Application_Service_Evaluation
         'interpretation_result', 'dts_rtri_is_editable', 'created_by', 'created_on', 'updated_by', 'updated_on',
     ];
 
+    /** Response fields on shipment_participant_map that an admin edit can change. */
+    private const RESPONSE_AUDIT_MAP_FIELDS = [
+        'attributes', 'shipment_receipt_date', 'shipment_test_date', 'shipment_test_report_date', 'mode_id',
+        'supervisor_approval', 'participant_supervisor', 'user_comment', 'custom_field_1', 'custom_field_2',
+        'number_of_tests', 'specimen_volume', 'lab_director_name', 'lab_director_email', 'contact_person_name',
+        'contact_person_email', 'contact_person_telephone', 'failure_reason',
+    ];
+
     /** Scheme names used in response statements. */
     private const RESPONSE_AUDIT_SCHEMES = [
         'eid' => 'EID', 'dts' => 'DTS', 'vl' => 'VL', 'dbs' => 'DBS', 'recency' => 'Recency',
@@ -1752,7 +1760,7 @@ class Application_Service_Evaluation
      * A response's results and evaluation fields, read before an admin edit.
      * Returns null when they cannot be read, so the edit itself goes on.
      *
-     * @return array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>}|null
+     * @return array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>, response: array<string, mixed>}|null
      */
     private function responseEditSnapshot(string $scheme, int $mapId): ?array
     {
@@ -1771,9 +1779,19 @@ class Application_Service_Evaluation
                 }
                 $samples['Sample ' . $row['sample_id']] = $sample;
             }
+            // The response's own fields: dates, algorithm, supervisor and the rest.
+            $map = $db->fetchRow($db->select()->from('shipment_participant_map')->where('map_id = ?', $mapId)) ?: [];
+            $response = array_intersect_key($map, array_flip(self::RESPONSE_AUDIT_MAP_FIELDS));
+            foreach (['attributes', 'failure_reason'] as $jsonField) {
+                if (isset($response[$jsonField]) && is_string($response[$jsonField])) {
+                    $decoded = json_decode($response[$jsonField], true);
+                    $response[$jsonField] = is_array($decoded) ? $decoded : $response[$jsonField];
+                }
+            }
             return [
                 'evaluation' => Application_Service_Shipments::adminEvaluationSnapshot($mapId),
                 'samples' => $samples,
+                'response' => $response,
             ];
         } catch (Throwable $e) {
             Pt_Commons_LoggerUtility::logWarning('responseEditSnapshot failed: ' . $e->getMessage());
@@ -1785,7 +1803,7 @@ class Application_Service_Evaluation
      * Log an admin edit of a participant's response with what changed.
      * Flagged when results, the score or the exclusion changed.
      *
-     * @param array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>}|null $before
+     * @param array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>, response: array<string, mixed>}|null $before
      */
     private function auditResponseEdit(string $scheme, int $mapId, ?array $before): void
     {
@@ -1809,7 +1827,8 @@ class Application_Service_Evaluation
             if ($before !== null && $after !== null) {
                 $extra['changes'] = array_merge(
                     Application_Service_Shipments::adminEvaluationChangesSince($mapId, $before['evaluation']),
-                    Application_Model_DbTable_AuditLog::changes(['samples' => $before['samples']], ['samples' => $after['samples']])
+                    Application_Model_DbTable_AuditLog::changes(['samples' => $before['samples']], ['samples' => $after['samples']]),
+                    Application_Model_DbTable_AuditLog::changes($before['response'], $after['response'])
                 );
                 $extra['importantFields'] = array_merge(Application_Service_Shipments::ADMIN_EVALUATION_SCORING_FIELDS, ['samples']);
                 $extra['reason'] = "Changes a lab's results or score";
