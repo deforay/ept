@@ -26,6 +26,7 @@ shared_fn_is_valid() {
     local file="$1"
     [ -s "$file" ] || return 1
     grep -q '^prepare_system()' "$file" || return 1
+    grep -q '^resolve_mysql_admin()' "$file" || return 1
     bash -n "$file" 2>/dev/null
 }
 
@@ -727,16 +728,18 @@ mkdir -p "${ept_path}/public/uploads"
 print header "Setting up MySQL"
 
 # Extract MySQL root password or prompt
-if [ -f ~/.my.cnf ]; then
-    mysql_root_password=$(awk -F= '/^password[[:space:]]*=/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2; exit}' ~/.my.cnf)
-    if [ -n "$mysql_root_password" ]; then
-        print info "Found existing MySQL credentials in ~/.my.cnf; verifying..."
-        if MYSQL_PWD="${mysql_root_password}" mysql -u root -e "SELECT 1" >/dev/null 2>&1; then
-            print success "MySQL root password verified."
-        else
-            print warning "Existing password did not work; prompting for a new one."
-            mysql_root_password=""
-        fi
+mysql_root_password="${MYSQL_ROOT_PASSWORD:-}"
+if [ -z "$mysql_root_password" ]; then
+    mysql_root_password="$(read_mysql_root_cnf_password 2>/dev/null || true)"
+fi
+if [ -n "$mysql_root_password" ]; then
+    print info "Found existing MySQL root password; verifying..."
+    if MYSQL_PWD="${mysql_root_password}" mysql --no-defaults -u root -e "SELECT 1" >/dev/null 2>&1; then
+        print success "MySQL root password verified."
+        save_mysql_root_cnf "$mysql_root_password"
+    else
+        print warning "Existing password did not work; prompting for a new one."
+        mysql_root_password=""
     fi
 fi
 
@@ -756,19 +759,13 @@ if [ -z "$mysql_root_password" ]; then
         fi
     done
 
-    if ! MYSQL_PWD="${mysql_root_password}" mysqladmin ping -u root &>/dev/null; then
+    if ! MYSQL_PWD="${mysql_root_password}" mysql --no-defaults -u root -e "SELECT 1" >/dev/null 2>&1; then
         print error "Unable to verify the password. Please check and try again."
         exit 1
     fi
 
-    cat <<EOF >~/.my.cnf
-[client]
-user=root
-password=${mysql_root_password}
-host=localhost
-EOF
-    chmod 600 ~/.my.cnf
-    print success "MySQL credentials saved."
+    save_mysql_root_cnf "$mysql_root_password"
+    print success "MySQL root password saved to $(mysql_root_cnf_path)."
 fi
 
 # Update application.ini with database credentials
