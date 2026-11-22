@@ -613,10 +613,18 @@ class Application_Service_Shipments
             [$table, $columns] = self::REFERENCE_AUDIT[$scheme] ?? self::REFERENCE_AUDIT['generic'];
             $rows = $db->fetchAll(
                 $db->select()
-                    ->from($table, array_merge(['sample_id'], $columns))
+                    ->from($table)
                     ->where('shipment_id = ?', (int) $shipment['shipment_id'])
                     ->order('sample_id')
             );
+            // Every saved column counts, not only the labelled ones, so no edit
+            // is logged as "(no changes)". Labelled columns come first.
+            if ($rows !== []) {
+                $columns = array_values(array_unique(array_merge(
+                    $columns,
+                    array_filter(array_keys($rows[0]), [self::class, 'isAuditedReferenceColumn'])
+                )));
+            }
             $names = [];
             $usesIds = in_array($scheme, self::REFERENCE_RESULT_ID_SCHEMES, true);
             if ($usesIds) {
@@ -648,12 +656,59 @@ class Application_Service_Shipments
                 }
                 $samples['Sample ' . $row['sample_id']] = $sample;
             }
+            // Secondary reference tables (EIA, WB, rapid HIV, Geenius, VL methods,
+            // recency assays...). Each sample's rows there become one value.
+            foreach (self::referenceSideTables($db, $table) as $sideTable) {
+                $sideRows = $db->fetchAll($db->select()->from($sideTable)->where('shipment_id = ?', (int) $shipment['shipment_id']));
+                $bySample = [];
+                foreach ($sideRows as $sideRow) {
+                    $parts = [];
+                    foreach ($sideRow as $column => $value) {
+                        if (self::isAuditedReferenceColumn((string) $column)) {
+                            $parts[] = $column . ': ' . $value;
+                        }
+                    }
+                    $bySample[(string) ($sideRow['sample_id'] ?? '')][] = implode(', ', $parts);
+                }
+                foreach ($bySample as $sampleId => $lines) {
+                    sort($lines);
+                    $samples['Sample ' . $sampleId]['table:' . $sideTable] = implode(' | ', $lines);
+                }
+            }
             $snapshot['samples'] = $samples;
             return $snapshot;
         } catch (Throwable $e) {
             Pt_Commons_LoggerUtility::logWarning('shipmentAuditSnapshot failed: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /** Keys and timestamps are not compared. */
+    private static function isAuditedReferenceColumn(string $column): bool
+    {
+        return !in_array($column, ['shipment_id', 'sample_id', 'id'], true)
+            && !preg_match('/^(created|updated)_|_(on|by)$/', $column);
+    }
+
+    /**
+     * Reference tables other than the scheme's main one that hold rows for a
+     * shipment, found from the schema. The *_calculation(s) tables hold ranges
+     * that scoring computes, not values an admin edits, so they are left out.
+     *
+     * @return string[]
+     */
+    private static function referenceSideTables(Zend_Db_Adapter_Abstract $db, string $mainTable): array
+    {
+        static $tables = null;
+        if ($tables === null) {
+            $tables = array_map('strval', $db->fetchCol(
+                "SELECT TABLE_NAME FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = DATABASE() AND COLUMN_NAME = 'shipment_id'
+                   AND TABLE_NAME LIKE 'reference\\_%' AND TABLE_NAME NOT LIKE 'reference\\_result\\_%'
+                   AND TABLE_NAME NOT LIKE '%calculation%'"
+            ));
+        }
+        return array_values(array_filter($tables, static fn (string $t) => $t !== $mainTable));
     }
 
     /**
@@ -675,7 +730,10 @@ class Application_Service_Shipments
             $name = trim((string) ($sample['sample_label'] ?? ''));
             $name = $name !== '' ? $name : (string) $key;
             foreach (array_keys($sample) as $column) {
-                $columnLabel = self::REFERENCE_AUDIT_LABELS[$column] ?? Application_Model_DbTable_AuditLog::humanize((string) $column);
+                $column = (string) $column;
+                $columnLabel = str_starts_with($column, 'table:')
+                    ? Application_Model_DbTable_AuditLog::humanize(substr($column, 6))
+                    : (self::REFERENCE_AUDIT_LABELS[$column] ?? Application_Model_DbTable_AuditLog::humanize($column));
                 $labels["samples.{$key}.{$column}"] = $name . ' › ' . $columnLabel;
             }
         }
