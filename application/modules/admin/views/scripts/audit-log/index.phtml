@@ -3,46 +3,262 @@
 
 <style>
     .audit-page {
+        --al-text: #2d3748;
+        --al-strong: #1a202c;
+        --al-muted: #718096;
+        --al-faint: #a0aec0;
+        --al-line: #e2e8f0;
+        --al-soft: #f7fafc;
+        --al-accent: #3182ce;
+        --al-accent-soft: #ebf4ff;
+        --al-danger: #c53030;
+        --al-danger-soft: #fff5f5;
+        --al-add: #276749;
+        --al-add-soft: #f0fff4;
         max-width: 1080px;
         margin: 0 auto;
         padding: 8px 4px 48px;
         font-size: 14px;
-        color: #2d3748;
+        color: var(--al-text);
     }
 
     .audit-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 18px;
-        border-bottom: 1px solid #e2e8f0;
+        gap: 16px;
+        border-bottom: 1px solid var(--al-line);
         padding-bottom: 14px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         flex-wrap: wrap;
     }
 
-    .audit-header .audit-title {
+    .audit-title {
         display: flex;
         align-items: baseline;
         gap: 14px;
         flex-wrap: wrap;
     }
 
-    .audit-header h1 {
+    .audit-title h1 {
         font-size: 24px;
         font-weight: 600;
-        color: #1a202c;
+        color: var(--al-strong);
         margin: 0;
         line-height: 1.2;
     }
 
-    .audit-header .audit-summary {
+    .audit-summary {
         font-size: 13px;
-        color: #718096;
+        color: var(--al-muted);
     }
 
     .audit-summary strong {
-        color: #2d3748;
+        color: var(--al-text);
+    }
+
+    .al-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 34px;
+        padding: 0 14px;
+        border: 1px solid var(--al-line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--al-text);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .al-btn:hover {
+        background: var(--al-soft);
+        color: var(--al-strong);
+        text-decoration: none;
+    }
+
+    .al-btn.primary {
+        background: var(--al-accent);
+        border-color: var(--al-accent);
+        color: #fff;
+    }
+
+    .al-btn.primary:hover {
+        background: #2b6cb0;
+        color: #fff;
+    }
+
+    .al-btn.is-on {
+        background: var(--al-danger-soft);
+        border-color: #feb2b2;
+        color: var(--al-danger);
+    }
+
+    /* Item banner: shown when the feed is scoped to one shipment, scheme, ... */
+    .al-scope {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        border: 1px solid #bee3f8;
+        border-radius: 10px;
+        background: var(--al-accent-soft);
+        color: #2c5282;
+    }
+
+    .al-scope.is-visible {
+        display: flex;
+    }
+
+    .al-scope strong {
+        color: #1a365d;
+    }
+
+    /* Filters */
+    .audit-toolbar {
+        background: var(--al-soft);
+        border: 1px solid var(--al-line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+    }
+
+    .al-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .al-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 150px;
+        flex: 1 1 150px;
+    }
+
+    .al-field.narrow {
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    .al-field label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--al-muted);
+        margin: 0;
+    }
+
+    .al-field input,
+    .al-field select {
+        height: 34px;
+        border: 1px solid var(--al-line);
+        border-radius: 6px;
+        padding: 0 10px;
+        background: #fff;
+        color: var(--al-text);
+        font-size: 13px;
+        width: 100%;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    .al-field input:focus,
+    .al-field select:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, .15);
+    }
+
+    .audit-source {
+        display: inline-flex;
+        border: 1px solid var(--al-line);
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+        height: 34px;
+    }
+
+    .audit-source .src-btn {
+        border: 0;
+        background: transparent;
+        padding: 0 12px;
+        font-size: 13px;
+        color: var(--al-text);
+        cursor: pointer;
+    }
+
+    .audit-source .src-btn + .src-btn {
+        border-left: 1px solid var(--al-line);
+    }
+
+    .audit-source .src-btn.is-active {
+        background: var(--al-accent);
+        color: #fff;
+    }
+
+    .al-more {
+        display: none;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--al-line);
+    }
+
+    .al-more.is-open {
+        display: block;
+    }
+
+    .al-more-toggle .count {
+        display: inline-block;
+        min-width: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: var(--al-accent);
+        color: #fff;
+        font-size: 11px;
+        line-height: 18px;
+        text-align: center;
+    }
+
+    .al-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .al-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 4px 3px 10px;
+        border-radius: 999px;
+        background: var(--al-accent-soft);
+        color: #2c5282;
+        font-size: 12px;
+    }
+
+    .al-chip button {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .al-chip button:hover {
+        background: #bee3f8;
     }
 
     .audit-search {
@@ -55,8 +271,7 @@
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #a0aec0;
-        font-size: 14px;
+        color: var(--al-faint);
         pointer-events: none;
     }
 
@@ -64,16 +279,13 @@
         width: 100%;
         height: 40px;
         padding: 0 38px 0 40px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--al-line);
         border-radius: 999px;
-        background: #f7fafc;
+        background: var(--al-soft);
         font-size: 14px;
-        color: #2d3748;
-        transition: all .15s;
-    }
-
-    .audit-search input::placeholder {
-        color: #a0aec0;
+        color: var(--al-text);
+        box-shadow: none;
+        margin: 0;
     }
 
     .audit-search input:focus {
@@ -91,7 +303,7 @@
         width: 22px;
         height: 22px;
         border-radius: 50%;
-        border: none;
+        border: 0;
         background: #cbd5e0;
         color: #fff;
         font-size: 10px;
@@ -101,132 +313,54 @@
         justify-content: center;
     }
 
-    .audit-search .clear-search:hover {
-        background: #a0aec0;
-    }
-
     .audit-search.has-value .clear-search {
         display: flex;
     }
 
-    .audit-toolbar {
-        background: #f7fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 14px 16px;
-        display: grid;
-        grid-template-columns: 1.4fr 1fr 1.4fr auto;
-        gap: 10px;
-        align-items: end;
-        margin-bottom: 22px;
+    /* Feed */
+    .day-group {
+        margin-bottom: 18px;
     }
 
-    .audit-toolbar .field {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .audit-toolbar label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: #718096;
-        margin: 0;
-    }
-
-    .audit-toolbar input,
-    .audit-toolbar select {
-        height: 34px;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        padding: 0 10px;
-        background: #fff;
-        font-size: 13px;
-        color: #2d3748;
-        transition: border-color .15s, box-shadow .15s;
-    }
-
-    .audit-toolbar input:focus,
-    .audit-toolbar select:focus {
-        border-color: #4299e1;
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, .15);
-        outline: none;
-    }
-
-    .audit-toolbar .reset-btn {
-        height: 34px;
-        padding: 0 14px;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        background: #fff;
-        color: #4a5568;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all .15s;
-    }
-
-    .audit-toolbar .reset-btn:hover {
-        background: #edf2f7;
-        color: #2d3748;
-    }
-
-    @media (max-width: 900px) {
-        .audit-toolbar {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .audit-toolbar .reset-btn {
-            grid-column: span 2;
-        }
-    }
-
-    .audit-feed {
-        position: relative;
-    }
-
-    .audit-feed .day-group {
-        margin-bottom: 28px;
-    }
-
-    .audit-feed .day-header {
-        position: sticky;
-        top: 0;
-        background: linear-gradient(to bottom, #fff 75%, rgba(255, 255, 255, 0));
-        padding: 6px 0 10px;
-        z-index: 2;
+    .day-header {
         font-size: 12px;
         font-weight: 600;
-        color: #718096;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: .05em;
+        color: var(--al-muted);
+        margin: 0 0 8px 2px;
     }
 
-    .audit-feed .day-header .count {
-        color: #a0aec0;
+    .day-header .count {
+        color: var(--al-faint);
         font-weight: 500;
         margin-left: 6px;
     }
 
     .audit-item {
-        position: relative;
         display: grid;
         grid-template-columns: 36px 1fr auto;
-        gap: 14px;
-        padding: 12px 14px 12px 12px;
-        border: 1px solid #edf2f7;
-        border-radius: 8px;
+        gap: 12px;
+        align-items: start;
+        padding: 12px 14px;
+        border: 1px solid var(--al-line);
+        border-left: 3px solid transparent;
+        border-radius: 10px;
         background: #fff;
         margin-bottom: 8px;
-        align-items: center;
-        transition: border-color .15s, box-shadow .15s, transform .15s;
+        cursor: pointer;
+        transition: border-color .15s, box-shadow .15s;
     }
 
-    .audit-item:hover {
+    .audit-item:hover,
+    .audit-item:focus {
         border-color: #cbd5e0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .03);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+        outline: none;
+    }
+
+    .audit-item.is-important {
+        border-left-color: var(--al-danger);
     }
 
     .audit-icon {
@@ -236,49 +370,28 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
         color: #fff;
-        flex-shrink: 0;
+        font-size: 14px;
+        background: #a0aec0;
     }
 
     .audit-icon.create { background: #38a169; }
-    .audit-icon.delete { background: #e53e3e; }
     .audit-icon.update { background: #d69e2e; }
-    .audit-icon.import { background: #3182ce; }
-    .audit-icon.download { background: #319795; }
-    .audit-icon.message { background: #805ad5; }
-    .audit-icon.other { background: #718096; }
-    .audit-icon.login { background: #2b6cb0; }
-    .audit-icon.login-fail { background: #c05621; }
-
-    /* Segmented source toggle (Actions / Logins / All) */
-    .audit-source {
-        display: flex;
-        width: 100%;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #fff;
-    }
-    .audit-source .src-btn {
-        flex: 1 1 0;
-        text-align: center;
-        border: 0;
-        background: transparent;
-        padding: 7px 10px;
-        font-size: 13px;
-        font-weight: 500;
-        color: #4a5568;
-        cursor: pointer;
-        border-left: 1px solid #e2e8f0;
-        white-space: nowrap;
-    }
-    .audit-source .src-btn:first-child { border-left: 0; }
-    .audit-source .src-btn:hover { background: #f7fafc; }
-    .audit-source .src-btn.is-active {
-        background: #3182ce;
-        color: #fff;
-    }
+    .audit-icon.delete,
+    .audit-icon.cancel { background: #e53e3e; }
+    .audit-icon.import { background: #805ad5; }
+    .audit-icon.download { background: #3182ce; }
+    .audit-icon.message { background: #319795; }
+    .audit-icon.evaluate { background: #2b6cb0; }
+    .audit-icon.finalize { background: #2f855a; }
+    .audit-icon.submit { background: #4c51bf; }
+    .audit-icon.generate,
+    .audit-icon.ship { background: #3182ce; }
+    .audit-icon.impersonate { background: #b83280; }
+    .audit-icon.login,
+    .audit-icon.logout { background: #718096; }
+    .audit-icon.login-fail,
+    .audit-icon.password { background: #dd6b20; }
 
     .audit-body {
         min-width: 0;
@@ -286,32 +399,77 @@
 
     .audit-action {
         font-size: 14px;
-        color: #1a202c;
         font-weight: 500;
+        color: var(--al-strong);
         line-height: 1.4;
         word-break: break-word;
-        /* Clamp long statements (e.g. multi-field config saves) to keep rows
-           uniform; the full text is one click away in the detail modal. */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    }
+
+    .audit-repeat {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 0 6px;
+        border-radius: 4px;
+        background: #edf2f7;
+        color: var(--al-muted);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .audit-flag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--al-danger);
+    }
+
+    .audit-changes {
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--al-text);
+    }
+
+    .audit-changes .chg-label {
+        color: var(--al-muted);
+    }
+
+    .chg-from {
+        color: var(--al-danger);
+        text-decoration: line-through;
+        text-decoration-color: rgba(197, 48, 48, .4);
+    }
+
+    .chg-to {
+        color: var(--al-add);
+        font-weight: 500;
+    }
+
+    .chg-empty {
+        color: var(--al-faint);
+        font-style: italic;
+    }
+
+    .audit-changes .more {
+        color: var(--al-muted);
     }
 
     .audit-meta {
-        margin-top: 4px;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
-        gap: 10px;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        margin-top: 6px;
         font-size: 12px;
-        color: #718096;
+        color: var(--al-muted);
     }
 
     .audit-user {
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        color: var(--al-text);
     }
 
     .audit-avatar {
@@ -320,231 +478,104 @@
         border-radius: 50%;
         background: #4299e1;
         color: #fff;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 600;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        text-transform: uppercase;
-    }
-
-    .audit-user-name {
-        color: #4a5568;
-        font-weight: 500;
-    }
-
-    .audit-context {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 999px;
-        background: #edf2f7;
-        color: #4a5568;
-        font-size: 11px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
     }
 
     .audit-role {
-        display: inline-block;
-        padding: 1px 7px;
+        padding: 1px 6px;
         border-radius: 4px;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        border: 1px solid transparent;
+        background: #edf2f7;
+        color: var(--al-muted);
     }
 
-    .audit-role.admin { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-    .audit-role.datamanager { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-    .audit-role.ptcc { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
-    .audit-role.participant { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
-    .audit-role.system { background: #e2e8f0; color: #475569; border-color: #cbd5e0; }
+    .audit-role.admin { background: #fefcbf; color: #744210; }
+    .audit-role.datamanager { background: #e6fffa; color: #234e52; }
+    .audit-role.ptcc { background: #e9d8fd; color: #44337a; }
+    .audit-role.participant { background: #ebf8ff; color: #2a4365; }
 
-    .audit-ip {
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
-        font-size: 11px;
-        color: #94a3b8;
-    }
-
-    .audit-ua {
-        font-size: 11px;
-        color: #94a3b8;
-    }
-
-    .session-pill {
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
-        font-size: 10.5px;
-        color: #475569;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
+    .audit-entity,
+    .audit-behalf {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
         padding: 1px 8px;
-        cursor: pointer;
-        user-select: all;
-        white-space: nowrap;
-    }
-    .session-pill:hover { background: #e2e8f0; color: #1e293b; }
-    .session-pill i { margin-right: 3px; opacity: 0.65; }
-
-    .audit-item { cursor: pointer; }
-
-    .audit-modal-backdrop {
-        position: fixed; inset: 0;
-        background: rgba(15, 23, 42, 0.45);
-        display: none;
-        align-items: center; justify-content: center;
-        z-index: 9999;
-    }
-    .audit-modal-backdrop.is-open { display: flex; }
-    .audit-modal {
-        background: #fff;
-        width: min(640px, 92vw);
-        max-height: 86vh;
-        overflow-y: auto;
-        border-radius: 10px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-        padding: 22px 24px 20px;
-    }
-    .audit-modal .am-head {
-        display: flex; align-items: flex-start; justify-content: space-between;
-        gap: 12px; margin-bottom: 4px;
-    }
-    .audit-modal .am-title {
-        font-size: 16px; font-weight: 600; color: #0f172a;
-        margin: 0; line-height: 1.3;
-    }
-    .audit-modal .am-close {
-        background: none; border: none; font-size: 18px; color: #94a3b8;
-        cursor: pointer; padding: 0 4px; line-height: 1;
-    }
-    .audit-modal .am-close:hover { color: #475569; }
-    .audit-modal .am-time {
-        color: #64748b; font-size: 12.5px; margin-bottom: 16px;
-    }
-    .audit-modal .am-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        margin-bottom: 14px;
-    }
-    .audit-modal .am-cell {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 8px 10px;
-    }
-    .audit-modal .am-label {
-        font-size: 10.5px; color: #94a3b8;
-        text-transform: uppercase; letter-spacing: 0.04em;
-        margin-bottom: 3px;
-    }
-    .audit-modal .am-value {
-        font-size: 13px; color: #1e293b; word-break: break-word;
-    }
-    .audit-modal .am-value.mono {
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        border-radius: 999px;
+        border: 1px solid var(--al-line);
+        background: var(--al-soft);
+        color: var(--al-text);
         font-size: 12px;
-    }
-    .audit-modal .am-section-label {
-        font-size: 10.5px; color: #94a3b8;
-        text-transform: uppercase; letter-spacing: 0.04em;
-        margin: 14px 0 6px;
-    }
-    .audit-modal .am-statement {
-        background: #f1f5f9;
-        border-radius: 6px;
-        padding: 10px 12px;
-        font-size: 13px;
-        color: #1e293b;
-        line-height: 1.5;
-    }
-    .audit-modal .am-actions {
-        display: flex; gap: 8px; justify-content: flex-end;
-        margin-top: 18px;
-    }
-    .audit-modal .am-btn {
-        border: 1px solid #e2e8f0;
-        background: #fff;
-        color: #334155;
-        border-radius: 6px;
-        padding: 6px 14px;
-        font-size: 13px;
         cursor: pointer;
     }
-    .audit-modal .am-btn:hover { background: #f1f5f9; }
-    .audit-modal .am-btn.primary {
-        background: #2563eb; border-color: #2563eb; color: #fff;
+
+    .audit-entity:hover {
+        border-color: #90cdf4;
+        background: var(--al-accent-soft);
+        color: #2c5282;
     }
-    .audit-modal .am-btn.primary:hover { background: #1d4ed8; }
+
+    .audit-entity .etype {
+        color: var(--al-muted);
+    }
+
+    .audit-behalf {
+        border-color: #fbb6ce;
+        background: #fff5f7;
+        color: #97266d;
+    }
 
     .audit-time {
-        color: #a0aec0;
         font-size: 12px;
+        color: var(--al-faint);
         white-space: nowrap;
-        flex-shrink: 0;
+        padding-top: 2px;
     }
 
-    .audit-action mark,
-    .audit-meta mark {
-        background: #fef3c7;
-        color: #92400e;
-        padding: 0 2px;
-        border-radius: 2px;
-    }
-
-    .audit-feed .empty-state,
-    .audit-feed .loading-state {
+    .loading-state,
+    .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        color: #a0aec0;
-        font-size: 14px;
+        padding: 48px 16px;
+        color: var(--al-muted);
     }
 
-    .audit-feed .empty-state i,
-    .audit-feed .loading-state i {
-        font-size: 32px;
-        color: #cbd5e0;
-        margin-bottom: 12px;
+    .empty-state i,
+    .loading-state i {
         display: block;
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: var(--al-faint);
     }
 
     .audit-pagination {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        margin-top: 24px;
-        padding-top: 16px;
-        border-top: 1px solid #edf2f7;
-        font-size: 13px;
-        color: #718096;
+        align-items: center;
         gap: 12px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--al-muted);
         flex-wrap: wrap;
     }
 
     .audit-pagination .page-controls {
         display: flex;
-        gap: 6px;
         align-items: center;
+        gap: 8px;
     }
 
     .audit-pagination button {
+        width: 32px;
         height: 32px;
-        min-width: 32px;
-        padding: 0 10px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
+        border: 1px solid var(--al-line);
         border-radius: 6px;
-        color: #4a5568;
-        font-size: 13px;
+        background: #fff;
+        color: var(--al-text);
         cursor: pointer;
-        transition: all .15s;
-    }
-
-    .audit-pagination button:hover:not(:disabled) {
-        background: #edf2f7;
-        border-color: #cbd5e0;
     }
 
     .audit-pagination button:disabled {
@@ -554,12 +585,199 @@
 
     .audit-pagination select {
         height: 32px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--al-line);
         border-radius: 6px;
         padding: 0 8px;
         background: #fff;
-        color: #4a5568;
+        margin: 0;
+        width: auto;
+    }
+
+    /* Detail panel */
+    .al-panel-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 32, 44, .35);
+        z-index: 1050;
+        display: none;
+    }
+
+    .al-panel-backdrop.is-open {
+        display: block;
+    }
+
+    .al-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(560px, 100%);
+        background: #fff;
+        box-shadow: -8px 0 24px rgba(0, 0, 0, .12);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .al-panel-head {
+        padding: 18px 20px 12px;
+        border-bottom: 1px solid var(--al-line);
+    }
+
+    .al-panel-head h3 {
+        margin: 0 32px 4px 0;
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.35;
+        color: var(--al-strong);
+    }
+
+    .al-panel-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        font-size: 20px;
+        color: var(--al-muted);
+        cursor: pointer;
+    }
+
+    .al-panel-close:hover {
+        background: var(--al-soft);
+    }
+
+    .al-panel-time {
         font-size: 13px;
+        color: var(--al-muted);
+    }
+
+    .al-panel-body {
+        padding: 14px 20px 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .al-section {
+        margin-bottom: 18px;
+    }
+
+    .al-section h4 {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: var(--al-muted);
+        margin: 0 0 8px;
+    }
+
+    .al-reason {
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: var(--al-danger-soft);
+        color: var(--al-danger);
+        font-size: 13px;
+    }
+
+    .al-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .al-table th,
+    .al-table td {
+        text-align: left;
+        padding: 6px 8px;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: top;
+        word-break: break-word;
+    }
+
+    .al-table th {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--al-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .al-table td.k {
+        color: var(--al-muted);
+        width: 38%;
+    }
+
+    .al-list {
+        max-height: 260px;
+        overflow-y: auto;
+        border: 1px solid var(--al-line);
+        border-radius: 8px;
+        margin: 0;
+        padding: 6px 0;
+        list-style: none;
+        font-size: 13px;
+    }
+
+    .al-list li {
+        padding: 3px 12px;
+    }
+
+    .al-list-note {
+        font-size: 12px;
+        color: var(--al-muted);
+        margin-top: 4px;
+    }
+
+    .al-kv {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 6px 12px;
+        font-size: 13px;
+    }
+
+    .al-kv .k {
+        color: var(--al-muted);
+    }
+
+    .al-kv .v {
+        word-break: break-word;
+    }
+
+    .al-kv .mono,
+    .al-table .mono {
+        font-family: SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+    }
+
+    .al-panel-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 20px;
+        border-top: 1px solid var(--al-line);
+        background: var(--al-soft);
+    }
+
+    @media (max-width: 640px) {
+        .audit-item {
+            grid-template-columns: 28px 1fr;
+        }
+
+        .audit-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+        }
+
+        .audit-time {
+            grid-column: 2;
+        }
+
+        .al-kv {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
@@ -569,64 +787,93 @@
             <h1><?= $this->translate->_("Audit Log"); ?></h1>
             <div class="audit-summary" id="auditSummary"></div>
         </div>
+        <a class="al-btn" id="exportBtn" href="#" title="<?= $this->htmlTranslate("Download the entries that match the current filters"); ?>">
+            <i class="fas fa-file-csv"></i> <?= $this->translate->_("Export CSV"); ?>
+        </a>
+    </div>
+
+    <div class="al-scope" id="alScope">
+        <span><i class="fas fa-history"></i> <?= $this->translate->_("History of"); ?> <span id="alScopeType"></span> <strong id="alScopeLabel"></strong></span>
+        <button type="button" class="al-btn" id="alScopeClear"><?= $this->translate->_("Show all entries"); ?></button>
     </div>
 
     <div class="audit-toolbar">
-        <div class="field">
-            <label><?= $this->translate->_("Show"); ?></label>
-            <div class="audit-source" id="auditSource" role="group" aria-label="<?= $this->translate->_("Feed source"); ?>">
-                <button type="button" class="src-btn is-active" data-source="actions"><?= $this->translate->_("Actions"); ?></button>
-                <button type="button" class="src-btn" data-source="logins"><?= $this->translate->_("Logins"); ?></button>
-                <button type="button" class="src-btn" data-source="all"><?= $this->translate->_("All"); ?></button>
+        <div class="al-row">
+            <div class="al-field narrow">
+                <label><?= $this->translate->_("Show"); ?></label>
+                <div class="audit-source" id="auditSource" role="group" aria-label="<?= $this->htmlTranslate("Feed source"); ?>">
+                    <button type="button" class="src-btn is-active" data-source="actions"><?= $this->translate->_("Actions"); ?></button>
+                    <button type="button" class="src-btn" data-source="logins"><?= $this->translate->_("Logins"); ?></button>
+                    <button type="button" class="src-btn" data-source="all"><?= $this->translate->_("All"); ?></button>
+                </div>
+            </div>
+            <div class="al-field">
+                <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
+                <input type="text" id="dateRange" placeholder="<?= $this->htmlTranslate("Any date"); ?>" readonly />
+            </div>
+            <div class="al-field">
+                <label for="createdBy"><?= $this->translate->_("User"); ?></label>
+                <select id="createdBy">
+                    <option value=""><?= $this->translate->_("All users"); ?></option>
+                    <?php foreach ($this->systemAdmin as $admin): ?>
+                        <option value="<?= htmlspecialchars($admin['primary_email']); ?>"><?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="al-field">
+                <label for="type"><?= $this->translate->_("Context"); ?></label>
+                <select id="type">
+                    <option value=""><?= $this->translate->_("All contexts"); ?></option>
+                    <?php foreach (($this->contextTypes ?? []) as $ctx): ?>
+                        <option value="<?= htmlspecialchars($ctx); ?>"><?= htmlspecialchars(ucwords(str_replace('-', ' ', $ctx))); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="al-field narrow">
+                <label>&nbsp;</label>
+                <button type="button" class="al-btn" id="importantBtn" aria-pressed="false" title="<?= $this->htmlTranslate("Show only changes that can alter scores or results"); ?>">
+                    <i class="fas fa-flag"></i> <?= $this->translate->_("Important only"); ?>
+                </button>
+            </div>
+            <div class="al-field narrow">
+                <label>&nbsp;</label>
+                <button type="button" class="al-btn al-more-toggle" id="moreBtn" aria-expanded="false" aria-controls="alMore">
+                    <i class="fas fa-sliders-h"></i> <?= $this->translate->_("More filters"); ?> <span class="count" id="moreCount" style="display:none;"></span>
+                </button>
             </div>
         </div>
-        <div class="field">
-            <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
-            <input type="text" id="dateRange" placeholder="<?= $this->htmlTranslate("Any date"); ?>" readonly />
+        <div class="al-more" id="alMore">
+            <div class="al-row">
+                <div class="al-field">
+                    <label for="actorEmail"><?= $this->translate->_("Actor email"); ?></label>
+                    <input type="search" id="actorEmail" data-key="actorEmail" placeholder="<?= $this->htmlTranslate("e.g."); ?> dm@lab.org" autocomplete="off" />
+                </div>
+                <div class="al-field">
+                    <label for="labId"><?= $this->translate->_("Lab ID"); ?></label>
+                    <input type="search" id="labId" data-key="labId" placeholder="<?= $this->htmlTranslate("participant unique ID"); ?>" autocomplete="off" />
+                </div>
+                <div class="al-field">
+                    <label for="onBehalfOf"><?= $this->translate->_("View as account"); ?></label>
+                    <input type="search" id="onBehalfOf" data-key="onBehalfOf" placeholder="<?= $this->htmlTranslate("data manager email"); ?>" autocomplete="off" />
+                </div>
+                <div class="al-field">
+                    <label for="sessionHash"><?= $this->translate->_("Session"); ?></label>
+                    <input type="search" id="sessionHash" data-key="sessionHash" placeholder="<?= $this->htmlTranslate("16-char session hash"); ?>" autocomplete="off" />
+                </div>
+                <div class="al-field">
+                    <label for="requestId"><?= $this->translate->_("Request"); ?></label>
+                    <input type="search" id="requestId" data-key="requestId" placeholder="<?= $this->htmlTranslate("16-char request ID"); ?>" autocomplete="off" />
+                </div>
+            </div>
         </div>
-        <div class="field">
-            <label for="type"><?= $this->translate->_("Context"); ?></label>
-            <select id="type">
-                <option value=""><?= $this->translate->_("All contexts"); ?></option>
-                <?php if (!empty($this->contextTypes)): ?>
-                    <?php foreach ($this->contextTypes as $ctx): ?>
-                        <option value="<?= htmlspecialchars($ctx); ?>">
-                            <?= ucwords(str_replace('-', ' ', htmlspecialchars($ctx))); ?>
-                        </option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </select>
-        </div>
-        <div class="field">
-            <label for="createdBy"><?= $this->translate->_("User"); ?></label>
-            <select id="createdBy">
-                <option value=""><?= $this->translate->_("All users"); ?></option>
-                <?php foreach ($this->systemAdmin as $admin): ?>
-                    <option value="<?= htmlspecialchars($admin['primary_email']); ?>">
-                        <?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="field">
-            <label for="actorEmail"><?= $this->translate->_("Actor email"); ?></label>
-            <input type="search" id="actorEmail" placeholder="<?= $this->htmlTranslate("e.g."); ?> dm@lab.org" autocomplete="off" />
-        </div>
-        <div class="field">
-            <label for="labId"><?= $this->translate->_("Lab ID"); ?></label>
-            <input type="search" id="labId" placeholder="<?= $this->htmlTranslate("participant unique ID"); ?>" autocomplete="off" />
-        </div>
-        <div class="field">
-            <label><?= $this->translate->_("Session"); ?></label>
-            <input type="search" id="sessionHash" placeholder="<?= $this->htmlTranslate("16-char session hash"); ?>" autocomplete="off" />
-        </div>
-        <button type="button" class="reset-btn" id="resetBtn"><?= $this->translate->_("Reset"); ?></button>
     </div>
+
+    <div class="al-chips" id="alChips"></div>
 
     <div class="audit-search" id="searchWrap">
         <i class="fas fa-search"></i>
-        <input type="search" id="searchBox" placeholder="<?= $this->htmlTranslate("Search actions — try a name, code, or keyword…"); ?>" autocomplete="off" />
-        <button type="button" class="clear-search" id="clearSearch" title="Clear search">
+        <input type="search" id="searchBox" placeholder="<?= $this->htmlTranslate("Search actions, names, codes, changed values…"); ?>" autocomplete="off" />
+        <button type="button" class="clear-search" id="clearSearch" title="<?= $this->htmlTranslate("Clear search"); ?>">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -634,57 +881,7 @@
     <div class="audit-feed" id="auditFeed">
         <div class="loading-state">
             <i class="fas fa-circle-notch fa-spin"></i>
-            <?= $this->htmlTranslate("Loading audit log…"); ?>
-        </div>
-    </div>
-
-    <div class="audit-modal-backdrop" id="auditModalBackdrop" aria-hidden="true">
-        <div class="audit-modal" role="dialog" aria-modal="true" aria-labelledby="amTitle">
-            <div class="am-head">
-                <h3 class="am-title" id="amTitle"></h3>
-                <button type="button" class="am-close" id="amClose" aria-label="<?= $this->translate->_('Close'); ?>">&times;</button>
-            </div>
-            <div class="am-time" id="amTime"></div>
-            <div class="am-grid">
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('User'); ?></div>
-                    <div class="am-value" id="amUser"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('Email'); ?></div>
-                    <div class="am-value mono" id="amEmail"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('Role'); ?></div>
-                    <div class="am-value" id="amRole"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('Context'); ?></div>
-                    <div class="am-value" id="amContext"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('IP address'); ?></div>
-                    <div class="am-value mono" id="amIp"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('Session hash'); ?></div>
-                    <div class="am-value mono" id="amSession"></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('Browser'); ?></div>
-                    <div class="am-value" id="amBrowser" title=""></div>
-                </div>
-                <div class="am-cell">
-                    <div class="am-label"><?= $this->translate->_('OS'); ?></div>
-                    <div class="am-value" id="amOs"></div>
-                </div>
-            </div>
-            <div class="am-section-label"><?= $this->translate->_('Action'); ?></div>
-            <div class="am-statement" id="amAction"></div>
-            <div class="am-actions">
-                <button type="button" class="am-btn primary" id="amFilterSession"><?= $this->translate->_('Filter by this session'); ?></button>
-                <button type="button" class="am-btn" id="amDismiss"><?= $this->translate->_('Close'); ?></button>
-            </div>
+            <?= $this->translate->_("Loading audit log…"); ?>
         </div>
     </div>
 
@@ -697,13 +894,25 @@
                 <option value="50">50</option>
                 <option value="100">100</option>
             </select>
-            <button type="button" id="prevBtn" title="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button type="button" id="nextBtn" title="Next">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+            <button type="button" id="prevBtn" title="<?= $this->htmlTranslate("Previous"); ?>"><i class="fas fa-chevron-left"></i></button>
+            <button type="button" id="nextBtn" title="<?= $this->htmlTranslate("Next"); ?>"><i class="fas fa-chevron-right"></i></button>
         </div>
+    </div>
+
+    <div class="al-panel-backdrop" id="alPanelBackdrop" aria-hidden="true">
+        <aside class="al-panel" role="dialog" aria-modal="true" aria-labelledby="alPanelTitle">
+            <div class="al-panel-head">
+                <h3 id="alPanelTitle"></h3>
+                <div class="al-panel-time" id="alPanelTime"></div>
+                <button type="button" class="al-panel-close" id="alPanelClose" aria-label="<?= $this->htmlTranslate('Close'); ?>">&times;</button>
+            </div>
+            <div class="al-panel-body" id="alPanelBody"></div>
+            <div class="al-panel-actions">
+                <button type="button" class="al-btn primary" id="alHistoryBtn"><i class="fas fa-history"></i> <?= $this->translate->_('History of this item'); ?></button>
+                <button type="button" class="al-btn" id="alRequestBtn" title="<?= $this->htmlTranslate('Other entries written by the same click or save'); ?>"><i class="fas fa-mouse-pointer"></i> <?= $this->translate->_('Same click'); ?></button>
+                <button type="button" class="al-btn" id="alSessionBtn"><i class="fas fa-fingerprint"></i> <?= $this->translate->_('Same session'); ?></button>
+            </div>
+        </aside>
     </div>
 </div>
 
@@ -712,44 +921,108 @@
 <script type="text/javascript">
 (function() {
     var feedUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'feed']); ?>";
+    var exportUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'export']); ?>";
 
-    var state = {
-        page: 1,
-        pageSize: 25,
-        source: 'actions',
-        startDate: '',
-        endDate: '',
-        type: '',
-        createdBy: '',
-        actorEmail: '',
-        labId: '',
-        sessionHash: '',
-        search: ''
+    var T = {
+        entries: "<?= $this->jsTranslate('entries') ?>",
+        important: "<?= $this->jsTranslate('important') ?>",
+        showing: "<?= $this->jsTranslate('Showing') ?>",
+        of: "<?= $this->jsTranslate('of') ?>",
+        loading: "<?= $this->jsTranslate('Loading…') ?>",
+        none: "<?= $this->jsTranslate('No audit entries match the current filters.') ?>",
+        failed: "<?= $this->jsTranslate('Failed to load audit log. Please retry.') ?>",
+        empty: "<?= $this->jsTranslate('empty') ?>",
+        moreChanges: "<?= $this->jsTranslate('more changes') ?>",
+        oneMoreChange: "<?= $this->jsTranslate('1 more change') ?>",
+        asAccount: "<?= $this->jsTranslate('as') ?>",
+        viewAs: "<?= $this->jsTranslate('Done through View as, using this account') ?>",
+        historyOf: "<?= $this->jsTranslate('Show the history of this item') ?>",
+        whyImportant: "<?= $this->jsTranslate('Why this is flagged') ?>",
+        changes: "<?= $this->jsTranslate('What changed') ?>",
+        field: "<?= $this->jsTranslate('Field') ?>",
+        before: "<?= $this->jsTranslate('Before') ?>",
+        after: "<?= $this->jsTranslate('After') ?>",
+        details: "<?= $this->jsTranslate('Details') ?>",
+        listMore: "<?= $this->jsTranslate('Only the first rows were kept. Total:') ?>",
+        who: "<?= $this->jsTranslate('Who') ?>",
+        where: "<?= $this->jsTranslate('Where') ?>",
+        user: "<?= $this->jsTranslate('User') ?>",
+        email: "<?= $this->jsTranslate('Email') ?>",
+        role: "<?= $this->jsTranslate('Role') ?>",
+        onBehalfOf: "<?= $this->jsTranslate('On behalf of') ?>",
+        item: "<?= $this->jsTranslate('Item') ?>",
+        context: "<?= $this->jsTranslate('Context') ?>",
+        ip: "<?= $this->jsTranslate('IP address') ?>",
+        browser: "<?= $this->jsTranslate('Browser') ?>",
+        channel: "<?= $this->jsTranslate('Channel') ?>",
+        page: "<?= $this->jsTranslate('Page') ?>",
+        session: "<?= $this->jsTranslate('Session') ?>",
+        request: "<?= $this->jsTranslate('Request') ?>",
+        repeated: "<?= $this->jsTranslate('Repeated') ?>",
+        times: "<?= $this->jsTranslate('times') ?>",
+        filterSession: "<?= $this->jsTranslate('Click to show this session only') ?>",
+        chipDate: "<?= $this->jsTranslate('Date') ?>",
+        chipUser: "<?= $this->jsTranslate('User') ?>",
+        chipContext: "<?= $this->jsTranslate('Context') ?>",
+        chipImportant: "<?= $this->jsTranslate('Important only') ?>",
+        chipActor: "<?= $this->jsTranslate('Actor email') ?>",
+        chipLab: "<?= $this->jsTranslate('Lab ID') ?>",
+        chipBehalf: "<?= $this->jsTranslate('View as account') ?>",
+        chipSession: "<?= $this->jsTranslate('Session') ?>",
+        chipRequest: "<?= $this->jsTranslate('Request') ?>",
+        chipSearch: "<?= $this->jsTranslate('Search') ?>",
+        chipLogins: "<?= $this->jsTranslate('Logins') ?>",
+        chipAll: "<?= $this->jsTranslate('Actions and logins') ?>",
+        remove: "<?= $this->jsTranslate('Remove filter') ?>",
+        channels: {
+            web: "<?= $this->jsTranslate('Web') ?>",
+            api: "<?= $this->jsTranslate('API') ?>",
+            cli: "<?= $this->jsTranslate('Scheduled job') ?>"
+        }
     };
 
+    // Every filter the feed understands. The URL carries the same keys, so a
+    // filtered view can be bookmarked, shared or linked from another page.
+    var FILTER_KEYS = ['source', 'startDate', 'endDate', 'type', 'createdBy', 'important',
+        'actorEmail', 'labId', 'onBehalfOf', 'sessionHash', 'requestId', 'search',
+        'entityType', 'entityId', 'entityLabel'];
+    var MORE_KEYS = ['actorEmail', 'labId', 'onBehalfOf', 'sessionHash', 'requestId'];
+
+    function blankState() {
+        var s = { page: 1, pageSize: 25 };
+        FILTER_KEYS.forEach(function(k) { s[k] = ''; });
+        s.source = 'actions';
+        return s;
+    }
+
+    var state = blankState();
+
     var actionIcons = {
-        create:       'fa-plus',
-        delete:       'fa-trash-alt',
-        update:       'fa-pencil-alt',
-        import:       'fa-file-import',
-        download:     'fa-download',
-        message:      'fa-paper-plane',
-        login:        'fa-sign-in-alt',
+        create: 'fa-plus',
+        update: 'fa-pencil-alt',
+        delete: 'fa-trash-alt',
+        cancel: 'fa-ban',
+        import: 'fa-file-import',
+        download: 'fa-download',
+        message: 'fa-paper-plane',
+        evaluate: 'fa-calculator',
+        finalize: 'fa-check-double',
+        submit: 'fa-clipboard-check',
+        generate: 'fa-file-pdf',
+        ship: 'fa-shipping-fast',
+        impersonate: 'fa-user-secret',
+        login: 'fa-sign-in-alt',
+        logout: 'fa-sign-out-alt',
         'login-fail': 'fa-user-lock',
-        other:        'fa-circle'
+        password: 'fa-key',
+        other: 'fa-circle'
     };
 
     var $feed = $('#auditFeed');
-    var $summary = $('#auditSummary');
-    var $pagination = $('#auditPagination');
-    var $pageInfo = $('#pageInfo');
-    var $prev = $('#prevBtn');
-    var $next = $('#nextBtn');
     var fetchSeq = 0;
-    var searchDebounce = null;
     var currentItems = [];
 
-    function escapeHtml(text) {
+    function esc(text) {
         if (text === null || text === undefined) return '';
         return String(text)
             .replace(/&/g, '&amp;')
@@ -760,16 +1033,14 @@
     }
 
     function highlight(text, term) {
-        var safe = escapeHtml(text);
-        if (!term) return safe;
-        var trimmed = term.trim();
+        var safe = esc(text);
+        var trimmed = (term || '').trim();
         if (!trimmed) return safe;
         var parts = trimmed.split(/\s+/).map(function(p) {
-            return p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return esc(p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }).filter(Boolean);
         if (!parts.length) return safe;
-        var re = new RegExp('(' + parts.join('|') + ')', 'gi');
-        return safe.replace(re, '<mark>$1</mark>');
+        return safe.replace(new RegExp('(' + parts.join('|') + ')', 'gi'), '<mark>$1</mark>');
     }
 
     function parseBrowserOS(ua) {
@@ -782,8 +1053,7 @@
         else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
         else if (/Firefox\//.test(ua)) browser = 'Firefox';
         else if (/MSIE|Trident/.test(ua)) browser = 'IE';
-        if (/Windows NT 10/.test(ua)) os = 'Windows 10';
-        else if (/Windows NT 11/.test(ua)) os = 'Windows 11';
+        if (/Windows NT 10/.test(ua)) os = 'Windows';
         else if (/Windows/.test(ua)) os = 'Windows';
         else if (/Mac OS X/.test(ua)) os = 'macOS';
         else if (/Android/.test(ua)) os = 'Android';
@@ -792,157 +1062,350 @@
         return { browser: browser, os: os };
     }
 
-    function parseUserAgent(ua) {
-        var p = parseBrowserOS(ua);
-        if (!p.browser) return '';
-        return p.os ? p.browser + ' on ' + p.os : p.browser;
-    }
-
-    // Login rows ship pre-parsed browser/OS (user_login_history stores them
-    // split); action rows carry only a raw user agent. Prefer the explicit
-    // fields and fall back to parsing the UA string.
     function deviceLabel(item) {
-        if (item.browser || item.os) {
-            if (item.browser && item.os) return item.browser + ' on ' + item.os;
-            return item.browser || item.os;
+        var b = item.browser || '';
+        var o = item.os || '';
+        if (!b && !o) {
+            var p = parseBrowserOS(item.userAgent);
+            b = p.browser;
+            o = p.os;
         }
-        return parseUserAgent(item.userAgent);
+        return b && o ? b + ' · ' + o : (b || o);
     }
 
     function roleSlug(role) {
-        if (!role) return 'system';
-        var r = String(role).toLowerCase();
+        var r = String(role || '').toLowerCase();
         if (r === 'data manager') return 'datamanager';
-        return r;
+        return r || 'system';
     }
 
-    function renderItem(item, term, idx) {
-        var iconClass = actionIcons[item.actionType] || actionIcons.other;
-        var contextHtml = item.context
-            ? '<span class="audit-context">' + escapeHtml(item.context) + '</span>'
-            : '';
-        var roleHtml = item.userRole
-            ? '<span class="audit-role ' + roleSlug(item.userRole) + '">' + escapeHtml(item.userRole) + '</span>'
-            : '';
-        var ipHtml = item.ipAddress
-            ? '<span class="audit-ip" title="IP address">' + escapeHtml(item.ipAddress) + '</span>'
-            : '';
-        var uaShort = deviceLabel(item);
-        var uaHtml = uaShort
-            ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent || uaShort) + '">' + escapeHtml(uaShort) + '</span>'
-            : '';
-        var sessHtml = item.sessionHash
-            ? '<span class="session-pill" data-session="' + escapeHtml(item.sessionHash) + '" title="Click to filter by this session">'
-              +    '<i class="fas fa-fingerprint"></i> ' + escapeHtml(item.sessionHash.substring(0, 8))
-              + '</span>'
-            : '';
-        return ''
-            + '<div class="audit-item" data-idx="' + idx + '" role="button" tabindex="0">'
-            +   '<div class="audit-icon ' + escapeHtml(item.actionType) + '">'
-            +     '<i class="fas ' + iconClass + '"></i>'
-            +   '</div>'
-            +   '<div class="audit-body">'
-            +     '<div class="audit-action">' + highlight(item.action, term) + '</div>'
-            +     '<div class="audit-meta">'
-            +       '<span class="audit-user" title="' + escapeHtml(item.userEmail) + '">'
-            +         '<span class="audit-avatar">' + escapeHtml(item.userInitials) + '</span>'
-            +         '<span class="audit-user-name">' + highlight(item.userName, term) + '</span>'
-            +       '</span>'
-            +       roleHtml
-            +       contextHtml
-            +       ipHtml
-            +       uaHtml
-            +       sessHtml
-            +     '</div>'
-            +   '</div>'
-            +   '<div class="audit-time">' + escapeHtml(item.time) + '</div>'
+    function valueHtml(v) {
+        return v === '' || v === null || v === undefined
+            ? '<span class="chg-empty">' + esc(T.empty) + '</span>'
+            : esc(v);
+    }
+
+    function changeHtml(c) {
+        return '<span class="chg-label">' + esc(c.label) + ':</span> '
+            + '<span class="chg-from">' + valueHtml(c.from) + '</span> → '
+            + '<span class="chg-to">' + valueHtml(c.to) + '</span>';
+    }
+
+    // Consecutive look-alike entries read as one row with a count. They must
+    // match on everything the detail panel shows, so merging never hides a
+    // different IP address, session, page or account.
+    function collapseRepeats(items) {
+        var out = [];
+        items.forEach(function(item) {
+            var prev = out[out.length - 1];
+            var plain = !(item.changes && item.changes.length) && !item.list && !item.important
+                && !(item.facts && item.facts.length) && item.source !== 'login';
+            if (prev && plain && prev.__plain && prev.dateKey === item.dateKey
+                && prev.action === item.action && prev.userEmail === item.userEmail
+                && prev.entityId === item.entityId && prev.onBehalfOf === item.onBehalfOf
+                && prev.sessionHash === item.sessionHash && prev.ipAddress === item.ipAddress
+                && prev.userAgent === item.userAgent && prev.route === item.route) {
+                prev.__repeat = (prev.__repeat || 1) + 1;
+                prev.__times = (prev.__times || [prev.time]).concat([item.time]);
+                return;
+            }
+            item.__plain = plain;
+            out.push(item);
+        });
+        return out;
+    }
+
+    function renderItem(item, idx) {
+        var term = state.search;
+        var icon = actionIcons[item.actionType] || actionIcons.other;
+        var html = '<div class="audit-item' + (item.important ? ' is-important' : '') + '" data-idx="' + idx + '" role="button" tabindex="0">'
+            + '<div class="audit-icon ' + esc(item.actionType) + '"><i class="fas ' + icon + '"></i></div>'
+            + '<div class="audit-body">'
+            + '<div class="audit-action">' + highlight(item.action, term)
+            + (item.__repeat ? '<span class="audit-repeat" title="' + esc(T.repeated + ': ' + item.__times.join(', ')) + '">×' + item.__repeat + '</span>' : '')
             + '</div>';
+        if (item.important && item.reason) {
+            html += '<div class="audit-flag"><i class="fas fa-flag"></i> ' + esc(item.reason) + '</div>';
+        }
+        if (item.changes && item.changes.length) {
+            var extra = item.changes.length - 1;
+            html += '<div class="audit-changes">' + changeHtml(item.changes[0])
+                + (extra > 0 ? ' <span class="more">· ' + esc(extra === 1 ? T.oneMoreChange : extra + ' ' + T.moreChanges) + '</span>' : '')
+                + '</div>';
+        } else if (item.list && item.list.total) {
+            html += '<div class="audit-changes"><span class="chg-label">' + esc(item.list.title) + ':</span> ' + esc(item.list.total) + '</div>';
+        }
+        html += '<div class="audit-meta">'
+            + '<span class="audit-user" title="' + esc(item.userEmail) + '">'
+            + '<span class="audit-avatar">' + esc(item.userInitials) + '</span>'
+            + '<span>' + highlight(item.userName, term) + '</span></span>';
+        if (item.userRole && item.userRole !== 'Unknown') {
+            html += '<span class="audit-role ' + roleSlug(item.userRole) + '">' + esc(item.userRole) + '</span>';
+        }
+        if (item.onBehalfOf) {
+            html += '<span class="audit-behalf" title="' + esc(T.viewAs) + '"><i class="fas fa-user-secret"></i> ' + esc(T.asAccount) + ' ' + esc(item.onBehalfOf) + '</span>';
+        }
+        if (item.entityType && item.entityId) {
+            html += '<span class="audit-entity" data-idx="' + idx + '" title="' + esc(T.historyOf) + '">'
+                + '<span class="etype">' + esc(item.entityTypeLabel) + '</span> ' + highlight(item.entityLabel || item.entityId, term) + '</span>';
+        } else if (item.context) {
+            html += '<span>' + esc(item.context) + '</span>';
+        }
+        html += '</div></div>'
+            + '<div class="audit-time">' + esc(item.time) + '</div>'
+            + '</div>';
+        return html;
     }
 
     function renderFeed(payload) {
-        currentItems = payload.items || [];
-        if (currentItems.length === 0) {
-            $feed.html(''
-                + '<div class="empty-state">'
-                +   '<i class="far fa-folder-open"></i>'
-                +   '<?= $this->jsTranslate('No audit entries match the current filters.') ?>'
-                + '</div>');
-            $summary.html('<strong>0</strong> <?= $this->jsTranslate('entries') ?>');
-            $pagination.hide();
+        currentItems = collapseRepeats(payload.items || []);
+        var total = payload.total || 0;
+        $('#auditSummary').html('<strong>' + total.toLocaleString() + '</strong> ' + esc(T.entries));
+        if (!currentItems.length) {
+            $feed.html('<div class="empty-state"><i class="far fa-folder-open"></i>' + esc(T.none) + '</div>');
+            $('#auditPagination').hide();
             return;
         }
-
-        // Annotate each item with its flat index so the detail modal can
-        // look it up by data-idx on click.
-        currentItems.forEach(function(item, i) { item.__idx = i; });
-
-        var groups = [];
-        var current = null;
-        currentItems.forEach(function(item) {
-            if (!current || current.key !== item.dateKey) {
-                current = { key: item.dateKey, label: item.dateLabel, items: [] };
-                groups.push(current);
-            }
-            current.items.push(item);
-        });
-
-        var term = state.search;
         var html = '';
-        groups.forEach(function(g) {
-            html += '<div class="day-group">';
-            html +=   '<div class="day-header">' + escapeHtml(g.label) + ' <span class="count">' + g.items.length + '</span></div>';
-            g.items.forEach(function(it) { html += renderItem(it, term, it.__idx); });
-            html += '</div>';
+        var day = null;
+        var dayItems = [];
+        function flush() {
+            if (!day) return;
+            html += '<div class="day-group"><div class="day-header">' + esc(day.label)
+                + ' <span class="count">' + dayItems.length + '</span></div>' + dayItems.join('') + '</div>';
+        }
+        currentItems.forEach(function(item, i) {
+            if (!day || day.key !== item.dateKey) {
+                flush();
+                day = { key: item.dateKey, label: item.dateLabel };
+                dayItems = [];
+            }
+            dayItems.push(renderItem(item, i));
         });
-
+        flush();
         $feed.html(html);
 
         var start = (payload.page - 1) * payload.pageSize + 1;
-        var end = Math.min(start + payload.items.length - 1, payload.total);
-        $summary.html('<strong>' + payload.total.toLocaleString() + '</strong> <?= $this->jsTranslate('entries') ?>');
-        $pageInfo.html('<?= $this->jsTranslate('Showing') ?> <strong>' + start + '</strong>–<strong>' + end + '</strong> <?= $this->jsTranslate('of') ?> <strong>' + payload.total.toLocaleString() + '</strong>');
-        $prev.prop('disabled', payload.page <= 1);
-        $next.prop('disabled', payload.page >= payload.totalPages);
-        $pagination.show();
+        var end = Math.min(start + (payload.items || []).length - 1, total);
+        $('#pageInfo').html(esc(T.showing) + ' <strong>' + start + '</strong>–<strong>' + end + '</strong> ' + esc(T.of) + ' <strong>' + total.toLocaleString() + '</strong>');
+        $('#prevBtn').prop('disabled', payload.page <= 1);
+        $('#nextBtn').prop('disabled', payload.page >= payload.totalPages);
+        $('#auditPagination').show();
+    }
+
+    function filterParams() {
+        var p = {};
+        FILTER_KEYS.forEach(function(k) {
+            if (state[k] !== '' && state[k] !== null && state[k] !== undefined) p[k] = state[k];
+        });
+        if (p.source === 'actions') delete p.source;
+        return p;
+    }
+
+    function syncUrl() {
+        if (!window.history || !window.history.replaceState) return;
+        var qs = $.param(filterParams());
+        window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    }
+
+    function readUrl() {
+        var params = new URLSearchParams(window.location.search);
+        FILTER_KEYS.forEach(function(k) {
+            if (params.has(k)) state[k] = params.get(k) || '';
+        });
+        if (['actions', 'logins', 'all'].indexOf(state.source) === -1) state.source = 'actions';
+    }
+
+    function syncControls() {
+        $('#auditSource .src-btn').removeClass('is-active').filter('[data-source="' + state.source + '"]').addClass('is-active');
+        $('#type').val(state.type);
+        $('#createdBy').val(state.createdBy);
+        $('#searchBox').val(state.search);
+        $('#searchWrap').toggleClass('has-value', !!state.search);
+        $('#dateRange').val(state.startDate && state.endDate ? state.startDate + ' – ' + state.endDate : '');
+        MORE_KEYS.forEach(function(k) { $('#' + k).val(state[k]); });
+        var on = state.important === '1';
+        $('#importantBtn').toggleClass('is-on', on).attr('aria-pressed', on ? 'true' : 'false');
+        var moreCount = MORE_KEYS.filter(function(k) { return state[k] !== ''; }).length;
+        $('#moreCount').text(moreCount).toggle(moreCount > 0);
+        if (state.entityType && state.entityId) {
+            $('#alScopeType').text(state.entityTypeLabel || '');
+            $('#alScopeLabel').text(state.entityLabel || state.entityId);
+            $('#alScope').addClass('is-visible');
+        } else {
+            $('#alScope').removeClass('is-visible');
+        }
+        renderChips();
+        $('#exportBtn').attr('href', exportUrl + (function(qs) { return qs ? '?' + qs : ''; })($.param(filterParams())));
+    }
+
+    function renderChips() {
+        var chips = [];
+        function add(key, label, value) { chips.push({ key: key, text: label + ': ' + value }); }
+        if (state.source === 'logins') chips.push({ key: 'source', text: T.chipLogins });
+        if (state.source === 'all') chips.push({ key: 'source', text: T.chipAll });
+        if (state.startDate) add('date', T.chipDate, state.startDate + ' – ' + state.endDate);
+        if (state.createdBy) add('createdBy', T.chipUser, $('#createdBy option:selected').text().trim() || state.createdBy);
+        if (state.type) add('type', T.chipContext, $('#type option:selected').text().trim() || state.type);
+        if (state.important === '1') chips.push({ key: 'important', text: T.chipImportant });
+        if (state.actorEmail) add('actorEmail', T.chipActor, state.actorEmail);
+        if (state.labId) add('labId', T.chipLab, state.labId);
+        if (state.onBehalfOf) add('onBehalfOf', T.chipBehalf, state.onBehalfOf);
+        if (state.sessionHash) add('sessionHash', T.chipSession, state.sessionHash.substring(0, 8));
+        if (state.requestId) add('requestId', T.chipRequest, state.requestId.substring(0, 8));
+        if (state.search) add('search', T.chipSearch, state.search);
+        $('#alChips').html(chips.map(function(c) {
+            return '<span class="al-chip">' + esc(c.text)
+                + ' <button type="button" data-key="' + esc(c.key) + '" aria-label="' + esc(T.remove) + '">&times;</button></span>';
+        }).join(''));
+    }
+
+    function clearFilter(key) {
+        if (key === 'date') {
+            state.startDate = '';
+            state.endDate = '';
+        } else if (key === 'source') {
+            state.source = 'actions';
+        } else if (key === 'entity') {
+            state.entityType = '';
+            state.entityId = '';
+            state.entityLabel = '';
+            state.entityTypeLabel = '';
+        } else {
+            state[key] = '';
+        }
+    }
+
+    function refresh() {
+        state.page = 1;
+        syncControls();
+        syncUrl();
+        fetchFeed();
     }
 
     function fetchFeed() {
         var seq = ++fetchSeq;
-        $feed.html('<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><?= $this->jsTranslate('Loading…') ?></div>');
+        $feed.html('<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>' + esc(T.loading) + '</div>');
         $.ajax({
             url: feedUrl,
             type: 'POST',
             dataType: 'json',
-            data: {
-                page: state.page,
-                pageSize: state.pageSize,
-                source: state.source,
-                startDate: state.startDate,
-                endDate: state.endDate,
-                type: state.type,
-                createdBy: state.createdBy,
-                actorEmail: state.actorEmail,
-                labId: state.labId,
-                sessionHash: state.sessionHash,
-                search: state.search
-            }
+            data: $.extend({ page: state.page, pageSize: state.pageSize }, filterParams())
         }).done(function(payload) {
             if (seq !== fetchSeq) return;
+            // The scope banner needs the type label, which the feed provides.
+            if (state.entityType && !state.entityTypeLabel && payload.items && payload.items.length) {
+                state.entityTypeLabel = payload.items[0].entityTypeLabel || '';
+                if (!state.entityLabel) state.entityLabel = payload.items[0].entityLabel || '';
+                syncControls();
+            }
             renderFeed(payload);
         }).fail(function() {
             if (seq !== fetchSeq) return;
-            $feed.html(''
-                + '<div class="empty-state">'
-                +   '<i class="fas fa-exclamation-triangle"></i>'
-                +   '<?= $this->jsTranslate('Failed to load audit log. Please retry.') ?>'
-                + '</div>');
-            $pagination.hide();
+            $feed.html('<div class="empty-state"><i class="fas fa-exclamation-triangle"></i>' + esc(T.failed) + '</div>');
+            $('#auditPagination').hide();
         });
     }
 
+    function showEntity(item) {
+        state = $.extend(blankState(), { pageSize: state.pageSize });
+        state.entityType = item.entityType;
+        state.entityId = item.entityId;
+        state.entityLabel = item.entityLabel || item.entityId;
+        state.entityTypeLabel = item.entityTypeLabel || '';
+        closePanel();
+        refresh();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Detail panel
+    var $panel = $('#alPanelBackdrop');
+    var panelItem = null;
+
+    function kv(label, value, mono) {
+        if (value === '' || value === null || value === undefined) return '';
+        return '<div class="k">' + esc(label) + '</div><div class="v' + (mono ? ' mono' : '') + '">' + esc(value) + '</div>';
+    }
+
+    function openPanel(item) {
+        panelItem = item;
+        $('#alPanelTitle').text(item.action || '');
+        $('#alPanelTime').text(item.dateLabel + ' · ' + (item.__times ? item.__times.join(', ') : item.time));
+        var body = '';
+        if (item.important) {
+            body += '<div class="al-section"><h4>' + esc(T.whyImportant) + '</h4><div class="al-reason"><i class="fas fa-flag"></i> '
+                + esc(item.reason || T.important) + '</div></div>';
+        }
+        if (item.changes && item.changes.length) {
+            body += '<div class="al-section"><h4>' + esc(T.changes) + '</h4><table class="al-table"><thead><tr><th>'
+                + esc(T.field) + '</th><th>' + esc(T.before) + '</th><th>' + esc(T.after) + '</th></tr></thead><tbody>';
+            item.changes.forEach(function(c) {
+                body += '<tr><td>' + esc(c.label) + '</td><td class="chg-from">' + valueHtml(c.from) + '</td><td class="chg-to">' + valueHtml(c.to) + '</td></tr>';
+            });
+            body += '</tbody></table></div>';
+        }
+        if ((item.facts && item.facts.length) || item.list) {
+            body += '<div class="al-section"><h4>' + esc(T.details) + '</h4>';
+            if (item.facts && item.facts.length) {
+                body += '<table class="al-table"><tbody>';
+                item.facts.forEach(function(f) {
+                    body += '<tr><td class="k">' + esc(f.label) + '</td><td>' + esc(f.value) + '</td></tr>';
+                });
+                body += '</tbody></table>';
+            }
+            if (item.list && item.list.rows && item.list.rows.length) {
+                body += '<div style="margin-top:8px;font-weight:500;">' + esc(item.list.title) + ' (' + esc(item.list.total) + ')</div>'
+                    + '<ul class="al-list">' + item.list.rows.map(function(r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>';
+                if (item.list.total > item.list.rows.length) {
+                    body += '<div class="al-list-note">' + esc(T.listMore) + ' ' + esc(item.list.total) + '</div>';
+                }
+            }
+            body += '</div>';
+        }
+        body += '<div class="al-section"><h4>' + esc(T.who) + '</h4><div class="al-kv">'
+            + kv(T.user, item.userName)
+            + kv(T.email, item.userEmail, true)
+            + kv(T.role, item.userRole)
+            + kv(T.onBehalfOf, item.onBehalfOf, true)
+            + kv(T.item, item.entityType ? (item.entityTypeLabel + ' ' + (item.entityLabel || item.entityId)) : '')
+            + kv(T.context, item.context)
+            + '</div></div>';
+        body += '<div class="al-section"><h4>' + esc(T.where) + '</h4><div class="al-kv">'
+            + kv(T.ip, item.ipAddress, true)
+            + kv(T.browser, deviceLabel(item))
+            + kv(T.channel, T.channels[item.channel] || item.channel)
+            + kv(T.page, item.route, true)
+            + kv(T.session, item.sessionHash, true)
+            + kv(T.request, item.requestId, true)
+            + '</div></div>';
+        $('#alPanelBody').html(body).scrollTop(0);
+        $('#alHistoryBtn').toggle(!!(item.entityType && item.entityId));
+        $('#alRequestBtn').toggle(!!item.requestId);
+        $('#alSessionBtn').toggle(!!item.sessionHash);
+        $panel.addClass('is-open').attr('aria-hidden', 'false');
+        $('#alPanelClose').trigger('focus');
+    }
+
+    function closePanel() {
+        $panel.removeClass('is-open').attr('aria-hidden', 'true');
+    }
+
+    function onlyFilter(key, value) {
+        state = $.extend(blankState(), { pageSize: state.pageSize, source: state.source });
+        state[key] = value;
+        closePanel();
+        refresh();
+    }
+
     $(document).ready(function() {
+        readUrl();
+        if (MORE_KEYS.some(function(k) { return state[k] !== ''; })) {
+            $('#alMore').addClass('is-open');
+            $('#moreBtn').attr('aria-expanded', 'true');
+        }
+
         $('#dateRange').daterangepicker({
-            locale: { cancelLabel: 'Clear', format: 'DD-MMM-YYYY', separator: ' to ' },
+            locale: { cancelLabel: "<?= $this->jsTranslate('Clear') ?>", format: 'DD-MMM-YYYY', separator: ' – ' },
             autoApply: true,
             showDropdowns: true,
             alwaysShowCalendars: true,
@@ -951,81 +1414,71 @@
         }, function(start, end) {
             state.startDate = start.format('DD-MMM-YYYY');
             state.endDate = end.format('DD-MMM-YYYY');
-            state.page = 1;
-            $('#dateRange').val(state.startDate + ' to ' + state.endDate);
-            fetchFeed();
+            refresh();
         });
-
         $('#dateRange').on('cancel.daterangepicker', function() {
-            $(this).val('');
-            state.startDate = '';
-            state.endDate = '';
-            state.page = 1;
-            fetchFeed();
+            clearFilter('date');
+            refresh();
         });
 
-        $('#type').on('change', function() {
-            state.type = $(this).val();
-            state.page = 1;
-            fetchFeed();
+        $('#type').on('change', function() { state.type = $(this).val(); refresh(); });
+        $('#createdBy').on('change', function() { state.createdBy = $(this).val(); refresh(); });
+
+        $('#importantBtn').on('click', function() {
+            state.important = state.important === '1' ? '' : '1';
+            refresh();
         });
 
-        $('#createdBy').on('change', function() {
-            state.createdBy = $(this).val();
-            state.page = 1;
-            fetchFeed();
+        $('#moreBtn').on('click', function() {
+            var open = !$('#alMore').hasClass('is-open');
+            $('#alMore').toggleClass('is-open', open);
+            $(this).attr('aria-expanded', open ? 'true' : 'false');
         });
 
-        var actorEmailDebounce;
-        $('#actorEmail').on('input', function() {
+        var debounce = {};
+        $('#alMore input[data-key], #searchBox').on('input', function() {
+            var key = $(this).data('key') || 'search';
             var val = $(this).val();
-            clearTimeout(actorEmailDebounce);
-            actorEmailDebounce = setTimeout(function() {
-                state.actorEmail = val.trim();
-                state.page = 1;
-                fetchFeed();
-            }, 250);
+            if (key === 'search') $('#searchWrap').toggleClass('has-value', val.length > 0);
+            clearTimeout(debounce[key]);
+            debounce[key] = setTimeout(function() {
+                state[key] = val.trim();
+                refresh();
+            }, 300);
         });
 
-        var labIdDebounce;
-        $('#labId').on('input', function() {
-            var val = $(this).val();
-            clearTimeout(labIdDebounce);
-            labIdDebounce = setTimeout(function() {
-                state.labId = val.trim();
-                state.page = 1;
-                fetchFeed();
-            }, 250);
+        $('#clearSearch').on('click', function() {
+            state.search = '';
+            refresh();
+            $('#searchBox').trigger('focus');
         });
 
-        var sessionHashDebounce;
-        $('#sessionHash').on('input', function() {
-            var val = $(this).val();
-            clearTimeout(sessionHashDebounce);
-            sessionHashDebounce = setTimeout(function() {
-                state.sessionHash = val.trim();
-                state.page = 1;
-                fetchFeed();
-            }, 250);
+        $('#auditSource').on('click', '.src-btn', function() {
+            var src = $(this).data('source');
+            if (src === state.source) return;
+            state.source = src;
+            refresh();
         });
 
-        // Click any per-row session pill to scope the feed to that session.
-        // Stop propagation so the row's click-to-open-detail handler doesn't fire.
-        $feed.on('click', '.session-pill', function(e) {
+        $('#alChips').on('click', 'button[data-key]', function() {
+            clearFilter($(this).data('key'));
+            refresh();
+        });
+
+        $('#alScopeClear').on('click', function() {
+            clearFilter('entity');
+            refresh();
+        });
+
+        $feed.on('click', '.audit-entity', function(e) {
             e.stopPropagation();
-            var sh = $(this).data('session') || '';
-            if (!sh) return;
-            $('#sessionHash').val(sh);
-            state.sessionHash = sh;
-            state.page = 1;
-            fetchFeed();
+            var item = currentItems[parseInt($(this).data('idx'), 10)];
+            if (item) showEntity(item);
         });
 
-        // Click a row (or press Enter/Space when focused) to open the detail modal.
         $feed.on('click', '.audit-item', function() {
-            var idx = parseInt($(this).data('idx'), 10);
-            if (isNaN(idx) || !currentItems[idx]) return;
-            openDetailModal(currentItems[idx]);
+            var item = currentItems[parseInt($(this).data('idx'), 10)];
+            if (item) openPanel(item);
         });
         $feed.on('keydown', '.audit-item', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -1034,120 +1487,34 @@
             }
         });
 
-        var $modal = $('#auditModalBackdrop');
-        function openDetailModal(item) {
-            $('#amTitle').text(item.action || '');
-            $('#amTime').text(item.dateLabel + ' • ' + item.time);
-            $('#amUser').text(item.userName || '—');
-            $('#amEmail').text(item.userEmail || '—');
-            $('#amRole').text(item.userRole || '—');
-            $('#amContext').text(item.context || '—');
-            $('#amIp').text(item.ipAddress || '—');
-            $('#amSession').text(item.sessionHash || '—');
-            $('#amAction').text(item.action || '');
-            var amBrowser = item.browser || '';
-            var amOs = item.os || '';
-            if (!amBrowser && !amOs) {
-                var parsed = parseBrowserOS(item.userAgent || '');
-                amBrowser = parsed.browser;
-                amOs = parsed.os;
-            }
-            $('#amBrowser').text(amBrowser || '—')
-                .attr('title', item.userAgent || '');
-            $('#amOs').text(amOs || '—');
-            // Hide the Filter-by-session button entirely when the row has no
-            // session hash — disabling looked like a permission gate.
-            if (item.sessionHash) {
-                $('#amFilterSession').data('session', item.sessionHash).show();
-            } else {
-                $('#amFilterSession').hide();
-            }
-            $modal.addClass('is-open').attr('aria-hidden', 'false');
-        }
-        function closeDetailModal() {
-            $modal.removeClass('is-open').attr('aria-hidden', 'true');
-        }
-        $('#amClose, #amDismiss').on('click', closeDetailModal);
-        $modal.on('click', function(e) {
-            if (e.target === this) closeDetailModal();
-        });
+        $('#alPanelClose').on('click', closePanel);
+        $panel.on('click', function(e) { if (e.target === this) closePanel(); });
         $(document).on('keydown', function(e) {
-            if (e.key === 'Escape' && $modal.hasClass('is-open')) closeDetailModal();
+            if (e.key === 'Escape' && $panel.hasClass('is-open')) closePanel();
         });
-        $('#amFilterSession').on('click', function() {
-            var sh = $(this).data('session') || '';
-            if (!sh) return;
-            $('#sessionHash').val(sh);
-            state.sessionHash = sh;
-            state.page = 1;
-            closeDetailModal();
-            fetchFeed();
-        });
-
-        $('#searchBox').on('input', function() {
-            var val = $(this).val();
-            $('#searchWrap').toggleClass('has-value', val.length > 0);
-            clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(function() {
-                state.search = val;
-                state.page = 1;
-                fetchFeed();
-            }, 250);
-        });
-
-        $('#clearSearch').on('click', function() {
-            $('#searchBox').val('').focus();
-            $('#searchWrap').removeClass('has-value');
-            state.search = '';
-            state.page = 1;
-            fetchFeed();
-        });
-
-        $('#auditSource').on('click', '.src-btn', function() {
-            var src = $(this).data('source');
-            if (src === state.source) return;
-            $('#auditSource .src-btn').removeClass('is-active');
-            $(this).addClass('is-active');
-            state.source = src;
-            state.page = 1;
-            fetchFeed();
-        });
+        $('#alHistoryBtn').on('click', function() { if (panelItem) showEntity(panelItem); });
+        $('#alRequestBtn').on('click', function() { if (panelItem) onlyFilter('requestId', panelItem.requestId); });
+        $('#alSessionBtn').on('click', function() { if (panelItem) onlyFilter('sessionHash', panelItem.sessionHash); });
 
         $('#pageSize').on('change', function() {
             state.pageSize = parseInt($(this).val(), 10) || 25;
             state.page = 1;
             fetchFeed();
         });
-
-        $prev.on('click', function() {
+        $('#prevBtn').on('click', function() {
             if (state.page > 1) {
                 state.page -= 1;
                 fetchFeed();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
-
-        $next.on('click', function() {
+        $('#nextBtn').on('click', function() {
             state.page += 1;
             fetchFeed();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        $('#resetBtn').on('click', function() {
-            $('#dateRange').val('');
-            $('#type').val('');
-            $('#createdBy').val('');
-            $('#actorEmail').val('');
-            $('#labId').val('');
-            $('#sessionHash').val('');
-            $('#searchBox').val('');
-            $('#searchWrap').removeClass('has-value');
-            $('#auditSource .src-btn').removeClass('is-active')
-                .filter('[data-source="actions"]').addClass('is-active');
-            state = { page: 1, pageSize: state.pageSize, source: 'actions', startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', sessionHash: '', search: '' };
-            fetchFeed();
-        });
-
+        syncControls();
         fetchFeed();
     });
 })();
