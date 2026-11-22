@@ -54,8 +54,16 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $reasonCode = trim((string) ($params['ntReasonCode'] ?? ''));
             $reasonText = trim((string) ($params['ntReason'] ?? ''));
             $label = $reasonCode !== '' ? $reasonCode : ($reasonText !== '' ? $reasonText : '(unlabeled)');
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new not-tested reason - {$label}", 'config');
+            $newId = $this->findReasonId($reasonText);
+            $after = $newId !== null ? $this->reasonAuditFields($newId) : null;
+            $facts = [];
+            foreach ($after ?? [] as $field => $value) {
+                $facts[self::AUDIT_LABELS[$field]] = $value;
+            }
+            Application_Model_DbTable_AuditLog::record("Added a new not-tested reason - {$label}", 'config', [
+                'entity' => ['type' => 'config', 'id' => $newId, 'label' => 'Not tested reason: ' . $reasonText],
+                'facts' => $facts,
+            ]);
 
             $this->redirect('/admin/sample-not-tested-reasons');
         }
@@ -70,13 +78,19 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
         if ($request->isPost()) {
             $params = $request->getPost();
+            $reasonId = (string) base64_decode((string) ($params['ntrId'] ?? ''));
+            $before = $this->reasonAuditFields($reasonId);
             $schemeService->saveNotTestedReasons($params);
 
             $reasonCode = trim((string) ($params['ntReasonCode'] ?? ''));
             $reasonText = trim((string) ($params['ntReason'] ?? ''));
             $label = $reasonCode !== '' ? $reasonCode : ($reasonText !== '' ? $reasonText : '(unlabeled)');
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated not-tested reason - {$label}", 'config');
+            $after = $this->reasonAuditFields($reasonId);
+            $extra = ['entity' => ['type' => 'config', 'id' => $reasonId, 'label' => 'Not tested reason: ' . $reasonText]];
+            if ($before !== null && $after !== null) {
+                $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_LABELS);
+            }
+            Application_Model_DbTable_AuditLog::record("Updated not-tested reason - {$label}", 'config', $extra);
 
             $this->redirect('/admin/sample-not-tested-reasons');
         } elseif ($this->hasParam('53s5k85_8d')) {
@@ -84,6 +98,58 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $this->view->result = $schemeService->getNotTestedReasonById($id);
         } else {
             $this->redirect('admin/sample-not-tested-reasons/index');
+        }
+    }
+
+    private const AUDIT_LABELS = [
+        'ntr_reason' => 'Not Tested Reason',
+        'reason_code' => 'Reason Code',
+        'ntr_test_type' => 'Scheme Name',
+        'collect_panel_receipt_date' => 'Collect Panel Receipt Date?',
+        'ntr_status' => 'Status',
+    ];
+
+    /** @return array<string, mixed>|null */
+    private function reasonAuditFields(string $id): ?array
+    {
+        if ($id === '' || !ctype_digit($id)) {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()->from('r_response_not_tested_reasons', array_keys(self::AUDIT_LABELS))->where('ntr_id = ?', (int) $id)
+            );
+        } catch (Throwable $e) {
+            return null;
+        }
+        if (!$row) {
+            return null;
+        }
+        $schemes = json_decode((string) $row['ntr_test_type'], true);
+        $schemes = is_array($schemes) ? array_map('strval', array_values($schemes)) : [];
+        sort($schemes);
+        $row['ntr_test_type'] = $schemes;
+        return $row;
+    }
+
+    private function findReasonId(string $reason): ?string
+    {
+        if ($reason === '') {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $id = $db->fetchOne(
+                $db->select()
+                    ->from('r_response_not_tested_reasons', ['ntr_id'])
+                    ->where('ntr_reason = ?', $reason)
+                    ->order('ntr_id DESC')
+                    ->limit(1)
+            );
+            return $id !== false ? (string) $id : null;
+        } catch (Throwable $e) {
+            return null;
         }
     }
 }

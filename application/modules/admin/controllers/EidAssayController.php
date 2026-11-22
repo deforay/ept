@@ -56,14 +56,16 @@ class Admin_EidAssayController extends Zend_Controller_Action
             $name = trim((string) ($params['name'] ?? ''));
             $nameLabel = $name !== '' ? $name : '(unnamed)';
             if (isset($params['category']) && trim($params['category']) == 'extraction') {
-                $vlAssayService->addEidExtractionAssay($params);
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Added a new EID extraction assay - {$nameLabel}", 'config');
+                $newId = $vlAssayService->addEidExtractionAssay($params);
+                Application_Model_DbTable_AuditLog::record("Added a new EID extraction assay - {$nameLabel}", 'config', [
+                    'entity' => ['type' => 'config', 'id' => $newId ?: null, 'label' => 'EID extraction assay: ' . $name],
+                ]);
                 $this->redirect('/admin/eid-assay/index/fromSource/' . $params['category']);
             } elseif (isset($params['category']) && trim($params['category']) == 'detection') {
-                $vlAssayService->addEidDetectionAssay($params);
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Added a new EID detection assay - {$nameLabel}", 'config');
+                $newId = $vlAssayService->addEidDetectionAssay($params);
+                Application_Model_DbTable_AuditLog::record("Added a new EID detection assay - {$nameLabel}", 'config', [
+                    'entity' => ['type' => 'config', 'id' => $newId ?: null, 'label' => 'EID detection assay: ' . $name],
+                ]);
                 $this->redirect('/admin/eid-assay/index/fromSource/' . $params['category']);
             }
             $this->redirect('/admin/eid-assay/');
@@ -87,17 +89,63 @@ class Admin_EidAssayController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $vlAssayService = new Application_Service_VlAssay();
-            $status = (string) ($params['status'] ?? '');
+            $status = (string) ($params['switchStatus'] ?? '');
             $source = (string) ($params['formSource'] ?? '');
+            $before = $this->assayRow($source, (string) ($params['id'] ?? ''));
             if ($source == 'extraction') {
                 $this->view->result = $vlAssayService->changeEidExtractionNameStatus($params);
             } elseif ($source == 'detection') {
                 $this->view->result = $vlAssayService->changeEidDetectionNameStatus($params);
             }
             if ($source !== '') {
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Changed EID {$source} assay status" . ($status !== '' ? " to '{$status}'" : ''), 'config');
+                $this->recordStatusChange($source, (string) ($params['id'] ?? ''), $status, $before);
             }
         }
+    }
+
+    private const ASSAY_TABLES = [
+        'extraction' => 'r_eid_extraction_assay',
+        'detection' => 'r_eid_detection_assay',
+    ];
+
+    /** @return array{name: string, status: string}|null */
+    private function assayRow(string $source, string $id): ?array
+    {
+        if (!isset(self::ASSAY_TABLES[$source]) || $id === '') {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()->from(self::ASSAY_TABLES[$source], ['name', 'status'])->where('id = ?', $id)
+            );
+            return $row ? ['name' => (string) $row['name'], 'status' => (string) $row['status']] : null;
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    /** @param array{name: string, status: string}|null $before */
+    private function recordStatusChange(string $source, string $id, string $status, ?array $before): void
+    {
+        $after = $this->assayRow($source, $id);
+        $name = $after['name'] ?? ($before['name'] ?? '');
+        $extra = ['entity' => ['type' => 'config', 'id' => $id, 'label' => "EID {$source} assay: {$name}"]];
+        if ($before !== null && $after !== null) {
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes(
+                ['status' => $before['status']],
+                ['status' => $after['status']],
+                ['status' => 'Status']
+            );
+            if ($before['status'] === 'active' && $after['status'] !== 'active') {
+                $extra['important'] = true;
+                $extra['reason'] = 'The assay is no longer offered in result entry.';
+            }
+        }
+        Application_Model_DbTable_AuditLog::record(
+            "Changed EID {$source} assay status" . ($status !== '' ? " to '{$status}'" : '') . ($name !== '' ? " - {$name}" : ''),
+            'config',
+            $extra
+        );
     }
 }
