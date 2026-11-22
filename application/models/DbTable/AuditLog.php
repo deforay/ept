@@ -349,6 +349,36 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         return is_array($decoded['snapshot'] ?? null) ? $decoded['snapshot'] : null;
     }
 
+    /**
+     * Environment variables scheduled-jobs/execute-job-queue.php sets for each
+     * job it runs, so entries a queued job writes name who queued it.
+     */
+    public const ENV_JOB_ADMIN_ID = 'EPT_JOB_REQUESTED_BY';
+    public const ENV_JOB_ID = 'EPT_JOB_ID';
+
+    /**
+     * A command-line run has no session. When the job queue started it, the
+     * admin who queued the job is the actor. Otherwise it is the system.
+     *
+     * @return array{email: ?string, role: string, id: ?int, onBehalfOf: ?string}
+     */
+    private function resolveJobRequester(): array
+    {
+        $system = ['email' => null, 'role' => 'system', 'id' => null, 'onBehalfOf' => null];
+        $adminId = (int) getenv(self::ENV_JOB_ADMIN_ID);
+        if ($adminId <= 0) {
+            return $system;
+        }
+        try {
+            $email = $this->getAdapter()->fetchOne(
+                $this->getAdapter()->select()->from('system_admin', ['primary_email'])->where('admin_id = ?', $adminId)
+            );
+        } catch (Throwable $e) {
+            return $system;
+        }
+        return $email ? ['email' => (string) $email, 'role' => 'admin', 'id' => $adminId, 'onBehalfOf' => null] : $system;
+    }
+
     /** Same id for every entry written during one PHP request. */
     public static function requestId(): string
     {
@@ -371,7 +401,9 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
     {
         if (php_sapi_name() === 'cli') {
             $script = $_SERVER['argv'][0] ?? ($_SERVER['SCRIPT_NAME'] ?? '');
-            return $script !== '' ? substr(basename((string) $script), 0, 255) : null;
+            $jobId = (int) getenv(self::ENV_JOB_ID);
+            $route = $script !== '' ? basename((string) $script) . ($jobId > 0 ? " (job {$jobId})" : '') : '';
+            return $route !== '' ? substr($route, 0, 255) : null;
         }
         $request = $this->currentRequest();
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
@@ -408,7 +440,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         // CLI runs (scheduled jobs) have no session; starting one here throws
         // once any output has been emitted. Attribute these to the system.
         if (php_sapi_name() === 'cli') {
-            return ['email' => null, 'role' => 'system', 'id' => null, 'onBehalfOf' => null];
+            return $this->resolveJobRequester();
         }
         $admin = new Zend_Session_Namespace('administrators');
         $dm = new Zend_Session_Namespace('datamanagers');
@@ -484,6 +516,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             'requested password' => 'password',
             'set new password' => 'password',
             'cancelled' => 'cancel',
+            'closed responses' => 'close',
             'shipped' => 'ship',
             'generated' => 'generate',
             'queued' => 'generate',
@@ -817,6 +850,11 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             }
             if ($name === '') {
                 $name = $row['created_by'] ?? 'Unattributed';
+            }
+            // Scheduled jobs no admin queued, such as cron housekeeping.
+            if (empty($row['created_by']) && ($row['channel'] ?? '') === 'cli') {
+                $name = $this->translator()('System');
+                $role = $name;
             }
             // Login rows carry their own icon and, since user_login_history
             // already stores parsed browser/OS, their own display strings.
