@@ -118,15 +118,26 @@ foreach (Pt_Evaluation_Dts_Algorithm::cases() as $algorithm) {
     }
     $passing = [];
     $total = 0;
+    $messageProblems = [];
     foreach (combinations($algorithm, ['-', 'R', 'NR', 'I', 'IND', 'WR'], ['P', 'N', 'IND', 'X']) as [$results, $final]) {
         $total++;
-        if (Pt_Evaluation_Dts_AlgorithmCheck::check($algorithm, $results, $final)['pass']) {
+        $pass = Pt_Evaluation_Dts_AlgorithmCheck::check($algorithm, $results, $final)['pass'];
+        if ($pass) {
             $passing[key_of($results, $final)] = true;
+        }
+        // The label holds markup so the check can tell that values are escaped.
+        $feedback = Pt_Evaluation_Dts_AlgorithmCheck::feedback($algorithm, $results, $final, 'S<1>');
+        $problem = feedback_problem($feedback, $pass);
+        if ($problem !== null && count($messageProblems) < 5) {
+            $messageProblems[] = key_of($results, $final) . ": $problem";
         }
     }
     $missing = array_keys(array_diff_key($expected, $passing));
     $extra = array_keys(array_diff_key($passing, $expected));
-    $ok = $missing === [] && $extra === [];
+    $ok = $missing === [] && $extra === [] && $messageProblems === [];
+    foreach ($messageProblems as $line) {
+        fwrite(STDOUT, "    warnings: $line\n");
+    }
     $failed = $failed || !$ok;
     fwrite(STDOUT, sprintf("%-32s %5d combinations, %2d pass  %s\n", $algorithm->value, $total, count($passing), $ok ? 'OK' : 'DIFFERS'));
     foreach ($missing as $combo) {
@@ -141,4 +152,66 @@ foreach (Pt_Evaluation_Dts_Algorithm::cases() as $algorithm) {
     }
 }
 
+// Key combinations must get exactly the expected reasons and corrective actions.
+$cases = require "$root/expectations/dts-algorithm-messages.php";
+$caseFailures = [];
+foreach ($cases as [$name, $results, $final, $want]) {
+    $feedback = Pt_Evaluation_Dts_AlgorithmCheck::feedback(Pt_Evaluation_Dts_Algorithm::from($name), $results, $final, 'S1');
+    $got = array_map(static fn ($item) => [$item['code'], $item['correctiveActionId']], $feedback['items']);
+    if ($got !== $want) {
+        $caseFailures[] = sprintf(
+            '%s %s: expected %s, got %s',
+            $name,
+            key_of($results, $final),
+            json_encode($want),
+            json_encode($got)
+        );
+    }
+}
+fwrite(STDOUT, sprintf("%-32s %5d cases  %s\n", 'warnings for key cases', count($cases), $caseFailures === [] ? 'OK' : 'DIFFERS'));
+foreach ($caseFailures as $line) {
+    fwrite(STDOUT, "    $line\n");
+}
+$failed = $failed || $caseFailures !== [];
+
 exit($failed ? 1 : 0);
+
+/**
+ * What is wrong with the warnings for one combination, or null when they are right:
+ * none for a pass, at least one for a fail, each with a known reason code, a known
+ * corrective action, no placeholder left unfilled and the sample label escaped.
+ */
+function feedback_problem(array $feedback, bool $pass): ?string
+{
+    if ($feedback['pass'] !== $pass) {
+        return 'feedback() and check() disagree on the verdict';
+    }
+    if ($pass) {
+        return $feedback['items'] === [] ? null : 'a passing combination has warnings';
+    }
+    if ($feedback['items'] === []) {
+        return 'a failing combination has no warning';
+    }
+    if (count($feedback['actions']) !== count($feedback['items'])) {
+        return 'warnings and corrective actions do not pair up';
+    }
+    foreach ($feedback['items'] as $item) {
+        if (Pt_Evaluation_Dts_Reason::tryFrom((string) ($item['code'] ?? '')) === null) {
+            return 'unknown reason code ' . json_encode($item['code'] ?? null);
+        }
+        if (Pt_Evaluation_Dts_CorrectiveAction::tryFrom((int) ($item['correctiveActionId'] ?? 0)) === null) {
+            return 'unknown corrective action ' . json_encode($item['correctiveActionId'] ?? null);
+        }
+        $html = Pt_Evaluation_FailureReason::warningHtml($item);
+        if (preg_match('/%[a-zA-Z]+%/', $html)) {
+            return "placeholder left in: $html";
+        }
+        if (!str_contains($html, 'S&lt;1&gt;')) {
+            return "sample label missing or not escaped: $html";
+        }
+        if (trim(strip_tags(Pt_Evaluation_FailureReason::correctiveActionHtml($item))) === '') {
+            return 'empty corrective action';
+        }
+    }
+    return null;
+}

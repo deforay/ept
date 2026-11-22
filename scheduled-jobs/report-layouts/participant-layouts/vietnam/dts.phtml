@@ -779,8 +779,10 @@ if (!empty($resultArray['shipment'])) {
         $grouped = [];
         if (!empty($warnings)) {
             foreach ($warnings as $warning) {
-                $obs = is_array($warning) ? ($warning['warning'] ?? '') : (string) $warning;
-                $rec = is_array($warning) ? ($warning['correctiveAction'] ?? '') : '';
+                // Both helpers show a coded item in the reader's language. NIHE feedback
+                // has no code, so it comes back as stored and is translated below.
+                $obs = is_array($warning) || is_string($warning) ? Pt_Evaluation_FailureReason::warningHtml($warning) : '';
+                $rec = is_array($warning) ? Pt_Evaluation_FailureReason::correctiveActionHtml($warning) : '';
                 $key = $rec !== '' ? $rec : $obs;
                 if (!isset($grouped[$key])) {
                     $grouped[$key] = ['rec' => $rec, 'obs' => []];
