@@ -225,6 +225,12 @@ class AuthController extends Zend_Controller_Action
                     $authNameSpace->ptcc = 1;
                 }
 
+                // Before any redirect below, so logins that land on the profile
+                // review or email verification page are recorded too.
+                Application_Model_DbTable_AuditLog::record('Logged in', 'auth', [
+                    'entity' => Application_Model_DbTable_DataManagers::auditEntity($result),
+                ]);
+
                 // Update last login
                 $userService = new Application_Service_DataManagers();
                 $userService->updateLastLogin($result['dm_id']);
@@ -267,8 +273,6 @@ class AuthController extends Zend_Controller_Action
 
                 $loginHistoryModel->addLoginHistory($loginData);
 
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog('Logged in', 'auth');
                 // To check the re-drection for participant after logged in
                 $dbUsersProfile = new Application_Service_Participants();
                 $shipmentService = new Application_Service_Shipments();
@@ -367,8 +371,9 @@ class AuthController extends Zend_Controller_Action
             $this->redirect('/admin/impersonate/stop');
             return;
         }
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Logged out', 'auth');
+        Application_Model_DbTable_AuditLog::record('Logged out', 'auth', [
+            'entity' => Application_Model_DbTable_DataManagers::auditEntity(['dm_id' => $authNameSpace->dm_id ?? null, 'primary_email' => $authNameSpace->email ?? '']),
+        ]);
         Zend_Auth::getInstance()->clearIdentity();
         Zend_Session::destroy();
         $this->redirect('/');
@@ -403,8 +408,15 @@ class AuthController extends Zend_Controller_Action
             $userService = new Application_Service_DataManagers();
             $email = trim((string) ($params['registeredEmail'] ?? ''));
             $userService->resetPassword($email !== '' ? $email : null);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Requested password reset' . ($email !== '' ? " - {$email}" : ''), 'auth');
+            $auditExtra = [];
+            if ($email !== '') {
+                $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $dmId = $db->fetchOne($db->select()->from('data_manager', ['dm_id'])->where('primary_email = ?', $email));
+                if ($dmId) {
+                    $auditExtra['entity'] = ['type' => 'data-manager', 'id' => (int) $dmId, 'label' => $email];
+                }
+            }
+            Application_Model_DbTable_AuditLog::record('Requested password reset' . ($email !== '' ? " - {$email}" : ''), 'auth', $auditExtra);
             $this->redirect($this->loginUri);
         }
         $this->view->formToken = Application_Service_Common::generateFormToken();
@@ -444,8 +456,9 @@ class AuthController extends Zend_Controller_Action
             $params['registeredEmail'] = $verifiedEmail;
             $params['dm_id'] = $verifiedDmId;
             $redirectTo = $userService->newPassword($params);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Set new password via reset link - ' . $verifiedEmail, 'auth');
+            Application_Model_DbTable_AuditLog::record('Set new password via reset link - ' . $verifiedEmail, 'auth', [
+                'entity' => ['type' => 'data-manager', 'id' => $verifiedDmId, 'label' => $verifiedEmail],
+            ]);
             $this->redirect($redirectTo);
         } else {
             $this->view->email = $resolved;

@@ -43,6 +43,142 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     private array $ptccProvinceListCache = [];
     private array $ptccDistrictListCache = [];
 
+    /** Labels the data manager form shows, for the audit log. */
+    private const AUDIT_FIELD_LABELS = [
+        'primary_email' => 'Login (Primary e-mail)',
+        'password' => 'Password',
+        'institute' => 'Institute',
+        'first_name' => 'User First Name',
+        'last_name' => 'User Last Name',
+        'secondary_email' => 'Secondary e-mail Address',
+        'mobile' => 'Cell Phone Number',
+        'phone' => 'Phone Number',
+        'qc_access' => 'QC Access',
+        'enable_adding_test_response_date' => 'Enable Adding Response Date',
+        'enable_choosing_mode_of_receipt' => 'Enable Choosing Mode of Receipt',
+        'view_only_access' => 'Enable View-Only Access',
+        'status' => 'Status',
+        'country_id' => 'Country',
+        'language' => 'Language',
+    ];
+
+    /**
+     * Audit log entity for one data manager row.
+     *
+     * @return array{type: string, id: mixed, label: string}
+     */
+    public static function auditEntity($row): array
+    {
+        return ['type' => 'data-manager', 'id' => $row['dm_id'] ?? null, 'label' => trim((string) ($row['primary_email'] ?? ''))];
+    }
+
+    /**
+     * The data manager's editable fields as the audit log compares them, or
+     * null when the row cannot be read.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function auditSnapshot(int $dmId): ?array
+    {
+        try {
+            $db = $this->getAdapter();
+            $row = $db->fetchRow($db->select()->from(['dm' => $this->_name])
+                ->joinLeft(['c' => 'countries'], 'c.id = dm.country_id', ['country_name' => 'iso_name'])
+                ->where('dm.dm_id = ?', $dmId));
+            if (!$row) {
+                return null;
+            }
+            $snapshot = ['data_manager_type' => $row['data_manager_type']];
+            foreach (array_keys(self::AUDIT_FIELD_LABELS) as $field) {
+                $snapshot[$field] = $row[$field] ?? null;
+            }
+            $snapshot['country_id'] = $row['country_name'] ?? $row['country_id'];
+            $snapshot['areas'] = array_map(
+                static fn ($area) => implode(' / ', array_filter([$area['iso_name'], $area['state'], $area['district']], static fn ($v) => (string) $v !== '')),
+                $db->fetchAll($db->select()->from(['m' => 'ptcc_countries_map'], ['state', 'district'])
+                    ->joinLeft(['c' => 'countries'], 'c.id = m.country_id', ['iso_name'])
+                    ->where('m.ptcc_id = ?', $dmId)
+                    ->order(['c.iso_name', 'm.state', 'm.district']))
+            );
+            return $snapshot;
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('Data manager audit snapshot failed: ' . $e->getMessage(), ['dm_id' => $dmId]);
+            return null;
+        }
+    }
+
+    /**
+     * Participant ids mapped to one data manager.
+     *
+     * @return list<int>
+     */
+    public function mappedParticipantIds(int $dmId): array
+    {
+        try {
+            $db = $this->getAdapter();
+            return array_map('intval', $db->fetchCol($db->select()->from('participant_manager_map', ['participant_id'])->where('dm_id = ?', $dmId)));
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Write one audit entry about a data manager. With $before, it lists what
+     * changed. With $beforeLabs, it lists the labs mapped and unmapped. An
+     * unmapped lab or a status change alters who can submit results, so the
+     * entry is flagged.
+     *
+     * @param array<string, mixed>|null $before from auditSnapshot(), read before the save
+     * @param list<int>|null $beforeLabs from mappedParticipantIds(), read before the save
+     */
+    public function auditDataManager(string $statement, int $dmId, ?array $before = null, ?array $beforeLabs = null, string $type = 'participants'): void
+    {
+        $after = $this->auditSnapshot($dmId);
+        $email = trim((string) ($after['primary_email'] ?? $before['primary_email'] ?? ''));
+        $extra = [
+            'entity' => ['type' => 'data-manager', 'id' => $dmId, 'label' => $email],
+            'importantFields' => ['status'],
+            'reason' => 'Changes who can submit results for the mapped labs',
+        ];
+        if ($before !== null && $after !== null) {
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_FIELD_LABELS);
+        } elseif ($after !== null) {
+            $extra['facts'] = array_filter([
+                'Status' => $after['status'] ?? null,
+                'Country' => $after['country_id'] ?? null,
+            ], static fn ($v) => $v !== null && $v !== '');
+        }
+        if ($beforeLabs !== null) {
+            $afterLabs = $this->mappedParticipantIds($dmId);
+            $mapped = array_values(array_diff($afterLabs, $beforeLabs));
+            $unmapped = array_values(array_diff($beforeLabs, $afterLabs));
+            $names = Application_Model_DbTable_Participants::auditLabels(array_merge($mapped, $unmapped));
+            $rows = [];
+            foreach ($mapped as $id) {
+                $rows[] = 'Mapped: ' . ($names[$id] ?? $id);
+            }
+            foreach ($unmapped as $id) {
+                $rows[] = 'Unmapped: ' . ($names[$id] ?? $id);
+            }
+            $extra['facts'] = ($extra['facts'] ?? []) + [
+                'Labs mapped' => count($mapped),
+                'Labs unmapped' => count($unmapped),
+                'Mapped Participants' => count($afterLabs),
+            ];
+            if ($rows !== []) {
+                $extra['list'] = ['title' => 'Labs', 'rows' => $rows];
+                if (isset($extra['changes']) && $extra['changes'] === []) {
+                    // The labs changed, so the entry must not say nothing changed.
+                    unset($extra['changes']);
+                }
+            }
+            if ($unmapped !== []) {
+                $extra['important'] = true;
+            }
+        }
+        Application_Model_DbTable_AuditLog::record($statement . ($email !== '' ? ' - ' . $email : ''), $type, $extra);
+    }
+
     public function addUser($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -92,13 +228,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ]);
             }
 
-            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
-            $lastName = isset($params['lname']) && $params['lname'] != '' ? $params['lname'] : null;
-            $authNameSpace = new Zend_Session_Namespace('administrators');
-            $name = $firstName . ' ' . $lastName;
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new data manager - $userName", 'participants');
+            $this->auditDataManager('Added a new data manager', (int) $dmId, null, []);
         }
         return $dmId;
     }
@@ -628,17 +758,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $dmId = (int) $params['userSystemId'];
         if ($dmId !== false && $dmId > 0) {
+            $auditBefore = $this->auditSnapshot($dmId);
+            $auditBeforeLabs = $this->mappedParticipantIds($dmId);
             $this->update($data, ['dm_id = ?' => $dmId]);
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
-            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
-            $lastName = isset($params['lname']) && $params['lname'] != '' ? $params['lname'] : null;
-            $authNameSpace = new Zend_Session_Namespace('administrators');
-            $name = "$firstName $lastName";
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated data manager - $userName", 'participants');
+            $this->auditDataManager('Updated data manager', $dmId, $auditBefore, $auditBeforeLabs);
         }
         return $dmId;
     }
@@ -1420,6 +1546,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $auditBefore = $this->auditSnapshot($dmId);
         $rows = $this->update(
             [
                 'primary_email' => $newEmail,
@@ -1430,6 +1557,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ],
             ['dm_id = ?' => $dmId]
         );
+        if ($rows > 0) {
+            $this->auditDataManager('Updated data manager login email', $dmId, $auditBefore);
+        }
         return ['ok' => $rows > 0, 'message' => $rows > 0 ? 'Primary email updated.' : 'Update failed.', 'old' => $oldEmail];
     }
 
@@ -1885,10 +2015,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             throw $e;
         }
 
-        $authNameSpace = new Zend_Session_Namespace('administrators');
         $managerLabel = ($type === 'ptcc') ? 'PTCCs' : 'data managers';
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Bulk imported {$importedCount} {$managerLabel}", 'data-managers');
+        $this->auditBulkImport("Bulk imported {$importedCount} {$managerLabel}", $response);
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
@@ -1898,6 +2026,49 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
      * Before/after of a PTCC update for the review screen. The password is left out:
      * an update always rewrites it, which the review states once for all rows.
      */
+    /**
+     * One audit entry for a data manager import: counts and the accounts
+     * added, updated or deactivated. Deactivated accounts can no longer log
+     * in, so an import that deactivates any is flagged.
+     *
+     * @param array<string, mixed> $response the import summary
+     */
+    private function auditBulkImport(string $statement, array $response): void
+    {
+        $added = 0;
+        $updated = 0;
+        $rows = [];
+        foreach ((array) ($response['data'] ?? []) as $saved) {
+            $email = (string) ($saved['primary_email'] ?? '');
+            if (($saved['action'] ?? '') === 'updated') {
+                $updated++;
+                $fields = array_keys((array) ($saved['changes'] ?? []));
+                $rows[] = 'Updated: ' . $email . ($fields !== [] ? ' (' . implode(', ', array_map([Application_Model_DbTable_AuditLog::class, 'humanize'], $fields)) . ')' : '');
+            } else {
+                $added++;
+                $rows[] = 'Added: ' . $email;
+            }
+        }
+        $deactivated = (array) ($response['deactivated'] ?? []);
+        foreach ($deactivated as $ptcc) {
+            $rows[] = 'Deactivated: ' . ($ptcc['primary_email'] ?? '');
+        }
+        $extra = [
+            'facts' => [
+                'Added' => $added,
+                'Updated' => $updated,
+                'Skipped' => count((array) ($response['error-data'] ?? [])),
+                'Deactivated' => count($deactivated),
+            ],
+            'list' => ['title' => 'Accounts', 'rows' => $rows],
+        ];
+        if ($deactivated !== []) {
+            $extra['important'] = true;
+            $extra['reason'] = 'Deactivated accounts can no longer log in';
+        }
+        Application_Model_DbTable_AuditLog::record($statement, 'data-managers', $extra);
+    }
+
     private function diffDataManager(int $dmId, array $newData, array $countryNamesById): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1994,6 +2165,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $activeOnly = in_array($type, ['active_list', 'active_credentials'], true);
         $withPassword = ($type === 'active_credentials');
         $resetCount = 0;
+        $resetLogins = [];
 
         try {
             $excel = new Spreadsheet();
@@ -2091,6 +2263,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                             $password = MiscUtility::generateTempPassword($login);
                             if ($this->updatePasswordFromAdmin($login, $password, true)) {
                                 $resetCount++;
+                                $resetLogins[] = $login;
                             }
                         }
                         $row[] = $login;
@@ -2133,7 +2306,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if ($withPassword && $resetCount > 0) {
                 try {
                     (new Application_Model_DbTable_AuditLog())
-                        ->addNewAuditLog("Bulk deterministic password reset for {$resetCount} active PTCC via credentials export", 'password-reset');
+                        ->addNewAuditLog("Bulk deterministic password reset for {$resetCount} active PTCC via credentials export", 'password-reset', null, [
+                            'facts' => ['Passwords reset' => $resetCount],
+                            'list' => ['title' => 'PTCC logins reset', 'rows' => array_values(array_unique($resetLogins))],
+                        ]);
                 } catch (Throwable $auditEx) {
                     Pt_Commons_LoggerUtility::logError('PTCC credentials export: audit log failed: ' . $auditEx->getMessage());
                 }

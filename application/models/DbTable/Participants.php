@@ -67,6 +67,183 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return trim((string) ($row['first_name'] ?? ''));
     }
 
+    /** "UNIQUE_ID - Lab name", how the audit log names one participant. */
+    public static function auditLabel($row): string
+    {
+        $uid = trim((string) ($row['unique_identifier'] ?? ''));
+        $name = self::formatParticipantName($row);
+        if ($uid === '' || $name === '') {
+            return $uid . $name;
+        }
+        return $uid . ' - ' . $name;
+    }
+
+    /**
+     * Audit log entity for one participant row.
+     *
+     * @return array{type: string, id: mixed, label: string}
+     */
+    public static function auditEntity($row): array
+    {
+        return ['type' => 'participant', 'id' => $row['participant_id'] ?? null, 'label' => self::auditLabel($row)];
+    }
+
+    /**
+     * Audit labels for many participants, keyed by participant_id.
+     *
+     * @param array<int|string> $participantIds
+     * @return array<int, string>
+     */
+    public static function auditLabels(array $participantIds): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $participantIds))));
+        if ($ids === []) {
+            return [];
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll($db->select()
+            ->from('participant', ['participant_id', 'unique_identifier', 'individual', 'lab_name', 'first_name', 'last_name'])
+            ->where('participant_id IN (?)', $ids)
+            ->order('unique_identifier'));
+        $out = [];
+        foreach ($rows as $row) {
+            $out[(int) $row['participant_id']] = self::auditLabel($row);
+        }
+        return $out;
+    }
+
+    /** Labels the participant form shows, for the audit log. */
+    private const AUDIT_FIELD_LABELS = [
+        'unique_identifier' => 'Participant ID',
+        'individual' => 'Individual Participant',
+        'first_name' => 'First Name',
+        'last_name' => 'Last Name',
+        'contact_name' => 'Contact Person Name',
+        'institute_name' => 'Institute Name',
+        'department_name' => 'Department Name',
+        'email' => 'E-mail',
+        'additional_email' => 'Additional/Alternate E-mail',
+        'address' => 'Physical Address',
+        'country' => 'Country',
+        'zip' => 'Zip/Postal Code (if applicable)',
+        'state' => 'State/Province',
+        'district' => 'District/County',
+        'city' => 'City',
+        'shipping_address' => 'Shipping Address (include city and country)',
+        'region' => 'Region',
+        'lat' => 'Latitude',
+        'long' => 'Longitude',
+        'funding_source' => 'Funding Source',
+        'testing_volume' => 'Testing Volume',
+        'enrolled_programs' => 'Enrolled Programs',
+        'site_type' => 'Site Type/Testing Point',
+        'anc' => 'ANC',
+        'pepfar_id' => 'PEPFAR ID',
+        'mobile' => 'Cell/Mobile No.',
+        'phone' => 'Phone Number',
+        'network_tier' => 'Network Tier',
+        'affiliation' => 'Affiliation',
+        'schemes' => 'Schemes',
+        'data_managers' => 'Selected Data Managers',
+        'status' => 'Status',
+    ];
+
+    /**
+     * The participant's editable fields as the audit log compares them. The
+     * country, programs, schemes and data managers are shown by name.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function auditSnapshot(int $participantId): ?array
+    {
+        try {
+            return $this->readAuditSnapshot($participantId);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('Participant audit snapshot failed: ' . $e->getMessage(), ['participant_id' => $participantId]);
+            return null;
+        }
+    }
+
+    /** @return array<string, mixed>|null */
+    private function readAuditSnapshot(int $participantId): ?array
+    {
+        $db = $this->getAdapter();
+        $row = $db->fetchRow($db->select()->from(['p' => 'participant'])
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'iso_name'])
+            ->where('p.participant_id = ?', $participantId));
+        if (!$row) {
+            return null;
+        }
+        $snapshot = [];
+        foreach (array_keys(self::AUDIT_FIELD_LABELS) as $field) {
+            if (array_key_exists($field, $row)) {
+                $snapshot[$field] = $row[$field];
+            }
+        }
+        $snapshot['country'] = $row['country_name'] ?? $row['country'];
+        $snapshot['enrolled_programs'] = $db->fetchCol($db->select()
+            ->from(['m' => 'participant_enrolled_programs_map'], [])
+            ->join(['r' => 'r_enrolled_programs'], 'r.r_epid = m.ep_id', ['enrolled_programs'])
+            ->where('m.participant_id = ?', $participantId)
+            ->order('r.enrolled_programs'));
+        $snapshot['schemes'] = $db->fetchCol($db->select()->distinct()
+            ->from(['e' => 'enrollments'], [])
+            ->join(['s' => 'scheme_list'], 's.scheme_id = e.scheme_id', ['scheme_name'])
+            ->where('e.participant_id = ?', $participantId)
+            ->order('s.scheme_name'));
+        $snapshot['data_managers'] = $db->fetchCol($db->select()
+            ->from(['pmm' => 'participant_manager_map'], [])
+            ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['primary_email'])
+            ->where('pmm.participant_id = ?', $participantId)
+            ->order('dm.primary_email'));
+        $snapshot['label'] = self::auditLabel($row);
+        $snapshot['participant_id'] = $participantId;
+        return $snapshot;
+    }
+
+    /** Write the audit entry for a new participant, with its main details. */
+    private function auditAdded(int $participantId): void
+    {
+        $snapshot = $this->auditSnapshot($participantId);
+        $label = (string) ($snapshot['label'] ?? $participantId);
+        $facts = [];
+        foreach (['status', 'country', 'email', 'schemes', 'data_managers'] as $field) {
+            $value = $snapshot[$field] ?? null;
+            if ($value !== null && $value !== '' && $value !== []) {
+                $facts[self::AUDIT_FIELD_LABELS[$field]] = $value;
+            }
+        }
+        Application_Model_DbTable_AuditLog::record('Added a new participant - ' . $label, 'participants', [
+            'entity' => ['type' => 'participant', 'id' => $participantId, 'label' => $label],
+            'facts' => $facts,
+        ]);
+    }
+
+    /**
+     * Write one audit entry for a participant save, with what changed since
+     * $before. A new Participant ID, a status change or a removed data manager
+     * changes who can submit results, so those entries are flagged.
+     *
+     * @param array<string, mixed>|null $before from auditSnapshot(), read before the save
+     */
+    public function auditUpdate(string $statement, ?array $before, int $participantId): void
+    {
+        $after = $this->auditSnapshot($participantId);
+        $label = (string) ($after['label'] ?? $before['label'] ?? '');
+        $extra = [
+            'entity' => ['type' => 'participant', 'id' => $participantId, 'label' => $label],
+            'importantFields' => ['unique_identifier', 'status'],
+            'reason' => 'Changes who can submit results for this participant',
+        ];
+        if ($before !== null && $after !== null) {
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes($before, $after, self::AUDIT_FIELD_LABELS, ['label', 'participant_id']);
+            if (array_diff((array) ($before['data_managers'] ?? []), (array) ($after['data_managers'] ?? [])) !== []) {
+                $extra['important'] = true;
+            }
+        }
+        Application_Model_DbTable_AuditLog::record($statement . ($label !== '' ? ' - ' . $label : ''), 'participants', $extra);
+    }
+
     public function getParticipantsByUserSystemId($userSystemId)
     {
         $sql = $this->getAdapter()->select()->from(['p' => $this->_name], [
@@ -495,8 +672,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         $params['pid'] = $normalizedPid;
 
-        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : null;
-        $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : null;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         // Capture PTCC status before $authNameSpace may be reassigned below;
         // PTCC coordinators are not allowed to rename sites.
@@ -556,6 +731,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         /* get previous unique id for changes */
         $exist = $this->fetchRow($this->select()->where('participant_id = ?', $params['participantId']));
+        $auditBefore = $this->auditSnapshot($currentParticipantId);
         // PTCC coordinators may edit a site but must not rename it; ignore any
         // posted name and retain the stored values (defends against a crafted POST).
         if ($exist && $isPtcc) {
@@ -612,16 +788,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $enrollDb->enrollParticipantToSchemes($params['participantId'], $params['scheme']);
         }
 
-        if ($noOfRows > 0) {
-            $name = "$firstName $lastName";
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated participant - $userName", 'participants');
-        }
-
         // Last, so the data-manager mapping above cannot replace it; the lab's
         // country, province or district may have changed
         $this->mapToPtccs([(int) $params['participantId']]);
+
+        if ($noOfRows > 0) {
+            $this->auditUpdate('Updated participant', $auditBefore, $currentParticipantId);
+        }
         return $noOfRows;
     }
 
@@ -641,8 +814,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
         $ulid = Pt_Commons_General::generateULID();
-        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : null;
-        $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : null;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
             'unique_identifier' => $params['pid'],
@@ -730,14 +901,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        if ($participantId > 0) {
-            $name = $firstName . ' ' . $lastName;
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new participant - ' . $userName, 'participants');
-        }
         // Last, so the data-manager mapping above cannot replace it
         $this->mapToPtccs([(int) $participantId]);
+        if ($participantId > 0) {
+            $this->auditAdded((int) $participantId);
+        }
         return $participantId;
     }
 
@@ -812,6 +980,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         // After the creator's own mapping, which a PTCC creator would otherwise collide with
         $this->mapToPtccs([(int) $participantId]);
+        $this->auditAdded((int) $participantId);
         return $participantId;
     }
 
@@ -1098,6 +1267,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                             $authNameSpace = new Zend_Session_Namespace('administrators');
                             $mappedCount = 0;
+                            $newDmCount = 0;
+                            $auditRows = [];
 
                             foreach ($sheetData as $row) {
 
@@ -1143,6 +1314,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                                     $db->insert('data_manager', $dataManagerData);
                                     $dmId = $db->lastInsertId();
+                                    $newDmCount++;
                                 } else {
                                     $dmId = $dmresult['dm_id'];
                                 }
@@ -1153,11 +1325,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                     $dmData = ['dm_id' => $dmId, 'participant_id' => $participantId];
                                     $common->insertIgnore('participant_manager_map', $dmData);
                                     $mappedCount++;
+                                    $auditRows[] = self::auditLabel($participantRow) . ' → ' . $row['D'];
                                 }
                             }
-                            $authNameSpace = new Zend_Session_Namespace('administrators');
-                            $auditDb = new Application_Model_DbTable_AuditLog();
-                            $auditDb->addNewAuditLog("Bulk imported {$mappedCount} participant–data manager mappings", 'data-managers');
+                            Application_Model_DbTable_AuditLog::record("Bulk imported {$mappedCount} participant–data manager mappings", 'data-managers', [
+                                'facts' => ['Mappings' => $mappedCount, 'New data managers' => $newDmCount],
+                                'list' => ['title' => 'Mappings', 'rows' => $auditRows],
+                            ]);
                             $alertMsg->message = 'Mapping completed successfully';
                         } else {
                             $alertMsg->message = 'Mapping import failed';
@@ -1180,6 +1354,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         return ['ok' => false, 'count' => 0, 'error' => 'invalid_payload'];
                     }
                     $params['participantsList'] = $decoded;
+                    $auditBeforeLabs = $dm->mappedParticipantIds((int) $params['datamanagerId']);
                     $result = $dm->dmParticipantMap($params, $params['datamanagerId'], false);
 
                     if (is_array($result) && empty($result['ok'])) {
@@ -1191,11 +1366,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     }
 
                     $mappedCount = (int) ($result['count'] ?? count($decoded));
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog(
-                        "Mapped {$mappedCount} participants to data manager #{$params['datamanagerId']}",
-                        'data-managers'
-                    );
+                    $dm->auditDataManager("Mapped {$mappedCount} participants to data manager", (int) $params['datamanagerId'], null, $auditBeforeLabs, 'data-managers');
 
                     $alertMsg->message = 'Participants mapped successfully';
                     return ['ok' => true, 'count' => $mappedCount];
@@ -2436,8 +2607,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             // Log audit
             $importedCount = count($response['data'] ?? []);
             $errorCount = count($response['error-data'] ?? []);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants (run {$importRunId}, {$errorCount} error(s))", 'participants');
+            $this->auditBulkImport("Bulk imported {$importedCount} participants (run {$importRunId}, {$errorCount} error(s))", $response);
 
             $alertMsg->message = 'Your file was imported successfully';
 
@@ -2510,6 +2680,52 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $changes[$field] = ['from' => $old, 'to' => $new];
         }
         return $changes;
+    }
+
+    /**
+     * One audit entry for a participant import: counts and the labs added or
+     * updated, with the fields each update changed. An import that changes a
+     * lab's status changes who can submit results, so it is flagged.
+     *
+     * @param array<string, mixed> $response the import summary
+     */
+    private function auditBulkImport(string $statement, array $response): void
+    {
+        $counts = ['new' => 0, 'update' => 0, 'email-only' => 0];
+        $rows = [];
+        $statusChanged = false;
+        foreach ((array) ($response['data'] ?? []) as $saved) {
+            $action = (string) ($saved['action'] ?? 'new');
+            $counts[$action] = ($counts[$action] ?? 0) + 1;
+            $label = self::auditLabel([
+                'unique_identifier' => $saved['participant_id'] ?? '',
+                'individual' => $saved['individual'] ?? 'no',
+                'lab_name' => $saved['participant_lab_name'] ?? '',
+                'first_name' => $saved['participant_lab_name'] ?? '',
+                'last_name' => $saved['participant_last_name'] ?? '',
+            ]);
+            $fields = array_keys((array) ($saved['changes'] ?? []));
+            if (in_array('status', $fields, true)) {
+                $statusChanged = true;
+            }
+            $fieldLabels = array_map(static fn ($f) => self::AUDIT_FIELD_LABELS[$f] ?? Application_Model_DbTable_AuditLog::humanize((string) $f), $fields);
+            $verb = $action === 'new' ? 'Added' : 'Updated';
+            $rows[] = $verb . ': ' . $label . ($fieldLabels !== [] ? ' (' . implode(', ', $fieldLabels) . ')' : '');
+        }
+        $extra = [
+            'facts' => [
+                'Added' => $counts['new'],
+                'Updated' => $counts['update'],
+                'E-mail only' => $counts['email-only'],
+                'Errors' => count((array) ($response['error-data'] ?? [])),
+            ],
+            'list' => ['title' => 'Participants', 'rows' => $rows],
+        ];
+        if ($statusChanged) {
+            $extra['important'] = true;
+            $extra['reason'] = 'Changes who can submit results for the updated labs';
+        }
+        Application_Model_DbTable_AuditLog::record($statement, 'participants', $extra);
     }
 
     /**
@@ -2849,8 +3065,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $id = $db->delete('participant', $db->quoteInto('participant_id = ?', $participantId));
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=1");
                 if ($participantId > 0) {
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog('Deleted participant - ' . $partcipant['unique_identifier'], 'participants');
+                    $auditRow = $partcipant ? $partcipant->toArray() : ['participant_id' => $participantId];
+                    Application_Model_DbTable_AuditLog::record('Deleted participant - ' . ($auditRow['unique_identifier'] ?? $participantId), 'participants', [
+                        'entity' => self::auditEntity($auditRow),
+                        'facts' => array_filter([
+                            'Status' => $auditRow['status'] ?? null,
+                            'E-mail' => $auditRow['email'] ?? null,
+                            'Shipments removed' => isset($mapIds) ? count($mapIds) : null,
+                        ], static fn ($v) => $v !== null && $v !== ''),
+                    ]);
                 }
                 if ($ownTx) {
                     $db->commit();

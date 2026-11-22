@@ -32,11 +32,11 @@ class Admin_ImpersonateController extends Zend_Controller_Action
         }
 
         if (!in_array('view-as-participant', $privileges, true)) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                'Denied view-as-participant attempt: ' . $request->getRequestUri(),
-                'auth'
-            );
+            Application_Model_DbTable_AuditLog::record('Denied view-as-participant attempt', 'auth', [
+                'facts' => ['Page' => $request->getRequestUri()],
+                'important' => true,
+                'reason' => 'An admin without the View as Participant privilege tried to use it',
+            ]);
             if ($request->isXmlHttpRequest()) {
                 $this->getResponse()->setHttpResponseCode(403)->sendResponse();
                 exit;
@@ -126,15 +126,10 @@ class Admin_ImpersonateController extends Zend_Controller_Action
         $authNameSpace->lastActivity = time();
         $authNameSpace->impersonationTtl = self::TTL_SECONDS;
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog(
-            sprintf(
-                'Started view-as-participant: dm_id=%d (%s)',
-                (int)$result['dm_id'],
-                $result['primary_email']
-            ),
-            'auth'
-        );
+        Application_Model_DbTable_AuditLog::record('Started view-as-participant - ' . $result['primary_email'], 'auth', [
+            'entity' => Application_Model_DbTable_DataManagers::auditEntity($result),
+            'facts' => ['Idle time limit (minutes)' => (int) (self::TTL_SECONDS / 60)],
+        ]);
 
         $this->redirect('/participant/dashboard');
     }
@@ -146,15 +141,14 @@ class Admin_ImpersonateController extends Zend_Controller_Action
         $backup = new Zend_Session_Namespace('impersonationBackup');
 
         if (!empty($authNameSpace->impersonatedBy)) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                sprintf(
-                    'Stopped view-as-participant: dm_id=%s (%s)',
-                    (string)($authNameSpace->dm_id ?? ''),
-                    (string)($authNameSpace->primary_email ?? '')
-                ),
-                'auth'
-            );
+            $startedAt = (int) ($authNameSpace->impersonationStartedAt ?? 0);
+            Application_Model_DbTable_AuditLog::record('Ended view-as-participant - ' . (string) ($authNameSpace->primary_email ?? ''), 'auth', [
+                'entity' => Application_Model_DbTable_DataManagers::auditEntity(['dm_id' => $authNameSpace->dm_id ?? null, 'primary_email' => $authNameSpace->primary_email ?? '']),
+                'facts' => array_filter([
+                    'Ended by' => 'Admin',
+                    'Minutes' => $startedAt > 0 ? (int) round((time() - $startedAt) / 60) : null,
+                ], static fn ($v) => $v !== null),
+            ]);
         }
 
         $this->restoreFromBackup($authNameSpace, $loggedUser, $backup);

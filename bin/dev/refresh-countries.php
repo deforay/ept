@@ -202,10 +202,27 @@ if ($apply && ($updates !== [] || ($insertMissing && $missing !== []))) {
         $db->commit();
         $io->success('Applied to the database.');
         try {
+            $auditRows = array_map(
+                static fn ($u) => $u['oldName'] === $u['newName']
+                    ? "Updated: {$u['iso3']} {$u['newName']}"
+                    : "Updated: {$u['iso3']} {$u['oldName']} → {$u['newName']}",
+                $updates
+            );
+            if ($insertMissing) {
+                foreach ($missing as $c) {
+                    $auditRows[] = 'Inserted: ' . strtoupper($c['alpha3']) . ' ' . $c['name'];
+                }
+            }
             (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
                 'Refreshed countries from ISO 3166 (' . count($updates) . ' updated' .
                 ($insertMissing ? ', ' . count($missing) . ' inserted' : '') . ')',
-                'config'
+                'config',
+                null,
+                [
+                    'entity' => ['type' => 'config', 'id' => 'countries', 'label' => 'Countries'],
+                    'facts' => ['Updated' => count($updates), 'Inserted' => $insertMissing ? count($missing) : 0],
+                    'list' => ['title' => 'Countries', 'rows' => $auditRows],
+                ]
             );
         } catch (Throwable $ignore) {
         }

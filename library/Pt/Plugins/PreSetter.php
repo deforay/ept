@@ -124,20 +124,14 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $request->getControllerName() !== 'captcha' &&
             !$request->isXmlHttpRequest()
         ) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                sprintf(
-                    'View-as-participant request: dm_id=%s, uri=%s',
-                    (string)($authNameSpace->dm_id ?? ''),
-                    $request->getRequestUri()
-                ),
-                'auth'
-            );
+            Application_Model_DbTable_AuditLog::record('View-as-participant request - ' . (string) ($authNameSpace->primary_email ?? ''), 'auth', [
+                'entity' => self::viewAsEntity($authNameSpace),
+                'facts' => ['Page' => $request->getRequestUri()],
+            ]);
         }
 
         if ($expiredKind === 'impersonation') {
-            $impersonatedDmId = (string)($authNameSpace->dm_id ?? '');
-            $impersonatedEmail = (string)($authNameSpace->primary_email ?? '');
+            $viewAsEntity = self::viewAsEntity($authNameSpace);
 
             $loggedUser = new Zend_Session_Namespace('loggedUser');
             $backup = new Zend_Session_Namespace('impersonationBackup');
@@ -155,15 +149,10 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
             $backup->unsetAll();
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                sprintf(
-                    'View-as-participant expired (idle): dm_id=%s (%s)',
-                    $impersonatedDmId,
-                    $impersonatedEmail
-                ),
-                'auth'
-            );
+            Application_Model_DbTable_AuditLog::record('Ended view-as-participant - ' . $viewAsEntity['label'], 'auth', [
+                'entity' => $viewAsEntity,
+                'facts' => ['Ended by' => 'Idle time limit'],
+            ]);
 
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = 'Impersonation session expired due to inactivity.';
@@ -193,16 +182,11 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $loggedUser = new Zend_Session_Namespace('loggedUser');
             $backup = new Zend_Session_Namespace('impersonationBackup');
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                sprintf(
-                    'Auto-stopped view-as-participant on admin-area navigation: dm_id=%s (%s), target=%s',
-                    (string)($authNameSpace->dm_id ?? ''),
-                    (string)($authNameSpace->primary_email ?? ''),
-                    $request->getRequestUri()
-                ),
-                'auth'
-            );
+            $viewAsEntity = self::viewAsEntity($authNameSpace);
+            Application_Model_DbTable_AuditLog::record('Ended view-as-participant - ' . $viewAsEntity['label'], 'auth', [
+                'entity' => $viewAsEntity,
+                'facts' => ['Ended by' => 'Opening an admin page', 'Page' => $request->getRequestUri()],
+            ]);
 
             $authNameSpace->unsetAll();
             $loggedUser->unsetAll();
@@ -456,6 +440,20 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 
     /** The page pings every 5 minutes while in use; a shorter limit would sign people out mid-typing */
     private const MIN_IDLE_MINUTES = 10;
+
+    /**
+     * Audit log entity for the data manager being viewed as.
+     *
+     * @return array{type: string, id: mixed, label: string}
+     */
+    private static function viewAsEntity(Zend_Session_Namespace $authNameSpace): array
+    {
+        return [
+            'type' => 'data-manager',
+            'id' => $authNameSpace->dm_id ?? null,
+            'label' => (string) ($authNameSpace->primary_email ?? ''),
+        ];
+    }
 
     private static function idleLimitSeconds(): int
     {

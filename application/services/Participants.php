@@ -549,8 +549,9 @@ class Application_Service_Participants
                     : "Downloaded participant response report ({$rowCount} rows)";
             }
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog($auditAction, 'participants');
+            Application_Model_DbTable_AuditLog::record($auditAction, 'participants', [
+                'facts' => ['Rows' => $rowCount, 'File' => $filename],
+            ]);
             return $filename;
         } catch (Exception $exc) {
 
@@ -728,8 +729,9 @@ class Application_Service_Participants
 
             $filename = 'UNUSABLE-EMAILS-' . date('d-M-Y-H-i-s') . '.xlsx';
             IOFactory::createWriter($excel, 'Xlsx')->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(sprintf('Downloaded unusable email list (%d participants, %d data managers)', count($participantRows), count($dmRows)), 'participants');
+            Application_Model_DbTable_AuditLog::record(sprintf('Downloaded unusable email list (%d participants, %d data managers)', count($participantRows), count($dmRows)), 'participants', [
+                'facts' => ['Participants' => count($participantRows), 'Data managers' => count($dmRows), 'File' => $filename],
+            ]);
             return $filename;
         } catch (Throwable $exc) {
             Pt_Commons_LoggerUtility::logError('Failed to generate unusable email export: ' . $exc->getMessage(), [
@@ -878,8 +880,11 @@ class Application_Service_Participants
             $rowCount = count($rResult);
             $shipmentCode = trim((string) ($params['shipmentCode'] ?? ''));
             $detail = $shipmentCode !== '' ? " - {$shipmentCode}" : '';
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Downloaded non-respondents report{$detail} ({$rowCount} rows)", 'shipment');
+            $auditExtra = ['facts' => ['Rows' => $rowCount]];
+            if (!empty($params['shipmentId'])) {
+                $auditExtra['entity'] = ['type' => 'shipment', 'id' => (int) $params['shipmentId'], 'label' => $shipmentCode];
+            }
+            Application_Model_DbTable_AuditLog::record("Downloaded non-respondents report{$detail} ({$rowCount} rows)", 'shipment', $auditExtra);
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $namePrefix = $shipmentCode !== '' ? $shipmentCode . '-' : '';
@@ -1148,8 +1153,9 @@ class Application_Service_Participants
             $filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             $rowCount = count($rResult);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Downloaded participant response data ({$rowCount} rows)", 'participants');
+            Application_Model_DbTable_AuditLog::record("Downloaded participant response data ({$rowCount} rows)", 'participants', [
+                'facts' => ['Rows' => $rowCount, 'File' => $filename],
+            ]);
             echo $filename;
         } catch (Exception $exc) {
             $sQuerySession->shipmentRespondedParticipantQuery = '';

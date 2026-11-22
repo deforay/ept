@@ -212,10 +212,8 @@ class ParticipantController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             // Own record only. updateUser() is the admin path and trusts userSystemId.
+            // The service writes the audit entry with what changed.
             $userService->updateOwnInfo($request->getPost());
-
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated own user info', 'participants');
 
             // To check the re-drection for participant after logged in
             $dbUsersProfile = new Application_Service_Participants();
@@ -308,8 +306,9 @@ class ParticipantController extends Zend_Controller_Action
                     if ($forceProfileConfirmation) {
                         unset($_SESSION['profile_confirmed']);
                     }
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog('Changed password', 'auth');
+                    Application_Model_DbTable_AuditLog::record('Changed password', 'auth', [
+                        'entity' => Application_Model_DbTable_DataManagers::auditEntity(['dm_id' => $authNameSpace->dm_id, 'primary_email' => $authNameSpace->email ?? '']),
+                    ]);
                     $this->redirect('/participant/current-schemes');
                     return;
                 }
@@ -339,9 +338,13 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $response = $user->confirmPrimaryMail((int) (new Zend_Session_Namespace('datamanagers'))->dm_id, $params, true);
             if ($response) {
-                $newEmail = trim((string) ($params['primaryEmail'] ?? ''));
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog('Requested primary email change' . ($newEmail !== '' ? " to {$newEmail}" : ''), 'auth');
+                $newEmail = trim((string) ($params['registeredEmail'] ?? $params['primaryEmail'] ?? ''));
+                $dmSession = new Zend_Session_Namespace('datamanagers');
+                $oldEmail = (string) ($dmSession->email ?? '');
+                Application_Model_DbTable_AuditLog::record('Requested primary email change' . ($newEmail !== '' ? " to {$newEmail}" : ''), 'auth', [
+                    'entity' => Application_Model_DbTable_DataManagers::auditEntity(['dm_id' => $dmSession->dm_id, 'primary_email' => $oldEmail]),
+                    'facts' => ['Old Primary Email' => $oldEmail, 'New Primary Email' => $newEmail],
+                ]);
                 $this->redirect('/participant/current-schemes');
             }
         }
@@ -389,10 +392,8 @@ class ParticipantController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();
+            // The model writes the audit entry with what changed.
             $participantService->updateParticipant($data);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $uid = trim((string) ($data['uniqueIdentifier'] ?? ''));
-            $auditDb->addNewAuditLog('Updated tester profile' . ($uid !== '' ? " - {$uid}" : ''), 'participants');
             $this->redirect('/participant/testers');
         } else {
             $this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));

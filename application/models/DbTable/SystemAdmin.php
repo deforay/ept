@@ -126,6 +126,76 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
 
+    /** Labels the admin form shows, for the audit log. */
+    private const AUDIT_FIELD_LABELS = [
+        'first_name' => 'First Name',
+        'last_name' => 'Last Name',
+        'primary_email' => 'Primary Email',
+        'password' => 'Password',
+        'phone' => 'Cell/Mobile Number',
+        'secondary_email' => 'Secondary Email',
+        'status' => 'Status',
+        'scheme' => 'Choose Active Schemes',
+        'privileges' => 'Privileges',
+        'language' => 'Language',
+    ];
+
+    /** Privilege codes and the labels the admin form shows for them. */
+    private const PRIVILEGE_LABELS = [
+        'config-ept' => 'Configure ePT',
+        'manage-participants' => 'Manage Participants',
+        'manage-shipments' => 'Manage Shipments',
+        'analyze-generate-reports' => 'Analyze and Generate Reports',
+        'edit-participant-response' => 'Edit Participant Responses',
+        'access-reports' => 'Access Reports',
+        'delete-participants' => 'Delete Participants',
+        'replace-finalized-summary-report' => 'Replace Finalized Summary Reports',
+        'view-as-participant' => 'View as Participant (support troubleshooting)',
+    ];
+
+    /**
+     * The admin's editable fields as the audit log compares them, or null
+     * when the row cannot be read. Schemes and privileges are shown by name.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function auditSnapshot(int $adminId): ?array
+    {
+        try {
+            $row = $this->getAdapter()->fetchRow($this->getAdapter()->select()->from($this->_name)->where('admin_id = ?', $adminId));
+            if (!$row) {
+                return null;
+            }
+            $snapshot = [];
+            foreach (array_keys(self::AUDIT_FIELD_LABELS) as $field) {
+                $snapshot[$field] = $row[$field] ?? null;
+            }
+            $schemeIds = array_values(array_filter(array_map('trim', explode(',', (string) ($row['scheme'] ?? '')))));
+            $schemeNames = $schemeIds === [] ? [] : $this->getAdapter()->fetchPairs(
+                $this->getAdapter()->select()->from('scheme_list', ['scheme_id', 'scheme_name'])->where('scheme_id IN (?)', $schemeIds)
+            );
+            $schemes = array_map(static fn ($id) => $schemeNames[$id] ?? $id, $schemeIds);
+            sort($schemes);
+            $snapshot['scheme'] = $schemes;
+            $privileges = array_map(
+                static fn ($code) => self::PRIVILEGE_LABELS[$code] ?? $code,
+                array_values(array_filter(array_map('trim', explode(',', (string) ($row['privileges'] ?? '')))))
+            );
+            sort($privileges);
+            $snapshot['privileges'] = $privileges;
+            return $snapshot;
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('Admin audit snapshot failed: ' . $e->getMessage(), ['admin_id' => $adminId]);
+            return null;
+        }
+    }
+
+    /** @return array{type: string, id: int, label: string} */
+    private static function auditEntity(int $adminId, string $name): array
+    {
+        return ['type' => 'admin', 'id' => $adminId, 'label' => $name];
+    }
+
     public function addSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -149,9 +219,17 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         $adminId = $this->insert($data);
 
         if ($adminId > 0) {
-            $name = $firstName . ' ' . $lastName;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new admin - ' . $name, 'admin');
+            $name = trim($firstName . ' ' . $lastName) ?: (string) $params['primaryEmail'];
+            $snapshot = $this->auditSnapshot((int) $adminId);
+            Application_Model_DbTable_AuditLog::record('Added a new admin - ' . $name, 'admin', [
+                'entity' => self::auditEntity((int) $adminId, $name),
+                'facts' => [
+                    'Primary Email' => $params['primaryEmail'],
+                    'Status' => $params['status'],
+                    'Privileges' => $snapshot['privileges'] ?? [],
+                    'Choose Active Schemes' => $snapshot['scheme'] ?? [],
+                ],
+            ]);
         }
 
         return $adminId;
@@ -182,23 +260,21 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()'),
         ];
-        $sensitiveChanges = [];
         if (isset($params['password']) && $params['password'] != '') {
             $password = Application_Service_Common::passwordHash($params['password']);
             $data['password'] = $password ?? null;
             $data['force_password_reset'] = 1;
-            $sensitiveChanges[] = 'password reset';
         }
         if (isset($params['schemeId']) && $params['schemeId'] != '') {
             $data['scheme'] = implode(',', $params['schemeId'] ?? []);
         }
         if (isset($params['privileges']) && $params['privileges'] != '') {
             $data['privileges'] = implode(',', $params['privileges'] ?? []);
-            $sensitiveChanges[] = 'privileges';
         }
         if (isset($params['language']) && $params['language'] != '') {
             $authNameSpace->language = $params['language'];
         }
+        $auditBefore = $this->auditSnapshot((int) $params['adminId']);
         $adminId = $this->update($data, ['admin_id = ?' => $params['adminId']]);
 
         if ($adminId > 0) {
@@ -208,9 +284,12 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             }
             $isSelf = (int) $params['adminId'] === (int) ($authNameSpace->admin_id ?? 0);
             $verb = $isSelf ? 'Updated own profile' : 'Updated admin';
-            $detail = empty($sensitiveChanges) ? '' : ' (' . implode(', ', $sensitiveChanges) . ')';
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("{$verb} - {$name}{$detail}", 'admin');
+            $auditAfter = $this->auditSnapshot((int) $params['adminId']);
+            $extra = ['entity' => self::auditEntity((int) $params['adminId'], $name)];
+            if ($auditBefore !== null && $auditAfter !== null) {
+                $extra['changes'] = Application_Model_DbTable_AuditLog::changes($auditBefore, $auditAfter, self::AUDIT_FIELD_LABELS);
+            }
+            Application_Model_DbTable_AuditLog::record("{$verb} - {$name}", 'admin', $extra);
         }
 
         return $adminId;
@@ -248,7 +327,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         }
 
         $newPassword = (string) ($params['password'] ?? '');
-        $changes = [];
         if ($newPassword !== '') {
             if (!password_verify((string) ($params['oldPassword'] ?? ''), (string) $row['password'])) {
                 return 'Your current password is not correct. Nothing was changed.';
@@ -261,20 +339,21 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
                 return "The new password must be at least {$minLength} characters long.";
             }
             $data['password'] = Application_Service_Common::passwordHash($newPassword);
-            $changes[] = 'password changed';
-        }
-        if (strcasecmp($primaryEmail, (string) $row['primary_email']) !== 0) {
-            $changes[] = 'primary email changed';
         }
 
+        $auditBefore = $this->auditSnapshot($adminId);
         $this->update($data, ['admin_id = ?' => $adminId]);
         if ($language !== '') {
             $session = new Zend_Session_Namespace('administrators');
             $session->language = $language;
         }
         $name = trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: $primaryEmail;
-        $detail = empty($changes) ? '' : ' (' . implode(', ', $changes) . ')';
-        (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Updated own profile - {$name}{$detail}", 'admin');
+        $auditAfter = $this->auditSnapshot($adminId);
+        $extra = ['entity' => self::auditEntity($adminId, $name)];
+        if ($auditBefore !== null && $auditAfter !== null) {
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes($auditBefore, $auditAfter, self::AUDIT_FIELD_LABELS);
+        }
+        Application_Model_DbTable_AuditLog::record("Updated own profile - {$name}", 'admin', $extra);
         return '';
     }
 
