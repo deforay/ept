@@ -179,6 +179,25 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         return $response;
     }
 
+    /**
+     * A feedback question's editable fields, with dropdown options as a list.
+     *
+     * @param array<string, mixed> $row a question row or the data being saved
+     * @return array<string, mixed>
+     */
+    private static function questionAuditValues(array $row): array
+    {
+        $options = json_decode((string) ($row['response_attributes'] ?? ''), true);
+        return [
+            'question_text' => $row['question_text'] ?? null,
+            'question_type' => $row['question_type'] ?? null,
+            'options' => is_array($options) ? array_values(array_map('strval', $options)) : [],
+            'question_code' => $row['question_code'] ?? null,
+            'question_status' => $row['question_status'] ?? null,
+            'question_show_to' => $row['question_show_to'] ?? null,
+        ];
+    }
+
     public function saveFeedbackQuestionsDetails($params)
     {
         $data = [];
@@ -195,17 +214,38 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'modified_by' => $authNameSpace->admin_id,
             ];
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
             $code = $params['questionCode'] ?: '(no code)';
+            $labels = [
+                'question_text' => 'Question',
+                'question_type' => 'Question Type',
+                'options' => 'Options',
+                'question_code' => 'Question Code',
+                'question_status' => 'Question Status',
+                'question_show_to' => 'Show feedback question to',
+            ];
 
             if (isset($params['questionID']) && !empty($params['questionID']) && $params['formType'] != 'clone') {
-                $result = $this->update($data, $this->_primary . ' = ' . base64_decode($params['questionID']));
-                $auditDb->addNewAuditLog("Updated feedback question - {$code}", 'feedback');
+                $questionId = (int) base64_decode($params['questionID']);
+                $before = $this->getAdapter()->fetchRow(
+                    $this->getAdapter()->select()->from($this->_name)->where('question_id = ?', $questionId)
+                );
+                $result = $this->update($data, $this->_primary . ' = ' . $questionId);
+                Application_Model_DbTable_AuditLog::record("Updated feedback question - {$code}", 'feedback', [
+                    'entity' => ['type' => 'feedback-question', 'id' => $questionId, 'label' => $code],
+                    'changes' => Application_Model_DbTable_AuditLog::changes(
+                        self::questionAuditValues($before ?: []),
+                        self::questionAuditValues($data),
+                        $labels
+                    ),
+                ]);
                 return $result;
             } else {
                 $result = $this->insert($data);
                 $verb = (isset($params['formType']) && $params['formType'] === 'clone') ? 'Cloned' : 'Added a new';
-                $auditDb->addNewAuditLog("{$verb} feedback question - {$code}", 'feedback');
+                Application_Model_DbTable_AuditLog::record("{$verb} feedback question - {$code}", 'feedback', [
+                    'entity' => ['type' => 'feedback-question', 'id' => (int) $result, 'label' => $code],
+                    'facts' => ['Question Type' => $data['question_type'], 'Question Status' => $data['question_status']],
+                ]);
                 return $result;
             }
         }
@@ -370,10 +410,19 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $db->select()->from('shipment', 'shipment_code')->where('shipment_id = ?', $params['shipmentId'])
         );
         $questionCount = count((array) $params['question']);
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog(
+        $shipmentEntity = ['type' => 'shipment', 'id' => (int) $params['shipmentId'], 'label' => (string) $shipmentCode];
+        $questionCodes = $questionCount > 0
+            ? $db->fetchCol(
+                $db->select()->from('r_feedback_questions', ['question_code'])->where('question_id IN (?)', array_map('intval', (array) $params['question']))
+            )
+            : [];
+        Application_Model_DbTable_AuditLog::record(
             'Mapped feedback form for shipment - ' . ($shipmentCode ?: "#{$params['shipmentId']}") . " ({$questionCount} questions)",
-            'feedback'
+            'feedback',
+            [
+                'entity' => $shipmentEntity,
+                'list' => ['title' => 'Questions', 'rows' => $questionCodes],
+            ]
         );
 
         // Building a form is the admin saying "collect feedback for this shipment", so
@@ -384,9 +433,17 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         if ($shipmentResult['collect_feedback'] !== 'yes') {
             $db->update('shipment', ['collect_feedback' => 'yes'], 'shipment_id = ' . (int) $params['shipmentId']);
             $feedbackTurnedOn = true;
-            $auditDb->addNewAuditLog(
+            Application_Model_DbTable_AuditLog::record(
                 'Turned on Collect Feedback for shipment - ' . ($shipmentCode ?: "#{$params['shipmentId']}") . ' (feedback form saved)',
-                'feedback'
+                'feedback',
+                [
+                    'entity' => $shipmentEntity,
+                    'changes' => Application_Model_DbTable_AuditLog::changes(
+                        ['collect_feedback' => $shipmentResult['collect_feedback']],
+                        ['collect_feedback' => 'yes'],
+                        ['collect_feedback' => 'Collect Feedback']
+                    ),
+                ]
             );
         }
 

@@ -37,8 +37,18 @@ class Admin_AnnouncementController extends Zend_Controller_Action
 
             $subject = trim((string) ($params['subject'] ?? ''));
             $detail = $subject !== '' ? " - \"{$subject}\"" : '';
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Composed announcement{$detail}", 'announcement');
+            $participantIds = array_values(array_filter(array_map('intval', (array) ($params['participants'] ?? []))));
+            $labIds = [];
+            if ($participantIds !== []) {
+                $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $labIds = $db->fetchCol(
+                    $db->select()->from('participant', ['unique_identifier'])->where('participant_id IN (?)', $participantIds)->order('unique_identifier')
+                );
+            }
+            Application_Model_DbTable_AuditLog::record("Composed announcement{$detail}", 'announcement', [
+                'facts' => ['Participants' => count($participantIds)],
+                'list' => ['title' => 'Participants', 'rows' => $labIds],
+            ]);
 
             $this->redirect('/admin/announcement');
         }

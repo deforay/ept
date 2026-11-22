@@ -68,9 +68,12 @@ class DlController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setNoRender(true);
         echo $this->view->render('download/index.phtml');
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
         $authTag = !empty($decoded['auth']) ? '[signed,auth]' : '[signed]';
-        $auditDb->addNewAuditLog('Downloaded file ' . $authTag . ' - ' . basename($realPath), 'download');
+        Application_Model_DbTable_AuditLog::record(
+            'Downloaded file ' . $authTag . ' - ' . basename($realPath),
+            'download',
+            Application_Service_Shipments::downloadAuditExtra($realPath, !empty($decoded['auth']) ? 'Signed, sign-in required' : 'Signed')
+        );
     }
 
     /** True if any of the recognised ePT sessions has an identity. */

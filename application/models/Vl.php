@@ -1321,8 +1321,9 @@ class Application_Model_Vl
         // Keep the long method lines from stretching column A.
         $inputsSheet->getColumnDimension('A')->setAutoSize(false)->setWidth(18);
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded DTS Viral Load report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded DTS Viral Load report - ' . ($result['shipment_code'] ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $result['shipment_code'] ?? ''],
+        ]);
 
         $excel->setActiveSheetIndex(0);
 

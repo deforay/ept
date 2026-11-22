@@ -2408,8 +2408,9 @@ final class Application_Model_Dts
 
         $excel->setActiveSheetIndex(0);
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded DTS Rapid HIV report - ' . ($shipmentCode ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded DTS Rapid HIV report - ' . ($shipmentCode ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $shipmentCode],
+        ]);
 
         Pt_Commons_SpreadsheetUtility::removeEmptyDefaultSheet($excel);
         $writer = IOFactory::createWriter($excel, 'Xlsx');

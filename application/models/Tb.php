@@ -896,8 +896,9 @@ class Application_Model_Tb
             $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
             $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Downloaded TB Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
+            Application_Model_DbTable_AuditLog::record('Downloaded TB Excel report - ' . ($shipmentCode ?? '?'), 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $shipmentCode ?? ''],
+            ]);
 
             $excel->setActiveSheetIndex(0);
 
