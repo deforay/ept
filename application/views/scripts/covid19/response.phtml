@@ -836,6 +836,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                         echo $this->partial('common/admin-evaluation-panel.phtml', [
                             'scheme' => 'covid19',
                             'shipment' => $this->shipment,
+                            'viewOnly' => $viewOnly,
                             'evalComments' => $this->evaluateData['evalComments'] ?? [],
                         ]);
                     }
