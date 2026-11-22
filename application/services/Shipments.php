@@ -687,7 +687,7 @@ class Application_Service_Shipments
     private static function isAuditedReferenceColumn(string $column): bool
     {
         return !in_array($column, ['shipment_id', 'sample_id', 'id'], true)
-            && !preg_match('/^(created|updated)_|_(on|by)$/', $column);
+            && !preg_match('/^(?:(?:created|updated)_.*|.*_(?:on|by))$/', $column);
     }
 
     /**
