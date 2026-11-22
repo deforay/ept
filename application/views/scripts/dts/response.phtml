@@ -56,6 +56,71 @@ if ($this->reqFrom == "admin") {
     $resultText = $this->translate->_('Reported Result');
 }
 
+// Per-sample verdicts from the last evaluation. The controller sets them for the
+// admin view only, so a participant never sees them.
+$sampleVerdicts = $adminAccess ? ($this->sampleVerdicts ?? []) : [];
+// The samples with a coded algorithm warning (stored since the rule tables). An
+// expired or unapproved test kit also fails algorithm_result, so without such a
+// warning the badge cannot say which of the two failed.
+$algorithmWarningSamples = [];
+foreach ((array) json_decode((string) ($this->shipment['failure_reason'] ?? ''), true) as $item) {
+    if (is_array($item) && isset($item['code'], $item['params']['sample']) && str_starts_with((string) $item['code'], 'dts.')) {
+        $algorithmWarningSamples[(string) $item['params']['sample']] = true;
+    }
+}
+$failedSampleCount = $evaluatedSampleCount = 0;
+// Answers saved after the last evaluation: the verdicts stay, but reasons worked out
+// from the current answers would not match them.
+$verdictsOutdated = $adminAccess && !empty($this->verdictsOutdated);
+foreach ($this->allSamples as $s) {
+    $score = $sampleVerdicts[$s['sample_id']]['score'] ?? null;
+    // Every row that shows a verdict counts, controls included.
+    if (in_array($score, ['Pass', 'Fail'], true)) {
+        $evaluatedSampleCount++;
+        $failedSampleCount += $score === 'Fail' ? 1 : 0;
+    }
+}
+
+/**
+ * The verdict badge and, for a failed sample, the reasons, for the sample label cell.
+ * The notes below the results hold the full warnings.
+ */
+$verdictBadge = function (?array $verdict, array $sample) use ($algorithmWarningSamples, $verdictsOutdated): string {
+    if ($verdict === null) {
+        return '';
+    }
+    $score = (string) $verdict['score'];
+    if ($score === 'Pass') {
+        return '<div class="sample-verdict"><span class="badge badge-verdict-pass">' . $this->htmlTranslate('Pass') . '</span></div>';
+    }
+    if ($score !== 'Fail') {
+        return '<div class="sample-verdict"><span class="badge badge-verdict-other">' . $this->htmlTranslate($score) . '</span></div>';
+    }
+    if ($verdictsOutdated) {
+        return '<div class="sample-verdict"><span class="badge badge-verdict-fail">' . $this->htmlTranslate('Fail') . '</span></div>';
+    }
+    // interpretation_result is also Fail when only the algorithm failed, so the final
+    // result is compared with the reference here instead.
+    $reasons = [];
+    if (empty($sample['reported_result'])) {
+        $reasons[] = $this->htmlTranslate('Final result not reported');
+    } elseif ((string) $sample['reported_result'] !== (string) $sample['reference_result']) {
+        $reasons[] = $this->htmlTranslate('Final result does not match the reference');
+    }
+    if ($verdict['algorithm'] === 'Fail') {
+        if (isset($algorithmWarningSamples[(string) $sample['sample_label']])) {
+            $reasons[] = $this->htmlTranslate('Algorithm not followed');
+        } else {
+            $reasons[] = $this->htmlTranslate('Algorithm or test kit check failed');
+        }
+    }
+    if ($reasons === []) {
+        $reasons[] = $this->htmlTranslate('Failed another evaluation check');
+    }
+    return '<div class="sample-verdict"><span class="badge badge-verdict-fail">' . $this->htmlTranslate('Fail') . '</span>'
+        . '<ul class="sample-verdict-reasons"><li>' . implode('</li><li>', $reasons) . '</li></ul></div>';
+};
+
 $kitAttributes = [];
 foreach ($this->allTestKits as $kit) {
     if (isset($kit['attributes']) && !empty($kit['attributes'])) {
@@ -82,6 +147,78 @@ foreach ($this->allTestKits as $kit) {
     .repeat_2,
     .repeat_3 {
         display: none;
+    }
+
+    /* Per-sample verdicts in the admin view. The cells carry the tint so it wins over
+       table-striped. */
+    .result-section-table tr.sample-failed > th,
+    .result-section-table tr.sample-failed > td {
+        background-color: #fdf1f0 !important;
+    }
+
+    .result-section-table tr.sample-failed > th:first-child {
+        box-shadow: inset 4px 0 0 #c0392b;
+    }
+
+    .sample-verdict {
+        margin-top: 6px;
+        white-space: normal;
+        font-weight: normal;
+    }
+
+    .sample-verdict .badge {
+        font-size: 11px;
+        padding: 3px 7px;
+    }
+
+    .badge-verdict-fail {
+        background-color: #c0392b;
+        color: #fff;
+    }
+
+    .badge-verdict-pass {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+    }
+
+    .badge-verdict-other {
+        background-color: #eceff1;
+        color: #455a64;
+    }
+
+    .sample-verdict-reasons {
+        list-style: none;
+        margin: 4px 0 0;
+        padding: 0;
+        font-size: 12px;
+        color: #8e2b20;
+        text-align: left;
+    }
+
+    .sample-verdict-summary {
+        margin: 10px auto 0;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .sample-verdict-summary.has-failures {
+        background-color: #fdf1f0;
+        border: 1px solid #f5c6c0;
+        color: #8e2b20;
+    }
+
+    .sample-verdict-summary.outdated {
+        background-color: #fff8e1;
+        border: 1px solid #ffe082;
+        color: #6d4c00;
+    }
+
+    .sample-verdict-summary.all-passed {
+        background-color: #e8f5e9;
+        border: 1px solid #a5d6a7;
+        color: #2e7d32;
     }
 </style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
@@ -523,6 +660,23 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;"
                                 for="isPtTestNotPerformed"><?= $this->translate->_("PT panel not tested"); ?><label>
                         </div><br><br>
+
+                        <?php if ($evaluatedSampleCount > 0) { ?>
+                            <?php if ($failedSampleCount > 0) { ?>
+                                <div class="sample-verdict-summary has-failures">
+                                    <?= sprintf($this->htmlTranslate('%1$d of %2$d samples failed in the last evaluation. They are marked below.'), $failedSampleCount, $evaluatedSampleCount); ?>
+                                </div>
+                            <?php } else { ?>
+                                <div class="sample-verdict-summary all-passed">
+                                    <?= sprintf($this->htmlTranslate('All %d samples passed in the last evaluation.'), $evaluatedSampleCount); ?>
+                                </div>
+                            <?php } ?>
+                            <?php if ($verdictsOutdated) { ?>
+                                <div class="sample-verdict-summary outdated">
+                                    <?= $this->htmlTranslate('The response changed after the last evaluation. Evaluate the shipment again to update these verdicts.'); ?>
+                                </div>
+                            <?php } ?>
+                        <?php } ?>
 
                         <table class="result-section-table table table-bordered table-striped"
                             style="margin:10px auto;">
@@ -1141,12 +1295,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
                                     $sample['mandatory'] = 0;
                                 }
-                                $count++; ?>
-                                <tr align="CENTER" class="light autoWidthInput vlResultSection"
+                                $count++;
+                                $verdict = $sampleVerdicts[$sample['sample_id']] ?? null; ?>
+                                <tr align="CENTER" class="light autoWidthInput vlResultSection<?= ($verdict['score'] ?? '') === 'Fail' ? ' sample-failed' : ''; ?>"
                                     style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                                     <th scope="col" style="width: <?php echo $width; ?>%;white-space: nowrap;" class="colwidth">
-                                        <?php echo ($sample['sample_label']);
-                                        echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                                        <?php echo $this->escape($sample['sample_label']);
+                                        echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;";
+                                        echo $verdictBadge($verdict, $sample); ?>
                                         <input type="hidden" id="sample<?= $count; ?>"
                                             name="sampleId[<?php echo $sample['sample_id']; ?>]"
                                             value="<?php echo $sample['sample_id']; ?>" />
@@ -1381,7 +1537,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                                         onchange="dtsRtriIsEditable(this, <?= $count; ?>)" />
                                                 </th>
                                                 <th scope="col" style="white-space: nowrap">
-                                                    <?php echo $sample['sample_label']; ?>
+                                                    <?php echo $this->escape($sample['sample_label']); ?>
                                                     <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
                                                     <input type="hidden" id="rtriSampleId<?= $count; ?>" name="rtriSampleId[]"
                                                         value="<?php echo $sample['sample_id']; ?>" />

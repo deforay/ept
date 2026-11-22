@@ -1264,6 +1264,51 @@ final class Application_Model_Dts
         return $this->db->fetchAll($sql);
     }
 
+    /**
+     * The verdicts the last evaluation gave each sample of one participant's response,
+     * keyed by sample_id. Empty until the response is evaluated. For the admin view
+     * only: a participant must not see per-sample verdicts while the round is open.
+     *
+     * @return array<int|string, array{score: ?string, algorithm: ?string}>
+     */
+    public function getSampleVerdicts($sId, $pId): array
+    {
+        $rows = $this->db->fetchAll(
+            $this->db->select()
+                ->from(['res' => 'response_result_dts'], ['sample_id', 'calculated_score', 'algorithm_result'])
+                ->join(['sp' => 'shipment_participant_map'], 'sp.map_id = res.shipment_map_id', [])
+                ->where('sp.shipment_id = ?', $sId)
+                ->where('sp.participant_id = ?', $pId)
+                ->where('res.calculated_score IS NOT NULL')
+        );
+        $verdicts = [];
+        foreach ($rows as $row) {
+            $verdicts[$row['sample_id']] = [
+                'score' => $row['calculated_score'],
+                'algorithm' => $row['algorithm_result'],
+            ];
+        }
+        return $verdicts;
+    }
+
+    /**
+     * Whether the participant changed the response after the shipment was last
+     * evaluated, so the stored verdicts may no longer match the answers. Same rule as
+     * the "responses changed since evaluation" check in Application_Service_Evaluation.
+     */
+    public function responseChangedSinceEvaluation($sId, $pId): bool
+    {
+        return (bool) $this->db->fetchOne(
+            $this->db->select()
+                ->from(['sp' => 'shipment_participant_map'], [new Zend_Db_Expr('1')])
+                ->join(['s' => 'shipment'], 's.shipment_id = sp.shipment_id', [])
+                ->where('sp.shipment_id = ?', $sId)
+                ->where('sp.participant_id = ?', $pId)
+                ->where('s.evaluated_at IS NOT NULL')
+                ->where('(sp.updated_on_user > s.evaluated_at OR sp.created_on_user > s.evaluated_at)')
+        );
+    }
+
     public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null, $nonDts = false)
     {
         $sql = $this->db->select()->from(['dts_recommended_testkits']);
