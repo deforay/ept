@@ -11,13 +11,13 @@ final class Pt_Evaluation_Dts_AlgorithmCheck
 {
     /**
      * @param array<string, string> $results result code by test (test1, test2, test3,
-     *     repeat1). '-' or a missing key means the test was not done.
+     *     repeat1, repeat2). '-' or a missing key means the test was not done.
      * @param string $final the reported final result as P, N or IND, or any other
      *     value for a result the algorithm never gives
      * @return array{
      *     pass: bool,
-     *     expected: ?string,
-     *     problems: list<array{reason: Pt_Evaluation_Dts_Reason, test?: string, last?: string, extra?: list<string>, expected?: string}>
+     *     expected: string|list<string>|null,
+     *     problems: list<array{reason: Pt_Evaluation_Dts_Reason, test?: string, last?: string, extra?: list<string>, expected?: string|list<string>}>
      * }
      */
     public static function check(Pt_Evaluation_Dts_Algorithm $algorithm, array $results, string $final): array
@@ -49,11 +49,13 @@ final class Pt_Evaluation_Dts_AlgorithmCheck
 
         $problems = [];
         $ignored = array_merge($visited, $next['ignore']);
+        $notDone = $algorithm->notDone();
         $extra = array_values(array_filter(
             $algorithm->tests(),
-            static fn (string $t): bool => !in_array($t, $ignored, true) && $result($t) !== '-'
+            static fn (string $t): bool => !in_array($t, $ignored, true) && !in_array($result($t), $notDone, true)
         ));
-        if ($extra !== []) {
+        // A step that gives no final result reads the last test, so nothing comes after it.
+        if ($extra !== [] && $next['gives'] !== null) {
             $problems[] = [
                 'reason' => Pt_Evaluation_Dts_Reason::TestingShouldHaveStopped,
                 'last' => $test,
@@ -61,7 +63,7 @@ final class Pt_Evaluation_Dts_AlgorithmCheck
                 'expected' => $next['gives'],
             ];
         }
-        if ($final !== $next['gives']) {
+        if ($algorithm->checksFinal() && $next['gives'] !== null && !in_array($final, (array) $next['gives'], true)) {
             $problems[] = [
                 'reason' => Pt_Evaluation_Dts_Reason::FinalResultMismatch,
                 'expected' => $next['gives'],

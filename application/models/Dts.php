@@ -2644,15 +2644,15 @@ final class Application_Model_Dts
             return $out;
         }
 
-        // Serial
-        elseif (($attributes['algorithm'] ?? '') === 'serial') {
-            $this->algoSerial($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
-            return $out;
-        }
-
-        // Parallel
-        elseif (($attributes['algorithm'] ?? '') === 'parallel') {
-            $this->algoParallel($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
+        // Serial and parallel do not check the final result.
+        elseif (in_array($attributes['algorithm'] ?? '', ['serial', 'parallel'], true)) {
+            $this->checkAlgorithmRules(
+                Pt_Evaluation_Dts_Algorithm::from($attributes['algorithm']),
+                $result,
+                ['test1' => (string) $result1, 'test2' => (string) $result2, 'test3' => (string) $result3],
+                '',
+                $out
+            );
             return $out;
         }
 
@@ -2675,14 +2675,14 @@ final class Application_Model_Dts
 
         // Cote d'Ivoire
         elseif ($dtsSchemeType === 'cotedivoire' || ($attributes['algorithm'] ?? '') === 'cotedivoireNationalDtsAlgo') {
-            $this->algoCoteDivoire(
+            $this->checkAlgorithmRules(
+                Pt_Evaluation_Dts_Algorithm::CoteDivoire,
                 $result,
-                $result1,
-                $result2,
-                $result3,
-                $reportedResultCode,
-                $repeatResult1,
-                $correctiveActions,
+                ['test1' => (string) $result1, 'test2' => (string) $result2, 'test3' => (string) $result3, 'repeat1' => $repeatResult1],
+                // Côte d'Ivoire reports a positive as the HIV type.
+                in_array(strtoupper(trim((string) $reportedResultCode)), ['VIH1', 'VH1', 'VIH2', 'VH2', 'VIH1&2', 'VH1&2', 'P'], true)
+                    ? 'P'
+                    : $this->exactFinal($reportedResultCode),
                 $out
             );
             return $out;
@@ -2705,16 +2705,17 @@ final class Application_Model_Dts
 
         // Malawi
         elseif ($dtsSchemeType === 'malawi' || ($attributes['algorithm'] ?? '') === 'malawiNationalDtsAlgo') {
-            $this->algoMalawi(
+            $this->checkAlgorithmRules(
+                $noOfTestsInPanel === 3 ? Pt_Evaluation_Dts_Algorithm::MalawiThreeTestPanel : Pt_Evaluation_Dts_Algorithm::Malawi,
                 $result,
-                $result1,
-                $result2,
-                $result3,
-                $reportedResultCode,
-                $noOfTestsInPanel,
-                $correctiveActions,
-                $out,
-                $repeatResult1
+                [
+                    'test1' => $this->normalizeAlgoResult($result1),
+                    'test2' => $this->normalizeAlgoResult($result2),
+                    'test3' => $this->normalizeAlgoResult($result3),
+                    'repeat1' => $this->normalizeAlgoResult($repeatResult1),
+                ],
+                $this->exactFinal($reportedResultCode),
+                $out
             );
             return $out;
         }
@@ -2724,15 +2725,17 @@ final class Application_Model_Dts
             if ($syphilisEnabled) {
                 $out['sypAlgoResult'] = $this->algoGhanaSyphilis($syphilisResult, $reportedSyphilisResultCode);
             }
-            $this->algoGhana(
+            $this->checkAlgorithmRules(
+                Pt_Evaluation_Dts_Algorithm::Ghana,
                 $result,
-                $result1,
-                $result2,
-                $result3,
-                $reportedResultCode,
-                $repeatResult1,
-                $repeatResult2,
-                $correctiveActions,
+                [
+                    'test1' => (string) $result1,
+                    'test2' => (string) $result2,
+                    'test3' => (string) $result3,
+                    'repeat1' => $repeatResult1,
+                    'repeat2' => $repeatResult2,
+                ],
+                $this->exactFinal($reportedResultCode),
                 $out
             );
             return $out;
@@ -2816,6 +2819,21 @@ final class Application_Model_Dts
             $testResults
         );
         return empty(array_intersect(['R', 'WR'], $codes));
+    }
+
+    /**
+     * The final result as P, N or IND for an algorithm that matches exact codes, where
+     * Indeterminate is 'I'. Any other code, 'IND' included, becomes a value that no
+     * algorithm gives.
+     */
+    private function exactFinal(?string $code): string
+    {
+        return match ($code) {
+            'P' => 'P',
+            'N' => 'N',
+            'I' => 'IND',
+            default => 'code:' . $code,
+        };
     }
 
     /**
@@ -3058,133 +3076,6 @@ final class Application_Model_Dts
         $out['rtriAlgoResult'] = $r;
     }
 
-    /** Serial */
-    private function algoSerial(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        array $correctiveActions,
-        array &$out
-    ) {
-        if ($result1 === 'NR') {
-            if ($result2 === '-' && ($result3 === '-' || $result3 === 'X')) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR') {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-
-        if ($result1 === 'R' && $result2 === 'R') {
-            if (in_array($result3, ['R', '-', 'X'], true)) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'R' && $result2 === 'NR' && in_array($result3, ['R', 'X'], true)) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-
-        $this->warningForAlgo($out, $result);
-    }
-
-    /** Parallel */
-    private function algoParallel(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        array $correctiveActions,
-        array &$out
-    ) {
-        if ($result1 === 'R' && $result2 === 'R') {
-            if (in_array($result3, ['-', 'X'], true)) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'R' && $result2 === 'NR' && in_array($result3, ['R', 'X', 'NR'], true)) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-
-        if ($result1 === 'NR' && $result2 === 'NR') {
-            if (in_array($result3, ['-', 'X'], true)) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'NR' && $result2 === 'R' && in_array($result3, ['NR', 'X', 'R'], true)) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-
-        $this->warningForAlgo($out, $result);
-    }
-
-    /** Cote d'Ivoire */
-    private function algoCoteDivoire(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        string $repeatResult1,
-        array $correctiveActions,
-        array &$out
-    ) {
-
-        // for ease of checking, we map all positive reported codes to 'P'
-        if (in_array(strtoupper(trim($reportedResultCode)), ['VIH1', 'VH1', 'VIH2', 'VH2', 'VIH1&2', 'VH1&2', 'P'])) {
-            $reportedResultCode = 'P';
-        }
-        if ($result1 === 'NR' && $reportedResultCode === 'N') {
-            if ($result2 === '-' && $result3 === '-' && $repeatResult1 === '-') {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-        if ($result1 === 'R') {
-            if ($result2 === 'R' && $result3 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-') {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            if ($result2 === 'NR') {
-                if ($repeatResult1 === 'NR' && $reportedResultCode === 'N') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                if (($repeatResult1 === 'R' || $repeatResult1 === 'I') && in_array($reportedResultCode, ['P', 'I'], true)) {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                $this->warningForAlgo($out, $result);
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-        }
-    }
-
     /** Myanmar (sets 50% score if algorithm is right) */
     private function algoMyanmar(
         array $result,
@@ -3218,108 +3109,6 @@ final class Application_Model_Dts
             return;
         }
         $this->warningForAlgo($out, $result);
-    }
-
-    /** Malawi */
-    private function algoMalawi(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        int $noOfTestsInPanel,
-        array $correctiveActions,
-        array &$out,
-        ?string $repeatResult1 = '-'
-    ) {
-        $result1 = $this->normalizeAlgoResult($result1);
-        $result2 = $this->normalizeAlgoResult($result2);
-        $result3 = $this->normalizeAlgoResult($result3);
-        $repeatResult1 = $this->normalizeAlgoResult($repeatResult1);
-        $isThreeTestPanel = ($noOfTestsInPanel === 3);
-
-        if ($result1 === 'NR' && $reportedResultCode === 'N') {
-            if ($result2 === '-' && $repeatResult1 === '-' && (!$isThreeTestPanel || $result3 === '-')) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'R') {
-            // Malawi can run as a 2-test or 3-test panel; Bioline is required only for 3-test panels.
-            if ($result2 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-' && (!$isThreeTestPanel || $result3 === 'R')) {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            if ($result2 === 'NR') {
-                if ((!$isThreeTestPanel || $result3 === '-') && $repeatResult1 === 'NR' && $reportedResultCode === 'N') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                if ((!$isThreeTestPanel || $result3 === '-') && $repeatResult1 === 'R' && $reportedResultCode === 'I') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                $this->warningForAlgo($out, $result);
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        $this->warningForAlgo($out, $result);
-    }
-
-    /** Ghana (HIV algo) */
-    private function algoGhana(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        string $repeatResult1,
-        string $repeatResult2,
-        array $correctiveActions,
-        array &$out
-    ) {
-        if ($result1 === 'NR' && $reportedResultCode === 'N') {
-            if ($result2 === '-' && $result3 === '-') {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-            return;
-        }
-
-        if ($result1 === 'R') {
-            if ($result2 === 'R' && $result3 === 'R' && $reportedResultCode === 'P') {
-                $out['algoResult'] = 'Pass';
-                return;
-            }
-            if ($result2 === 'NR') {
-                if ($repeatResult1 === 'NR' && $repeatResult2 === 'NR' && $reportedResultCode === 'N') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                if ($repeatResult1 === 'R' && $repeatResult2 === 'R' && $reportedResultCode === 'P') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                if ($repeatResult1 === 'R' && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                if ($repeatResult1 === 'NR' && $repeatResult2 === 'N' && $reportedResultCode === 'I') {
-                    $out['algoResult'] = 'Pass';
-                    return;
-                }
-                $this->warningForAlgo($out, $result);
-                return;
-            }
-            $this->warningForAlgo($out, $result);
-        }
     }
 
     /** Ghana syphilis mini-check */

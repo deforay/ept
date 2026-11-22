@@ -61,18 +61,25 @@ enum Pt_Evaluation_Dts_Reason: string
             'test2' => T::markForTranslation('Test 2'),
             'test3' => T::markForTranslation('Test 3'),
             'repeat1' => T::markForTranslation('Repeat Test 1'),
+            'repeat2' => T::markForTranslation('Repeat Test 2'),
             default => $test,
         };
     }
 
-    /** The English name of a final result that an algorithm gives. */
-    public static function finalName(string $final): string
+    /**
+     * The English name of a final result that an algorithm gives. A list names a
+     * choice of finals.
+     *
+     * @param string|list<string> $final
+     */
+    public static function finalName(string|array $final): string
     {
-        return match ($final) {
+        return match (is_array($final) ? implode('|', $final) : $final) {
+            'P|IND' => T::markForTranslation('Positive or Indeterminate'),
             'P' => T::markForTranslation('Positive'),
             'N' => T::markForTranslation('Negative'),
             'IND' => T::markForTranslation('Indeterminate'),
-            default => $final,
+            default => is_array($final) ? implode(', ', $final) : $final,
         };
     }
 }
