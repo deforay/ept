@@ -1410,15 +1410,14 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['s.shipment_code'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
             ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['map_id'])
-            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', ['total_corrective' => new Zend_Db_Expr('count("cam.corrective_action_id")')])
-            ->join(['ca' => 'r_dts_corrective_actions'], 'ca.action_id=cam.corrective_action_id', ['action_id', 'corrective_action'])
+            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', ['action_id' => 'cam.corrective_action_id', 'total_corrective' => new Zend_Db_Expr('count("cam.corrective_action_id")')])
             ->where('s.shipment_id = ?', $shipmentId)
             ->group(['cam.corrective_action_id'])
             ->order(['total_corrective DESC']);
         if (isset($testType) && !empty($testType)) {
             $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
         }
-        return $dbAdapter->fetchAll($sQuery);
+        return Pt_Evaluation_Dts_CorrectiveAction::fillRows($dbAdapter->fetchAll($sQuery));
     }
 
     public function exportShipmentsReport($params)
@@ -2903,19 +2902,18 @@ class Application_Service_Reports
 
         $actions = $db->fetchAll(
             $this->correctiveActionResponses($params)
-                ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', [])
-                ->join(['ca' => 'r_dts_corrective_actions'], 'ca.action_id=cam.corrective_action_id', ['ca.action_id', 'ca.corrective_action'])
+                ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', ['action_id' => 'cam.corrective_action_id'])
                 ->columns([
                     'responses' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
                     'participants' => new Zend_Db_Expr('COUNT(DISTINCT p.participant_id)'),
                     'failed' => new Zend_Db_Expr('COUNT(DISTINCT CASE WHEN sp.final_result = 2 THEN sp.map_id END)'),
                 ])
-                ->group('ca.action_id')
-                ->order(['responses DESC', 'ca.action_id ASC'])
+                ->group('cam.corrective_action_id')
+                ->order(['responses DESC', 'cam.corrective_action_id ASC'])
         );
 
+        $actions = Pt_Evaluation_Dts_CorrectiveAction::fillRows($actions);
         foreach ($actions as &$action) {
-            $action['corrective_action'] = $this->translator->_(trim((string) $action['corrective_action']));
             foreach (['responses', 'participants', 'failed'] as $key) {
                 $action[$key] = (int) $action[$key];
             }
@@ -2951,23 +2949,18 @@ class Application_Service_Reports
                 'sp.shipment_test_report_date',
                 'score' => new Zend_Db_Expr('IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)'),
             ])
-            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', [])
-            ->join(['ca' => 'r_dts_corrective_actions'], 'ca.action_id=cam.corrective_action_id', ['ca.action_id', 'ca.corrective_action'])
+            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', ['action_id' => 'cam.corrective_action_id'])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['c.iso_name'])
-            ->order(['s.shipment_date DESC', 'participant_name ASC', 'ca.action_id ASC']);
+            ->order(['s.shipment_date DESC', 'participant_name ASC', 'cam.corrective_action_id ASC']);
 
         if ($actionId !== null) {
-            $sQuery->where('ca.action_id = ?', $actionId);
+            $sQuery->where('cam.corrective_action_id = ?', $actionId);
         }
         if ($limit !== null) {
             $sQuery->limit($limit);
         }
 
-        $rows = Zend_Db_Table_Abstract::getDefaultAdapter()->fetchAll($sQuery);
-        foreach ($rows as &$row) {
-            $row['corrective_action'] = $this->translator->_(trim((string) $row['corrective_action']));
-        }
-        return $rows;
+        return Pt_Evaluation_Dts_CorrectiveAction::fillRows(Zend_Db_Table_Abstract::getDefaultAdapter()->fetchAll($sQuery));
     }
 
     /**

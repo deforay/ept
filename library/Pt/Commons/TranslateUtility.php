@@ -25,6 +25,16 @@ final class Pt_Commons_TranslateUtility
     }
 
     /**
+     * Returns the text unchanged. Wrap an English literal in it when the code stores or
+     * passes the English and translates it later, so the translation catalogue still
+     * picks up the string. bin/refresh-translations.php lists it as a gettext keyword.
+     */
+    public static function markForTranslation(string $text): string
+    {
+        return $text;
+    }
+
+    /**
      * Translate a string and escape it for use in HTML content/attributes.
      *
      * @param string|null $text The text to translate

@@ -5021,22 +5021,21 @@ class Application_Service_Shipments
     public function getCorrectiveActionsByMapId(int $mapId, ?int $dmId = null): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['c' => 'r_dts_corrective_actions'], ['c.action_id', 'c.corrective_action', 'c.description'])
-            ->join(['map' => 'dts_shipment_corrective_action_map'], 'c.action_id=map.corrective_action_id', ['map.shipment_map_id', 'map.action_taken', 'map.action_date'])
+        $sql = $db->select()->from(['map' => 'dts_shipment_corrective_action_map'], ['action_id' => 'map.corrective_action_id', 'map.shipment_map_id', 'map.action_taken', 'map.action_date'])
             ->join(['spm' => 'shipment_participant_map'], 'map.shipment_map_id=spm.map_id', ['spm.final_result', 'spm.shipment_score', 'spm.documentation_score'])
             ->join(['p' => 'participant'], 'spm.participant_id=p.participant_id', ['institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'))])
             ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
             ->join(['d' => 'distributions'], 's.distribution_id=d.distribution_id', ['distribution_code', 'distribution_date'])
             ->where('spm.map_id = ?', $mapId)
-            ->group('c.action_id')
-            ->order('c.action_id');
+            ->group('map.corrective_action_id')
+            ->order('map.corrective_action_id');
         if ($dmId !== null) {
             $sql = $sql->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
                 ->where('pmm.dm_id = ?', $dmId);
         }
         $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
         $sQuerySession->capaQuery = $sql;
-        return $db->fetchAll($sql);
+        return Pt_Evaluation_Dts_CorrectiveAction::fillRows($db->fetchAll($sql));
     }
 
     /**
@@ -5112,10 +5111,9 @@ class Application_Service_Shipments
             $sQuerySession = new Zend_Session_Namespace('capaExcel');
             $sQuery = $sQuerySession->capaQuery;
             // One row per response and corrective action.
-            $sQuery = $sQuery->join(['map' => 'dts_shipment_corrective_action_map'], 'map.shipment_map_id=spm.map_id', ['map.action_taken', 'map.action_date'])
-                ->join(['c' => 'r_dts_corrective_actions'], 'c.action_id=map.corrective_action_id', ['c.corrective_action'])
-                ->group(['spm.map_id', 'c.action_id']);
-            $rResult = $db->fetchAll($sQuery);
+            $sQuery = $sQuery->join(['map' => 'dts_shipment_corrective_action_map'], 'map.shipment_map_id=spm.map_id', ['action_id' => 'map.corrective_action_id', 'map.action_taken', 'map.action_date'])
+                ->group(['spm.map_id', 'map.corrective_action_id']);
+            $rResult = Pt_Evaluation_Dts_CorrectiveAction::fillRows($db->fetchAll($sQuery));
             $results = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'];
 
             foreach ($rResult as $aRow) {
@@ -5185,7 +5183,7 @@ class Application_Service_Shipments
             $sheet = $excel->getActiveSheet();
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
-            $rResult = $db->fetchAll($sQuerySession->capaQuery);
+            $rResult = Pt_Evaluation_Dts_CorrectiveAction::fillRows($db->fetchAll($sQuerySession->capaQuery));
             $result = $rResult[0];
 
             $colNo = 0;
