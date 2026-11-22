@@ -25,6 +25,8 @@ if ($this->reqFrom == "admin") {
 	$resultText = $this->translate->_('Reported Result');
 	$adminAccess = true;
 }
+// Admin view-only mode: the same page with every field locked and no Submit.
+$viewOnly = !empty($adminAccess) && !empty($this->viewOnly);
 $userTestConfig = Zend_Json_Decoder::decode($this->shipment['user_test_config'], true);
 // Possible results can be split into TEST vs FINAL option sets via the
 // r_possibleresult.scheme_sub_group column (e.g. mRDT has MAL-T-* test codes and
@@ -186,6 +188,7 @@ if ($inConfirmStep) {
 			action="<?php echo $this->url(array("controller" => "custom-test", "action" => "response"), null, true) ?>"
 			onsubmit="return validateNow();return false;">
 			<div class="box-body">
+				<?php if ($viewOnly) { echo $this->render('common/response-view-only.phtml'); } ?>
 				<?php if ($inConfirmStep && $this->isEditable) { ?>
 					<div id="confirmResponseBanner">
 						<div class="crb-row">
@@ -258,13 +261,13 @@ if ($inConfirmStep) {
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-								<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
+								<?php echo $this->escape((string) (($this->participant['first_name'] ?? '') . ' ' . ($this->participant['last_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participant['unique_identifier']; ?>
+								<?php echo $this->escape((string) (($this->participant['unique_identifier'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participant['iso_name']; ?>
+								<?php echo $this->escape((string) (($this->participant['iso_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
 							</td>
@@ -487,20 +490,20 @@ if ($inConfirmStep) {
 									<tr class="light"
 										style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 										<td style="text-align:left;font-size:1.1em;font-weight:bold;">
-											<?php echo $sample['sample_label']; ?>
+											<?php echo $this->escape($sample['sample_label']); ?>
 											<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory ' style='visibility:hidden;'>*</span>"; ?>
 											<input type="hidden" id="sample<?php echo $count; ?>" class="sampleIds"
 												name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
 											<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
 										</td>
 										<td style="text-align:center;">
-											<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>"
+											<input type="number" data-sample-label="<?php echo $this->escape($sample['sample_label']); ?>"
 												<?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4"
 												name="reportedResult[]" id="reportedResult<?php echo $count; ?>"
 												class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal"
 												value="<?php echo $sample['reported_result']; ?>"
 												placeholder="<?= $this->htmlTranslate("Enter the result"); ?>"
-												title="<?= $this->translate->_("Please enter the result for"); ?> <?php echo $sample['sample_label']; ?>" />
+												title="<?= $this->translate->_("Please enter the result for"); ?> <?php echo $this->escape($sample['sample_label']); ?>" />
 										</td>
 										<td>
 											<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>"
@@ -529,7 +532,7 @@ if ($inConfirmStep) {
 								<?php } else { ?>
 									<tr align="CENTER" class="light other<?php echo $sample['sample_id']; ?>">
 										<th scope="col">
-											<?php echo $sample['sample_label']; ?>
+											<?php echo $this->escape($sample['sample_label']); ?>
 											<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 											<input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
 												value="<?php echo $sample['sample_id']; ?>" />
@@ -679,7 +682,8 @@ if ($inConfirmStep) {
 							</td>
 						</tr>
 					</table>
-					<?php $warnings = Zend_Json_Decoder::decode($this->shipment['failure_reason'], true);
+					<?php // Empty until the response is evaluated.
+					$warnings = json_decode((string) ($this->shipment['failure_reason'] ?? ''), true);
 					if (isset($warnings) && !empty($warnings)) { ?>
 						<table class="table table-bordered" style="width:100%;margin:0 auto;">
 							<tr>
@@ -761,7 +765,7 @@ if ($inConfirmStep) {
 						</tr>
 					</table>
 				<?php }
-				if ($this->isEditable) { ?>
+				if (($this->isEditable) && !$viewOnly) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<p>
 							<?php $submitText = "Submit";

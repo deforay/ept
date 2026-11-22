@@ -60,6 +60,7 @@ class VlController extends Zend_Controller_Action
                 $evalService = new Application_Service_Evaluation();
                 $this->view->vlRange = $vlModel->getVlRange($sID);
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
+                [$this->view->canEditResponse, $this->view->viewOnly] = Application_Service_Shipments::adminResponseMode($request->getParam('mode'));
                 $this->_helper->layout()->setLayout('admin');
             } else {
                 // Record when the participant first opened the form - the "started the

@@ -20,6 +20,8 @@ $adminAccess = false;
 if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
+// Admin view-only mode: the same page with every field locked and no Submit.
+$viewOnly = !empty($adminAccess) && !empty($this->viewOnly);
 ?>
 <style>
 	th {
@@ -78,6 +80,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		<form name="eidResponseForm" id="eidResponseForm" method="post" enctype="multipart/form-data"
 			action="<?php echo $this->url(array("controller" => "eid", "action" => "response"), null, true) ?>">
 			<div class="box-body">
+				<?php if ($viewOnly) { echo $this->render('common/response-view-only.phtml'); } ?>
 				<?php if ($inConfirmStep && $this->isEditable) { ?>
 					<div id="confirmResponseBanner">
 						<div class="crb-row">
@@ -101,7 +104,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 				<input type="hidden" id="schemeCode" name="schemeCode"
 					value="<?= $this->escape((string) ($this->shipment['shipment_code'])); ?>" />
 				<input type="hidden" id="participantName" name="participantName"
-					value="<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>" />
+					value="<?php echo $this->escape((string) (($this->participant['first_name'] ?? '') . ' ' . ($this->participant['last_name'] ?? ''))); ?>" />
 
 
 				<div id="view-content">
@@ -144,14 +147,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								</label>
 							</td>
 							<td style="width:30%;">
-								<?php echo $this->participant['first_name'] . " " . $this->participant['last_name']; ?>
+								<?php echo $this->escape((string) (($this->participant['first_name'] ?? '') . " " . ($this->participant['last_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
 								<label class="label-control" for=""><?= $this->translate->_("Laboratory ID"); ?>:
 								</label>
 							</td>
 							<td style="width:30%;">
-								<?php echo $this->participant['unique_identifier']; ?>
+								<?php echo $this->escape((string) (($this->participant['unique_identifier'] ?? ''))); ?>
 							</td>
 						</tr>
 						<tr>
@@ -162,7 +165,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="text" id="labDirectorName" name="labDirectorName" class="form-control"
-									value="<?php echo $labDirectorName; ?>"
+									value="<?php echo $this->escape((string) $labDirectorName); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter the Laboratory Director Name"); ?>"
 									title="<?= $this->htmlTranslate("Please enter the laboratory director name"); ?>">
 							</td>
@@ -173,9 +176,9 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="hidden" id="labDirectorEmailChange" name="labDirectorEmailChange"
-									value="<?php echo $labDirectorEmail; ?>" style="display:none;">
+									value="<?php echo $this->escape((string) $labDirectorEmail); ?>" style="display:none;">
 								<input type="text" id="labDirectorEmail" name="labDirectorEmail" class="form-control"
-									value="<?php echo $labDirectorEmail; ?>"
+									value="<?php echo $this->escape((string) $labDirectorEmail); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter the Laboratory Director email"); ?>"
 									title="<?= $this->htmlTranslate("Please enter the laboratory director email"); ?>"
 									onchange="changeEmail('#labDirectorEmail','#labDirectorEmailChange', '#confirmLabDirectorEmail');">
@@ -191,7 +194,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="text" id="contactPersonName" name="contactPersonName" class="form-control"
-									value="<?php echo $contactPersonName; ?>"
+									value="<?php echo $this->escape((string) $contactPersonName); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter the Contact Person name"); ?>"
 									title="<?= $this->htmlTranslate("Please enter the contact person name"); ?>">
 							</td>
@@ -202,9 +205,9 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="hidden" id="contactPersonEmailChange" name="contactPersonEmailChange"
-									value="<?php echo $contactPersonEmail; ?>" style="display:none;">
+									value="<?php echo $this->escape((string) $contactPersonEmail); ?>" style="display:none;">
 								<input type="text" id="contactPersonEmail" name="contactPersonEmail"
-									class="form-control" value="<?php echo $contactPersonEmail; ?>"
+									class="form-control" value="<?php echo $this->escape((string) $contactPersonEmail); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter the Contact Person email"); ?>"
 									title="<?= $this->htmlTranslate("Please enter the contact person email"); ?>"
 									onchange="changeEmail('#contactPersonEmail','#contactPersonEmailChange','#confirmContactPersonEmail');">
@@ -221,7 +224,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="text" id="contactPersonTelephone" name="contactPersonTelephone"
-									class="form-control isRequired" value="<?php echo $contactPersonTelephone; ?>"
+									class="form-control isRequired" value="<?php echo $this->escape((string) $contactPersonTelephone); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter the contact person telephone"); ?>"
 									title="<?= $this->htmlTranslate("Please enter the contact person telephone"); ?>">
 							</td>
@@ -230,19 +233,19 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					<!-- <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
 							<td style="width:20%;">
-								<h4 class="text-info"> <?= $this->translate->_("Participant Name"); ?> </h4> <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
+								<h4 class="text-info"> <?= $this->translate->_("Participant Name"); ?> </h4> <?php echo $this->escape((string) (($this->participant['first_name'] ?? '') . ' ' . ($this->participant['last_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<h4 class="text-info"> <?= $this->translate->_("Participant Code"); ?> </h4> <?php echo $this->participant['unique_identifier'] ?>
+								<h4 class="text-info"> <?= $this->translate->_("Participant Code"); ?> </h4> <?php echo $this->escape((string) (($this->participant['unique_identifier'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<h4 class="text-info"> <?= $this->translate->_("Affiliation"); ?> </h4> <?php echo ($this->participant['affiliation']); ?>
+								<h4 class="text-info"> <?= $this->translate->_("Affiliation"); ?> </h4> <?php echo $this->escape((string) (($this->participant['affiliation'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<h4 class="text-info"> <?= $this->translate->_("Phone No"); ?> </h4> <?php echo ($this->participant['phone']); ?>
+								<h4 class="text-info"> <?= $this->translate->_("Phone No"); ?> </h4> <?php echo $this->escape((string) (($this->participant['phone'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<h4 class="text-info"> <?= $this->translate->_("Mobile No"); ?> </h4> <?php echo ($this->participant['mobile']); ?>
+								<h4 class="text-info"> <?= $this->translate->_("Mobile No"); ?> </h4> <?php echo $this->escape((string) (($this->participant['mobile'] ?? ''))); ?>
 							</td>
 						</tr>
 					</table> -->
@@ -498,7 +501,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 								<th scope="col" style="white-space: nowrap">
 									<!--< ?php echo $sample['sample_label']; ?> < ?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>-->
-									<?php echo $sample['sample_label']; ?>
+									<?php echo $this->escape($sample['sample_label']); ?>
 									<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
 									<input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
 										value="<?php echo $sample['sample_id']; ?>" />
@@ -768,7 +771,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					</tr>
 				</table>
 			<?php }
-			if ($this->isEditable || $adminAccess) { ?>
+			if (($this->isEditable || $adminAccess) && !$viewOnly) { ?>
 				<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 					<p>
 						<?php $submitText = "Submit";

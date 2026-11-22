@@ -16,6 +16,8 @@ $isLoggedInAsAdmin = false;
 if ($this->reqFrom == "admin") {
 	$isLoggedInAsAdmin = true;
 }
+// Admin view-only mode: the same page with every field locked and no Submit.
+$viewOnly = !empty($isLoggedInAsAdmin) && !empty($this->viewOnly);
 $download = "";
 // TB forms are an MTBEPT-only feature.
 if (Application_Service_Common::getConfig('instance') === 'mtbept') {
@@ -103,6 +105,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			action="<?php echo $this->url(array("controller" => "tb", "action" => "response"), null, true) ?>"
 			onsubmit="return validateNow('submit');return false;">
 			<div class="box-body">
+				<?php if ($viewOnly) { echo $this->render('common/response-view-only.phtml'); } ?>
 				<?php if ($inConfirmStep && $this->isEditable) { ?>
 					<div id="confirmResponseBanner">
 						<div class="crb-row">
@@ -172,13 +175,13 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-								<?php echo $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
+								<?php echo $this->escape((string) (($this->participant['first_name'] ?? '') . ' ' . ($this->participant['last_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participant['unique_identifier']; ?>
+								<?php echo $this->escape((string) (($this->participant['unique_identifier'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participant['iso_name']; ?>
+								<?php echo $this->escape((string) (($this->participant['iso_name'] ?? ''))); ?>
 							</td>
 							<td style="width:20%;">
 							</td>
@@ -612,7 +615,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						</tr>
 					</table>
 				<?php }
-				if ($this->isEditable || $isLoggedInAsAdmin) { ?>
+				if (($this->isEditable || $isLoggedInAsAdmin) && !$viewOnly) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<?php $submitText = "Complete and Submit";
 						if ($inConfirmStep) {
