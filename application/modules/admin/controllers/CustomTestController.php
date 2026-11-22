@@ -440,7 +440,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
                 $extra['reason'] = 'Retires results that shipments already use: ' . implode(', ', $retiredInUse);
             } elseif ($scoringHits !== []) {
                 $extra['important'] = true;
-                $extra['reason'] = 'Changes scoring: ' . implode(', ', $scoringHits);
+                $extra['reason'] = 'Affects scores or results: ' . implode(', ', $scoringHits);
             }
         }
         Application_Model_DbTable_AuditLog::record("Updated generic test - {$schemeCode}", 'config', $extra);
