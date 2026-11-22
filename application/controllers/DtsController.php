@@ -42,6 +42,8 @@ class DtsController extends Zend_Controller_Action
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts', $uc);
+                $this->view->sampleVerdicts = $dtsModel->getSampleVerdicts($sID, $pID);
+                $this->view->verdictsOutdated = $dtsModel->responseChangedSinceEvaluation($sID, $pID);
                 $this->_helper->layout()->setLayout('admin');
             } else {
                 if (isset($pID) && !empty($pID)) {

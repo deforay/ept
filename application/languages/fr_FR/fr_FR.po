@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 18:38+0530\n"
+"POT-Creation-Date: 2026-11-22 19:13+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -453,7 +453,7 @@ msgstr ""
 
 #: application/languages/db-translation-strings.php:47
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2322 application/models/Eid.php:236
+#: application/models/Dts.php:2368 application/models/Eid.php:236
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:12
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:176
@@ -477,8 +477,8 @@ msgstr "N'a pas atteint le score minimum requis"
 #: application/languages/db-translation-strings.php:55
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/CustomTest.php:503 application/models/CustomTest.php:622
-#: application/models/Dts.php:1620 application/models/Dts.php:1638
-#: application/models/Dts.php:2326 application/models/Dts.php:2403
+#: application/models/Dts.php:1666 application/models/Dts.php:1684
+#: application/models/Dts.php:2372 application/models/Dts.php:2449
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/data-managers/index.phtml:233
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:80
@@ -577,7 +577,7 @@ msgstr "Diagnostic précoce chez le nourrisson"
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/DbTable/DataManagers.php:599
 #: application/models/DbTable/Distribution.php:156
-#: application/models/Dts.php:2329 application/models/Recency.php:553
+#: application/models/Dts.php:2375 application/models/Recency.php:553
 #: application/modules/admin/views/scripts/audit-log/index.phtml:951
 #: application/modules/admin/views/scripts/email-participants/index.phtml:464
 #: application/modules/admin/views/scripts/login/index.phtml:190
@@ -714,6 +714,8 @@ msgstr "exclus"
 #: application/services/Evaluation.php:2630
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:30
+#: application/views/scripts/dts/response.phtml:100
+#: application/views/scripts/dts/response.phtml:120
 #: application/views/scripts/participant/dashboard.phtml:438
 msgid "Fail"
 msgstr "Échec"
@@ -1179,12 +1181,12 @@ msgstr "Réponse en ligne"
 #: application/views/scripts/covid19/response.phtml:461
 #: application/views/scripts/covid19/response.phtml:483
 #: application/views/scripts/custom-test/response.phtml:397
-#: application/views/scripts/dts/response.phtml:604
-#: application/views/scripts/dts/response.phtml:629
-#: application/views/scripts/dts/response.phtml:655
-#: application/views/scripts/dts/response.phtml:681
-#: application/views/scripts/dts/response.phtml:707
-#: application/views/scripts/dts/response.phtml:734
+#: application/views/scripts/dts/response.phtml:758
+#: application/views/scripts/dts/response.phtml:783
+#: application/views/scripts/dts/response.phtml:809
+#: application/views/scripts/dts/response.phtml:835
+#: application/views/scripts/dts/response.phtml:861
+#: application/views/scripts/dts/response.phtml:888
 #: application/views/scripts/participant/participant-message.phtml:10
 msgid "Other"
 msgstr "Autre"
@@ -1223,6 +1225,7 @@ msgstr ""
 #: application/services/Evaluation.php:2535
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:29
+#: application/views/scripts/dts/response.phtml:94
 #: application/views/scripts/participant/dashboard.phtml:436
 msgid "Pass"
 msgstr "Réussi"
@@ -1346,9 +1349,9 @@ msgstr "Hôpital privé"
 
 #: application/languages/db-translation-strings.php:377
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:1619 application/models/Dts.php:1637
-#: application/models/Dts.php:2325 application/models/Dts.php:2355
-#: application/models/Dts.php:2375 application/models/Dts.php:2402
+#: application/models/Dts.php:1665 application/models/Dts.php:1683
+#: application/models/Dts.php:2371 application/models/Dts.php:2401
+#: application/models/Dts.php:2421 application/models/Dts.php:2448
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:70
 #: application/modules/admin/views/scripts/enrollments/add.phtml:40
@@ -3848,7 +3851,7 @@ msgstr "Confirmer"
 #: application/views/scripts/data-managers/change-primary-email.phtml:61
 #: application/views/scripts/data-managers/change-primary-email.phtml:92
 #: application/views/scripts/data-managers/reset-password.phtml:36
-#: application/views/scripts/dts/response.phtml:1674
+#: application/views/scripts/dts/response.phtml:1830
 #: application/views/scripts/eid/response.phtml:783
 #: application/views/scripts/participant/add-participant.phtml:231
 #: application/views/scripts/participant/add.phtml:184
@@ -4390,14 +4393,14 @@ msgstr "Description"
 #: application/models/Covid19.php:734 application/models/Covid19.php:815
 #: application/models/CustomTest.php:456 application/models/CustomTest.php:503
 #: application/models/CustomTest.php:595 application/models/CustomTest.php:622
-#: application/models/Dts.php:1616 application/models/Dts.php:1634
-#: application/models/Dts.php:2319 application/models/Dts.php:2352
-#: application/models/Dts.php:2372 application/models/Dts.php:2399
+#: application/models/Dts.php:1662 application/models/Dts.php:1680
+#: application/models/Dts.php:2365 application/models/Dts.php:2398
+#: application/models/Dts.php:2418 application/models/Dts.php:2445
 #: application/models/Recency.php:553 application/models/Recency.php:637
 #: application/models/Recency.php:702 application/models/Recency.php:740
 #: application/models/Recency.php:780
 #: application/views/scripts/covid19/response.phtml:191
-#: application/views/scripts/dts/response.phtml:196
+#: application/views/scripts/dts/response.phtml:333
 #: application/views/scripts/eid/response.phtml:236
 #: application/views/scripts/recency/response.phtml:140
 #: application/views/scripts/shipment-form/download.phtml:133
@@ -4410,9 +4413,9 @@ msgstr "Code du participant"
 #: application/models/Covid19.php:734 application/models/Covid19.php:815
 #: application/models/CustomTest.php:456 application/models/CustomTest.php:503
 #: application/models/CustomTest.php:595 application/models/CustomTest.php:622
-#: application/models/Dts.php:1617 application/models/Dts.php:1635
-#: application/models/Dts.php:2320 application/models/Dts.php:2353
-#: application/models/Dts.php:2373 application/models/Dts.php:2400
+#: application/models/Dts.php:1663 application/models/Dts.php:1681
+#: application/models/Dts.php:2366 application/models/Dts.php:2399
+#: application/models/Dts.php:2419 application/models/Dts.php:2446
 #: application/models/Recency.php:553 application/models/Recency.php:637
 #: application/models/Recency.php:702 application/models/Recency.php:740
 #: application/models/Recency.php:780 application/models/Vl.php:386
@@ -4420,7 +4423,7 @@ msgstr "Code du participant"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:88
 #: application/views/scripts/capa/index.phtml:61
 #: application/views/scripts/covid19/response.phtml:187
-#: application/views/scripts/dts/response.phtml:192
+#: application/views/scripts/dts/response.phtml:329
 #: application/views/scripts/eid/response.phtml:233
 #: application/views/scripts/participant/file-downloads.phtml:14
 #: application/views/scripts/participant/password.phtml:115
@@ -4430,9 +4433,9 @@ msgid "Participant Name"
 msgstr "Nom du participant"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:1618 application/models/Dts.php:1636
-#: application/models/Dts.php:2321 application/models/Dts.php:2354
-#: application/models/Dts.php:2374 application/models/Dts.php:2401
+#: application/models/Dts.php:1664 application/models/Dts.php:1682
+#: application/models/Dts.php:2367 application/models/Dts.php:2400
+#: application/models/Dts.php:2420 application/models/Dts.php:2447
 #: application/models/Recency.php:553 application/models/Vl.php:459
 #: application/models/Vl.php:463
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:128
@@ -4456,7 +4459,7 @@ msgstr "Nom de l'institut"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
 #: application/models/DbTable/Enrollments.php:718
-#: application/models/Dts.php:2323 application/models/Dts.php:2405
+#: application/models/Dts.php:2369 application/models/Dts.php:2451
 #: application/models/Eid.php:230 application/models/Recency.php:553
 #: application/models/Vl.php:388
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
@@ -4524,7 +4527,7 @@ msgid "Country"
 msgstr "Pays"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2324 application/models/Recency.php:553
+#: application/models/Dts.php:2370 application/models/Recency.php:553
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:13
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:177
 #: library/Pt/Commons/ImportTemplate.php:82
@@ -4532,7 +4535,7 @@ msgid "Address"
 msgstr "Adresse"
 
 #: application/models/Covid19.php:568 application/models/CustomTest.php:456
-#: application/models/Dts.php:2327 application/models/Dts.php:2404
+#: application/models/Dts.php:2373 application/models/Dts.php:2450
 #: application/models/Recency.php:553
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:11
@@ -4559,7 +4562,7 @@ msgid "Point of Contact"
 msgstr "Personne de contact"
 
 #: application/models/Covid19.php:649 application/models/CustomTest.php:503
-#: application/models/Dts.php:1621 application/models/Dts.php:1639
+#: application/models/Dts.php:1667 application/models/Dts.php:1685
 #: application/models/Recency.php:637
 #: application/views/scripts/eid/response.phtml:260
 #: application/views/scripts/recency/response.phtml:168
@@ -4570,10 +4573,10 @@ msgstr "Personne de contact"
 msgid "Shipment Receipt Date"
 msgstr "Date de réception de l'expédition"
 
-#: application/models/Covid19.php:649 application/models/Dts.php:1623
-#: application/models/Dts.php:2378 application/models/Recency.php:637
+#: application/models/Covid19.php:649 application/models/Dts.php:1669
+#: application/models/Dts.php:2424 application/models/Recency.php:637
 #: application/views/scripts/covid19/response.phtml:236
-#: application/views/scripts/dts/response.phtml:258
+#: application/views/scripts/dts/response.phtml:395
 #: application/views/scripts/recency/response.phtml:182
 #: application/views/scripts/shipment-form/download.phtml:211
 #: application/views/scripts/shipment-form/download.phtml:416
@@ -4583,7 +4586,7 @@ msgid "Sample Rehydration Date"
 msgstr "Date de reconstitution de l'échantillon"
 
 #: application/models/Covid19.php:649 application/models/CustomTest.php:503
-#: application/models/Dts.php:1624 application/models/Dts.php:1641
+#: application/models/Dts.php:1670 application/models/Dts.php:1687
 #: application/models/Recency.php:637
 #: application/views/scripts/covid19/response.phtml:255
 #: application/views/scripts/shipment-form/download.phtml:216
@@ -4623,7 +4626,7 @@ msgstr "Lot du type de test n° 1"
 #: application/models/Covid19.php:649 application/models/Covid19.php:654
 #: application/models/Covid19.php:658
 #: application/views/scripts/covid19/response.phtml:642
-#: application/views/scripts/dts/response.phtml:835
+#: application/views/scripts/dts/response.phtml:989
 #: application/views/scripts/shipment-form/download.phtml:274
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:403
 msgid "Expiry Date"
@@ -4670,7 +4673,7 @@ msgid "Type Lot #3"
 msgstr "Lot du type de test n° 3"
 
 #: application/models/Covid19.php:662 application/models/CustomTest.php:513
-#: application/models/Dts.php:1762 application/models/Recency.php:646
+#: application/models/Dts.php:1808 application/models/Recency.php:646
 #: application/modules/admin/views/scripts/test-platform/add.phtml:75
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:82
 #: application/modules/admin/views/scripts/testkit/add.phtml:147
@@ -4692,7 +4695,7 @@ msgid "Comments"
 msgstr "Commentaires"
 
 #: application/models/Covid19.php:677 application/models/CustomTest.php:531
-#: application/models/Dts.php:1763 application/models/Eid.php:298
+#: application/models/Dts.php:1809 application/models/Eid.php:298
 #: application/models/Recency.php:646 application/models/Vl.php:514
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:10
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:13
@@ -4710,7 +4713,7 @@ msgid "Test# Correct"
 msgstr "Nombre de tests corrects"
 
 #: application/models/Covid19.php:736 application/models/CustomTest.php:597
-#: application/models/Dts.php:2358 application/models/Recency.php:704
+#: application/models/Dts.php:2404 application/models/Recency.php:704
 msgid "% Correct"
 msgstr "Pourcentage correct"
 
@@ -4741,16 +4744,16 @@ msgid "Documentation Score(10% Conv.)"
 msgstr "Score de documentation (conv. 10 %)"
 
 #: application/models/Covid19.php:815 application/models/CustomTest.php:622
-#: application/models/Dts.php:2409 application/models/Recency.php:780
+#: application/models/Dts.php:2455 application/models/Recency.php:780
 msgid "Total Score"
 msgstr "Score total"
 
 #: application/models/Covid19.php:815 application/models/CustomTest.php:622
-#: application/models/Dts.php:2410 application/models/Recency.php:780
+#: application/models/Dts.php:2456 application/models/Recency.php:780
 msgid "Overall Performance"
 msgstr "Performance globale"
 
-#: application/models/CustomTest.php:456 application/models/Dts.php:2328
+#: application/models/CustomTest.php:456 application/models/Dts.php:2374
 msgid "Telephone"
 msgstr "Téléphone"
 
@@ -4758,7 +4761,7 @@ msgstr "Téléphone"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1063
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:229
 #: application/views/scripts/custom-test/response.phtml:366
-#: application/views/scripts/dts/response.phtml:583
+#: application/views/scripts/dts/response.phtml:737
 #: application/views/scripts/shipment-form/download.phtml:242
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:373
 msgid "Kit Name"
@@ -5226,7 +5229,7 @@ msgstr "Inconnu"
 
 #: application/models/DbTable/Shipments.php:1396
 #: application/models/DbTable/Shipments.php:1920
-#: application/views/scripts/dts/response.phtml:371
+#: application/views/scripts/dts/response.phtml:508
 msgid "Not Available"
 msgstr "Non disponible"
 
@@ -5424,130 +5427,130 @@ msgstr "Expiré"
 msgid "Held by the development mail trap"
 msgstr "Bloqué par le piège de messagerie de développement"
 
-#: application/models/Dts.php:1622 application/models/Dts.php:1640
+#: application/models/Dts.php:1668 application/models/Dts.php:1686
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:269
 msgid "Test Type"
 msgstr "Type de test"
 
-#: application/models/Dts.php:1625 application/models/Dts.php:1642
+#: application/models/Dts.php:1671 application/models/Dts.php:1688
 msgid "Reported On"
 msgstr "Date de soumission"
 
-#: application/models/Dts.php:1626 application/models/Dts.php:1646
+#: application/models/Dts.php:1672 application/models/Dts.php:1692
 msgid "Test #1 Kit Name"
 msgstr "Nom du kit de test n° 1"
 
-#: application/models/Dts.php:1627 application/models/Dts.php:1647
+#: application/models/Dts.php:1673 application/models/Dts.php:1693
 msgid "Kit Lot #1"
 msgstr "Lot du kit n° 1"
 
-#: application/models/Dts.php:1628 application/models/Dts.php:1648
+#: application/models/Dts.php:1674 application/models/Dts.php:1694
 msgid "Expiry Date #1"
 msgstr "Date d'expiration #1"
 
-#: application/models/Dts.php:1629 application/models/Dts.php:1649
+#: application/models/Dts.php:1675 application/models/Dts.php:1695
 msgid "QC Done #1"
 msgstr "CQ effectué n° 1"
 
-#: application/models/Dts.php:1630 application/models/Dts.php:1650
+#: application/models/Dts.php:1676 application/models/Dts.php:1696
 msgid "QC Expiry Date #1"
 msgstr "Date d'expiration du CQ #1"
 
-#: application/models/Dts.php:1643
-#: application/views/scripts/dts/response.phtml:343
+#: application/models/Dts.php:1689
+#: application/views/scripts/dts/response.phtml:480
 msgid "Condition Of PT Samples"
 msgstr "État des échantillons PT"
 
-#: application/models/Dts.php:1644
-#: application/views/scripts/dts/response.phtml:355
-#: application/views/scripts/dts/response.phtml:359
+#: application/models/Dts.php:1690
+#: application/views/scripts/dts/response.phtml:492
+#: application/views/scripts/dts/response.phtml:496
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:286
 msgid "Room Temperature"
 msgstr "Température ambiante"
 
-#: application/models/Dts.php:1645
-#: application/views/scripts/dts/response.phtml:365
+#: application/models/Dts.php:1691
+#: application/views/scripts/dts/response.phtml:502
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:290
 msgid "Stop Watch"
 msgstr "Chronomètre"
 
-#: application/models/Dts.php:1666
+#: application/models/Dts.php:1712
 msgid "Test #2 Kit Name"
 msgstr "Nom du kit de test n° 2"
 
-#: application/models/Dts.php:1667
+#: application/models/Dts.php:1713
 msgid "Kit Lot #2"
 msgstr "Lot du kit n° 2"
 
-#: application/models/Dts.php:1668
+#: application/models/Dts.php:1714
 msgid "Expiry Date #2"
 msgstr "Date d'expiration #2"
 
-#: application/models/Dts.php:1669
+#: application/models/Dts.php:1715
 msgid "QC Done #2"
 msgstr "CQ effectué n° 2"
 
-#: application/models/Dts.php:1670
+#: application/models/Dts.php:1716
 msgid "QC Expiry Date #2"
 msgstr "Date d'expiration du CQ #2"
 
-#: application/models/Dts.php:1701
+#: application/models/Dts.php:1747
 msgid "Test#3 Kit Name"
 msgstr "Nom du kit de test n° 3"
 
-#: application/models/Dts.php:1702
+#: application/models/Dts.php:1748
 msgid "Kit Lot #3"
 msgstr "Lot du kit n° 3"
 
-#: application/models/Dts.php:1703
+#: application/models/Dts.php:1749
 msgid "Expiry Date #3"
 msgstr "Date d'expiration #3"
 
-#: application/models/Dts.php:1704
+#: application/models/Dts.php:1750
 msgid "QC Done #3"
 msgstr "CQ effectué n° 3"
 
-#: application/models/Dts.php:1705
+#: application/models/Dts.php:1751
 msgid "QC Expiry Date #3"
 msgstr "Date d'expiration du CQ #3"
 
-#: application/models/Dts.php:2358
+#: application/models/Dts.php:2404
 msgid "No. of Correct Responses"
 msgstr "Nombre de réponses correctes"
 
-#: application/models/Dts.php:2376 application/models/Recency.php:740
+#: application/models/Dts.php:2422 application/models/Recency.php:740
 msgid "Supervisor signature"
 msgstr "Signature du superviseur"
 
-#: application/models/Dts.php:2377 application/models/Recency.php:740
+#: application/models/Dts.php:2423 application/models/Recency.php:740
 #: application/views/scripts/custom-test/response.phtml:338
-#: application/views/scripts/dts/response.phtml:225
+#: application/views/scripts/dts/response.phtml:362
 #: application/views/scripts/tb/response.phtml:245
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:236
 msgid "Panel Receipt Date"
 msgstr "Date de réception du panel"
 
-#: application/models/Dts.php:2379 application/models/Recency.php:740
+#: application/models/Dts.php:2425 application/models/Recency.php:740
 msgid "Tested Date"
 msgstr "Date du test"
 
-#: application/models/Dts.php:2380 application/models/Recency.php:740
+#: application/models/Dts.php:2426 application/models/Recency.php:740
 msgid "Rehydration Test In Specified Time"
 msgstr "Test de réhydratation dans le temps imparti"
 
-#: application/models/Dts.php:2381 application/models/Recency.php:740
+#: application/models/Dts.php:2427 application/models/Recency.php:740
 msgid "Documentation Score %"
 msgstr "Score de documentation %"
 
-#: application/models/Dts.php:2406
+#: application/models/Dts.php:2452
 msgid "No. of Correct Samples"
 msgstr "Nombre d'échantillons corrects"
 
-#: application/models/Dts.php:2407
+#: application/models/Dts.php:2453
 msgid "Panel Score"
 msgstr "Score du panel"
 
-#: application/models/Dts.php:2408
+#: application/models/Dts.php:2454
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:338
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:120
 #: application/modules/admin/views/scripts/scheme-config/partials/recency.phtml:35
@@ -5556,8 +5559,8 @@ msgstr "Score du panel"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:391
 #: application/views/scripts/covid19/response.phtml:871
 #: application/views/scripts/custom-test/response.phtml:672
-#: application/views/scripts/dts/response.phtml:1549
-#: application/views/scripts/dts/response.phtml:1567
+#: application/views/scripts/dts/response.phtml:1705
+#: application/views/scripts/dts/response.phtml:1723
 #: application/views/scripts/eid/response.phtml:683
 #: application/views/scripts/recency/response.phtml:592
 #: application/views/scripts/tb/response.phtml:522
@@ -5565,7 +5568,7 @@ msgstr "Score du panel"
 msgid "Documentation Score"
 msgstr "Score de documentation"
 
-#: application/models/Dts.php:2411
+#: application/models/Dts.php:2457
 msgid "Warnings and/or Reasons for Failure"
 msgstr "Avertissements et/ou raisons de l'échec"
 
@@ -5672,7 +5675,7 @@ msgstr "RÉSULTATS DE RÉFÉRENCE"
 
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:139
-#: application/views/scripts/dts/response.phtml:1357
+#: application/views/scripts/dts/response.phtml:1513
 #: application/views/scripts/recency/response.phtml:379
 #: application/views/scripts/shipment-form/download.phtml:372
 #: application/views/scripts/shipment-form/download.phtml:579
@@ -5682,7 +5685,7 @@ msgstr "Ligne de contrôle"
 
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:140
-#: application/views/scripts/dts/response.phtml:1360
+#: application/views/scripts/dts/response.phtml:1516
 #: application/views/scripts/recency/response.phtml:381
 #: application/views/scripts/shipment-form/download.phtml:373
 #: application/views/scripts/shipment-form/download.phtml:580
@@ -5762,7 +5765,7 @@ msgstr "Volume de l'échantillon"
 #: application/models/Vl.php:501 application/models/Vl.php:505
 #: application/views/scripts/covid19/response.phtml:814
 #: application/views/scripts/custom-test/response.phtml:613
-#: application/views/scripts/dts/response.phtml:1476
+#: application/views/scripts/dts/response.phtml:1632
 #: application/views/scripts/eid/response.phtml:627
 #: application/views/scripts/recency/response.phtml:534
 #: application/views/scripts/shipment-form/download.phtml:534
@@ -6086,18 +6089,18 @@ msgstr "Motif de non-utilisation"
 #: application/views/scripts/custom-test/response.phtml:655
 #: application/views/scripts/custom-test/response.phtml:741
 #: application/views/scripts/custom-test/response.phtml:757
-#: application/views/scripts/dts/response.phtml:422
-#: application/views/scripts/dts/response.phtml:913
-#: application/views/scripts/dts/response.phtml:925
-#: application/views/scripts/dts/response.phtml:937
-#: application/views/scripts/dts/response.phtml:950
-#: application/views/scripts/dts/response.phtml:959
-#: application/views/scripts/dts/response.phtml:968
-#: application/views/scripts/dts/response.phtml:1274
-#: application/views/scripts/dts/response.phtml:1293
-#: application/views/scripts/dts/response.phtml:1535
-#: application/views/scripts/dts/response.phtml:1637
-#: application/views/scripts/dts/response.phtml:1654
+#: application/views/scripts/dts/response.phtml:559
+#: application/views/scripts/dts/response.phtml:1067
+#: application/views/scripts/dts/response.phtml:1079
+#: application/views/scripts/dts/response.phtml:1091
+#: application/views/scripts/dts/response.phtml:1104
+#: application/views/scripts/dts/response.phtml:1113
+#: application/views/scripts/dts/response.phtml:1122
+#: application/views/scripts/dts/response.phtml:1430
+#: application/views/scripts/dts/response.phtml:1449
+#: application/views/scripts/dts/response.phtml:1691
+#: application/views/scripts/dts/response.phtml:1793
+#: application/views/scripts/dts/response.phtml:1810
 #: application/views/scripts/eid/response.phtml:408
 #: application/views/scripts/eid/response.phtml:561
 #: application/views/scripts/eid/response.phtml:667
@@ -7287,23 +7290,23 @@ msgstr "Tâche planifiée"
 #: application/views/scripts/custom-test/response.phtml:363
 #: application/views/scripts/custom-test/response.phtml:430
 #: application/views/scripts/custom-test/response.phtml:446
-#: application/views/scripts/dts/response.phtml:236
-#: application/views/scripts/dts/response.phtml:250
-#: application/views/scripts/dts/response.phtml:273
-#: application/views/scripts/dts/response.phtml:390
-#: application/views/scripts/dts/response.phtml:448
-#: application/views/scripts/dts/response.phtml:847
-#: application/views/scripts/dts/response.phtml:857
-#: application/views/scripts/dts/response.phtml:867
-#: application/views/scripts/dts/response.phtml:878
-#: application/views/scripts/dts/response.phtml:887
-#: application/views/scripts/dts/response.phtml:896
-#: application/views/scripts/dts/response.phtml:1015
-#: application/views/scripts/dts/response.phtml:1024
-#: application/views/scripts/dts/response.phtml:1033
-#: application/views/scripts/dts/response.phtml:1043
-#: application/views/scripts/dts/response.phtml:1052
-#: application/views/scripts/dts/response.phtml:1061
+#: application/views/scripts/dts/response.phtml:373
+#: application/views/scripts/dts/response.phtml:387
+#: application/views/scripts/dts/response.phtml:410
+#: application/views/scripts/dts/response.phtml:527
+#: application/views/scripts/dts/response.phtml:585
+#: application/views/scripts/dts/response.phtml:1001
+#: application/views/scripts/dts/response.phtml:1011
+#: application/views/scripts/dts/response.phtml:1021
+#: application/views/scripts/dts/response.phtml:1032
+#: application/views/scripts/dts/response.phtml:1041
+#: application/views/scripts/dts/response.phtml:1050
+#: application/views/scripts/dts/response.phtml:1169
+#: application/views/scripts/dts/response.phtml:1178
+#: application/views/scripts/dts/response.phtml:1187
+#: application/views/scripts/dts/response.phtml:1197
+#: application/views/scripts/dts/response.phtml:1206
+#: application/views/scripts/dts/response.phtml:1215
 #: application/views/scripts/eid/response.phtml:270
 #: application/views/scripts/eid/response.phtml:276
 #: application/views/scripts/eid/response.phtml:287
@@ -8249,26 +8252,26 @@ msgstr "Veuillez choisir ici le pays d'adaptation"
 #: application/views/scripts/custom-test/response.phtml:510
 #: application/views/scripts/custom-test/response.phtml:605
 #: application/views/scripts/custom-test/response.phtml:651
-#: application/views/scripts/dts/response.phtml:288
-#: application/views/scripts/dts/response.phtml:348
-#: application/views/scripts/dts/response.phtml:369
-#: application/views/scripts/dts/response.phtml:398
-#: application/views/scripts/dts/response.phtml:470
-#: application/views/scripts/dts/response.phtml:911
-#: application/views/scripts/dts/response.phtml:923
-#: application/views/scripts/dts/response.phtml:935
-#: application/views/scripts/dts/response.phtml:949
-#: application/views/scripts/dts/response.phtml:958
-#: application/views/scripts/dts/response.phtml:967
-#: application/views/scripts/dts/response.phtml:1250
-#: application/views/scripts/dts/response.phtml:1272
-#: application/views/scripts/dts/response.phtml:1292
-#: application/views/scripts/dts/response.phtml:1303
-#: application/views/scripts/dts/response.phtml:1395
-#: application/views/scripts/dts/response.phtml:1405
-#: application/views/scripts/dts/response.phtml:1418
-#: application/views/scripts/dts/response.phtml:1470
-#: application/views/scripts/dts/response.phtml:1530
+#: application/views/scripts/dts/response.phtml:425
+#: application/views/scripts/dts/response.phtml:485
+#: application/views/scripts/dts/response.phtml:506
+#: application/views/scripts/dts/response.phtml:535
+#: application/views/scripts/dts/response.phtml:607
+#: application/views/scripts/dts/response.phtml:1065
+#: application/views/scripts/dts/response.phtml:1077
+#: application/views/scripts/dts/response.phtml:1089
+#: application/views/scripts/dts/response.phtml:1103
+#: application/views/scripts/dts/response.phtml:1112
+#: application/views/scripts/dts/response.phtml:1121
+#: application/views/scripts/dts/response.phtml:1406
+#: application/views/scripts/dts/response.phtml:1428
+#: application/views/scripts/dts/response.phtml:1448
+#: application/views/scripts/dts/response.phtml:1459
+#: application/views/scripts/dts/response.phtml:1551
+#: application/views/scripts/dts/response.phtml:1561
+#: application/views/scripts/dts/response.phtml:1574
+#: application/views/scripts/dts/response.phtml:1626
+#: application/views/scripts/dts/response.phtml:1686
 #: application/views/scripts/eid/response.phtml:295
 #: application/views/scripts/eid/response.phtml:314
 #: application/views/scripts/eid/response.phtml:376
@@ -8631,18 +8634,18 @@ msgstr "Désactiver l'autre kit de test"
 #: application/views/scripts/custom-test/response.phtml:653
 #: application/views/scripts/custom-test/response.phtml:743
 #: application/views/scripts/custom-test/response.phtml:755
-#: application/views/scripts/dts/response.phtml:425
-#: application/views/scripts/dts/response.phtml:916
-#: application/views/scripts/dts/response.phtml:928
-#: application/views/scripts/dts/response.phtml:940
-#: application/views/scripts/dts/response.phtml:951
-#: application/views/scripts/dts/response.phtml:960
-#: application/views/scripts/dts/response.phtml:969
-#: application/views/scripts/dts/response.phtml:1277
-#: application/views/scripts/dts/response.phtml:1294
-#: application/views/scripts/dts/response.phtml:1532
-#: application/views/scripts/dts/response.phtml:1639
-#: application/views/scripts/dts/response.phtml:1651
+#: application/views/scripts/dts/response.phtml:562
+#: application/views/scripts/dts/response.phtml:1070
+#: application/views/scripts/dts/response.phtml:1082
+#: application/views/scripts/dts/response.phtml:1094
+#: application/views/scripts/dts/response.phtml:1105
+#: application/views/scripts/dts/response.phtml:1114
+#: application/views/scripts/dts/response.phtml:1123
+#: application/views/scripts/dts/response.phtml:1433
+#: application/views/scripts/dts/response.phtml:1450
+#: application/views/scripts/dts/response.phtml:1688
+#: application/views/scripts/dts/response.phtml:1795
+#: application/views/scripts/dts/response.phtml:1807
 #: application/views/scripts/eid/response.phtml:411
 #: application/views/scripts/eid/response.phtml:562
 #: application/views/scripts/eid/response.phtml:665
@@ -10850,7 +10853,7 @@ msgstr "Niveau du réseau"
 #: application/services/Reports.php:501
 #: application/views/partials/participant-response-report.phtml:25
 #: application/views/scripts/covid19/response.phtml:195
-#: application/views/scripts/dts/response.phtml:200
+#: application/views/scripts/dts/response.phtml:337
 #: application/views/scripts/eid/response.phtml:239
 #: application/views/scripts/participant/add-participant.phtml:195
 #: application/views/scripts/participant/edit-participant.phtml:239
@@ -11267,7 +11270,7 @@ msgstr "Code de l'expédition"
 #: application/views/partials/shipments-report-grid.phtml:325
 #: application/views/partials/shipments-report-grid.phtml:328
 #: application/views/scripts/covid19/response.phtml:212
-#: application/views/scripts/dts/response.phtml:217
+#: application/views/scripts/dts/response.phtml:354
 #: application/views/scripts/eid/response.phtml:252
 #: application/views/scripts/participant/corrective.phtml:42
 #: application/views/scripts/participant/corrective.phtml:49
@@ -11382,8 +11385,8 @@ msgstr "Statut non mis à jour. Veuillez réessayer."
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:139
 #: application/views/scripts/covid19/response.phtml:993
 #: application/views/scripts/covid19/response.phtml:995
-#: application/views/scripts/dts/response.phtml:1683
-#: application/views/scripts/dts/response.phtml:1685
+#: application/views/scripts/dts/response.phtml:1839
+#: application/views/scripts/dts/response.phtml:1841
 #: application/views/scripts/participant/add.phtml:188
 #: application/views/scripts/participant/certificate.phtml:6
 #: application/views/scripts/participant/testeredit.phtml:213
@@ -13216,7 +13219,7 @@ msgstr "Remplacement manuel uniquement"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:261
 #: application/views/scripts/covid19/response.phtml:848
-#: application/views/scripts/dts/response.phtml:1529
+#: application/views/scripts/dts/response.phtml:1685
 #: application/views/scripts/eid/response.phtml:662
 #: application/views/scripts/partials/evaluate-form.phtml:18
 #: application/views/scripts/recency/response.phtml:571
@@ -13279,7 +13282,7 @@ msgstr "Tous les niveaux"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:375
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:303
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:303
-#: application/views/scripts/dts/response.phtml:471
+#: application/views/scripts/dts/response.phtml:608
 msgid "Screening"
 msgstr "Dépistage"
 
@@ -13287,7 +13290,7 @@ msgstr "Dépistage"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:376
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:304
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:304
-#: application/views/scripts/dts/response.phtml:472
+#: application/views/scripts/dts/response.phtml:609
 msgid "Confirmatory"
 msgstr "Confirmation"
 
@@ -14696,7 +14699,7 @@ msgstr "Activer les tests personnalisés"
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:300
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:315
 #: application/views/scripts/covid19/response.phtml:810
-#: application/views/scripts/dts/response.phtml:1472
+#: application/views/scripts/dts/response.phtml:1628
 #: application/views/scripts/eid/response.phtml:622
 #: application/views/scripts/recency/response.phtml:529
 msgid "YES"
@@ -14720,7 +14723,7 @@ msgstr "OUI"
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:303
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:318
 #: application/views/scripts/covid19/response.phtml:812
-#: application/views/scripts/dts/response.phtml:1474
+#: application/views/scripts/dts/response.phtml:1630
 #: application/views/scripts/eid/response.phtml:624
 #: application/views/scripts/recency/response.phtml:531
 msgid "NO"
@@ -18725,40 +18728,40 @@ msgid "Select allowed algorithms"
 msgstr "Sélectionner les algorithmes autorisés"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:257
-#: application/views/scripts/dts/response.phtml:291
+#: application/views/scripts/dts/response.phtml:428
 msgid "Serial"
 msgstr "En série"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:258
-#: application/views/scripts/dts/response.phtml:294
+#: application/views/scripts/dts/response.phtml:431
 msgid "Parallel"
 msgstr "Parallèle"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:259
-#: application/views/scripts/dts/response.phtml:303
+#: application/views/scripts/dts/response.phtml:440
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:256
 msgid "Myanmar National Algorithm"
 msgstr "Algorithme national du Myanmar"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:260
-#: application/views/scripts/dts/response.phtml:313
+#: application/views/scripts/dts/response.phtml:450
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:258
 msgid "Malawi National Algorithm"
 msgstr "Algorithme national du Malawi"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:261
-#: application/views/scripts/dts/response.phtml:318
+#: application/views/scripts/dts/response.phtml:455
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:260
 msgid "Ghana National Algorithm"
 msgstr "Algorithme national du Ghana"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:262
-#: application/views/scripts/dts/response.phtml:308
+#: application/views/scripts/dts/response.phtml:445
 msgid "Sierra Leone National Algorithm"
 msgstr "Algorithme national de la Sierra Leone"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:263
-#: application/views/scripts/dts/response.phtml:298
+#: application/views/scripts/dts/response.phtml:435
 msgid "Côte d'Ivoire National Algorithm"
 msgstr "Algorithme national de la Côte d'Ivoire"
 
@@ -18767,7 +18770,7 @@ msgid "DRC National Algorithm"
 msgstr "Algorithme national de la RDC"
 
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:265
-#: application/views/scripts/dts/response.phtml:328
+#: application/views/scripts/dts/response.phtml:465
 msgid "Vietnam National Algorithm"
 msgstr "Algorithme national du Vietnam"
 
@@ -19361,7 +19364,7 @@ msgstr "Copier les e-mails : PTCC"
 #: application/views/scripts/capa/capa.phtml:54
 #: application/views/scripts/capa/index.phtml:65
 #: application/views/scripts/covid19/response.phtml:215
-#: application/views/scripts/dts/response.phtml:220
+#: application/views/scripts/dts/response.phtml:357
 #: application/views/scripts/eid/response.phtml:255
 #: application/views/scripts/participant/current-schemes.phtml:120
 #: application/views/scripts/participant/defaulted-schemes.phtml:22
@@ -20059,7 +20062,7 @@ msgstr "Veuillez choisir le résultat final pour cet échantillon"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:136
 #: application/views/scripts/custom-test/response.phtml:456
-#: application/views/scripts/dts/response.phtml:1354
+#: application/views/scripts/dts/response.phtml:1510
 #: application/views/scripts/eid/response.phtml:472
 #: application/views/scripts/recency/response.phtml:377
 #: application/views/scripts/shipment-form/download.phtml:371
@@ -20072,7 +20075,7 @@ msgid "Control/Sample"
 msgstr "Contrôle/échantillon"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:141
-#: application/views/scripts/dts/response.phtml:1363
+#: application/views/scripts/dts/response.phtml:1519
 #: application/views/scripts/recency/response.phtml:383
 #: application/views/scripts/shipment-form/download.phtml:374
 #: application/views/scripts/shipment-form/download.phtml:581
@@ -20090,7 +20093,7 @@ msgstr "Contrôle ?"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:191
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:264
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:447
-#: application/views/scripts/dts/response.phtml:1394
+#: application/views/scripts/dts/response.phtml:1550
 #: application/views/scripts/recency/response.phtml:412
 msgid "Please choose control line"
 msgstr "Veuillez choisir la ligne de contrôle"
@@ -20104,9 +20107,9 @@ msgstr "Veuillez choisir la ligne de contrôle"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:449
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:456
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:463
-#: application/views/scripts/dts/response.phtml:1396
-#: application/views/scripts/dts/response.phtml:1407
-#: application/views/scripts/dts/response.phtml:1420
+#: application/views/scripts/dts/response.phtml:1552
+#: application/views/scripts/dts/response.phtml:1563
+#: application/views/scripts/dts/response.phtml:1576
 #: application/views/scripts/recency/response.phtml:414
 #: application/views/scripts/recency/response.phtml:423
 #: application/views/scripts/recency/response.phtml:432
@@ -20122,9 +20125,9 @@ msgstr "Présent"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:450
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:457
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:464
-#: application/views/scripts/dts/response.phtml:1397
-#: application/views/scripts/dts/response.phtml:1409
-#: application/views/scripts/dts/response.phtml:1422
+#: application/views/scripts/dts/response.phtml:1553
+#: application/views/scripts/dts/response.phtml:1565
+#: application/views/scripts/dts/response.phtml:1578
 #: application/views/scripts/recency/response.phtml:415
 #: application/views/scripts/recency/response.phtml:424
 #: application/views/scripts/recency/response.phtml:433
@@ -20134,7 +20137,7 @@ msgstr "Absent"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:198
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:271
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:454
-#: application/views/scripts/dts/response.phtml:1404
+#: application/views/scripts/dts/response.phtml:1560
 #: application/views/scripts/recency/response.phtml:421
 msgid "Please choose verification line"
 msgstr "Veuillez choisir une ligne de vérification"
@@ -20142,7 +20145,7 @@ msgstr "Veuillez choisir une ligne de vérification"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:205
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:278
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:461
-#: application/views/scripts/dts/response.phtml:1417
+#: application/views/scripts/dts/response.phtml:1573
 #: application/views/scripts/recency/response.phtml:430
 msgid "Please choose Longterm line"
 msgstr "Veuillez sélectionner la ligne « Longterm »"
@@ -20752,7 +20755,7 @@ msgstr "Affectations actuelles (toutes les positions)"
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:215
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:114
 #: application/views/scripts/capa/capa.phtml:108
-#: application/views/scripts/dts/response.phtml:1664
+#: application/views/scripts/dts/response.phtml:1820
 #: application/views/scripts/participant/add.phtml:182
 #: application/views/scripts/participant/all-schemes.phtml:105
 #: application/views/scripts/participant/participant-message.phtml:68
@@ -20771,7 +20774,7 @@ msgid "No kits assigned"
 msgstr "Aucun kit attribué"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:245
-#: application/views/scripts/dts/response.phtml:1494
+#: application/views/scripts/dts/response.phtml:1650
 msgid "Available Test Kits"
 msgstr "Kits de test disponibles"
 
@@ -23388,7 +23391,7 @@ msgstr "Part des réponses"
 
 #: application/services/Reports.php:1430
 #: application/views/scripts/covid19/response.phtml:677
-#: application/views/scripts/dts/response.phtml:1128
+#: application/views/scripts/dts/response.phtml:1282
 #: application/views/scripts/recency/response.phtml:388
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:456
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:146
@@ -24090,7 +24093,7 @@ msgstr "Aucun avertissement ni action corrective"
 #: application/views/scripts/common/get-corrective-actions.ajax.phtml:7
 #: application/views/scripts/covid19/response.phtml:889
 #: application/views/scripts/custom-test/response.phtml:690
-#: application/views/scripts/dts/response.phtml:1584
+#: application/views/scripts/dts/response.phtml:1740
 #: application/views/scripts/eid/response.phtml:700
 #: application/views/scripts/recency/response.phtml:609
 #: application/views/scripts/tb/response.phtml:540
@@ -24102,7 +24105,7 @@ msgstr "Raisons de l'échec (ou) avertissements"
 #: application/views/scripts/common/get-corrective-actions.ajax.phtml:8
 #: application/views/scripts/covid19/response.phtml:890
 #: application/views/scripts/custom-test/response.phtml:691
-#: application/views/scripts/dts/response.phtml:1585
+#: application/views/scripts/dts/response.phtml:1741
 #: application/views/scripts/eid/response.phtml:701
 #: application/views/scripts/recency/response.phtml:610
 #: application/views/scripts/tb/response.phtml:541
@@ -24235,7 +24238,7 @@ msgstr "Résultat rapporté"
 
 #: application/views/scripts/covid19/response.phtml:123
 #: application/views/scripts/custom-test/response.phtml:194
-#: application/views/scripts/dts/response.phtml:136
+#: application/views/scripts/dts/response.phtml:273
 #: application/views/scripts/eid/response.phtml:86
 #: application/views/scripts/recency/response.phtml:79
 #: application/views/scripts/tb/response.phtml:111
@@ -24245,7 +24248,7 @@ msgstr "Presque terminé — encore une étape"
 
 #: application/views/scripts/covid19/response.phtml:124
 #: application/views/scripts/custom-test/response.phtml:195
-#: application/views/scripts/dts/response.phtml:137
+#: application/views/scripts/dts/response.phtml:274
 #: application/views/scripts/eid/response.phtml:87
 #: application/views/scripts/recency/response.phtml:80
 #: application/views/scripts/tb/response.phtml:112
@@ -24261,7 +24264,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:158
 #: application/views/scripts/custom-test/response.phtml:216
-#: application/views/scripts/dts/response.phtml:171
+#: application/views/scripts/dts/response.phtml:308
 #: application/views/scripts/eid/response.phtml:116
 #: application/views/scripts/recency/response.phtml:109
 #: application/views/scripts/vl/response.phtml:134
@@ -24274,7 +24277,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:163
 #: application/views/scripts/custom-test/response.phtml:219
-#: application/views/scripts/dts/response.phtml:174
+#: application/views/scripts/dts/response.phtml:311
 #: application/views/scripts/eid/response.phtml:121
 #: application/views/scripts/recency/response.phtml:114
 #: application/views/scripts/vl/response.phtml:139
@@ -24283,7 +24286,7 @@ msgstr "Votre réponse est tardive."
 
 #: application/views/scripts/covid19/response.phtml:168
 #: application/views/scripts/custom-test/response.phtml:222
-#: application/views/scripts/dts/response.phtml:177
+#: application/views/scripts/dts/response.phtml:314
 #: application/views/scripts/eid/response.phtml:126
 #: application/views/scripts/recency/response.phtml:119
 #: application/views/scripts/vl/response.phtml:144
@@ -24296,7 +24299,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:175
 #: application/views/scripts/custom-test/response.phtml:227
-#: application/views/scripts/dts/response.phtml:182
+#: application/views/scripts/dts/response.phtml:319
 #: application/views/scripts/eid/response.phtml:133
 #: application/views/scripts/recency/response.phtml:126
 #: application/views/scripts/vl/response.phtml:151
@@ -24308,17 +24311,17 @@ msgstr ""
 "Veuillez contacter votre fournisseur de PT pour toute clarification."
 
 #: application/views/scripts/covid19/response.phtml:182
-#: application/views/scripts/dts/response.phtml:187
+#: application/views/scripts/dts/response.phtml:324
 msgid "Fields marked"
 msgstr "Champs marqués"
 
 #: application/views/scripts/covid19/response.phtml:183
-#: application/views/scripts/dts/response.phtml:188
+#: application/views/scripts/dts/response.phtml:325
 msgid "are mandatory"
 msgstr "sont obligatoires"
 
 #: application/views/scripts/covid19/response.phtml:199
-#: application/views/scripts/dts/response.phtml:204
+#: application/views/scripts/dts/response.phtml:341
 #: application/views/scripts/eid/response.phtml:242
 #: application/views/scripts/recency/response.phtml:148
 #: application/views/scripts/shipment-form/download.phtml:135
@@ -24326,7 +24329,7 @@ msgid "Phone No"
 msgstr "Téléphone"
 
 #: application/views/scripts/covid19/response.phtml:203
-#: application/views/scripts/dts/response.phtml:208
+#: application/views/scripts/dts/response.phtml:345
 #: application/views/scripts/eid/response.phtml:245
 #: application/views/scripts/recency/response.phtml:152
 msgid "Mobile No"
@@ -24368,28 +24371,28 @@ msgstr "Veuillez saisir la date de réception du test"
 #: application/views/scripts/custom-test/response.phtml:429
 #: application/views/scripts/custom-test/response.phtml:444
 #: application/views/scripts/custom-test/response.phtml:445
-#: application/views/scripts/dts/response.phtml:234
-#: application/views/scripts/dts/response.phtml:235
-#: application/views/scripts/dts/response.phtml:248
-#: application/views/scripts/dts/response.phtml:249
-#: application/views/scripts/dts/response.phtml:271
-#: application/views/scripts/dts/response.phtml:272
-#: application/views/scripts/dts/response.phtml:388
-#: application/views/scripts/dts/response.phtml:389
-#: application/views/scripts/dts/response.phtml:446
-#: application/views/scripts/dts/response.phtml:447
-#: application/views/scripts/dts/response.phtml:846
-#: application/views/scripts/dts/response.phtml:856
-#: application/views/scripts/dts/response.phtml:866
-#: application/views/scripts/dts/response.phtml:877
-#: application/views/scripts/dts/response.phtml:886
-#: application/views/scripts/dts/response.phtml:895
-#: application/views/scripts/dts/response.phtml:1014
-#: application/views/scripts/dts/response.phtml:1023
-#: application/views/scripts/dts/response.phtml:1032
-#: application/views/scripts/dts/response.phtml:1042
-#: application/views/scripts/dts/response.phtml:1051
-#: application/views/scripts/dts/response.phtml:1060
+#: application/views/scripts/dts/response.phtml:371
+#: application/views/scripts/dts/response.phtml:372
+#: application/views/scripts/dts/response.phtml:385
+#: application/views/scripts/dts/response.phtml:386
+#: application/views/scripts/dts/response.phtml:408
+#: application/views/scripts/dts/response.phtml:409
+#: application/views/scripts/dts/response.phtml:525
+#: application/views/scripts/dts/response.phtml:526
+#: application/views/scripts/dts/response.phtml:583
+#: application/views/scripts/dts/response.phtml:584
+#: application/views/scripts/dts/response.phtml:1000
+#: application/views/scripts/dts/response.phtml:1010
+#: application/views/scripts/dts/response.phtml:1020
+#: application/views/scripts/dts/response.phtml:1031
+#: application/views/scripts/dts/response.phtml:1040
+#: application/views/scripts/dts/response.phtml:1049
+#: application/views/scripts/dts/response.phtml:1168
+#: application/views/scripts/dts/response.phtml:1177
+#: application/views/scripts/dts/response.phtml:1186
+#: application/views/scripts/dts/response.phtml:1196
+#: application/views/scripts/dts/response.phtml:1205
+#: application/views/scripts/dts/response.phtml:1214
 #: application/views/scripts/eid/response.phtml:269
 #: application/views/scripts/eid/response.phtml:270
 #: application/views/scripts/eid/response.phtml:276
@@ -24466,7 +24469,7 @@ msgid "Please enter Specimen Volume"
 msgstr "Veuillez indiquer le volume de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:286
-#: application/views/scripts/dts/response.phtml:394
+#: application/views/scripts/dts/response.phtml:531
 #: application/views/scripts/eid/response.phtml:372
 #: application/views/scripts/recency/response.phtml:275
 #: application/views/scripts/vl/response.phtml:487
@@ -24474,7 +24477,7 @@ msgid "Mode of Receipt"
 msgstr "Mode de réception"
 
 #: application/views/scripts/covid19/response.phtml:289
-#: application/views/scripts/dts/response.phtml:397
+#: application/views/scripts/dts/response.phtml:534
 #: application/views/scripts/eid/response.phtml:375
 #: application/views/scripts/recency/response.phtml:278
 #: application/views/scripts/vl/response.phtml:490
@@ -24482,8 +24485,8 @@ msgid "Please choose the mode of receipt"
 msgstr "Veuillez choisir le mode de réception"
 
 #: application/views/scripts/covid19/response.phtml:304
-#: application/views/scripts/dts/response.phtml:420
-#: application/views/scripts/dts/response.phtml:904
+#: application/views/scripts/dts/response.phtml:557
+#: application/views/scripts/dts/response.phtml:1058
 #: application/views/scripts/eid/response.phtml:404
 #: application/views/scripts/recency/response.phtml:307
 #: application/views/scripts/vl/response.phtml:519
@@ -24491,7 +24494,7 @@ msgid "QC Done"
 msgstr "CQ effectué"
 
 #: application/views/scripts/covid19/response.phtml:307
-#: application/views/scripts/dts/response.phtml:423
+#: application/views/scripts/dts/response.phtml:560
 #: application/views/scripts/eid/response.phtml:409
 #: application/views/scripts/recency/response.phtml:312
 #: application/views/scripts/vl/response.phtml:523
@@ -24499,7 +24502,7 @@ msgid "Please select QC done status"
 msgstr "Veuillez sélectionner le statut « Contrôle qualité effectué »"
 
 #: application/views/scripts/covid19/response.phtml:317
-#: application/views/scripts/dts/response.phtml:380
+#: application/views/scripts/dts/response.phtml:517
 #: application/views/scripts/eid/response.phtml:355
 #: application/views/scripts/participant/corrective.phtml:89
 #: application/views/scripts/participant/report.phtml:208
@@ -24512,7 +24515,7 @@ msgid "Response Date"
 msgstr "Date de réponse"
 
 #: application/views/scripts/covid19/response.phtml:323
-#: application/views/scripts/dts/response.phtml:386
+#: application/views/scripts/dts/response.phtml:523
 #: application/views/scripts/eid/response.phtml:361
 #: application/views/scripts/recency/response.phtml:264
 #: application/views/scripts/tb/response.phtml:348
@@ -24521,8 +24524,8 @@ msgid "Please enter the date and time the response was submitted"
 msgstr "Veuillez saisir la date et l'heure de soumission de la réponse"
 
 #: application/views/scripts/covid19/response.phtml:342
-#: application/views/scripts/dts/response.phtml:438
-#: application/views/scripts/dts/response.phtml:1004
+#: application/views/scripts/dts/response.phtml:575
+#: application/views/scripts/dts/response.phtml:1158
 #: application/views/scripts/eid/response.phtml:425
 #: application/views/scripts/recency/response.phtml:328
 #: application/views/scripts/vl/response.phtml:539
@@ -24530,7 +24533,7 @@ msgid "QC Date"
 msgstr "Date du CQ"
 
 #: application/views/scripts/covid19/response.phtml:348
-#: application/views/scripts/dts/response.phtml:444
+#: application/views/scripts/dts/response.phtml:581
 #: application/views/scripts/eid/response.phtml:431
 #: application/views/scripts/recency/response.phtml:334
 #: application/views/scripts/vl/response.phtml:545
@@ -24538,7 +24541,7 @@ msgid "Please enter QC Date"
 msgstr "Veuillez saisir la date du contrôle qualité"
 
 #: application/views/scripts/covid19/response.phtml:355
-#: application/views/scripts/dts/response.phtml:451
+#: application/views/scripts/dts/response.phtml:588
 #: application/views/scripts/eid/response.phtml:437
 #: application/views/scripts/recency/response.phtml:341
 #: application/views/scripts/vl/response.phtml:551
@@ -24546,7 +24549,7 @@ msgid "QC Done By"
 msgstr "CQ effectué par"
 
 #: application/views/scripts/covid19/response.phtml:359
-#: application/views/scripts/dts/response.phtml:455
+#: application/views/scripts/dts/response.phtml:592
 #: application/views/scripts/eid/response.phtml:441
 #: application/views/scripts/recency/response.phtml:345
 #: application/views/scripts/vl/response.phtml:555
@@ -24562,7 +24565,7 @@ msgid "Please select the number of tests"
 msgstr "Veuillez sélectionner le nombre de tests"
 
 #: application/views/scripts/covid19/response.phtml:385
-#: application/views/scripts/dts/response.phtml:524
+#: application/views/scripts/dts/response.phtml:661
 #: application/views/scripts/eid/response.phtml:451
 #: application/views/scripts/recency/response.phtml:355
 #: application/views/scripts/vl/response.phtml:564
@@ -24570,21 +24573,21 @@ msgid "PT panel not tested"
 msgstr "Panel PT non testé"
 
 #: application/views/scripts/covid19/response.phtml:418
-#: application/views/scripts/dts/response.phtml:551
+#: application/views/scripts/dts/response.phtml:705
 #: application/views/scripts/shipment-form/download.phtml:227
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:359
 msgid "Test-1"
 msgstr "Test-1"
 
 #: application/views/scripts/covid19/response.phtml:419
-#: application/views/scripts/dts/response.phtml:554
+#: application/views/scripts/dts/response.phtml:708
 #: application/views/scripts/shipment-form/download.phtml:228
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:361
 msgid "Test-2"
 msgstr "Test-2"
 
 #: application/views/scripts/covid19/response.phtml:420
-#: application/views/scripts/dts/response.phtml:557
+#: application/views/scripts/dts/response.phtml:711
 #: application/views/scripts/shipment-form/download.phtml:230
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:364
 msgid "Test-3"
@@ -24595,29 +24598,29 @@ msgid "Test Platform"
 msgstr "Plateforme de test"
 
 #: application/views/scripts/covid19/response.phtml:428
-#: application/views/scripts/dts/response.phtml:590
+#: application/views/scripts/dts/response.phtml:744
 msgid "Please Choose Test Kit 1"
 msgstr "Veuillez choisir le kit de test n° 1"
 
 #: application/views/scripts/covid19/response.phtml:445
 #: application/views/scripts/covid19/response.phtml:466
 #: application/views/scripts/covid19/response.phtml:488
-#: application/views/scripts/dts/response.phtml:610
-#: application/views/scripts/dts/response.phtml:635
-#: application/views/scripts/dts/response.phtml:661
-#: application/views/scripts/dts/response.phtml:687
-#: application/views/scripts/dts/response.phtml:713
-#: application/views/scripts/dts/response.phtml:740
+#: application/views/scripts/dts/response.phtml:764
+#: application/views/scripts/dts/response.phtml:789
+#: application/views/scripts/dts/response.phtml:815
+#: application/views/scripts/dts/response.phtml:841
+#: application/views/scripts/dts/response.phtml:867
+#: application/views/scripts/dts/response.phtml:894
 msgid "Enter Kit Name"
 msgstr "Entrez le nom du kit"
 
 #: application/views/scripts/covid19/response.phtml:449
-#: application/views/scripts/dts/response.phtml:615
+#: application/views/scripts/dts/response.phtml:769
 msgid "Please Choose Test Kit 2"
 msgstr "Veuillez choisir le kit de test n° 2"
 
 #: application/views/scripts/covid19/response.phtml:471
-#: application/views/scripts/dts/response.phtml:641
+#: application/views/scripts/dts/response.phtml:795
 msgid "Please Choose Test Kit 3"
 msgstr "Veuillez choisir le kit de test n° 3"
 
@@ -24706,7 +24709,7 @@ msgid "Please select the expiry date of PCR reagent 3"
 msgstr "Veuillez sélectionner la date de péremption du réactif PCR n° 3"
 
 #: application/views/scripts/covid19/response.phtml:615
-#: application/views/scripts/dts/response.phtml:775
+#: application/views/scripts/dts/response.phtml:929
 #: application/views/scripts/shipment-form/download.phtml:258
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:388
 msgid "Lot No."
@@ -24717,7 +24720,7 @@ msgid "Enter lot no 1"
 msgstr "Entrez le numéro de lot 1"
 
 #: application/views/scripts/covid19/response.phtml:618
-#: application/views/scripts/dts/response.phtml:781
+#: application/views/scripts/dts/response.phtml:935
 msgid "Please enter Lot No. 1"
 msgstr "Veuillez saisir le numéro de lot 1"
 
@@ -24726,7 +24729,7 @@ msgid "Enter lot no 2"
 msgstr "Entrez le numéro de lot 2"
 
 #: application/views/scripts/covid19/response.phtml:621
-#: application/views/scripts/dts/response.phtml:785
+#: application/views/scripts/dts/response.phtml:939
 msgid "Please enter Lot No. 2"
 msgstr "Veuillez saisir le numéro de lot 2"
 
@@ -24735,7 +24738,7 @@ msgid "Enter lot no 3"
 msgstr "Entrez le numéro de lot 3"
 
 #: application/views/scripts/covid19/response.phtml:625
-#: application/views/scripts/dts/response.phtml:789
+#: application/views/scripts/dts/response.phtml:943
 msgid "Please enter Lot No. 3"
 msgstr "Veuillez saisir le numéro de lot 3"
 
@@ -24756,21 +24759,21 @@ msgid "Sample Number"
 msgstr "Numéro de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:671
-#: application/views/scripts/dts/response.phtml:1097
+#: application/views/scripts/dts/response.phtml:1251
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:428
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:448
 msgid "Result-1"
 msgstr "Résultat-1"
 
 #: application/views/scripts/covid19/response.phtml:672
-#: application/views/scripts/dts/response.phtml:1100
+#: application/views/scripts/dts/response.phtml:1254
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:434
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:450
 msgid "Result-2"
 msgstr "Résultat-2"
 
 #: application/views/scripts/covid19/response.phtml:673
-#: application/views/scripts/dts/response.phtml:1103
+#: application/views/scripts/dts/response.phtml:1257
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:441
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:453
 msgid "Result-3"
@@ -24786,7 +24789,7 @@ msgstr "Ajouter des types de gènes"
 
 #: application/views/scripts/covid19/response.phtml:742
 #: application/views/scripts/custom-test/response.phtml:288
-#: application/views/scripts/dts/response.phtml:1298
+#: application/views/scripts/dts/response.phtml:1454
 #: application/views/scripts/eid/response.phtml:532
 #: application/views/scripts/recency/response.phtml:454
 #: application/views/scripts/tb/response.phtml:202
@@ -24795,7 +24798,7 @@ msgid "Reason for not testing the PT Panel"
 msgstr "Raison pour laquelle le panel PT n'a pas été testé"
 
 #: application/views/scripts/covid19/response.phtml:745
-#: application/views/scripts/dts/response.phtml:1301
+#: application/views/scripts/dts/response.phtml:1457
 #: application/views/scripts/eid/response.phtml:535
 #: application/views/scripts/recency/response.phtml:457
 #: application/views/scripts/tb/response.phtml:205
@@ -24805,7 +24808,7 @@ msgstr "Veuillez sélectionner un motif"
 
 #: application/views/scripts/covid19/response.phtml:761
 #: application/views/scripts/custom-test/response.phtml:308
-#: application/views/scripts/dts/response.phtml:1318
+#: application/views/scripts/dts/response.phtml:1474
 #: application/views/scripts/eid/response.phtml:552
 #: application/views/scripts/recency/response.phtml:473
 #: application/views/scripts/tb/response.phtml:221
@@ -24824,7 +24827,7 @@ msgstr "Vos commentaires"
 #: application/views/scripts/custom-test/response.phtml:316
 #: application/views/scripts/custom-test/response.phtml:526
 #: application/views/scripts/custom-test/response.phtml:588
-#: application/views/scripts/dts/response.phtml:1328
+#: application/views/scripts/dts/response.phtml:1484
 #: application/views/scripts/eid/response.phtml:571
 #: application/views/scripts/recency/response.phtml:482
 #: application/views/scripts/tb/response.phtml:232
@@ -24833,7 +24836,7 @@ msgid "Please enter comments"
 msgstr "Veuillez entrer vos commentaires"
 
 #: application/views/scripts/covid19/response.phtml:776
-#: application/views/scripts/dts/response.phtml:1334
+#: application/views/scripts/dts/response.phtml:1490
 #: application/views/scripts/eid/response.phtml:577
 #: application/views/scripts/recency/response.phtml:488
 #: application/views/scripts/vl/response.phtml:819
@@ -24841,7 +24844,7 @@ msgid "Do you need any support from the PT Provider?"
 msgstr "Avez-vous besoin d'un appui de la part de l'organisateur du PT ?"
 
 #: application/views/scripts/covid19/response.phtml:778
-#: application/views/scripts/dts/response.phtml:1337
+#: application/views/scripts/dts/response.phtml:1493
 #: application/views/scripts/eid/response.phtml:579
 #: application/views/scripts/recency/response.phtml:490
 #: application/views/scripts/vl/response.phtml:821
@@ -24850,7 +24853,7 @@ msgstr "Veuillez saisir votre message à l'attention du prestataire PT"
 
 #: application/views/scripts/covid19/response.phtml:803
 #: application/views/scripts/custom-test/response.phtml:600
-#: application/views/scripts/dts/response.phtml:1466
+#: application/views/scripts/dts/response.phtml:1622
 #: application/views/scripts/eid/response.phtml:615
 #: application/views/scripts/recency/response.phtml:522
 #: application/views/scripts/shipment-form/download.phtml:532
@@ -24862,7 +24865,7 @@ msgid "Supervisor Review"
 msgstr "Contrôle du superviseur"
 
 #: application/views/scripts/covid19/response.phtml:807
-#: application/views/scripts/dts/response.phtml:1469
+#: application/views/scripts/dts/response.phtml:1625
 msgid "Please select if Supervisor Approval was conducted or not"
 msgstr ""
 "Veuillez indiquer si l'approbation du supérieur hiérarchique a été obtenue "
@@ -24870,7 +24873,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:844
 #: application/views/scripts/custom-test/response.phtml:645
-#: application/views/scripts/dts/response.phtml:1526
+#: application/views/scripts/dts/response.phtml:1682
 #: application/views/scripts/eid/response.phtml:659
 #: application/views/scripts/partials/evaluate-form.phtml:16
 #: application/views/scripts/recency/response.phtml:568
@@ -24881,8 +24884,8 @@ msgstr "Remplacer manuellement les résultats"
 
 #: application/views/scripts/covid19/response.phtml:860
 #: application/views/scripts/custom-test/response.phtml:661
-#: application/views/scripts/dts/response.phtml:1541
-#: application/views/scripts/dts/response.phtml:1557
+#: application/views/scripts/dts/response.phtml:1697
+#: application/views/scripts/dts/response.phtml:1713
 #: application/views/scripts/eid/response.phtml:673
 #: application/views/scripts/partials/evaluate-form.phtml:34
 #: application/views/scripts/recency/response.phtml:582
@@ -24893,7 +24896,7 @@ msgstr "Score de l'expédition"
 
 #: application/views/scripts/covid19/response.phtml:865
 #: application/views/scripts/custom-test/response.phtml:666
-#: application/views/scripts/dts/response.phtml:1561
+#: application/views/scripts/dts/response.phtml:1717
 #: application/views/scripts/eid/response.phtml:677
 #: application/views/scripts/partials/evaluate-form.phtml:38
 #: application/views/scripts/recency/response.phtml:586
@@ -24904,7 +24907,7 @@ msgstr "Entrez le score de l'expédition"
 
 #: application/views/scripts/covid19/response.phtml:865
 #: application/views/scripts/custom-test/response.phtml:667
-#: application/views/scripts/dts/response.phtml:1562
+#: application/views/scripts/dts/response.phtml:1718
 #: application/views/scripts/eid/response.phtml:678
 #: application/views/scripts/partials/evaluate-form.phtml:39
 #: application/views/scripts/recency/response.phtml:587
@@ -24915,7 +24918,7 @@ msgstr "Veuillez saisir le score de l'expédition"
 
 #: application/views/scripts/covid19/response.phtml:876
 #: application/views/scripts/custom-test/response.phtml:677
-#: application/views/scripts/dts/response.phtml:1572
+#: application/views/scripts/dts/response.phtml:1728
 #: application/views/scripts/eid/response.phtml:688
 #: application/views/scripts/recency/response.phtml:597
 #: application/views/scripts/tb/response.phtml:527
@@ -24925,7 +24928,7 @@ msgstr "Entrez la note attribuée à la documentation"
 
 #: application/views/scripts/covid19/response.phtml:877
 #: application/views/scripts/custom-test/response.phtml:678
-#: application/views/scripts/dts/response.phtml:1572
+#: application/views/scripts/dts/response.phtml:1728
 #: application/views/scripts/eid/response.phtml:688
 #: application/views/scripts/recency/response.phtml:597
 #: application/views/scripts/tb/response.phtml:528
@@ -24935,7 +24938,7 @@ msgstr "Veuillez saisir le score de la documentation"
 
 #: application/views/scripts/covid19/response.phtml:885
 #: application/views/scripts/custom-test/response.phtml:686
-#: application/views/scripts/dts/response.phtml:1580
+#: application/views/scripts/dts/response.phtml:1736
 #: application/views/scripts/eid/response.phtml:696
 #: application/views/scripts/recency/response.phtml:605
 #: application/views/scripts/tb/response.phtml:536
@@ -24945,7 +24948,7 @@ msgstr "Notes"
 
 #: application/views/scripts/covid19/response.phtml:920
 #: application/views/scripts/custom-test/response.phtml:721
-#: application/views/scripts/dts/response.phtml:1616
+#: application/views/scripts/dts/response.phtml:1772
 #: application/views/scripts/eid/response.phtml:731
 #: application/views/scripts/partials/evaluate-form.phtml:43
 #: application/views/scripts/recency/response.phtml:640
@@ -24956,7 +24959,7 @@ msgstr "Commentaire d'évaluation"
 
 #: application/views/scripts/covid19/response.phtml:929
 #: application/views/scripts/custom-test/response.phtml:730
-#: application/views/scripts/dts/response.phtml:1625
+#: application/views/scripts/dts/response.phtml:1781
 #: application/views/scripts/eid/response.phtml:740
 #: application/views/scripts/partials/evaluate-form.phtml:52
 #: application/views/scripts/recency/response.phtml:649
@@ -24967,7 +24970,7 @@ msgstr "Commentaires supplémentaires facultatifs"
 
 #: application/views/scripts/covid19/response.phtml:936
 #: application/views/scripts/custom-test/response.phtml:737
-#: application/views/scripts/dts/response.phtml:1633
+#: application/views/scripts/dts/response.phtml:1789
 #: application/views/scripts/eid/response.phtml:747
 #: application/views/scripts/recency/response.phtml:656
 #: application/views/scripts/tb/response.phtml:590
@@ -24976,7 +24979,7 @@ msgid "Is the above a follow up comment for corrective action?"
 msgstr "S'agit-il d'un commentaire de suivi en vue d'une action corrective ?"
 
 #: application/views/scripts/covid19/response.phtml:938
-#: application/views/scripts/dts/response.phtml:1636
+#: application/views/scripts/dts/response.phtml:1792
 #: application/views/scripts/eid/response.phtml:749
 #: application/views/scripts/recency/response.phtml:658
 #: application/views/scripts/tb/response.phtml:593
@@ -24986,7 +24989,7 @@ msgstr "Veuillez indiquer s'il s'agit d'un commentaire de suivi ou non"
 
 #: application/views/scripts/covid19/response.phtml:945
 #: application/views/scripts/custom-test/response.phtml:749
-#: application/views/scripts/dts/response.phtml:1645
+#: application/views/scripts/dts/response.phtml:1801
 #: application/views/scripts/eid/response.phtml:756
 #: application/views/scripts/partials/evaluate-form.phtml:5
 #: application/views/scripts/recency/response.phtml:665
@@ -24996,7 +24999,7 @@ msgid "Do you want to exclude this response from evaluation?"
 msgstr "Souhaitez-vous exclure cette réponse de l'évaluation ?"
 
 #: application/views/scripts/covid19/response.phtml:949
-#: application/views/scripts/dts/response.phtml:1649
+#: application/views/scripts/dts/response.phtml:1805
 #: application/views/scripts/eid/response.phtml:760
 #: application/views/scripts/partials/evaluate-form.phtml:9
 #: application/views/scripts/recency/response.phtml:669
@@ -25008,7 +25011,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:1168
 #: application/views/scripts/custom-test/response.phtml:827
-#: application/views/scripts/dts/response.phtml:1893
+#: application/views/scripts/dts/response.phtml:2049
 #: application/views/scripts/recency/response.phtml:768
 #: application/views/scripts/tb/response.phtml:756
 #: application/views/scripts/vl/response.phtml:1180
@@ -25021,7 +25024,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:1215
 #: application/views/scripts/custom-test/response.phtml:849
-#: application/views/scripts/dts/response.phtml:1920
+#: application/views/scripts/dts/response.phtml:2076
 #: application/views/scripts/recency/response.phtml:733
 #: application/views/scripts/tb/response.phtml:826
 #: application/views/scripts/vl/response.phtml:1223
@@ -25030,7 +25033,7 @@ msgstr "Mot de passe incorrect. Veuillez réessayer."
 
 #: application/views/scripts/covid19/response.phtml:1222
 #: application/views/scripts/custom-test/response.phtml:856
-#: application/views/scripts/dts/response.phtml:1927
+#: application/views/scripts/dts/response.phtml:2083
 #: application/views/scripts/recency/response.phtml:740
 #: application/views/scripts/tb/response.phtml:833
 #: application/views/scripts/vl/response.phtml:1230
@@ -25038,7 +25041,7 @@ msgid "Please enter the password to confirm"
 msgstr "Veuillez saisir le mot de passe pour confirmer"
 
 #: application/views/scripts/covid19/response.phtml:1235
-#: application/views/scripts/dts/response.phtml:1940
+#: application/views/scripts/dts/response.phtml:2096
 #: application/views/scripts/eid/response.phtml:846
 #: application/views/scripts/recency/response.phtml:754
 #: application/views/scripts/vl/response.phtml:1276
@@ -25156,12 +25159,12 @@ msgid "Please select a test kit"
 msgstr "Veuillez sélectionner un kit de test"
 
 #: application/views/scripts/custom-test/response.phtml:392
-#: application/views/scripts/dts/response.phtml:592
-#: application/views/scripts/dts/response.phtml:617
-#: application/views/scripts/dts/response.phtml:643
-#: application/views/scripts/dts/response.phtml:669
-#: application/views/scripts/dts/response.phtml:695
-#: application/views/scripts/dts/response.phtml:722
+#: application/views/scripts/dts/response.phtml:746
+#: application/views/scripts/dts/response.phtml:771
+#: application/views/scripts/dts/response.phtml:797
+#: application/views/scripts/dts/response.phtml:823
+#: application/views/scripts/dts/response.phtml:849
+#: application/views/scripts/dts/response.phtml:876
 msgid "Select Kit"
 msgstr "Sélectionner le kit"
 
@@ -25354,318 +25357,355 @@ msgstr ""
 msgid "Final HIV Interpretation"
 msgstr "Interprétation finale du VIH"
 
-#: application/views/scripts/dts/response.phtml:232
+#: application/views/scripts/dts/response.phtml:106
+msgid "Final result not reported"
+msgstr "Résultat final non rapporté"
+
+#: application/views/scripts/dts/response.phtml:108
+msgid "Final result does not match the reference"
+msgstr "Le résultat final ne correspond pas à la référence"
+
+#: application/views/scripts/dts/response.phtml:112
+msgid "Algorithm not followed"
+msgstr "Algorithme non respecté"
+
+#: application/views/scripts/dts/response.phtml:114
+msgid "Algorithm or test kit check failed"
+msgstr "Échec du contrôle de l'algorithme ou du kit de test"
+
+#: application/views/scripts/dts/response.phtml:118
+msgid "Failed another evaluation check"
+msgstr "Échec d'un autre contrôle de l'évaluation"
+
+#: application/views/scripts/dts/response.phtml:369
 msgid "Select Test Receipt Date"
 msgstr "Sélectionner la date de réception du panel"
 
-#: application/views/scripts/dts/response.phtml:232
+#: application/views/scripts/dts/response.phtml:369
 msgid "Please select Test Receipt Date"
 msgstr "Veuillez sélectionner la date de réception des échantillons"
 
-#: application/views/scripts/dts/response.phtml:239
+#: application/views/scripts/dts/response.phtml:376
 msgid "Panel Testing Date"
 msgstr "Date d'analyse du panel"
 
-#: application/views/scripts/dts/response.phtml:246
+#: application/views/scripts/dts/response.phtml:383
 msgid "Select Shipment Test Date"
 msgstr "Sélectionner la date de test de l'expédition"
 
-#: application/views/scripts/dts/response.phtml:246
+#: application/views/scripts/dts/response.phtml:383
 msgid "Please select Shipment Test Date"
 msgstr "Veuillez sélectionner la date de test de l'expédition"
 
-#: application/views/scripts/dts/response.phtml:268
+#: application/views/scripts/dts/response.phtml:405
 msgid "Select Sample Rehydration Date"
 msgstr "Sélectionner la date de réhydratation de l'échantillon"
 
-#: application/views/scripts/dts/response.phtml:269
+#: application/views/scripts/dts/response.phtml:406
 msgid "Please select Sample Rehydration Date"
 msgstr "Veuillez sélectionner la date de réhydratation de l'échantillon"
 
-#: application/views/scripts/dts/response.phtml:281
+#: application/views/scripts/dts/response.phtml:418
 #: application/views/scripts/shipment-form/download.phtml:218
 msgid "Algorithm Used"
 msgstr "Algorithme utilisé"
 
-#: application/views/scripts/dts/response.phtml:285
+#: application/views/scripts/dts/response.phtml:422
 msgid "Please choose the Algorithm used"
 msgstr "Veuillez choisir l'algorithme utilisé"
 
-#: application/views/scripts/dts/response.phtml:323
+#: application/views/scripts/dts/response.phtml:460
 msgid "3 Test DTS Algorithm"
 msgstr "Algorithme DTS à 3 tests"
 
-#: application/views/scripts/dts/response.phtml:332
+#: application/views/scripts/dts/response.phtml:469
 msgid "Screening Test"
 msgstr "Test de dépistage"
 
-#: application/views/scripts/dts/response.phtml:347
+#: application/views/scripts/dts/response.phtml:484
 msgid "Please select the condition of samples"
 msgstr "Veuillez sélectionner l'état des échantillons"
 
-#: application/views/scripts/dts/response.phtml:349
+#: application/views/scripts/dts/response.phtml:486
 msgid "Good"
 msgstr "Bon"
 
-#: application/views/scripts/dts/response.phtml:350
+#: application/views/scripts/dts/response.phtml:487
 msgid "Bad"
 msgstr "Mauvais"
 
-#: application/views/scripts/dts/response.phtml:351
+#: application/views/scripts/dts/response.phtml:488
 msgid "Not Sure"
 msgstr "Incertain"
 
-#: application/views/scripts/dts/response.phtml:360
+#: application/views/scripts/dts/response.phtml:497
 msgid "Please enter the room temperature"
 msgstr "Veuillez indiquer la température ambiante"
 
-#: application/views/scripts/dts/response.phtml:368
+#: application/views/scripts/dts/response.phtml:505
 msgid "Please select if a stop watch is available"
 msgstr "Veuillez indiquer si vous disposez d'un chronomètre"
 
-#: application/views/scripts/dts/response.phtml:370
+#: application/views/scripts/dts/response.phtml:507
 msgid "Available"
 msgstr "Disponible"
 
-#: application/views/scripts/dts/response.phtml:465
-#: application/views/scripts/dts/response.phtml:1093
+#: application/views/scripts/dts/response.phtml:602
+#: application/views/scripts/dts/response.phtml:1247
 msgid "Type of Test"
 msgstr "Type de test"
 
-#: application/views/scripts/dts/response.phtml:468
+#: application/views/scripts/dts/response.phtml:605
 msgid "Please choose screening or confirmatory test type"
 msgstr "Veuillez choisir entre un test de dépistage ou un test de confirmation"
 
-#: application/views/scripts/dts/response.phtml:540
+#: application/views/scripts/dts/response.phtml:667
+#, php-format
+msgid ""
+"%1$d of %2$d samples failed in the last evaluation. They are marked below."
+msgstr "%1$d échantillons sur %2$d ont échoué lors de la dernière évaluation. Ils sont signalés ci-dessous."
+
+#: application/views/scripts/dts/response.phtml:671
+#, php-format
+msgid "All %d samples passed in the last evaluation."
+msgstr "Les %d échantillons ont tous réussi lors de la dernière évaluation."
+
+#: application/views/scripts/dts/response.phtml:676
+msgid ""
+"The response changed after the last evaluation. Evaluate the shipment again "
+"to update these verdicts."
+msgstr "La réponse a changé depuis la dernière évaluation. Évaluez à nouveau l'envoi pour mettre à jour ces verdicts."
+
+#: application/views/scripts/dts/response.phtml:694
 msgid "Repeat Results"
 msgstr "Résultats des tests répétés"
 
-#: application/views/scripts/dts/response.phtml:561
+#: application/views/scripts/dts/response.phtml:715
 msgid "Repeat Test-1"
 msgstr "Répéter le test-1"
 
-#: application/views/scripts/dts/response.phtml:567
+#: application/views/scripts/dts/response.phtml:721
 msgid "Repeat Test-2"
 msgstr "Répéter le test-2"
 
-#: application/views/scripts/dts/response.phtml:573
+#: application/views/scripts/dts/response.phtml:727
 msgid "Repeat Test-3"
 msgstr "Répéter le test-3"
 
-#: application/views/scripts/dts/response.phtml:667
+#: application/views/scripts/dts/response.phtml:821
 msgid "Please Choose Repeat Test Kit 1"
 msgstr "Veuillez choisir le kit de test de répétition n° 1"
 
-#: application/views/scripts/dts/response.phtml:693
+#: application/views/scripts/dts/response.phtml:847
 msgid "Please Choose Repeat Test Kit 2"
 msgstr "Veuillez choisir le kit de test de répétition n° 2"
 
-#: application/views/scripts/dts/response.phtml:720
+#: application/views/scripts/dts/response.phtml:874
 msgid "Please Choose Repeat Test Kit 3"
 msgstr "Veuillez choisir le kit de test de répétition n° 3"
 
-#: application/views/scripts/dts/response.phtml:794
+#: application/views/scripts/dts/response.phtml:948
 msgid "Please enter Repeat Lot No. 1"
 msgstr "Veuillez saisir le numéro de lot de répétition 1"
 
-#: application/views/scripts/dts/response.phtml:798
+#: application/views/scripts/dts/response.phtml:952
 msgid "Please enter Repeat Lot No. 2"
 msgstr "Veuillez saisir le numéro de lot de répétition 2"
 
-#: application/views/scripts/dts/response.phtml:802
+#: application/views/scripts/dts/response.phtml:956
 msgid "Please enter Repeat Lot No. 3"
 msgstr "Veuillez saisir le numéro de lot de répétition 3"
 
-#: application/views/scripts/dts/response.phtml:841
+#: application/views/scripts/dts/response.phtml:995
 msgid "Select expiry date 1"
 msgstr "Sélectionnez la date d'expiration 1"
 
-#: application/views/scripts/dts/response.phtml:842
+#: application/views/scripts/dts/response.phtml:996
 msgid "Please select expiry date 1"
 msgstr "Veuillez sélectionner la date d'expiration 1"
 
-#: application/views/scripts/dts/response.phtml:851
+#: application/views/scripts/dts/response.phtml:1005
 msgid "Select expiry date 2"
 msgstr "Sélectionnez la date d'expiration 2"
 
-#: application/views/scripts/dts/response.phtml:852
+#: application/views/scripts/dts/response.phtml:1006
 msgid "Please select expiry date 2"
 msgstr "Veuillez sélectionner la date d'expiration 2"
 
-#: application/views/scripts/dts/response.phtml:861
+#: application/views/scripts/dts/response.phtml:1015
 msgid "Select expiry date 3"
 msgstr "Sélectionnez la date d'expiration 3"
 
-#: application/views/scripts/dts/response.phtml:862
+#: application/views/scripts/dts/response.phtml:1016
 msgid "Please select expiry date 3"
 msgstr "Veuillez sélectionner la date d'expiration 3"
 
-#: application/views/scripts/dts/response.phtml:872
+#: application/views/scripts/dts/response.phtml:1026
 msgid "Select repeat expiry date 1"
 msgstr "Sélectionner la date d'expiration de la répétition 1"
 
-#: application/views/scripts/dts/response.phtml:873
+#: application/views/scripts/dts/response.phtml:1027
 msgid "Please select repeat expiry date 1"
 msgstr "Veuillez sélectionner la date d'expiration de la répétition 1"
 
-#: application/views/scripts/dts/response.phtml:881
+#: application/views/scripts/dts/response.phtml:1035
 msgid "Select repeat expiry date 2"
 msgstr "Sélectionner la date d'expiration de la répétition 2"
 
-#: application/views/scripts/dts/response.phtml:882
+#: application/views/scripts/dts/response.phtml:1036
 msgid "Please select repeat expiry date 2"
 msgstr "Veuillez sélectionner la date d'expiration de la répétition 2"
 
-#: application/views/scripts/dts/response.phtml:890
+#: application/views/scripts/dts/response.phtml:1044
 msgid "Select repeat expiry date 3"
 msgstr "Sélectionner la date d'expiration de la répétition 3"
 
-#: application/views/scripts/dts/response.phtml:891
+#: application/views/scripts/dts/response.phtml:1045
 msgid "Please select repeat expiry date 3"
 msgstr "Veuillez sélectionner la date d'expiration de la répétition 3"
 
-#: application/views/scripts/dts/response.phtml:910
-#: application/views/scripts/dts/response.phtml:948
+#: application/views/scripts/dts/response.phtml:1064
+#: application/views/scripts/dts/response.phtml:1102
 msgid "Please select whether QC was done for test 1"
 msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 1"
 
-#: application/views/scripts/dts/response.phtml:922
-#: application/views/scripts/dts/response.phtml:957
+#: application/views/scripts/dts/response.phtml:1076
+#: application/views/scripts/dts/response.phtml:1111
 msgid "Please select whether QC was done for test 2"
 msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 2"
 
-#: application/views/scripts/dts/response.phtml:934
-#: application/views/scripts/dts/response.phtml:966
+#: application/views/scripts/dts/response.phtml:1088
+#: application/views/scripts/dts/response.phtml:1120
 msgid "Please select whether QC was done for test 3"
 msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 3"
 
-#: application/views/scripts/dts/response.phtml:1009
+#: application/views/scripts/dts/response.phtml:1163
 msgid "Select QC Date 1"
 msgstr "Sélectionner la date de contrôle qualité 1"
 
-#: application/views/scripts/dts/response.phtml:1018
+#: application/views/scripts/dts/response.phtml:1172
 msgid "Select QC Date 2"
 msgstr "Sélectionner la date de contrôle qualité 2"
 
-#: application/views/scripts/dts/response.phtml:1027
+#: application/views/scripts/dts/response.phtml:1181
 msgid "Select QC Date 3"
 msgstr "Sélectionner la date de contrôle qualité 3"
 
-#: application/views/scripts/dts/response.phtml:1037
+#: application/views/scripts/dts/response.phtml:1191
 msgid "Select Repeat QC Date 1"
 msgstr "Sélectionner la date de contrôle qualité de la répétition 1"
 
-#: application/views/scripts/dts/response.phtml:1045
+#: application/views/scripts/dts/response.phtml:1199
 msgid "Select Repeat QC Date 2"
 msgstr "Sélectionner la date de contrôle qualité de la répétition 2"
 
-#: application/views/scripts/dts/response.phtml:1054
+#: application/views/scripts/dts/response.phtml:1208
 msgid "Select Repeat QC Date 3"
 msgstr "Sélectionner la date de contrôle qualité de la répétition 3"
 
-#: application/views/scripts/dts/response.phtml:1082
+#: application/views/scripts/dts/response.phtml:1236
 msgid "Repeat Tests"
 msgstr "Répétition des tests"
 
-#: application/views/scripts/dts/response.phtml:1089
+#: application/views/scripts/dts/response.phtml:1243
 msgid "PT Panel Identifier"
 msgstr "Identifiant du panel PT"
 
-#: application/views/scripts/dts/response.phtml:1107
+#: application/views/scripts/dts/response.phtml:1261
 msgid "Repeat Result-1"
 msgstr "Résultat de la répétition-1"
 
-#: application/views/scripts/dts/response.phtml:1111
+#: application/views/scripts/dts/response.phtml:1265
 msgid "Repeat Result-2"
 msgstr "Résultat de la répétition-2"
 
-#: application/views/scripts/dts/response.phtml:1115
+#: application/views/scripts/dts/response.phtml:1269
 msgid "Repeat Result-3"
 msgstr "Résultat de la répétition-3"
 
-#: application/views/scripts/dts/response.phtml:1123
+#: application/views/scripts/dts/response.phtml:1277
 msgid "Lab Comment"
 msgstr "Commentaire du laboratoire"
 
-#: application/views/scripts/dts/response.phtml:1133
+#: application/views/scripts/dts/response.phtml:1287
 msgid "Is this a Retest?"
 msgstr "S'agit-il d'un nouveau test ?"
 
-#: application/views/scripts/dts/response.phtml:1158
+#: application/views/scripts/dts/response.phtml:1314
 #: application/views/scripts/shipment-form/download.phtml:335
 msgid "HIV"
 msgstr "VIH"
 
-#: application/views/scripts/dts/response.phtml:1160
+#: application/views/scripts/dts/response.phtml:1316
 #: application/views/scripts/shipment-form/download.phtml:336
 msgid "SYPHILIS"
 msgstr "SYPHILIS"
 
-#: application/views/scripts/dts/response.phtml:1229
+#: application/views/scripts/dts/response.phtml:1385
 msgid "Please select the result"
 msgstr "Veuillez sélectionner le résultat"
 
-#: application/views/scripts/dts/response.phtml:1253
+#: application/views/scripts/dts/response.phtml:1409
 msgid "Sent for confirmation"
 msgstr "Envoyé pour confirmation"
 
-#: application/views/scripts/dts/response.phtml:1257
+#: application/views/scripts/dts/response.phtml:1413
 msgid "Retest after 14 days"
 msgstr "Refaites le test au bout de 14 jours"
 
-#: application/views/scripts/dts/response.phtml:1270
+#: application/views/scripts/dts/response.phtml:1426
 msgid "Please select whether this is a retest"
 msgstr "Veuillez indiquer s'il s'agit d'un nouveau test"
 
-#: application/views/scripts/dts/response.phtml:1287
+#: application/views/scripts/dts/response.phtml:1443
 #: application/views/scripts/eid/response.phtml:556
 #: application/views/scripts/vl/response.phtml:798
 msgid "Received the PT Panel?"
 msgstr "Vous avez reçu le panel PT ?"
 
-#: application/views/scripts/dts/response.phtml:1291
+#: application/views/scripts/dts/response.phtml:1447
 #: application/views/scripts/eid/response.phtml:559
 #: application/views/scripts/vl/response.phtml:801
 msgid "Please select if you received the PT Panel"
 msgstr "Veuillez indiquer si vous avez reçu le panel PT"
 
-#: application/views/scripts/dts/response.phtml:1325
+#: application/views/scripts/dts/response.phtml:1481
 msgid "PT Participant/Tester comments"
 msgstr "Commentaires des participants/testeurs"
 
-#: application/views/scripts/dts/response.phtml:1346
+#: application/views/scripts/dts/response.phtml:1502
 msgid "RTRI Panel"
 msgstr "Panel RTRI"
 
-#: application/views/scripts/dts/response.phtml:1351
+#: application/views/scripts/dts/response.phtml:1507
 msgid "RTRI Tested?"
 msgstr "RTRI testé ?"
 
-#: application/views/scripts/dts/response.phtml:1366
+#: application/views/scripts/dts/response.phtml:1522
 #: application/views/scripts/shipment-form/download.phtml:375
 msgid "Final RTRI Interpretation"
 msgstr "Interprétation finale de la RTRI"
 
-#: application/views/scripts/dts/response.phtml:1429
+#: application/views/scripts/dts/response.phtml:1585
 #: application/views/scripts/eid/response.phtml:509
 #: application/views/scripts/recency/response.phtml:439
 #, php-format
 msgid "Please select the result for %s"
 msgstr "Veuillez sélectionner le résultat pour %s"
 
-#: application/views/scripts/dts/response.phtml:1485
+#: application/views/scripts/dts/response.phtml:1641
 msgid "Participant/Tester Comments"
 msgstr "Commentaires des participants/testeurs"
 
-#: application/views/scripts/dts/response.phtml:1498
+#: application/views/scripts/dts/response.phtml:1654
 msgid "Please select available test kits"
 msgstr "Veuillez sélectionner les kits de test disponibles"
 
-#: application/views/scripts/dts/response.phtml:1666
+#: application/views/scripts/dts/response.phtml:1822
 msgid "Confirm Response"
 msgstr "Confirmer la réponse"
 
-#: application/views/scripts/dts/response.phtml:2041
+#: application/views/scripts/dts/response.phtml:2197
 msgid ""
 "Changing the test type may lead to loss of previously entered data and "
 "cannot be undone. Are you sure you want to proceed?"
@@ -25674,7 +25714,7 @@ msgstr ""
 "précédemment saisies et ne peut être annulée. Êtes-vous sûr de vouloir "
 "continuer ?"
 
-#: application/views/scripts/dts/response.phtml:2179
+#: application/views/scripts/dts/response.phtml:2335
 msgid "Enter the ' + label + '"
 msgstr "Saisissez ' + label + '"
 
