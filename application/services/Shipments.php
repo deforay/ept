@@ -3596,6 +3596,14 @@ class Application_Service_Shipments
         return $returnArray;
     }
 
+    /** shipment_attributes keys the shipment edit form sets or clears. */
+    private const SHIPMENT_FORM_ATTRIBUTES = [
+        'sampleType', 'noOfTestsInPanel', 'screeningTest', 'dtsTestPanelType', 'enableSyphilis',
+        'dtsSchemeType', 'enableRtri', 'panelName', 'noOfTest', 'captureAdditionalDetails',
+        'additionalDetailLabel', 'methodOfEvaluation', 'score_per_sample', 'form_version',
+        'tb_test_type', 'collect_qc_data', 'reportVersion', 'effectiveDate',
+    ];
+
     public function updateShipment($params)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -4086,6 +4094,15 @@ class Application_Service_Shipments
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
             $shipmentAttributes['reportVersion'] = $params['reportVersion'] ?? null;
             $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
+
+            // Keep attributes this form does not edit, such as vlAssayGroups from
+            // the VL platform pooling page. Rebuilding from the form alone dropped them.
+            $storedAttributes = json_decode((string) $dbAdapter->fetchOne(
+                $dbAdapter->select()->from('shipment', ['shipment_attributes'])->where('shipment_id = ?', $params['shipmentId'])
+            ), true);
+            if (is_array($storedAttributes)) {
+                $shipmentAttributes += array_diff_key($storedAttributes, array_flip(self::SHIPMENT_FORM_ATTRIBUTES));
+            }
 
             $updateData = [
                 'number_of_samples' => $size - $controlCount,
