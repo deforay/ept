@@ -162,6 +162,86 @@ foreach ($this->allTestKits as $kit) {
         box-shadow: inset 4px 0 0 #c0392b;
     }
 
+    /* Admin view of the response (opened from evaluate). Participants keep the plain form. */
+    .admin-response .box {
+        border: 0;
+        box-shadow: none;
+    }
+
+    .admin-response .table {
+        background-color: #fff;
+    }
+
+    .admin-response .table > tbody > tr > td,
+    .admin-response .table > tbody > tr > th,
+    .admin-response .table > thead > tr > th,
+    .admin-response .table > tr > td,
+    .admin-response .table > tr > th {
+        vertical-align: middle;
+        padding: 8px 10px;
+    }
+
+    .admin-response .table-striped > tbody > tr:nth-of-type(odd),
+    .admin-response .table-striped > tbody > tr:nth-of-type(odd) > td,
+    .admin-response .table-striped > tbody > tr:nth-of-type(odd) > th {
+        background-color: #fafbfc;
+    }
+
+    .admin-response hr {
+        margin: 12px 0;
+        border-color: #eef0f3;
+    }
+
+    /* Participant details: small muted labels above the values. */
+    .admin-response h4.text-info {
+        margin: 0 0 4px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7785 !important;
+    }
+
+    .admin-response label {
+        margin-bottom: 0;
+        font-weight: 600;
+        color: #3d4852;
+    }
+
+    /* Clear-date links: the icon alone, without the serif "Clear" text. */
+    .admin-response i.icon-remove-sign {
+        font-size: 0;
+        margin-top: 9px !important;
+        color: #9aa5b1;
+    }
+
+    .admin-response i.icon-remove-sign::before {
+        font-size: 15px;
+    }
+
+    .admin-response i.icon-remove-sign:hover {
+        color: #c0392b;
+    }
+
+    .admin-response .result-section-table thead th,
+    .admin-response .result-section-table tr > th {
+        background-color: #f4f6f8;
+        font-weight: 600;
+    }
+
+    .admin-response .result-section-table select.form-control,
+    .admin-response .result-section-table input.form-control {
+        width: 100%;
+        min-width: 0;
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .admin-response .pull-right {
+        font-size: 12px;
+        color: #6b7785;
+    }
+
     /* View-only mode: locked fields read as plain text, not as disabled inputs. */
     .response-view-only .form-control:disabled,
     .response-view-only select:disabled,
@@ -299,7 +379,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 <section class="content-header">
     <h1><?= $this->escape((string) ($this->shipment['scheme_name'])); ?></h1>
 </section>
-<section class="content">
+<section class="content<?= $adminAccess ? ' admin-response' : ''; ?>">
     <div class="box">
         <form name="dtsResponseForm" id="dtsResponseForm" method="post"<?= $viewOnly ? ' class="response-view-only"' : ''; ?>
             action="<?php echo $this->url(array("controller" => "dts", "action" => "response"), null, true); ?>">
@@ -374,23 +454,23 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                         <tr>
                             <td style="width:20%;">
                                 <h4 class="text-info"> <?= $this->translate->_("Participant Name"); ?> </h4>
-                                <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
+                                <?= $this->escape(trim(($this->participant['first_name'] ?? '') . ' ' . ($this->participant['last_name'] ?? ''))); ?>
                             </td>
                             <td style="width:20%;">
                                 <h4 class="text-info"> <?= $this->translate->_("Participant Code"); ?> </h4>
-                                <?php echo $this->participant['unique_identifier'] ?>
+                                <?= $this->escape((string) ($this->participant['unique_identifier'] ?? '')); ?>
                             </td>
                             <td style="width:20%;">
                                 <h4 class="text-info"> <?= $this->translate->_("Affiliation"); ?> </h4>
-                                <?php echo ($this->participant['affiliation']); ?>
+                                <?= $this->escape((string) ($this->participant['affiliation'] ?? '')); ?>
                             </td>
                             <td style="width:20%;">
                                 <h4 class="text-info"> <?= $this->translate->_("Phone No"); ?> </h4>
-                                <?php echo ($this->participant['phone']); ?>
+                                <?= $this->escape((string) ($this->participant['phone'] ?? '')); ?>
                             </td>
                             <td style="width:20%;">
                                 <h4 class="text-info"> <?= $this->translate->_("Mobile No"); ?> </h4>
-                                <?php echo ($this->participant['mobile']); ?>
+                                <?= $this->escape((string) ($this->participant['mobile'] ?? '')); ?>
                             </td>
                         </tr>
                     </table>
