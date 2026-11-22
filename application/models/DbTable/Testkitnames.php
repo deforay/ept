@@ -96,6 +96,81 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         }
     }
 
+    /** Audit labels: the field labels on the test kit edit form. */
+    public const AUDIT_LABELS = [
+        'TestKit_Name' => 'Test Kit Name',
+        'TestKit_Name_Short' => 'Short Test Kit Name',
+        'TestKit_Comments' => 'Comments',
+        'TestKit_Manufacturer' => 'Test Kit Manufacturer',
+        'moh_approved' => 'Is Ministry of Health Approved?',
+        'source_reference' => 'Source Reference',
+        'pt_provider_validated' => 'Is PT Provider Validated?',
+        'Approval' => 'Active',
+        'attributes.additional_info' => 'Allow Additional Information',
+        'attributes.additional_info_label' => 'Additional Information Label',
+        'attributes.additional_info_mandatory' => 'Is Additional Information Mandatory?',
+    ];
+
+    /**
+     * One test kit as the audit log compares it: the edit form's fields and,
+     * per scheme, which test numbers the kit can be reported for.
+     *
+     * @return array{values: array<string, mixed>, labels: array<string, string>, name: string}
+     */
+    public function auditSnapshot(string $testkitId): array
+    {
+        $db = $this->getAdapter();
+        $row = $db->fetchRow($db->select()->from($this->_name)->where('TestKitName_ID = ?', $testkitId)) ?: [];
+        $values = [];
+        foreach (array_keys(self::AUDIT_LABELS) as $field) {
+            if (!str_starts_with($field, 'attributes.')) {
+                $values[$field] = $row[$field] ?? '';
+            }
+        }
+        $attributes = json_decode((string) ($row['attributes'] ?? ''), true);
+        $attributes = is_array($attributes) ? $attributes : [];
+        // Blank and 0 both mean no, so they must compare equal.
+        foreach (['additional_info', 'additional_info_mandatory'] as $flag) {
+            $attributes[$flag] = in_array((string) ($attributes[$flag] ?? ''), ['1', 'yes'], true) ? 'yes' : 'no';
+        }
+        $values['attributes'] = $attributes;
+
+        $labels = self::AUDIT_LABELS;
+        $schemes = $db->fetchPairs($db->select()->from('scheme_list', ['scheme_id', 'scheme_name']));
+        $maps = $db->fetchAll($db->select()->from('scheme_testkit_map')->where('testkit_id = ?', $testkitId));
+        foreach ($maps as $map) {
+            $scheme = (string) $map['scheme_type'];
+            foreach ([1, 2, 3] as $n) {
+                $key = 'tests.' . $scheme . '.' . $n;
+                $values['tests'][$scheme][$n] = !empty($map['testkit_' . $n]) ? 'yes' : 'no';
+                $labels[$key] = ($schemes[$scheme] ?? $scheme) . ' › Test ' . $n;
+            }
+        }
+        return ['values' => $values, 'labels' => $labels, 'name' => (string) ($row['TestKit_Name'] ?? $testkitId)];
+    }
+
+    /**
+     * Names of the kits a stage currently allows: one test number across all
+     * schemes ("testkit_1") or every kit mapped to one scheme ("dts").
+     *
+     * @return string[]
+     */
+    public function stageKitNames(string $stage): array
+    {
+        $db = $this->getAdapter();
+        $select = $db->select()
+            ->from(['m' => 'scheme_testkit_map'], [])
+            ->join(['k' => $this->_name], 'k.TestKitName_ID = m.testkit_id', ['TestKit_Name'])
+            ->group('k.TestKit_Name')
+            ->order('k.TestKit_Name');
+        if (in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'], true)) {
+            $select->where($db->quoteIdentifier('m.' . $stage) . ' = 1');
+        } else {
+            $select->where('m.scheme_type = ?', $stage);
+        }
+        return array_map('strval', $db->fetchCol($select));
+    }
+
     public function updateTestkitStageDetails($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
