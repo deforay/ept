@@ -362,7 +362,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $code = trim((string) ($row['result_code'] ?? ''));
             $name = $quantitative ? 'Quantitative' : ($code !== '' ? $code : trim((string) ($row['response'] ?? '')));
             // Rows are rebuilt on every save, so match them by test name and code, not by id.
-            $key = 'results.' . md5($sub . '|' . $name);
+            $key = 'results.' . substr(hash('sha256', $sub . '|' . $name), 0, 16);
             $seen[$key] = ($seen[$key] ?? 0) + 1;
             if ($seen[$key] > 1) {
                 $key .= '-' . $seen[$key];
