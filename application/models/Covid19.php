@@ -1124,8 +1124,9 @@ class Application_Model_Covid19
 
         //----------- Second Sheet End----->
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded COVID-19 Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded COVID-19 Excel report - ' . ($shipmentCode ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $shipmentCode ?? ''],
+        ]);
 
         $excel->setActiveSheetIndex(0);
 

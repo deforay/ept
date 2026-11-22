@@ -755,8 +755,9 @@ class Application_Model_CustomTest
 
         //----------- Second Sheet End----->
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded Generic Test Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded Generic Test Excel report - ' . ($shipmentCode ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $shipmentCode ?? ''],
+        ]);
 
         $excel->setActiveSheetIndex(0);
 

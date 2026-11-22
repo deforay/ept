@@ -656,6 +656,23 @@ class ReportGenerator
             self::error('Could not record report failure for shipment ' . $shipmentId . ': ' . $inner->getMessage(), $this->opts->isCli);
         }
 
+        if ($shipmentId > 0) {
+            try {
+                $code = (string) ($evalRow['shipment_code'] ?? '');
+                (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
+                    ($reportType === 'finalized' ? 'Failed to finalize shipment - ' : 'Failed to generate reports for shipment - ') . ($code !== '' ? $code : "#{$shipmentId}"),
+                    'shipment',
+                    $this->auditActor($evalRow),
+                    [
+                        'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                        'facts' => ['Error' => $message, 'Status now' => $restingStatus],
+                    ]
+                );
+            } catch (Throwable $inner) {
+                self::error('Could not write the audit log for shipment ' . $shipmentId . ': ' . $inner->getMessage(), $this->opts->isCli);
+            }
+        }
+
         // Release the lock and clear state so the batch continues cleanly.
         if (is_resource($this->currentShipmentLock)) {
             flock($this->currentShipmentLock, LOCK_UN);
@@ -1643,19 +1660,10 @@ class ReportGenerator
 
         $this->db->update('shipment', $shipmentUpdate, ['shipment_id = ?' => $evalRow['shipment_id']]);
 
-        // Add audit log for finalized shipments. Runs from CLI, so there is no
-        // admin session - attribute the action to whoever initiated the job.
-        if (!empty($evalRow['id']) && $reportCompletedStatus == 'finalized') {
-            $auditActor = null;
-            $initiatedBy = !empty($evalRow['initated_by']) ? $evalRow['initated_by'] : $evalRow['requested_by'];
-            if (!empty($initiatedBy)) {
-                $adminDetails = $this->config->adminService->getSystemAdminDetails($initiatedBy);
-                if (!empty($adminDetails['primary_email'])) {
-                    $auditActor = ['email' => $adminDetails['primary_email'], 'role' => 'admin'];
-                }
-            }
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment", $auditActor);
+        // Log the finished run. It runs from CLI, so there is no admin session.
+        // Attribute the action to whoever initiated the job.
+        if (!empty($evalRow['id']) && in_array($reportCompletedStatus, ['finalized', 'reports generated'], true)) {
+            $this->auditCompletedRun($evalRow, $totParticipantsRes, $reportCompletedStatus === 'finalized');
         }
 
         // Update queue record
@@ -1681,6 +1689,51 @@ class ReportGenerator
 
         // Send participant notification emails
         $this->sendParticipantNotificationEmails($evalRow);
+    }
+
+    /** The admin who asked for a report run, as an audit log actor. */
+    private function auditActor(array $evalRow): ?array
+    {
+        $initiatedBy = !empty($evalRow['initated_by']) ? $evalRow['initated_by'] : ($evalRow['requested_by'] ?? null);
+        if (empty($initiatedBy)) {
+            return null;
+        }
+        $adminDetails = $this->config->adminService->getSystemAdminDetails($initiatedBy);
+        return !empty($adminDetails['primary_email'])
+            ? ['email' => $adminDetails['primary_email'], 'role' => 'admin']
+            : null;
+    }
+
+    /**
+     * Log a finished report run. Finalizing is flagged because it publishes
+     * results to participants.
+     *
+     * @param array<string, mixed>|null $counts participant counts for the shipment
+     */
+    private function auditCompletedRun(array $evalRow, ?array $counts, bool $finalized): void
+    {
+        try {
+            $code = (string) $evalRow['shipment_code'];
+            $extra = [
+                'entity' => ['type' => 'shipment', 'id' => (int) $evalRow['shipment_id'], 'label' => $code],
+                'facts' => [
+                    'Participants' => (int) ($counts['participant_count'] ?? 0),
+                    'Individual reports' => (int) ($counts['reported_count'] ?? 0),
+                ],
+            ];
+            if ($finalized) {
+                $extra['important'] = true;
+                $extra['reason'] = 'Finalizing publishes results to participants';
+            }
+            (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
+                ($finalized ? 'Finalized shipment - ' : 'Generated reports for shipment - ') . $code,
+                'shipment',
+                $this->auditActor($evalRow),
+                $extra
+            );
+        } catch (Throwable $e) {
+            self::error('Could not write the audit log for shipment ' . ($evalRow['shipment_code'] ?? '') . ': ' . $e->getMessage(), $this->opts->isCli);
+        }
     }
 
     /**

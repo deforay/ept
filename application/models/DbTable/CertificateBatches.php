@@ -104,10 +104,17 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
         $batchName = $batch['batch_name'] ?? "#$batchId";
         $excellenceCount = (int) ($batch['excellence_count'] ?? 0);
         $participationCount = (int) ($batch['participation_count'] ?? 0);
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog(
+        Application_Model_DbTable_AuditLog::record(
             "Approved certificate batch - {$batchName} ({$excellenceCount} excellence, {$participationCount} participation)",
-            'certificate'
+            'certificate',
+            [
+                'entity' => ['type' => 'certificate', 'id' => $batchId, 'label' => $batch['batch_name'] ?? ''],
+                'facts' => [
+                    'Excellence' => $excellenceCount,
+                    'Participation' => $participationCount,
+                    'Skipped' => (int) ($batch['skipped_count'] ?? 0),
+                ],
+            ]
         );
         return null;
     }

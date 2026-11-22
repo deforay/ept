@@ -60,11 +60,28 @@ try {
         }
         $result = $participantService->queueParticipantEmail($id);
         $email = $emailParticipantDb->fetchEmail($id);
-        $auditDb->addNewAuditLog(
-            "Queued scheduled email to participants — \"{$email['subject']}\" ({$result['queued']} messages)",
-            'config',
-            ['email' => 'system', 'role' => 'system']
-        );
+        try {
+            $shipmentIds = array_values(array_filter(array_map('intval', explode(',', (string) ($email['shipment_code'] ?? '')))));
+            $shipmentCodes = $shipmentIds === [] ? [] : $db->fetchCol(
+                $db->select()->from('shipment', ['shipment_code'])->where('shipment_id IN (?)', $shipmentIds)->order('shipment_id')
+            );
+            $auditDb->addNewAuditLog(
+                "Queued scheduled email #{$id} to participants - \"{$email['subject']}\" ({$result['queued']} messages)",
+                'config',
+                ['email' => 'system', 'role' => 'system'],
+                [
+                    'entity' => ['type' => 'email', 'id' => $id, 'label' => (string) $email['subject']],
+                    'facts' => [
+                        'Send to' => str_replace(',', ', ', (string) $email['receivers']),
+                        'Shipments' => implode(', ', $shipmentCodes),
+                        'Emails queued' => (int) $result['queued'],
+                        'Invalid addresses skipped' => count($result['invalid'] ?? []),
+                    ],
+                ]
+            );
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('dispatch-scheduled-emails: audit log failed: ' . $e->getMessage());
+        }
     }
 } catch (Throwable $e) {
     Pt_Commons_LoggerUtility::logError('dispatch-scheduled-emails: ' . $e->getMessage(), [

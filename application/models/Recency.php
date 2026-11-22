@@ -993,8 +993,9 @@ class Application_Model_Recency
             }
         }
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded Recency Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded Recency Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $result['shipment_code'] ?? ''],
+        ]);
 
         $excel->setActiveSheetIndex(0);
 

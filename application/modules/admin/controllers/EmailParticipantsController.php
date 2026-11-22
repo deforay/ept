@@ -113,7 +113,6 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $adminEmail = (string) $adminSession->primary_email;
         $participantService = new Application_Service_Participants();
         $emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
-        $auditDb = new Application_Model_DbTable_AuditLog();
 
         $data = [
             'subject'   => trim((string) ($post['subject'] ?? '')),
@@ -154,9 +153,10 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
             }
         }
 
-        $detail = " — \"{$data['subject']}\" (shipments: " . implode(', ', $data['shipments']) . ')';
+        $detail = " - \"{$data['subject']}\"";
 
         if ($editId > 0) {
+            $beforeEmail = $emailParticipantDb->fetchEmail($editId);
             // Send now from the edit screen keeps the time it had, then sends
             $saved = $emailParticipantDb->updateScheduledEmail(
                 $editId,
@@ -169,7 +169,15 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
                 $this->redirect('/admin/email-participants?tab=scheduled');
                 return;
             }
-            $auditDb->addNewAuditLog("Edited scheduled email #{$editId} to participants" . $detail, 'config');
+            $afterEmail = $emailParticipantDb->fetchEmail($editId);
+            $extra = self::emailAuditExtra($editId, $data);
+            $extra['changes'] = Application_Model_DbTable_AuditLog::changes(
+                self::emailAuditValues($beforeEmail ?? []),
+                self::emailAuditValues($afterEmail ?? []),
+                self::EMAIL_AUDIT_LABELS
+            );
+            $extra['facts']['Message changed'] = (string) ($beforeEmail['content'] ?? '') !== (string) ($afterEmail['content'] ?? '');
+            Application_Model_DbTable_AuditLog::record("Edited scheduled email #{$editId} to participants" . $detail, 'config', $extra);
             self::offerFollowUp($editId, $data['sendMail']);
             if ($schedule) {
                 $alertMsg->message = sprintf($t->_('Changes saved. The email will be sent at %s.'), self::formatScheduledAt($scheduledAt));
@@ -184,13 +192,18 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $result = $participantService->saveParticipantEmail($data, $scheduledAt, $adminEmail);
         self::offerFollowUp((int) $result['id'], $data['sendMail']);
         if ($schedule) {
-            $auditDb->addNewAuditLog("Scheduled email #{$result['id']} to participants for {$scheduledAt}" . $detail, 'config');
+            $extra = self::emailAuditExtra((int) $result['id'], $data);
+            $extra['facts']['Send at'] = $scheduledAt;
+            Application_Model_DbTable_AuditLog::record("Scheduled email #{$result['id']} to participants for {$scheduledAt}" . $detail, 'config', $extra);
             $alertMsg->message = sprintf($t->_('Email scheduled. It will be sent at %s.'), self::formatScheduledAt($scheduledAt));
             $this->redirect('/admin/email-participants?tab=scheduled');
             return;
         }
 
-        $auditDb->addNewAuditLog('Sent email to participants' . $detail, 'config');
+        $extra = self::emailAuditExtra((int) $result['id'], $data);
+        $extra['facts']['Emails queued'] = (int) $result['queued'];
+        $extra['facts']['Invalid addresses skipped'] = count($result['invalid'] ?? []);
+        Application_Model_DbTable_AuditLog::record('Sent email to participants' . $detail, 'config', $extra);
         $message = $result['queued'] > 0
             ? sprintf($t->_('Emails queued for sending: %s.'), number_format($result['queued']))
             : $t->_('Nothing was queued: no recipients matched.');
@@ -199,6 +212,69 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
         $alertMsg->message = $message;
         $this->redirect('/admin/email-participants?tab=history');
+    }
+
+    /** Fields of a participant email compared when it is edited, with the form's labels. */
+    private const EMAIL_AUDIT_LABELS = [
+        'subject' => 'Subject',
+        'receivers' => 'Send to',
+        'shipments' => 'Shipments',
+        'manager_delivery' => 'How they get it',
+        'lab_filter' => 'Recipients',
+        'cc_data_managers' => "Also Cc each lab's data managers on the lab's email",
+        'scheduled_at' => 'Send at',
+    ];
+
+    /**
+     * Shipment codes for shipment ids, in id order.
+     *
+     * @param array<int|string> $ids
+     * @return string[]
+     */
+    private static function shipmentCodes(array $ids): array
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids === []) {
+            return [];
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchCol($db->select()->from('shipment', ['shipment_code'])->where('shipment_id IN (?)', $ids)->order('shipment_id'));
+    }
+
+    /**
+     * Entity and facts shared by every entry about one participant email.
+     *
+     * @param array<string, mixed> $data the saved form values
+     * @return array<string, mixed>
+     */
+    private static function emailAuditExtra(int $id, array $data): array
+    {
+        return [
+            'entity' => ['type' => 'email', 'id' => $id > 0 ? $id : null, 'label' => (string) $data['subject']],
+            'facts' => [
+                'Send to' => implode(', ', (array) $data['sendMail']),
+                'Shipments' => implode(', ', self::shipmentCodes((array) $data['shipments'])),
+            ],
+        ];
+    }
+
+    /**
+     * An email row in a form the audit log can compare.
+     *
+     * @param array<string, mixed> $email
+     * @return array<string, mixed>
+     */
+    private static function emailAuditValues(array $email): array
+    {
+        return [
+            'subject' => $email['subject'] ?? null,
+            'receivers' => $email['receivers'] ?? null,
+            'shipments' => implode(', ', self::shipmentCodes(explode(',', (string) ($email['shipment_code'] ?? '')))),
+            'manager_delivery' => $email['manager_delivery'] ?? null,
+            'lab_filter' => $email['lab_filter'] ?? null,
+            'cc_data_managers' => !empty($email['cc_data_managers']),
+            'scheduled_at' => $email['scheduled_at'] ?? null,
+        ];
     }
 
     /**
@@ -315,8 +391,20 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $result = (new Application_Service_Participants())->changeParticipantEmailState($id, $action, (string) $adminSession->primary_email);
         if ($result['ok']) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Email to participants #{$id}: {$action} ({$result['code']})", 'config');
+            $verbs = ['pause' => 'Paused', 'resume' => 'Resumed', 'cancel' => 'Cancelled', 'send-now' => 'Sent'];
+            $email = (new Application_Model_DbTable_EmailParticipants())->fetchEmail($id);
+            $facts = ['Outcome' => $result['code']];
+            if (isset($result['count'])) {
+                $facts['Messages'] = (int) $result['count'];
+            }
+            Application_Model_DbTable_AuditLog::record(
+                "{$verbs[$action]} email to participants #{$id}" . ($email ? " - \"{$email['subject']}\"" : ''),
+                'config',
+                [
+                    'entity' => ['type' => 'email', 'id' => $id, 'label' => (string) ($email['subject'] ?? '')],
+                    'facts' => $facts,
+                ]
+            );
         }
         echo json_encode(['ok' => $result['ok'], 'message' => $this->describeOutcome($result)]);
     }

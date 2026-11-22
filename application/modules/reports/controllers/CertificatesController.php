@@ -99,7 +99,22 @@ class Reports_CertificatesController extends Zend_Controller_Action
             'certificateName' => $name,
         ]);
         if ($batchId > 0) {
-            (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Queued certificate batch - {$name}", 'certificate');
+            $totals = ['excellence' => 0, 'participation' => 0, 'skipped' => 0];
+            foreach (Application_Service_AnnualCertificates::counts($plan) as $schemeCounts) {
+                foreach ($totals as $key => $total) {
+                    $totals[$key] = $total + (int) ($schemeCounts[$key] ?? 0);
+                }
+            }
+            Application_Model_DbTable_AuditLog::record("Queued certificate batch - {$name}", 'certificate', [
+                'entity' => ['type' => 'certificate', 'id' => (int) $batchId, 'label' => $name],
+                'facts' => [
+                    'Shipments' => count($shipmentIds),
+                    'Excellence' => $totals['excellence'],
+                    'Participation' => $totals['participation'],
+                    'Skipped' => $totals['skipped'],
+                ],
+                'list' => ['title' => 'Shipments', 'rows' => array_merge(...array_values($plan['schemes']))],
+            ]);
         }
         $this->_helper->json(['success' => $batchId > 0, 'batchId' => (int) $batchId]);
     }
@@ -168,7 +183,10 @@ class Reports_CertificatesController extends Zend_Controller_Action
             $done = $model->rejectBatch($batchId);
         }
         if ($done) {
-            (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Discarded certificate batch - {$batch['batch_name']}", 'certificate');
+            Application_Model_DbTable_AuditLog::record("Discarded certificate batch - {$batch['batch_name']}", 'certificate', [
+                'entity' => ['type' => 'certificate', 'id' => $batchId, 'label' => $batch['batch_name']],
+                'facts' => ['Status' => $batch['status']],
+            ]);
         }
         $this->_helper->json(['success' => $done]);
     }

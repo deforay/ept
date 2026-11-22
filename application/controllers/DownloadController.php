@@ -55,9 +55,12 @@ class DownloadController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         //$this->_helper->viewRenderer->setNoRender(true);
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
         // Tagged [unsigned] so the audit log makes it easy to spot any remaining
         // legacy callers — once this column is empty for a while, /d/ can be deleted.
-        $auditDb->addNewAuditLog('Downloaded file [unsigned] - ' . basename($realPath), 'download');
+        Application_Model_DbTable_AuditLog::record(
+            'Downloaded file [unsigned] - ' . basename($realPath),
+            'download',
+            Application_Service_Shipments::downloadAuditExtra($realPath, 'Unsigned')
+        );
     }
 }

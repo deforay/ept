@@ -405,8 +405,9 @@ class Application_Model_Eid
         $firstSheet = $this->common->applyBordersToSheet($firstSheet);
         $firstSheet = $this->common->setAllColumnWidthsInSheet($firstSheet, 20);
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Downloaded DTS EID Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
+        Application_Model_DbTable_AuditLog::record('Downloaded DTS EID Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $result['shipment_code'] ?? ''],
+        ]);
 
         $excel->setActiveSheetIndex(0);
 
