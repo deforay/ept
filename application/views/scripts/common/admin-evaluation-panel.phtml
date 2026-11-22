@@ -28,16 +28,52 @@ $documentationScore = (float) ($shipment['documentation_score'] ?? 0);
 $passMark = in_array($this->scheme ?? '', ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19'], true)
     ? Pt_Commons_SchemeConfig::get($this->scheme . '.passPercentage')
     : null;
-// final_result: 1 Pass, 2 Fail, 3 Excluded, 4 Not Evaluated
-// An icon, not a word: countries name the result differently (Pass or Satisfactory).
-$resultBadge = match ((int) ($shipment['final_result'] ?? 0)) {
-    1 => ['eval-result-pass icon-ok-circle', $this->htmlTranslate('Pass')],
-    2 => ['eval-result-fail icon-remove-circle', $this->htmlTranslate('Fail')],
-    3 => ['eval-result-other icon-ban-circle', $this->htmlTranslate('Excluded')],
-    4 => ['eval-result-other icon-ban-circle', $this->htmlTranslate('Not Evaluated')],
-    default => null,
-};
+// final_result: 1 Pass, 2 Fail, 3 Excluded, 4 Not Evaluated. The label is the
+// instance's own name for the result in r_results, since countries word it
+// differently (Pass or Satisfactory, for example).
+$finalResult = (int) ($shipment['final_result'] ?? 0);
+$resultBadge = null;
+if ($finalResult > 0) {
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    $resultName = (string) $db->fetchOne($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
+    $resultBadge = [
+        match ($finalResult) {
+            1 => 'eval-result-pass icon-ok-circle',
+            2 => 'eval-result-fail icon-remove-circle',
+            default => 'eval-result-other icon-ban-circle',
+        },
+        $this->htmlTranslate($resultName !== '' ? $resultName : (string) $finalResult),
+    ];
+}
 $warnings = json_decode((string) ($shipment['failure_reason'] ?? ''), true);
+// Findings grouped by the sample they name, so each sample label shows once. Coded
+// findings store the sample. Older ones start with it in bold ("For <strong>A1</strong>",
+// "Sample <strong>A1</strong>", "<strong>A1</strong> - ..."). The rest are general.
+$findingGroups = [];
+$generalFindings = [];
+$findingNo = 0;
+foreach (is_array($warnings) ? $warnings : [] as $warning) {
+    $findingNo++;
+    $html = Pt_Evaluation_FailureReason::warningHtml($warning);
+    $sample = is_array($warning) ? ($warning['params']['sample'] ?? null) : null;
+    if ($sample === null && preg_match('~^\s*(?:For\s+|Sample\s+)?<strong>(.*?)</strong>~u', $html, $m)) {
+        $sample = html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+    $finding = [
+        'no' => $findingNo,
+        'raw' => $warning,
+        'html' => $html,
+        'action' => Pt_Evaluation_FailureReason::correctiveActionHtml($warning),
+    ];
+    if ($sample === null || trim((string) $sample) === '') {
+        $generalFindings[] = $finding;
+    } else {
+        $findingGroups[(string) $sample][] = $finding;
+    }
+}
+if ($generalFindings !== []) {
+    $findingGroups[''] = $generalFindings;
+}
 // Evaluation always sets final_result (1 to 4). Before that, the card says so instead
 // of showing a score of 0 and no findings. shipment_score can already hold 0.00.
 $evaluated = (int) ($shipment['final_result'] ?? 0) > 0;
@@ -98,9 +134,7 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
     }
 
     .eval-result-badge {
-        align-self: center;
-        padding: 0 6px;
-        font-size: 40px;
+        font-size: 30px;
         line-height: 1;
     }
 
@@ -159,39 +193,69 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
         color: #6b7785;
     }
 
+    .eval-result {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-right: 8px;
+    }
+
+    .eval-result-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
     .eval-findings {
+        border-top: 1px solid #eef0f3;
+    }
+
+    .eval-finding-group {
+        display: grid;
+        grid-template-columns: minmax(120px, 180px) 1fr;
+        gap: 4px 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eef0f3;
+    }
+
+    .eval-finding-sample {
+        font-weight: 600;
+        color: #2c3e50;
+        word-break: break-word;
+    }
+
+    .eval-finding-list {
         list-style: none;
         margin: 0;
         padding: 0;
     }
 
-    .eval-findings li {
+    .eval-finding-list li {
         display: flex;
-        gap: 10px;
-        padding: 10px 0;
-        border-top: 1px solid #eef0f3;
+        gap: 8px;
+        padding: 2px 0 6px;
     }
 
-    .eval-findings li:first-child {
-        border-top: 0;
-    }
-
-    .eval-finding {
+    /* Beats the bold label style of the admin response pages. */
+    .eval-panel label.eval-finding {
         margin: 0;
         font-weight: normal;
     }
 
     .eval-finding-warning {
         display: block;
-        color: #a93226;
+        color: #2c3e50;
+    }
+
+    .eval-finding-warning strong {
+        font-weight: 600;
     }
 
     .eval-finding-action {
         display: block;
-        margin-top: 3px;
-        padding-left: 14px;
-        border-left: 2px solid #dfe4ea;
-        color: #3d4852;
+        margin-top: 2px;
+        font-size: 13px;
+        color: #6b7785;
     }
 
     .eval-field {
@@ -222,6 +286,35 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
         font-weight: normal;
     }
 
+    .eval-status-chips {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .eval-chip {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        background-color: #eef2f6;
+        color: #3d4852;
+    }
+
+    .eval-chip-warn {
+        background-color: #fff3df;
+        color: #8a5a00;
+    }
+
+    .eval-feedback-quote {
+        margin: 0 0 10px;
+        padding: 6px 12px;
+        border-left: 3px solid #dfe4ea;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
     .eval-readonly {
         display: grid;
         grid-template-columns: minmax(180px, max-content) 1fr;
@@ -250,7 +343,22 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
     <h3 class="eval-panel-title"><?= $this->htmlTranslate('Evaluation result'); ?></h3>
     <div class="eval-summary">
         <?php if ($resultBadge !== null) { ?>
-            <span class="eval-result-badge <?= $resultBadge[0]; ?>" title="<?= $resultBadge[1]; ?>" aria-label="<?= $resultBadge[1]; ?>"></span>
+            <span class="eval-result">
+                <span class="eval-result-badge <?= $resultBadge[0]; ?>" aria-hidden="true"></span>
+                <span class="eval-result-label"><?= $resultBadge[1]; ?></span>
+            </span>
+        <?php }
+        // The result already says Excluded when final_result is 3, so no chip then.
+        $excludedChip = ($shipment['is_excluded'] ?? '') === 'yes' && $finalResult !== 3;
+        if ($overrideOn || $excludedChip) { ?>
+            <span class="eval-status-chips">
+                <?php if ($overrideOn) { ?>
+                    <span class="eval-chip eval-chip-warn"><?= $this->htmlTranslate('Manually overridden'); ?></span>
+                <?php } ?>
+                <?php if ($excludedChip) { ?>
+                    <span class="eval-chip eval-chip-warn"><?= $this->htmlTranslate('Excluded from evaluation'); ?></span>
+                <?php } ?>
+            </span>
         <?php } ?>
         <?php if (!$evaluated) { ?>
             <p class="eval-help scoreReadOnlyRow" style="<?= $showReadOnly; ?>"><?= $this->htmlTranslate('This response has not been evaluated yet.'); ?></p>
@@ -288,55 +396,65 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
     <?php if (!empty($warnings) && is_array($warnings)) { ?>
         <h4 class="eval-subtitle"><?= $this->htmlTranslate('Findings and corrective actions'); ?></h4>
         <p class="eval-help manualOverrideRow" style="<?= $show; ?>"><?= $this->htmlTranslate('Untick a finding to leave it out of the report.'); ?></p>
-        <ul class="eval-findings">
-            <?php $i = 1;
-            foreach ($warnings as $warning) {
-                $action = Pt_Evaluation_FailureReason::correctiveActionHtml($warning); ?>
-                <li>
-                    <span class="manualOverrideRow" style="<?= $show; ?>">
-                        <input type="checkbox" id="manualCorrective<?= $i; ?>"
-                            name="manualCorrective[<?= $this->escape((string) (is_array($warning) ? ($warning['warning'] ?? '') : $warning)); ?>]"
-                            value="<?= $this->escape((string) (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '')); ?>" checked>
-                    </span>
-                    <label for="manualCorrective<?= $i; ?>" class="eval-finding">
-                        <span class="eval-finding-warning"><?= Pt_Evaluation_FailureReason::warningHtml($warning); ?></span>
-                        <?php if (trim(strip_tags($action)) !== '') { ?>
-                            <span class="eval-finding-action"><?= $action; ?></span>
+        <div class="eval-findings">
+            <?php foreach ($findingGroups as $groupLabel => $groupFindings) {
+                $shownActions = []; ?>
+                <div class="eval-finding-group">
+                    <div class="eval-finding-sample">
+                        <?= $groupLabel === '' ? $this->htmlTranslate('General') : $this->escape((string) $groupLabel); ?>
+                    </div>
+                    <ul class="eval-finding-list">
+                        <?php foreach ($groupFindings as $finding) {
+                            $warning = $finding['raw'];
+                            $i = $finding['no'];
+                            // A corrective action shows once per sample.
+                            $actionText = trim(strip_tags($finding['action']));
+                            $showAction = $actionText !== '' && !isset($shownActions[$actionText]);
+                            $shownActions[$actionText] = true; ?>
+                            <li>
+                                <span class="manualOverrideRow" style="<?= $show; ?>">
+                                    <input type="checkbox" id="manualCorrective<?= $i; ?>"
+                                        name="manualCorrective[<?= $this->escape((string) (is_array($warning) ? ($warning['warning'] ?? '') : $warning)); ?>]"
+                                        value="<?= $this->escape((string) (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '')); ?>" checked>
+                                </span>
+                                <label for="manualCorrective<?= $i; ?>" class="eval-finding">
+                                    <span class="eval-finding-warning"><?= $finding['html']; ?></span>
+                                    <?php if ($showAction) { ?>
+                                        <span class="eval-finding-action"><?= $finding['action']; ?></span>
+                                    <?php } ?>
+                                </label>
+                            </li>
                         <?php } ?>
-                    </label>
-                </li>
-                <?php $i++;
-            } ?>
-        </ul>
+                    </ul>
+                </div>
+            <?php } ?>
+        </div>
     <?php } elseif ($evaluated) { ?>
         <p class="eval-help"><?= $this->htmlTranslate('No findings for this response.'); ?></p>
     <?php } ?>
 </div>
 
 <?php if (!empty($this->viewOnly)) {
-    // Read-only: the values as text, so empty fields take no room.
-    $dash = '<span class="text-muted">&mdash;</span>';
-    $yesNo = fn ($value) => match ($value) {
-        'yes' => $this->htmlTranslate('Yes'),
-        'no' => $this->htmlTranslate('No'),
-        default => $dash,
-    };
+    // Read-only: only what the administrator wrote. Override and exclusion show as
+    // chips beside the result above.
     $commentText = $evalComments[$shipment['evaluation_comment'] ?? ''] ?? '';
-    $extraText = trim((string) ($shipment['optional_eval_comment'] ?? '')); ?>
+    $extraText = trim((string) ($shipment['optional_eval_comment'] ?? ''));
+    $hasFeedback = $commentText !== '' || $extraText !== ''; ?>
     <div class="eval-panel">
         <h3 class="eval-panel-title"><?= $this->htmlTranslate('Feedback to the participant'); ?></h3>
-        <dl class="eval-readonly">
-            <dt><?= $this->htmlTranslate('Evaluation Comment'); ?></dt>
-            <dd><?= $commentText !== '' ? $this->escape($commentText) : $dash; ?></dd>
-            <dt><?= $this->htmlTranslate('Optional Extra Comments'); ?></dt>
-            <dd><?= $extraText !== '' ? nl2br($this->escape($extraText)) : $dash; ?></dd>
-            <dt><?= $this->htmlTranslate('Follow-up comment'); ?></dt>
-            <dd><?= $yesNo($shipment['is_followup'] ?? ''); ?></dd>
-            <dt><?= $this->htmlTranslate('Manually Override Results'); ?></dt>
-            <dd><?= $yesNo($shipment['manual_override'] ?? ''); ?></dd>
-            <dt><?= $this->htmlTranslate('Excluded from evaluation'); ?></dt>
-            <dd><?= $yesNo($shipment['is_excluded'] ?? ''); ?></dd>
-        </dl>
+        <?php if (!$hasFeedback) { ?>
+            <p class="eval-help" style="margin:0;"><?= $this->htmlTranslate('No feedback was written for the participant.'); ?></p>
+        <?php } else { ?>
+            <?php if ($commentText !== '') { ?>
+                <blockquote class="eval-feedback-quote"><?= $this->escape($commentText); ?></blockquote>
+            <?php } ?>
+            <?php if ($extraText !== '') { ?>
+                <blockquote class="eval-feedback-quote"><?= nl2br($this->escape($extraText)); ?></blockquote>
+            <?php } ?>
+            <?php if (($shipment['is_followup'] ?? '') === 'yes') { ?>
+                <span class="eval-chip"><?= $this->htmlTranslate('Follow-up for corrective action'); ?></span>
+            <?php } ?>
+        <?php } ?>
     </div>
 <?php } else { ?>
 <div class="eval-panel">
