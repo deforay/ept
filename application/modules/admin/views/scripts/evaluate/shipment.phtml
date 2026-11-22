@@ -152,6 +152,7 @@ if ($shipmentAttributesRaw !== '') {
 	<div class="data-list-head">
 		<h2><?= $this->htmlTranslate("You are currently evaluating"); ?>
 			<strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
+			<?= $this->auditHistoryLink('shipment', $this->shipment[0]['shipment_id'], (string) $this->shipment[0]['shipment_code']); ?>
 		</h2>
 		<div class="data-list-actions">
 			<a href="javascript:scheduleShipmentEvaluation('<?= base64_encode($this->shipment[0]['shipment_id']); ?>')"

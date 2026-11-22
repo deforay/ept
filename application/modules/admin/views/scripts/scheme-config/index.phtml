@@ -7,6 +7,7 @@ $this->schemeConfigTitle = sprintf(
     $this->translate->_('%s Settings'),
     $this->translate->_($schemeLabels[$currentScheme] ?? $currentScheme)
 );
+$this->schemeConfigHistory = $this->auditHistoryLink('scheme', $currentScheme, (string) ($schemeLabels[$currentScheme] ?? $currentScheme));
 ?>
 <?php echo $this->render('partials/scheme-config-open.phtml'); ?>
 

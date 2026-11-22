@@ -72,7 +72,9 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
         class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
         <fieldset>
             <legend><?= $this->translate->_("Edit Participant"); ?>
-                (<?php echo ucwords($this->participant['status']); ?>)</legend>
+                (<?php echo ucwords($this->participant['status']); ?>)
+                <?= $this->auditHistoryLink('participant', $this->participant['participant_id'], trim($this->participant['unique_identifier'] . ' - ' . ($this->participant['lab_name'] ?? ''), ' -')); ?>
+            </legend>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>

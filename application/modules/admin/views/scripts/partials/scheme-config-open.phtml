@@ -8,6 +8,7 @@
  * content, then the close partial.
  *
  * $this->schemeConfigTitle - optional heading shown after "Scheme Config".
+ * $this->schemeConfigHistory - optional history link HTML from auditHistoryLink().
  *
  * NOTE: this is a block comment on purpose. A "?>" inside a // comment closes
  * PHP mode, so a usage example written with // would dump the rest of this file
@@ -23,6 +24,7 @@ $schemeConfigTitle = $this->schemeConfigTitle ?? '';
             <?php if ($schemeConfigTitle !== '') { ?>
                 <small style="color: #6b7280;">&mdash; <?php echo $schemeConfigTitle; ?></small>
             <?php } ?>
+            <?php echo $this->schemeConfigHistory ?? ''; ?>
         </legend>
 
         <div class="row config-layout">

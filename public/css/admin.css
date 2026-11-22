@@ -9216,3 +9216,11 @@ td.center {
 .mail-problem-close:focus {
 	opacity: 1;
 }
+
+/* "History" link next to a page heading: opens the Audit Log for that item. */
+.audit-history-link {
+	margin-left: 10px;
+	font-size: 13px;
+	font-weight: normal;
+	white-space: nowrap;
+}
