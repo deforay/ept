@@ -1513,14 +1513,10 @@ final class Application_Model_Dts
         );
     }
 
-    public function getDtsCorrectiveActions()
+    /** @return array<int, string> corrective action English text by ID */
+    public function getDtsCorrectiveActions(): array
     {
-        $res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
-        $response = [];
-        foreach ($res as $row) {
-            $response[$row['action_id']] = $row['corrective_action'];
-        }
-        return $response;
+        return Pt_Evaluation_Dts_CorrectiveAction::englishById();
     }
 
     public function generateDtsRapidHivExcelReport($shipmentId)

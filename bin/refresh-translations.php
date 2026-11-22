@@ -49,6 +49,7 @@ const GETTEXT_KEYWORDS = [
     'jsTranslate',
     'htmlTranslate',
     'safeTranslate',
+    'markForTranslation',
 ];
 const SOURCE_SCAN_ROOTS = [
     'application',
