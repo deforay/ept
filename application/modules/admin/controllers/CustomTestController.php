@@ -349,6 +349,8 @@ class Admin_CustomTestController extends Zend_Controller_Action
         sort($testkits);
         $values['testkits'] = implode(', ', $testkits);
         $labels['testkits'] = 'Enforce these Test kits';
+        // A result from a kit outside this list scores zero, so the list is scoring.
+        $scoring[] = 'testkits';
 
         $groupNames = ['TEST' => 'Test Result', 'FINAL' => 'Final Interpretation'];
         $contextNames = ['participant' => 'Participant', 'admin' => 'Admin', 'all' => 'All'];

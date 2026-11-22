@@ -2028,8 +2028,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
      */
     /**
      * One audit entry for a data manager import: counts and the accounts
-     * added, updated or deactivated. Deactivated accounts can no longer log
-     * in, so an import that deactivates any is flagged.
+     * added, updated or deactivated. An import that deactivates an account
+     * or changes an account's status is flagged, because it changes who can
+     * log in.
      *
      * @param array<string, mixed> $response the import summary
      */
@@ -2037,12 +2038,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $added = 0;
         $updated = 0;
+        $statusChanged = false;
         $rows = [];
         foreach ((array) ($response['data'] ?? []) as $saved) {
             $email = (string) ($saved['primary_email'] ?? '');
             if (($saved['action'] ?? '') === 'updated') {
                 $updated++;
                 $fields = array_keys((array) ($saved['changes'] ?? []));
+                $statusChanged = $statusChanged || in_array('status', $fields, true);
                 $rows[] = 'Updated: ' . $email . ($fields !== [] ? ' (' . implode(', ', array_map([Application_Model_DbTable_AuditLog::class, 'humanize'], $fields)) . ')' : '');
             } else {
                 $added++;
@@ -2062,9 +2065,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ],
             'list' => ['title' => 'Accounts', 'rows' => $rows],
         ];
-        if ($deactivated !== []) {
+        if ($deactivated !== [] || $statusChanged) {
             $extra['important'] = true;
-            $extra['reason'] = 'Deactivated accounts can no longer log in';
+            $extra['reason'] = 'Changes which accounts can log in';
         }
         Application_Model_DbTable_AuditLog::record($statement, 'data-managers', $extra);
     }

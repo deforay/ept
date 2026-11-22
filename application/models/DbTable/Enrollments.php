@@ -332,7 +332,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $db->rollBack();
             throw $e;
         }
-        $this->audit("Assigned scheme {$schemeId} to enrollment list {$listName} ({$moved} rows)", $listName, [
+        $this->audit("Assigned scheme {$schemeId} to enrollment list {$listName} ({$moved} rows)", $schemeId, $listName, [
             'facts' => ['Scheme' => $this->schemeLabel($schemeId), 'Participants' => $moved],
         ]);
         return $moved;
@@ -358,7 +358,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         } else {
             $db->delete('enrollment_list_archive', ['scheme_id = ?' => $schemeId, 'list_name = ?' => $listName]);
         }
-        $this->audit(($archived ? 'Archived' : 'Reactivated') . " enrollment list {$listName} for scheme {$schemeId}", $listName, [
+        $this->audit(($archived ? 'Archived' : 'Reactivated') . " enrollment list {$listName} for scheme {$schemeId}", $schemeId, $listName, [
             'facts' => ['Scheme' => $this->schemeLabel($schemeId)],
         ]);
     }
@@ -385,7 +385,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $db->rollBack();
             throw $e;
         }
-        $this->audit("Renamed enrollment list {$listName} to {$newName} for scheme {$schemeId}", $newName, [
+        $this->audit("Renamed enrollment list {$listName} to {$newName} for scheme {$schemeId}", $schemeId, $newName, [
             'facts' => ['Scheme' => $this->schemeLabel($schemeId), 'Previous name' => $listName],
         ]);
         return null;
@@ -417,7 +417,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             throw $e;
         }
         $joined = array_diff($this->memberIds($schemeId, $intoList), $intoBefore);
-        $this->audit("Merged enrollment list {$listName} into {$intoList} for scheme {$schemeId} ({$moved} rows)", $intoList, [
+        $this->audit("Merged enrollment list {$listName} into {$intoList} for scheme {$schemeId} ({$moved} rows)", $schemeId, $intoList, [
             'facts' => ['Scheme' => $this->schemeLabel($schemeId), 'Merged list' => $listName, 'Participants added' => count($joined)],
             'list' => ['title' => 'Participants added', 'rows' => array_values(Application_Model_DbTable_Participants::auditLabels($joined))],
         ]);
@@ -468,7 +468,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $db->rollBack();
             throw $e;
         }
-        $this->audit("Cloned enrollment list {$listName} of scheme {$schemeId} to {$newName} of scheme {$toSchemeId} (" . count($participantIds) . ' participants)', $newName, [
+        $this->audit("Cloned enrollment list {$listName} of scheme {$schemeId} to {$newName} of scheme {$toSchemeId} (" . count($participantIds) . ' participants)', $toSchemeId, $newName, [
             'facts' => [
                 'Scheme' => $this->schemeLabel($toSchemeId),
                 'Copied from' => $listName . ' (' . $this->schemeLabel($schemeId) . ')',
@@ -501,7 +501,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $extra['important'] = true;
             $extra['reason'] = 'Removed labs are no longer offered for shipments from this list';
         }
-        $this->audit("Deleted enrollment list {$listName} for scheme {$schemeId} ({$removed} rows)", $listName, $extra);
+        $this->audit("Deleted enrollment list {$listName} for scheme {$schemeId} ({$removed} rows)", $schemeId, $listName, $extra);
         return $removed;
     }
 
@@ -543,12 +543,17 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         }
     }
 
-    /** @param array<string, mixed> $extra see Application_Model_DbTable_AuditLog::addNewAuditLog() */
-    private function audit(string $message, string $listName, array $extra = []): void
+    /**
+     * List names are unique per scheme only (every scheme has a Default), so
+     * the audit id is "scheme:list".
+     *
+     * @param array<string, mixed> $extra see Application_Model_DbTable_AuditLog::addNewAuditLog()
+     */
+    private function audit(string $message, string $schemeId, string $listName, array $extra = []): void
     {
         $extra['entity'] = [
             'type' => 'enrollment-list',
-            'id' => $listName,
+            'id' => $schemeId . ':' . $listName,
             'label' => $listName === 'default' ? 'Default' : $listName,
         ];
         Application_Model_DbTable_AuditLog::record($message, 'enrollment', $extra);
@@ -615,7 +620,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $extra['important'] = true;
             $extra['reason'] = 'Removed labs are no longer offered for shipments from this list';
         }
-        $this->audit($message, $listName, $extra);
+        $this->audit($message, $schemeId, $listName, $extra);
     }
 
     /** One row per scheme and list, counting active participants only. */
