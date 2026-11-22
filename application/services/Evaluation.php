@@ -645,220 +645,6 @@ class Application_Service_Evaluation
                 $recencyModel = new Application_Model_Recency($db);
                 $shipmentResult = $recencyModel->evaluate($shipmentResult, $shipmentId);
             }
-        } elseif ($shipmentResult[0]['scheme_type'] == 'dbs') {
-            $counter = 0;
-            $maxScore = 0;
-
-            // Pre-fetch all EIA names for this shipment to avoid N+1 queries
-            $eiaNameMap = [];
-            $allEiaIds = $db->fetchCol(
-                $db->select()
-                    ->distinct()
-                    ->from(['rrd' => 'response_result_dbs'], [])
-                    ->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
-                    ->columns([
-                        new Zend_Db_Expr('DISTINCT rrd.eia_1'),
-                    ])
-                    ->where('sp.shipment_id = ?', $shipmentId)
-                    ->where('rrd.eia_1 IS NOT NULL AND rrd.eia_1 != 0')
-            );
-            $eia2Ids = $db->fetchCol(
-                $db->select()
-                    ->distinct()
-                    ->from(['rrd' => 'response_result_dbs'], [])
-                    ->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
-                    ->columns([new Zend_Db_Expr('DISTINCT rrd.eia_2')])
-                    ->where('sp.shipment_id = ?', $shipmentId)
-                    ->where('rrd.eia_2 IS NOT NULL AND rrd.eia_2 != 0')
-            );
-            $eia3Ids = $db->fetchCol(
-                $db->select()
-                    ->distinct()
-                    ->from(['rrd' => 'response_result_dbs'], [])
-                    ->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
-                    ->columns([new Zend_Db_Expr('DISTINCT rrd.eia_3')])
-                    ->where('sp.shipment_id = ?', $shipmentId)
-                    ->where('rrd.eia_3 IS NOT NULL AND rrd.eia_3 != 0')
-            );
-            $allEiaIds = array_filter(array_unique(array_merge($allEiaIds, $eia2Ids, $eia3Ids)));
-            if (!empty($allEiaIds)) {
-                $eiaRows = $db->fetchAll(
-                    $db->select()
-                        ->from('r_dbs_eia', ['eia_id', 'eia_name'])
-                        ->where('eia_id IN (?)', $allEiaIds)
-                );
-                foreach ($eiaRows as $row) {
-                    $eiaNameMap[$row['eia_id']] = $row['eia_name'];
-                }
-            }
-
-            foreach ($shipmentResult as $shipment) {
-                Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
-                $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-                    ?? new DateTimeImmutable('1970-01-01');
-
-                $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-                if ($createdOn > $lastDate) {
-
-                    $results = $schemeService->getDbsSamples($shipmentId, $shipment['participant_id']);
-                    $totalScore = 0;
-                    $maxScore = 0;
-                    $mandatoryResult = '';
-                    $lotResult = '';
-                    $testKit1 = '';
-                    $testKit2 = '';
-                    $testKit3 = '';
-                    $testKitExpiryResult = '';
-                    $lotResult = '';
-                    $scoreResult = '';
-                    $failureReason = [];
-
-                    foreach ($results as $result) {
-
-                        // matching reported and reference results
-                        if (isset($result['reported_result']) && $result['reported_result'] != null) {
-                            if ($result['reference_result'] == $result['reported_result']) {
-                                $totalScore += $result['sample_score'];
-                            } else {
-                                if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
-                                }
-                            }
-                        }
-                        $maxScore += $result['sample_score'];
-
-                        // checking if mandatory fields were entered and were entered right
-                        if ($result['mandatory'] == 1) {
-                            if ((!isset($result['reported_result']) || $result['reported_result'] == '' || $result['reported_result'] == null)) {
-                                $mandatoryResult = 'Fail';
-                                $failureReason[]['warning'] = 'Mandatory Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was not reported';
-                            }
-                            //else if(($result['reference_result'] != $result['reported_result'])){
-                            //	$mandatoryResult = 'Fail';
-                            //	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
-                            //}
-                        }
-                    }
-
-                    // checking if all LOT details were entered
-                    if (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == '' || $results[0]['lot_no_1'] == null) {
-                        $lotResult = 'Fail';
-                        $failureReason[]['warning'] = '<strong>Lot No. 1</strong> was not reported';
-                    }
-                    if (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == '' || $results[0]['lot_no_2'] == null) {
-                        $lotResult = 'Fail';
-                        $failureReason[]['warning'] = '<strong>Lot No. 2</strong> was not reported';
-                    }
-                    if (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == '' || $results[0]['lot_no_3'] == null) {
-                        $lotResult = 'Fail';
-                        $failureReason[]['warning'] = '<strong>Lot No. 3</strong> was not reported';
-                    }
-
-                    // checking test kit expiry dates
-
-                    $testedOn = new DateTime($results[0]['shipment_test_date']);
-                    $testDate = $testedOn->format('d-M-Y');
-                    $expDate1 = '';
-                    if (trim(strtotime($results[0]['exp_date_1'])) != '') {
-                        $expDate1 = new DateTime($results[0]['exp_date_1']);
-                    }
-                    $expDate2 = '';
-                    if (trim(strtotime($results[0]['exp_date_2'])) != '') {
-                        $expDate2 = new DateTime($results[0]['exp_date_2']);
-                    }
-
-                    $expDate3 = '';
-                    if (trim(strtotime($results[0]['exp_date_3'])) != '') {
-                        $expDate3 = new DateTime($results[0]['exp_date_3']);
-                    }
-
-                    // Use pre-fetched EIA names instead of individual queries
-                    $testKit1 = $eiaNameMap[$results[0]['eia_1']] ?? '';
-                    $testKit2 = '';
-                    if (trim($results[0]['eia_2'] ?? '') != 0) {
-                        $testKit2 = $eiaNameMap[$results[0]['eia_2']] ?? '';
-                    }
-                    $testKit3 = '';
-                    if (trim($results[0]['eia_3'] ?? '') != 0) {
-                        $testKit3 = $eiaNameMap[$results[0]['eia_3']] ?? '';
-                    }
-                    if ($expDate1 != '') {
-                        if ($testedOn > ($expDate1)) {
-                            $difference = $testedOn->diff($expDate1);
-
-                            $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 1 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
-                        }
-                    }
-
-                    if ($expDate2 != '') {
-                        if ($testedOn > ($expDate2)) {
-                            $difference = $testedOn->diff($expDate2);
-
-                            $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 2 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit2) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
-                        }
-                    }
-
-                    if ($expDate3 != '') {
-                        if ($testedOn > ($expDate3)) {
-                            $difference = $testedOn->diff($expDate3);
-
-                            $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 3 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit3) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
-                        }
-                    }
-                    //checking if testkits were repeated
-                    if (($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
-                        //$testKitRepeatResult = 'Fail';
-                        $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated for all three EIA';
-                    } else {
-                        if (($testKit1 == $testKit2) && $testKit1 != '' && $testKit2 != '') {
-                            //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated as EIA 1 and EIA 2';
-                        }
-                        if (($testKit2 == $testKit3) && $testKit2 != '' && $testKit3 != '') {
-                            //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit2) . '</strong> repeated as EIA 2 and EIA 3';
-                        }
-                        if (($testKit1 == $testKit3) && $testKit1 != '' && $testKit3 != '') {
-                            //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated as EIA 1 and EIA 3';
-                        }
-                    }
-
-                    // checking if total score and maximum scores are the same
-                    if ($totalScore != $maxScore) {
-                        $scoreResult = 'Fail';
-                        $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
-                    } else {
-                        $scoreResult = 'Pass';
-                    }
-
-                    // if any of the results have failed, then the final result is fail
-                    if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
-                        $finalResult = 2;
-                    } else {
-                        $finalResult = 1;
-                    }
-                    $shipmentResult[$counter]['shipment_score'] = $totalScore;
-                    $shipmentResult[$counter]['max_score'] = $maxScore;
-
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-                    if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                        // let us update the total score in DB
-                        $db->update('shipment_participant_map', ['failure_reason' => $failureReason], ['map_id = ?' => $shipment['map_id']]);
-                    } else {
-                        // let us update the total score in DB
-                        $db->update('shipment_participant_map', ['shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason], ['map_id = ?' => $shipment['map_id']]);
-                    }
-                    $counter++;
-                } else {
-                    $failureReason = ['warning' => 'Response was submitted after the last response date.'];
-                    $db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], ['map_id = ?' => $shipment['map_id']]);
-                }
-            }
-            $db->update('shipment', ['max_score' => $maxScore], ['shipment_id = ?' => $shipmentId]);
         } elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
             if ($reEvaluate == true) {
                 // Set processing state
@@ -930,10 +716,6 @@ class Application_Service_Evaluation
             if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
                 $possibleResults['recency'] = $schemeService->getPossibleResults('recency');
             }
-        } elseif ($scheme == 'dbs') {
-            $possibleResults = $schemeService->getPossibleResults('dbs');
-            $evalComments = $schemeService->getSchemeEvaluationComments('dbs');
-            $results = $schemeService->getDbsSamples($shipmentId, $participantId);
         } elseif ($scheme == 'recency') {
             $possibleResults = $schemeService->getPossibleResults('recency');
             $evalComments = $schemeService->getSchemeEvaluationComments('recency');
@@ -1007,10 +789,6 @@ class Application_Service_Evaluation
             $possibleResults = $schemeService->getPossibleResults('dts');
             $evalComments = $schemeService->getSchemeEvaluationComments('dts');
             $results = $dtsModel->getDtsSamples($shipmentId, $participantId);
-        } elseif ($scheme == 'dbs') {
-            $possibleResults = $schemeService->getPossibleResults('dbs');
-            $evalComments = $schemeService->getSchemeEvaluationComments('dbs');
-            $results = $schemeService->getDbsSamples($shipmentId, $participantId);
         } elseif ($scheme == 'recency') {
             $possibleResults = $schemeService->getPossibleResults('recency');
             $evalComments = $schemeService->getSchemeEvaluationComments('recency');
@@ -1402,41 +1180,6 @@ class Application_Service_Evaluation
                         $finalResult = 1;
                     }
                 }
-            } elseif ($params['scheme'] == 'dbs') {
-                for ($i = 0; $i < $size; $i++) {
-                    $db->update('response_result_dbs', [
-                        'eia_1' => $params['eia_1'],
-                        'lot_no_1' => $params['lot_no_1'],
-                        'exp_date_1' => Pt_Commons_DateUtility::isoDateFormat($params['exp_date_1']),
-                        'od_1' => $params['od_1'][$i],
-                        'cutoff_1' => $params['cutoff_1'][$i],
-                        'eia_2' => $params['eia_2'],
-                        'lot_no_2' => $params['lot_no_2'],
-                        'exp_date_2' => Pt_Commons_DateUtility::isoDateFormat($params['exp_date_2']),
-                        'od_2' => $params['od_2'][$i],
-                        'cutoff_2' => $params['cutoff_2'][$i],
-                        'eia_3' => $params['eia_3'],
-                        'lot_no_3' => $params['lot_no_3'],
-                        'exp_date_3' => Pt_Commons_DateUtility::isoDateFormat($params['exp_date_3']),
-                        'od_3' => $params['od_3'][$i],
-                        'cutoff_3' => $params['cutoff_3'][$i],
-                        'wb' => $params['wb'],
-                        'wb_lot' => $params['wb_lot'],
-                        'wb_exp_date' => Pt_Commons_DateUtility::isoDateFormat($params['wb_exp_date']),
-                        'wb_160' => $params['wb_160'][$i],
-                        'wb_120' => $params['wb_120'][$i],
-                        'wb_66' => $params['wb_66'][$i],
-                        'wb_55' => $params['wb_55'][$i],
-                        'wb_51' => $params['wb_51'][$i],
-                        'wb_41' => $params['wb_41'][$i],
-                        'wb_31' => $params['wb_31'][$i],
-                        'wb_24' => $params['wb_24'][$i],
-                        'wb_17' => $params['wb_17'][$i],
-                        'reported_result' => $params['reported_result'][$i],
-                        'updated_by' => $admin,
-                        'updated_on' => new Zend_Db_Expr('now()'),
-                    ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
-                }
             } elseif ($params['scheme'] == 'recency') {
 
                 $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage') ?? 100;
@@ -1729,7 +1472,6 @@ class Application_Service_Evaluation
         'eid' => 'response_result_eid',
         'dts' => 'response_result_dts',
         'vl' => 'response_result_vl',
-        'dbs' => 'response_result_dbs',
         'recency' => 'response_result_recency',
         'covid19' => 'response_result_covid19',
         'tb' => 'response_result_tb',
@@ -1752,7 +1494,7 @@ class Application_Service_Evaluation
 
     /** Scheme names used in response statements. */
     private const RESPONSE_AUDIT_SCHEMES = [
-        'eid' => 'EID', 'dts' => 'DTS', 'vl' => 'VL', 'dbs' => 'DBS', 'recency' => 'Recency',
+        'eid' => 'EID', 'dts' => 'DTS', 'vl' => 'VL', 'recency' => 'Recency',
         'covid19' => 'COVID-19', 'tb' => 'TB', 'generic-test' => 'Generic Test',
     ];
 
@@ -3357,16 +3099,7 @@ class Application_Service_Evaluation
                     $mapRes[$dmId] = $dmParticipantId . '#' . $participantFileName;
                 }
             }
-            if ($res['scheme_type'] == 'dbs') {
-                $sQuery = $db->select()->from(['resdbs' => 'response_result_dbs'], ['resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result'])
-                    ->join(['respr' => 'r_possibleresult'], 'respr.id=resdbs.reported_result', ['labResult' => 'respr.response'])
-                    ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=resdbs.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.participant_supervisor', 'responseDate' => 'sp.shipment_test_report_date'])
-                    ->join(['refdbs' => 'reference_result_dbs'], 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', ['refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'])
-                    ->join(['refpr' => 'r_possibleresult'], 'refpr.id=refdbs.reference_result', ['referenceResult' => 'refpr.response'])
-                    ->where('resdbs.shipment_map_id = ?', $res['map_id']);
-
-                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-            } elseif ($res['scheme_type'] == 'dts') {
+            if ($res['scheme_type'] == 'dts') {
                 $mid = (int) ($res['map_id'] ?? 0);
                 $shipmentResult[$i]['responseResult'] = $mid > 0 && isset($dtsResponseByMapId[$mid]) ? $dtsResponseByMapId[$mid] : [];
             } elseif ($res['scheme_type'] == 'recency') {
@@ -3558,110 +3291,7 @@ class Application_Service_Evaluation
                 'last_heartbeat' => null,
             ], "shipment_id = {$shipmentId}");
 
-            if ($shipmentResult['scheme_type'] == 'dbs') {
-                $sql = $db->select()->from(
-                    ['refdbs' => 'reference_result_dbs'],
-                    ['refdbs.reference_result', 'refdbs.sample_label', 'refdbs.mandatory']
-                )
-                    ->join(
-                        ['refpr' => 'r_possibleresult'],
-                        'refpr.id=refdbs.reference_result',
-                        ['referenceResult' => 'refpr.response']
-                    )
-                    ->where('refdbs.shipment_id = ?', $shipmentResult['shipment_id']);
-                $sqlRes = $db->fetchAll($sql);
-
-                $shipmentResult['referenceResult'] = $sqlRes;
-
-                $sQuery = $db->select()->from(
-                    ['spm' => 'shipment_participant_map'],
-                    [
-                        'spm.map_id',
-                        'spm.shipment_id',
-                        'spm.shipment_score',
-                        'spm.documentation_score',
-                        'spm.attributes',
-                        'spm.user_comment',
-                        'spm.shipment_test_date',
-                    ]
-                )
-                    ->join(
-                        ['p' => 'participant'],
-                        'p.participant_id=spm.participant_id',
-                        ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status']
-                    )
-                    ->joinLeft(
-                        ['res' => 'r_results'],
-                        'res.result_id=spm.final_result',
-                        ['result_name']
-                    )
-                    ->where('spm.shipment_id = ?', $shipmentId)
-                    //->where("substring(spm.evaluation_status,4,1) != '0'")
-                    ->where('spm.final_result IS NOT NULL')
-                    ->where("spm.final_result!=''")
-                    ->group('spm.map_id');
-                $sQueryRes = $db->fetchAll($sQuery);
-
-                if (!empty($sQueryRes)) {
-
-                    $tQuery = $db->select()->from(
-                        ['refdbs' => 'reference_result_dbs'],
-                        ['refdbs.sample_id', 'refdbs.sample_label']
-                    )
-                        ->join(
-                            ['resdbs' => 'response_result_dbs'],
-                            'resdbs.sample_id=refdbs.sample_id',
-                            ['correctRes' => new Zend_Db_Expr('SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)')]
-                        )
-                        ->join(['spm' => 'shipment_participant_map'], 'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id', [])
-                        ->where('spm.shipment_id = ?', $shipmentId)
-                        ->where('spm.final_result IS NOT NULL')
-                        ->where("spm.final_result!=''")
-                        //->where("substring(spm.evaluation_status,4,1) != '0'")
-                        ->group(['refdbs.sample_id']);
-
-                    $shipmentResult['summaryResult'][] = $sQueryRes;
-                    $shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
-
-                    $rQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id'])
-                        ->join(['resdbs' => 'response_result_dbs'], 'resdbs.shipment_map_id=spm.map_id', ['resdbs.eia_1', 'resdbs.eia_2', 'resdbs.eia_3', 'resdbs.wb'])
-                        //->where("substring(spm.evaluation_status,4,1) != '0'")
-                        ->where('spm.final_result IS NOT NULL')
-                        ->where("spm.final_result!=''")
-                        ->where('spm.shipment_id = ?', $shipmentId)
-                        ->group('spm.map_id');
-
-                    $rQueryRes = $db->fetchAll($rQuery);
-                    $eiaEiaEiaWb = '';
-                    $eiaEiaEia = '';
-                    $eiaEiaWb = '';
-                    $eiaEia = '';
-                    $eiaWb = '';
-                    $eia = '';
-                    foreach ($rQueryRes as $rVal) {
-                        if ($rVal['eia_1'] != 0 && $rVal['eia_2'] != 0 && $rVal['eia_3'] != 0 && $rVal['wb'] != 0) {
-                            ++$eiaEiaEiaWb;
-                        } elseif ($rVal['eia_1'] != 0 && $rVal['eia_2'] != 0 && $rVal['eia_3'] != 0) {
-                            ++$eiaEiaEia;
-                        } elseif ($rVal['eia_1'] != 0 && ($rVal['eia_2'] != 0 || $rVal['eia_3'] != 0) && $rVal['wb'] != 0) {
-                            ++$eiaEiaWb;
-                        } elseif ($rVal['eia_1'] != 0 && ($rVal['eia_2'] != 0 || $rVal['eia_3'] != 0)) {
-                            ++$eiaEia;
-                        } elseif ($rVal['eia_1'] != 0 && $rVal['wb'] != 0) {
-                            ++$eiaWb;
-                        } elseif ($rVal['eia_1'] != 0) {
-                            ++$eia;
-                        }
-                    }
-
-                    $shipmentResult['dbsPieChart']['EIA/EIA/EIA/WB'] = $eiaEiaEiaWb;
-                    $shipmentResult['dbsPieChart']['EIA/EIA/EIA'] = $eiaEiaEia;
-                    $shipmentResult['dbsPieChart']['EIA/EIA/WB'] = $eiaEiaWb;
-                    $shipmentResult['dbsPieChart']['EIA/EIA'] = $eiaEia;
-                    $shipmentResult['dbsPieChart']['EIA/WB'] = $eiaWb;
-                    $shipmentResult['dbsPieChart']['EIA'] = $eia;
-                }
-            } elseif ($shipmentResult['scheme_type'] == 'dts') {
+            if ($shipmentResult['scheme_type'] == 'dts') {
                 $pass = $dtsPasspercentage ?? 100;
                 $sql = $db->select()->from(
                     ['refdts' => 'reference_result_dts'],

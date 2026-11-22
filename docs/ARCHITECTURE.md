@@ -34,7 +34,7 @@ Backup arrows describe required operational arrangements, not verified running s
 - Service classes use ZF1 `Zend_Db_Table` models (`application/models/DbTable`) and other models.
 - Views live under `application/views` and module-specific `application/modules/*/views`, with layouts under `application/layouts`.
 - Background work runs via Crunz scheduled jobs in `scheduled-jobs/`.
-- Multi-scheme support: DTS, VL, EID, TB, Recency, COVID-19, and DBS, plus user-configured custom tests (`generic`).
+- Multi-scheme support: DTS, VL, EID, TB, Recency and COVID-19, plus user-configured custom tests (`generic`).
 
 ## Entry points
 

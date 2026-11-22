@@ -60,8 +60,8 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             // from /admin/evaluate: the `response` page ("Edit" link) and the
             // `assay-formats` page (where the bulk of the TB form is built).
             // Rather than maintain a per-controller allowlist that silently
-            // breaks every time a new test module is added (custom-test, dbs,
-            // covid19 were all missing), allow these shared actions across every
+            // breaks every time a new test module is added (custom-test and
+            // covid19 were both missing), allow these shared actions across every
             // front-end test controller.
             $adminAllowedActions = ['response', 'assay-formats'];
             if (in_array($request->getActionName(), $adminAllowedActions, true)) {
@@ -299,7 +299,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
     }
 
     /** Front-end test controllers whose `pid` is a participant id */
-    private const SCHEME_CONTROLLERS = ['dts', 'vl', 'eid', 'tb', 'dbs', 'recency', 'covid19', 'custom-test'];
+    private const SCHEME_CONTROLLERS = ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19', 'custom-test'];
 
     /**
      * Whether every lab (participant) and shipment-map id in the request belongs to

@@ -87,7 +87,7 @@ La méthode examinée du service aggregated-insights ne vérifie pas `authToken`
 Les actions de téléchargement utilisent une gestion distincte des liens.
 Affirmer que toutes les routes API exigent la même authentification n'est pas justifié.
 
-Cet inventaire ne contient pas d'actions dédiées aux réponses TB, DBS, recency ou COVID-19.
+Cet inventaire ne contient pas d'actions dédiées aux réponses TB, recency ou COVID-19.
 Les données de référence recency apparaissent dans les références DTS.
 Cela ne démontre pas l'existence d'une API dédiée à la soumission recency.
 

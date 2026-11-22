@@ -716,8 +716,6 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 return ['response_result_covid19', ['test_result_1', 'test_result_2', 'test_result_3', 'reported_result']];
             case 'dts':
                 return ['response_result_dts', ['test_result_1', 'test_result_2', 'test_result_3', 'syphilis_result', 'syphilis_final', 'reported_result']];
-            case 'dbs':
-                return ['response_result_dbs', ['reported_result']];
             case 'eid':
                 return ['response_result_eid', ['reported_result']];
             case 'recency':

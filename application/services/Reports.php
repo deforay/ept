@@ -899,9 +899,6 @@ class Application_Service_Reports
                 $rPositive = 4;
                 $rNegative = 5;
                 $rInderminate = 6;
-            } elseif ($parameters['scheme'] == 'dbs') {
-                $rPositive = 7;
-                $rNegative = 8;
             } elseif ($parameters['scheme'] == 'eid') {
                 $rPositive = 10;
                 $rNegative = 11;

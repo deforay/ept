@@ -89,7 +89,7 @@
 							title="<?= $this->htmlTranslate("Please select the Scheme") ?>" onchange="selectStages();">
 							<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
 							<?php foreach ($this->schemeList as $scheme) {
-								if (!in_array($scheme['scheme_id'], ['covid19', 'dbs', 'eid', 'recency', 'tb', 'vl'])) { ?>
+								if (!in_array($scheme['scheme_id'], ['covid19', 'eid', 'recency', 'tb', 'vl'])) { ?>
 									<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme['scheme_id']) ? " selected='selected'" : ""; ?>><?php echo $scheme['scheme_name']; ?></option>
 							<?php }
 							} ?>
@@ -241,7 +241,7 @@
 	function selectStages() {
 		let list = $('[name="scheme[]"]').val();
 
-		const multiStageSchemes = ['covid19', 'dbs', 'eid', 'recency', 'tb', 'vl'];
+		const multiStageSchemes = ['covid19', 'eid', 'recency', 'tb', 'vl'];
 
 		let showStages = false;
 		let isDts = false;

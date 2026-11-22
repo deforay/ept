@@ -131,10 +131,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->allTestKits = $scheme->getAllDtsTestKit();
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } elseif ($sid == 'dbs') {
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults('dbs', 'admin');
-                $this->view->wb = $scheme->getDbsWb();
-                $this->view->eia = $scheme->getDbsEia();
             } elseif ($sid == 'recency') {
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 $this->view->recencyAssay = $scheme->getRecencyAssay();

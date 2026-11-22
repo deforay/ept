@@ -26,7 +26,7 @@ expédier.
   fenêtre qui affiche toutes les expéditions de cette enquête sans
   quitter la page.
 - **Type d'expédition/de panel PT** : les types de panels (par exemple
-  DBS, VL, EID, DTS) de cette enquête. Affiche *Aucune
+  VL, EID, DTS) de cette enquête. Affiche *Aucune
   expédition/aucun panel ajouté* en gris quand l'enquête n'a pas
   encore d'expédition.
 - **Date de l'enquête PT** : la date du cycle.

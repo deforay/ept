@@ -1,6 +1,6 @@
 # Scheme Architecture Guide
 
-This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DBS, Custom Tests) are organized in the ePT project. Use this as a reference when maintaining existing schemes or adding new ones.
+This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, Custom Tests) are organized in the ePT project. Use this as a reference when maintaining existing schemes or adding new ones.
 
 ---
 
@@ -94,7 +94,6 @@ application/
 │   ├── EidController.php          # EID response entry
 │   ├── RecencyController.php      # Recency response entry
 │   ├── Covid19Controller.php      # COVID-19 response entry
-│   ├── DbsController.php          # DBS response entry
 │   └── CustomTestController.php   # Custom Tests response entry
 │
 ├── views/scripts/
@@ -104,7 +103,6 @@ application/
 │   ├── eid/response.phtml         # EID response form
 │   ├── recency/response.phtml     # Recency response form
 │   ├── covid19/response.phtml     # COVID-19 response form
-│   ├── dbs/response.phtml         # DBS response form
 │   └── custom-test/response.phtml # Custom Tests response form
 │
 ├── services/
@@ -128,7 +126,6 @@ application/
             ├── eid.phtml          # EID shipment form
             ├── recency.phtml      # Recency shipment form
             ├── covid19.phtml      # COVID-19 shipment form
-            ├── dbs.phtml          # DBS shipment form
             └── generic.phtml      # Custom Tests shipment form
 ```
 
@@ -350,7 +347,6 @@ sequenceDiagram
 | EID | `response_result_eid` | `reference_result_eid` |
 | Recency | `response_result_recency` | `reference_result_recency` |
 | COVID-19 | `response_result_covid19` | `reference_result_covid19` |
-| DBS | `response_result_dbs` | `reference_result_dbs` |
 | Custom Tests | `response_result_generic_test` | `reference_result_generic_test` |
 
 ### Table Relationships
@@ -559,14 +555,6 @@ CREATE TABLE response_result_newscheme (
   - PCR reagent tracking
   - Gene type identification
   - Platform validation
-
-### DBS (Dried Blood Spot)
-
-- **Complexity**: Medium-High
-- **Key Features**:
-  - Multiple EIA tests (up to 3)
-  - Western Blot with 9 protein bands
-  - OD and cutoff values
 
 ### Custom Tests
 

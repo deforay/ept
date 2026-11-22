@@ -757,7 +757,6 @@ if ($this->reportType == 'malawi') {
 | **TB** | Tuberculose | Moléculaire (GeneXpert) OU microscopie |
 | **Recency** | Infection récente par le VIH | Détection des infections récentes par RTRI |
 | **COVID-19** | Dépistage de la COVID-19 | Ajouté pendant la pandémie, PCR sur plusieurs plateformes |
-| **DBS** | Goutte de sang séché | Tests EIA et Western Blot |
 | **Tests personnalisés** | Configurables par l'utilisateur | Ajoutés à la demande des utilisateurs pour les tests propres à une organisation |
 
 ---
