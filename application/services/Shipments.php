@@ -378,11 +378,400 @@ class Application_Service_Shipments
             }
         }
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog(
+        $extra = [
+            'entity' => ['type' => 'shipment', 'id' => (int) ($params['shipmentId'] ?? 0), 'label' => $shipmentCode],
+            'facts' => [
+                'Lab ID' => $partLabel,
+                'Edited an earlier submission' => $adminOverride ? $priorSave : $priorSubmit,
+            ],
+        ];
+        if ($adminOverride) {
+            $evaluationChanges = $this->adminEvaluationChanges((int) ($params['smid'] ?? 0));
+            if ($evaluationChanges !== []) {
+                $extra['changes'] = $evaluationChanges;
+                $extra['importantFields'] = self::ADMIN_EVALUATION_SCORING_FIELDS;
+            }
+        }
+        Application_Model_DbTable_AuditLog::record(
             "{$verb} {$scheme} response - {$shipmentLabel} / {$partLabel}",
-            'response'
+            'response',
+            $extra
         );
+    }
+
+    /** Evaluation fields an admin edits on a response, with the labels the form shows. */
+    private const ADMIN_EVALUATION_LABELS = [
+        'manual_override' => 'Manually Override Results',
+        'shipment_score' => 'Shipment Score',
+        'documentation_score' => 'Documentation Score',
+        'final_result' => 'Final Result',
+        'is_excluded' => 'Do you want to exclude this response from evaluation?',
+        'evaluation_comment' => 'Evaluation Comment',
+        'optional_eval_comment' => 'Optional Extra Comments',
+        'is_followup' => 'Is the above a follow up comment for corrective action?',
+    ];
+
+    /** Evaluation fields that change a lab's score or whether it is scored. */
+    public const ADMIN_EVALUATION_SCORING_FIELDS = ['manual_override', 'shipment_score', 'documentation_score', 'final_result', 'is_excluded'];
+
+    /** @var array<int, array<string, mixed>> evaluation fields per map id, read before an admin edit */
+    private array $adminEvaluationBefore = [];
+
+    /**
+     * The evaluation fields of one response in a form the audit log can compare.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function adminEvaluationSnapshot(int $mapId): ?array
+    {
+        if ($mapId <= 0) {
+            return null;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $row = $db->fetchRow(
+            $db->select()
+                ->from('shipment_participant_map', array_keys(self::ADMIN_EVALUATION_LABELS))
+                ->where('map_id = ?', $mapId)
+        );
+        if (!$row) {
+            return null;
+        }
+        $finalResults = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded', 4 => 'Not Evaluated'];
+        foreach (['manual_override', 'is_excluded', 'is_followup'] as $flag) {
+            $row[$flag] = ($row[$flag] ?? '') === 'yes' ? 'yes' : 'no';
+        }
+        $row['final_result'] = $finalResults[(int) $row['final_result']] ?? (string) $row['final_result'];
+        return $row;
+    }
+
+    /**
+     * What an admin edit changed in a response's evaluation fields.
+     *
+     * @param array<string, mixed>|null $before from adminEvaluationSnapshot()
+     * @return list<array{field: string, label: string, from: string, to: string}>
+     */
+    public static function adminEvaluationChangesSince(int $mapId, ?array $before): array
+    {
+        if ($before === null) {
+            return [];
+        }
+        return Application_Model_DbTable_AuditLog::changes($before, self::adminEvaluationSnapshot($mapId), self::ADMIN_EVALUATION_LABELS);
+    }
+
+    /** Reads a response's evaluation fields once, before the first admin write to them. */
+    private function captureAdminEvaluation(array $params): void
+    {
+        $mapId = (int) ($params['smid'] ?? 0);
+        if ($mapId <= 0 || isset($this->adminEvaluationBefore[$mapId]) || !self::isAdminEdit($params)) {
+            return;
+        }
+        try {
+            $snapshot = self::adminEvaluationSnapshot($mapId);
+            if ($snapshot !== null) {
+                $this->adminEvaluationBefore[$mapId] = $snapshot;
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('captureAdminEvaluation failed: ' . $e->getMessage());
+        }
+    }
+
+    /** @return list<array{field: string, label: string, from: string, to: string}> */
+    private function adminEvaluationChanges(int $mapId): array
+    {
+        try {
+            return self::adminEvaluationChangesSince($mapId, $this->adminEvaluationBefore[$mapId] ?? null);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('adminEvaluationChanges failed: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Log that a participant's results were deleted. Call it after the delete,
+     * while the map row still says which shipment and lab it was.
+     */
+    private function auditResponseRemoval(int $mapId, string $scheme): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()
+                    ->from(['spm' => 'shipment_participant_map'], ['shipment_id'])
+                    ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['shipment_code'])
+                    ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['unique_identifier'])
+                    ->where('spm.map_id = ?', $mapId)
+            );
+            $code = (string) ($row['shipment_code'] ?? '');
+            $labId = (string) ($row['unique_identifier'] ?? '');
+            Application_Model_DbTable_AuditLog::record(
+                "Deleted {$scheme} response - " . ($code !== '' ? $code : '?') . ' / ' . ($labId !== '' ? $labId : "#{$mapId}"),
+                'response',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $row['shipment_id'] ?? null, 'label' => $code],
+                    'facts' => ['Lab ID' => $labId],
+                    'important' => true,
+                    'reason' => 'Deletes submitted results',
+                ]
+            );
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('auditResponseRemoval failed: ' . $e->getMessage());
+        }
+    }
+
+    /** Shipment fields an admin edits, with the labels the edit form shows. */
+    private const SHIPMENT_AUDIT_LABELS = [
+        'shipment_code' => 'Shipment Code',
+        'response_deadline' => 'Result Due Date & Time',
+        'auto_close_at_deadline' => 'Auto-close at deadline',
+        'allow_editing_response' => 'Allow Editing Response',
+        'issuing_authority' => 'Issuing Authority',
+        'pt_co_ordinator_name' => 'PT Co-ordinator Name',
+        'pt_co_ordinator_email' => 'PT Co-ordinator Email',
+        'pt_co_ordinator_phone' => 'PT Co-ordinator Phone Number',
+        'collect_feedback' => 'Collect Feedback',
+        'response_switch' => 'Response switch',
+        'number_of_samples' => 'Number of samples',
+        'number_of_controls' => 'Number of controls',
+    ];
+
+    /** Shipment attributes, with the labels the sample forms show. */
+    private const SHIPMENT_ATTRIBUTE_LABELS = [
+        'sampleType' => 'Sample Type',
+        'noOfTestsInPanel' => 'No. of tests in this Test Panel',
+        'screeningTest' => 'Is this ONLY Screening Test Panel?',
+        'dtsTestPanelType' => 'Allow users to Choose Screening/Confirmatory',
+        'enableSyphilis' => 'Enable Syphilis',
+        'enableRtri' => 'Enable RTRI',
+        'panelName' => 'Panel Name',
+        'noOfTest' => 'Number of Tests',
+        'captureAdditionalDetails' => 'Capture Additional Detail',
+        'additionalDetailLabel' => 'Additional Detail Label',
+        'methodOfEvaluation' => 'Method of Evaluation',
+        'score_per_sample' => 'Score Per Sample',
+        'form_version' => 'Form Version',
+        'tb_test_type' => 'Select Type of TB Test',
+        'collect_qc_data' => 'Collect QC Data',
+        'reportVersion' => 'Report Version',
+        'effectiveDate' => 'Report Effective Date',
+    ];
+
+    /** Reference result table and the columns compared for each scheme. */
+    private const REFERENCE_AUDIT = [
+        'dts' => ['reference_result_dts', ['sample_label', 'sample_preparation_date', 'reference_result', 'syphilis_reference_result', 'dts_rtri_reference_result', 'control', 'mandatory', 'is_sample_diluted']],
+        'eid' => ['reference_result_eid', ['sample_label', 'sample_preparation_date', 'reference_result', 'reference_hiv_ct_od', 'reference_ic_qs', 'control', 'mandatory']],
+        'vl' => ['reference_result_vl', ['sample_label', 'sample_preparation_date', 'reference_result', 'control', 'mandatory']],
+        'tb' => ['reference_result_tb', ['sample_label', 'sample_preparation_date', 'tb_isolate', 'mtb_detected', 'rif_resistance', 'control', 'mandatory']],
+        'covid19' => ['reference_result_covid19', ['sample_label', 'sample_preparation_date', 'reference_result', 'control', 'mandatory', 'sample_score']],
+        'dbs' => ['reference_result_dbs', ['sample_label', 'sample_preparation_date', 'reference_result', 'control', 'mandatory', 'sample_score']],
+        'recency' => ['reference_result_recency', ['sample_label', 'sample_preparation_date', 'reference_result', 'reference_control_line', 'reference_diagnosis_line', 'reference_longterm_line', 'control', 'mandatory']],
+        'generic' => ['reference_result_generic_test', ['sample_label', 'sample_preparation_date', 'reference_result', 'control', 'mandatory']],
+    ];
+
+    /** Schemes whose reference results are r_possibleresult ids. */
+    private const REFERENCE_RESULT_ID_SCHEMES = ['dts', 'eid', 'covid19', 'dbs', 'recency'];
+
+    /** Reference columns that hold an r_possibleresult id in those schemes. */
+    private const REFERENCE_RESULT_ID_COLUMNS = ['reference_result', 'syphilis_reference_result', 'dts_rtri_reference_result'];
+
+    private const REFERENCE_AUDIT_LABELS = [
+        'sample_label' => 'Sample Label',
+        'sample_preparation_date' => 'Sample Preparation Date',
+        'reference_result' => 'Reference Results',
+        'syphilis_reference_result' => 'Syphilis Final Result',
+        'dts_rtri_reference_result' => 'RTRI Final Result',
+        'control' => 'Control?',
+        'mandatory' => 'Mandatory?',
+        'is_sample_diluted' => 'Is Sample Diluted?',
+        'tb_isolate' => 'TB Isolate',
+        'mtb_detected' => 'MTB Detected',
+        'reference_control_line' => 'Control Line',
+        'sample_score' => 'Score',
+    ];
+
+    /**
+     * A shipment's editable fields and reference results, for comparing an
+     * edit. Returns [] when it cannot be read, so the edit itself goes on.
+     *
+     * @param array<string, mixed> $shipment a shipment row
+     * @return array<string, mixed>
+     */
+    private function shipmentAuditSnapshot(array $shipment): array
+    {
+        if (empty($shipment['shipment_id'])) {
+            return [];
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $snapshot = [];
+            foreach (array_keys(self::SHIPMENT_AUDIT_LABELS) as $field) {
+                $snapshot[$field] = $shipment[$field] ?? null;
+            }
+            $attributes = json_decode((string) ($shipment['shipment_attributes'] ?? ''), true);
+            $snapshot['attributes'] = is_array($attributes) ? $attributes : [];
+
+            $scheme = (string) ($shipment['scheme_type'] ?? '');
+            [$table, $columns] = self::REFERENCE_AUDIT[$scheme] ?? self::REFERENCE_AUDIT['generic'];
+            $rows = $db->fetchAll(
+                $db->select()
+                    ->from($table, array_merge(['sample_id'], $columns))
+                    ->where('shipment_id = ?', (int) $shipment['shipment_id'])
+                    ->order('sample_id')
+            );
+            $names = [];
+            $usesIds = in_array($scheme, self::REFERENCE_RESULT_ID_SCHEMES, true);
+            if ($usesIds) {
+                $ids = [];
+                foreach ($rows as $row) {
+                    foreach (self::REFERENCE_RESULT_ID_COLUMNS as $column) {
+                        if (isset($row[$column]) && is_numeric($row[$column])) {
+                            $ids[(int) $row[$column]] = true;
+                        }
+                    }
+                }
+                if ($ids !== []) {
+                    $names = $db->fetchPairs(
+                        $db->select()->from('r_possibleresult', ['id', 'response'])->where('id IN (?)', array_keys($ids))
+                    );
+                }
+            }
+            $samples = [];
+            foreach ($rows as $row) {
+                $sample = [];
+                foreach ($columns as $column) {
+                    $value = $row[$column] ?? null;
+                    if ($usesIds && in_array($column, self::REFERENCE_RESULT_ID_COLUMNS, true) && isset($names[$value])) {
+                        $value = $names[$value];
+                    } elseif ($column === 'control' || $column === 'mandatory') {
+                        $value = (string) $value === '1' ? 'yes' : 'no';
+                    }
+                    $sample[$column] = $value;
+                }
+                $samples['Sample ' . $row['sample_id']] = $sample;
+            }
+            $snapshot['samples'] = $samples;
+            return $snapshot;
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('shipmentAuditSnapshot failed: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Labels for a shipment snapshot. Sample fields are named after the
+     * sample, such as "Sample A › Reference Results".
+     *
+     * @param array<string, mixed> $before
+     * @param array<string, mixed> $after
+     * @return array<string, string>
+     */
+    private static function shipmentAuditLabels(array $before, array $after): array
+    {
+        $labels = self::SHIPMENT_AUDIT_LABELS;
+        foreach (self::SHIPMENT_ATTRIBUTE_LABELS as $key => $label) {
+            $labels['attributes.' . $key] = $label;
+        }
+        $samples = ($after['samples'] ?? []) + ($before['samples'] ?? []);
+        foreach ($samples as $key => $sample) {
+            $name = trim((string) ($sample['sample_label'] ?? ''));
+            $name = $name !== '' ? $name : (string) $key;
+            foreach (array_keys($sample) as $column) {
+                $columnLabel = self::REFERENCE_AUDIT_LABELS[$column] ?? Application_Model_DbTable_AuditLog::humanize((string) $column);
+                $labels["samples.{$key}.{$column}"] = $name . ' › ' . $columnLabel;
+            }
+        }
+        return $labels;
+    }
+
+    /**
+     * Log a shipment edit with what changed. Flags it when the deadline,
+     * samples or reference results changed after labs responded.
+     *
+     * @param array<string, mixed> $before from shipmentAuditSnapshot(), read before the edit
+     */
+    private function auditShipmentUpdate(int $shipmentId, array $before): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow($db->select()->from('shipment')->where('shipment_id = ?', $shipmentId));
+            if (!$row) {
+                return;
+            }
+            $after = $this->shipmentAuditSnapshot($row);
+            $extra = [
+                'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $row['shipment_code']],
+            ];
+            if ($before !== [] && $after !== []) {
+                $changes = Application_Model_DbTable_AuditLog::changes($before, $after, self::shipmentAuditLabels($before, $after));
+                $extra['changes'] = $changes;
+                $deadlineChanged = false;
+                $samplesChanged = false;
+                foreach ($changes as $change) {
+                    if ($change['field'] === 'response_deadline') {
+                        $deadlineChanged = true;
+                    } elseif (str_starts_with($change['field'], 'samples.') || str_starts_with($change['field'], 'number_of_')) {
+                        $samplesChanged = true;
+                    }
+                }
+                if ($deadlineChanged || $samplesChanged) {
+                    $responses = (int) $db->fetchOne(
+                        $db->select()
+                            ->from('shipment_participant_map', new Zend_Db_Expr('COUNT(*)'))
+                            ->where('shipment_id = ?', $shipmentId)
+                            ->where("response_status IN ('responded', 'nottested', 'late_submitted')")
+                    );
+                    if ($responses > 0) {
+                        $extra['important'] = true;
+                        $extra['reason'] = $samplesChanged
+                            ? 'Reference results changed after labs responded'
+                            : 'Response deadline changed after labs responded';
+                        $extra['facts'] = ['Responses received' => $responses];
+                    }
+                }
+            }
+            Application_Model_DbTable_AuditLog::record('Updated shipment - ' . $row['shipment_code'], 'shipment', $extra);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('auditShipmentUpdate failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Entity and facts for a file download. Files under the reports folder
+     * name their shipment, and an individual report names its lab.
+     *
+     * @return array<string, mixed> $extra for the audit log
+     */
+    public static function downloadAuditExtra(string $realPath, string $link): array
+    {
+        $extra = ['facts' => ['File' => basename($realPath), 'Link' => $link]];
+        try {
+            $reportsDir = realpath(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+            if ($reportsDir === false || !str_starts_with($realPath, $reportsDir . DIRECTORY_SEPARATOR)) {
+                return $extra;
+            }
+            $parts = explode(DIRECTORY_SEPARATOR, substr($realPath, strlen($reportsDir) + 1));
+            $code = count($parts) > 1 ? $parts[0] : preg_replace('/\.zip$/i', '', $parts[0]);
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $shipmentId = $db->fetchOne($db->select()->from('shipment', ['shipment_id'])->where('shipment_code = ?', $code));
+            if (!$shipmentId) {
+                return $extra;
+            }
+            $extra['entity'] = ['type' => 'shipment', 'id' => (int) $shipmentId, 'label' => $code];
+            if (preg_match('/-(\d+)\.pdf$/i', basename($realPath), $m)) {
+                $labId = $db->fetchOne(
+                    $db->select()
+                        ->from(['spm' => 'shipment_participant_map'], [])
+                        ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['unique_identifier'])
+                        ->where('spm.map_id = ?', (int) $m[1])
+                        ->where('spm.shipment_id = ?', (int) $shipmentId)
+                );
+                if ($labId) {
+                    $extra['facts']['Lab ID'] = $labId;
+                }
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('downloadAuditExtra failed: ' . $e->getMessage());
+        }
+        return $extra;
     }
 
     private function calculateMandatorySampleCount($mandatoryArr, $controlArr)
@@ -1428,6 +1817,7 @@ class Application_Service_Shipments
 
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
+            $this->auditResponseRemoval((int) $mapId, 'DTS');
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1492,6 +1882,7 @@ class Application_Service_Shipments
 
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
+            $this->auditResponseRemoval((int) $mapId, 'COVID-19');
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1546,6 +1937,7 @@ class Application_Service_Shipments
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->removeShipmentResults($mapId);
+            $this->auditResponseRemoval((int) $mapId, 'TB');
             $dbAdapter->commit();
         } catch (Throwable $e) {
             $dbAdapter->rollBack();
@@ -1596,6 +1988,7 @@ class Application_Service_Shipments
 
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->removeShipmentResults($mapId);
+            $this->auditResponseRemoval((int) $mapId, 'Generic Test');
             $dbAdapter->commit();
         } catch (Throwable $e) {
             $dbAdapter->rollBack();
@@ -1611,16 +2004,16 @@ class Application_Service_Shipments
 
     public function removeDtsEidResults($mapId)
     {
-        $this->removeQcSchemeResults($mapId, new Application_Model_DbTable_ResponseEid(), 'removeDtsEidResults');
+        $this->removeQcSchemeResults((int) $mapId, new Application_Model_DbTable_ResponseEid(), 'removeDtsEidResults', 'EID');
     }
 
     public function removeDbsResults($mapId)
     {
-        $this->removeQcSchemeResults($mapId, new Application_Model_DbTable_ResponseDbs(), 'removeDbsResults');
+        $this->removeQcSchemeResults((int) $mapId, new Application_Model_DbTable_ResponseDbs(), 'removeDbsResults', 'DBS');
     }
 
     /** Clears the participant's response and QC details, then deletes the scheme's result rows. */
-    private function removeQcSchemeResults(int $mapId, Zend_Db_Table_Abstract $responseDb, string $label): void
+    private function removeQcSchemeResults(int $mapId, Zend_Db_Table_Abstract $responseDb, string $label, string $scheme): void
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $ownTx = !$dbAdapter->getConnection()->inTransaction();
@@ -1662,6 +2055,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb->delete(['shipment_map_id = ?' => $mapId]);
+            $this->auditResponseRemoval($mapId, $scheme);
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1721,6 +2115,7 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete(['shipment_map_id = ?' => $mapId]);
+            $this->auditResponseRemoval((int) $mapId, 'Recency');
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1781,6 +2176,7 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete(['shipment_map_id = ?' => $mapId]);
+            $this->auditResponseRemoval((int) $mapId, 'VL');
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -2466,9 +2862,16 @@ class Application_Service_Shipments
             ];
             $lastId = $db->insert($data);
             if ($lastId > 0) {
-                $authNameSpace = new Zend_Session_Namespace('administrators');
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog('Added a new shipment - ' . $params['shipmentCode'], 'shipment');
+                Application_Model_DbTable_AuditLog::record('Added a new shipment - ' . $params['shipmentCode'], 'shipment', [
+                    'entity' => ['type' => 'shipment', 'id' => (int) $lastId, 'label' => $params['shipmentCode']],
+                    'facts' => [
+                        'Scheme' => $scheme,
+                        'PT Survey' => $distro['distribution_code'] ?? '',
+                        'Samples' => $data['number_of_samples'],
+                        'Controls' => $controlCount,
+                        'Result Due Date & Time' => $data['response_deadline'],
+                    ],
+                ]);
             }
 
             $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -3015,8 +3418,22 @@ class Application_Service_Shipments
                 }
             }
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Cancelled shipment - ' . $shipment['shipment_code'] . ' (reason: ' . $reason . ')', 'shipment');
+            $responses = (int) $db->fetchOne(
+                $db->select()
+                    ->from('shipment_participant_map', new Zend_Db_Expr('COUNT(*)'))
+                    ->where('shipment_id = ?', $shipmentId)
+                    ->where("response_status IN ('responded', 'nottested', 'late_submitted')")
+            );
+            Application_Model_DbTable_AuditLog::record(
+                'Cancelled shipment - ' . $shipment['shipment_code'] . ' (reason: ' . $reason . ')',
+                'shipment',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $shipment['shipment_code']],
+                    'facts' => ['Status' => $shipment['status'] ?? '', 'Responses received' => $responses],
+                    'important' => true,
+                    'reason' => 'Cancelling locks the shipment for good and deletes its reports',
+                ]
+            );
 
             $db->commit();
         } catch (Exception $e) {
@@ -3185,6 +3602,7 @@ class Application_Service_Shipments
         $dbAdapter->beginTransaction();
         try {
             $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(['s' => 'shipment'])->where('shipment_id = ?', $params['shipmentId']));
+            $auditBefore = $this->shipmentAuditSnapshot($shipmentRow ?: []);
             // DTS edit mode can intentionally retain saved shipment settings or refresh specific ones from config.
             $dtsSchemeType = $params['dtsSchemeType'] ?? (Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests');
             $scheme = $shipmentRow['scheme_type'];
@@ -3709,18 +4127,9 @@ class Application_Service_Shipments
                 ['shipment_id = ?' => (int) $params['shipmentId']]
             );
 
-            // The feedback switch decides whether participants ever see the form, and
-            // it is set on a different screen from the form itself — log the flip.
-            if (
-                isset($updateData['collect_feedback'])
-                && $updateData['collect_feedback'] !== ($shipmentRow['collect_feedback'] ?? null)
-            ) {
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog(
-                    'Collect Feedback set to ' . $updateData['collect_feedback'] . ' for shipment - ' . $params['shipmentCode'],
-                    'shipment'
-                );
-            }
+            // One entry for the whole edit. It lists every changed field, including
+            // the Collect Feedback switch and each sample's reference result.
+            $this->auditShipmentUpdate((int) $params['shipmentId'], $auditBefore);
 
             $dbAdapter->commit();
         } catch (Throwable $e) {
@@ -4045,12 +4454,13 @@ class Application_Service_Shipments
         $sQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.participant_id', 'sp.map_id', 'sp.new_shipment_mail_count'])
             ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_code'])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'p.unique_identifier', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
             ->where('sp.shipment_id = ?', $sid)
             ->group('p.participant_id');
         $participantEmails = $db->fetchAll($sQuery);
 
+        $labsEmailed = [];
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
@@ -4068,8 +4478,15 @@ class Application_Service_Shipments
                 $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 $count = $participantDetails['new_shipment_mail_count'] + 1;
                 $return = $db->update('shipment_participant_map', ['last_new_shipment_mailed_on' => new Zend_Db_Expr('now()'), 'new_shipment_mail_count' => $count], ['map_id = ?' => $participantDetails['map_id']]);
+                $labsEmailed[] = (string) $participantDetails['unique_identifier'];
             }
         }
+        $shipmentCode = (string) ($participantEmails[0]['shipment_code'] ?? '');
+        Application_Model_DbTable_AuditLog::record('Queued new shipment email - ' . ($shipmentCode !== '' ? $shipmentCode : "#{$sid}"), 'shipment', [
+            'entity' => ['type' => 'shipment', 'id' => (int) $sid, 'label' => $shipmentCode],
+            'facts' => ['Emails queued' => count($labsEmailed), 'Labs without an email address' => count($participantEmails) - count($labsEmailed)],
+            'list' => ['title' => 'Labs emailed', 'rows' => $labsEmailed],
+        ]);
         return $return;
     }
     public function getShipmentNotParticipated($sid)
@@ -4337,7 +4754,12 @@ class Application_Service_Shipments
                     'status' => 'pending',
                 ]
             );
-            return $dbAdapter->lastInsertId();
+            $jobId = $dbAdapter->lastInsertId();
+            $shipmentCode = (string) $dbAdapter->fetchOne($dbAdapter->select()->from('shipment', ['shipment_code'])->where('shipment_id = ?', (int) $sid));
+            Application_Model_DbTable_AuditLog::record('Queued report emails for shipment - ' . ($shipmentCode !== '' ? $shipmentCode : "#{$sid}"), 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => (int) $sid, 'label' => $shipmentCode],
+            ]);
+            return $jobId;
         } else {
             return false;
         }
@@ -4355,6 +4777,7 @@ class Application_Service_Shipments
         $sQuery = $sQuery->where('s.shipment_id = ?', $shipmentId);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
+        $labsEmailed = [];
         foreach ($rResult as $aRow) {
             if ($aRow['is_excluded'] != 'yes' && isset($aRow['REPORT']) && $aRow['REPORT'] != '') {
                 $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf');
@@ -4383,14 +4806,24 @@ class Application_Service_Shipments
                     $cc = $newShipmentMailContent['mail_cc'];
                     $bcc = $newShipmentMailContent['mail_bcc'];
                     $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+                    $labsEmailed[] = (string) $aRow['unique_identifier'];
                 }
             }
+        }
+        if ($rResult !== []) {
+            $shipmentCode = (string) $rResult[0]['shipment_code'];
+            Application_Model_DbTable_AuditLog::record('Sent report emails to participants - ' . $shipmentCode, 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => (int) $shipmentId, 'label' => $shipmentCode],
+                'facts' => ['Emails queued' => count($labsEmailed)],
+                'list' => ['title' => 'Labs emailed', 'rows' => $labsEmailed],
+            ]);
         }
         return $rResult;
     }
 
     public function updateAdminEvaluateEditShipments($params)
     {
+        $this->captureAdminEvaluation($params);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         // Updated manually overrided
@@ -4520,6 +4953,7 @@ class Application_Service_Shipments
 
     public function saveAdminData($params)
     {
+        $this->captureAdminEvaluation($params);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         // To get scheme config
@@ -5125,6 +5559,14 @@ class Application_Service_Shipments
                         if (!unlink($from)) {
                             Pt_Commons_LoggerUtility::logWarning("Could not remove temp file: {$from}");
                         }
+                        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                        $shipmentId = $db->fetchOne($db->select()->from('shipment', ['shipment_id'])->where('shipment_code = ?', $params['shipmentCode']));
+                        Application_Model_DbTable_AuditLog::record('Replaced summary report - ' . $params['shipmentCode'], 'shipment', [
+                            'entity' => ['type' => 'shipment', 'id' => $shipmentId ?: null, 'label' => $params['shipmentCode']],
+                            'facts' => ['File' => $fileName],
+                            'important' => true,
+                            'reason' => 'Replaces the summary report participants download',
+                        ]);
                         return 1;
                     } else {
                         Pt_Commons_LoggerUtility::logError("File not copied from {$from} to {$to}");

@@ -1070,6 +1070,7 @@ class Application_Service_Evaluation
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $admin = $authNameSpace->admin_id;
             $size = count($params['sampleId']);
+            $auditBefore = $this->responseEditSnapshot((string) ($params['scheme'] ?? ''), (int) ($params['smid'] ?? 0));
 
             $failureReason = [];
             /* Manual result override changes */
@@ -1708,6 +1709,7 @@ class Application_Service_Evaluation
             }
             $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
             $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
+            $this->auditResponseEdit((string) ($params['scheme'] ?? ''), (int) ($params['smid'] ?? 0), $auditBefore);
             $db->commit();
         } catch (Throwable $e) {
             $db->rollBack();
@@ -1722,6 +1724,107 @@ class Application_Service_Evaluation
         }
     }
 
+    /** Response result table for each scheme the admin edit form saves. */
+    private const RESPONSE_AUDIT_TABLES = [
+        'eid' => 'response_result_eid',
+        'dts' => 'response_result_dts',
+        'vl' => 'response_result_vl',
+        'dbs' => 'response_result_dbs',
+        'recency' => 'response_result_recency',
+        'covid19' => 'response_result_covid19',
+        'tb' => 'response_result_tb',
+        'generic-test' => 'response_result_generic_test',
+    ];
+
+    /** Response columns that are bookkeeping or computed by scoring, not entered results. */
+    private const RESPONSE_AUDIT_IGNORE = [
+        'shipment_map_id', 'sample_id', 'dts_id', 'calculated_score', 'z_score', 'algorithm_result',
+        'interpretation_result', 'dts_rtri_is_editable', 'created_by', 'created_on', 'updated_by', 'updated_on',
+    ];
+
+    /** Scheme names used in response statements. */
+    private const RESPONSE_AUDIT_SCHEMES = [
+        'eid' => 'EID', 'dts' => 'DTS', 'vl' => 'VL', 'dbs' => 'DBS', 'recency' => 'Recency',
+        'covid19' => 'COVID-19', 'tb' => 'TB', 'generic-test' => 'Generic Test',
+    ];
+
+    /**
+     * A response's results and evaluation fields, read before an admin edit.
+     * Returns null when they cannot be read, so the edit itself goes on.
+     *
+     * @return array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>}|null
+     */
+    private function responseEditSnapshot(string $scheme, int $mapId): ?array
+    {
+        $table = self::RESPONSE_AUDIT_TABLES[$scheme] ?? null;
+        if ($table === null || $mapId <= 0) {
+            return null;
+        }
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $samples = [];
+            foreach ($db->fetchAll($db->select()->from($table)->where('shipment_map_id = ?', $mapId)->order('sample_id')) as $row) {
+                $sample = array_diff_key($row, array_flip(self::RESPONSE_AUDIT_IGNORE));
+                if (isset($sample['response_attributes'])) {
+                    $decoded = json_decode((string) $sample['response_attributes'], true);
+                    $sample['response_attributes'] = is_array($decoded) ? $decoded : $sample['response_attributes'];
+                }
+                $samples['Sample ' . $row['sample_id']] = $sample;
+            }
+            return [
+                'evaluation' => Application_Service_Shipments::adminEvaluationSnapshot($mapId),
+                'samples' => $samples,
+            ];
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('responseEditSnapshot failed: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Log an admin edit of a participant's response with what changed.
+     * Flagged when results, the score or the exclusion changed.
+     *
+     * @param array{evaluation: array<string, mixed>|null, samples: array<string, array<string, mixed>>}|null $before
+     */
+    private function auditResponseEdit(string $scheme, int $mapId, ?array $before): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $row = $db->fetchRow(
+                $db->select()
+                    ->from(['spm' => 'shipment_participant_map'], ['shipment_id'])
+                    ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['shipment_code'])
+                    ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['unique_identifier'])
+                    ->where('spm.map_id = ?', $mapId)
+            );
+            if (!$row) {
+                return;
+            }
+            $extra = [
+                'entity' => ['type' => 'shipment', 'id' => (int) $row['shipment_id'], 'label' => $row['shipment_code']],
+                'facts' => ['Lab ID' => $row['unique_identifier']],
+            ];
+            $after = $before !== null ? $this->responseEditSnapshot($scheme, $mapId) : null;
+            if ($before !== null && $after !== null) {
+                $extra['changes'] = array_merge(
+                    Application_Service_Shipments::adminEvaluationChangesSince($mapId, $before['evaluation']),
+                    Application_Model_DbTable_AuditLog::changes(['samples' => $before['samples']], ['samples' => $after['samples']])
+                );
+                $extra['importantFields'] = array_merge(Application_Service_Shipments::ADMIN_EVALUATION_SCORING_FIELDS, ['samples']);
+                $extra['reason'] = "Changes a lab's results or score";
+            }
+            $schemeName = self::RESPONSE_AUDIT_SCHEMES[$scheme] ?? $scheme;
+            Application_Model_DbTable_AuditLog::record(
+                "Updated {$schemeName} response - {$row['shipment_code']} / {$row['unique_identifier']}",
+                'response',
+                $extra
+            );
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('auditResponseEdit failed: ' . $e->getMessage());
+        }
+    }
+
     public function updateShipmentComment($params)
     {
         // $comment = preg_replace('/[^a-zA-Z0-9_-]/', '', $params['comment']);
@@ -1730,6 +1833,7 @@ class Application_Service_Evaluation
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
+        $before = $db->fetchRow($db->select()->from('shipment', ['shipment_code', 'shipment_comment', 'corrective_action_file'])->where('shipment_id = ?', $shipmentId));
         $noOfRows = $db->update('shipment', ['shipment_comment' => $params['comment'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], ['shipment_id = ?' => $shipmentId]);
         if (isset($_FILES['correctiveActionFile']['name']) && count($_FILES['correctiveActionFile']) > 0) {
             $uploadDirectory = realpath(UPLOAD_PATH);
@@ -1744,6 +1848,16 @@ class Application_Service_Evaluation
                 }
             }
         }
+        if ($noOfRows > 0 && $before) {
+            $after = $db->fetchRow($db->select()->from('shipment', ['shipment_comment', 'corrective_action_file'])->where('shipment_id = ?', $shipmentId));
+            Application_Model_DbTable_AuditLog::record('Updated shipment comment - ' . $before['shipment_code'], 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => (int) $shipmentId, 'label' => $before['shipment_code']],
+                'changes' => Application_Model_DbTable_AuditLog::changes(
+                    ['shipment_comment' => $before['shipment_comment'], 'corrective_action_file' => $before['corrective_action_file']],
+                    $after ?: []
+                ),
+            ]);
+        }
         if ($noOfRows > 0) {
             return 'Comment updated';
         } else {
@@ -1756,7 +1870,16 @@ class Application_Service_Evaluation
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
+        $before = $db->fetchRow($db->select()->from('shipment', ['shipment_code', 'status'])->where('shipment_id = ?', $shipmentId));
         $noOfRows = $db->update('shipment', ['status' => $status, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], ['shipment_id = ?' => $shipmentId]);
+        if ($noOfRows > 0 && $before) {
+            Application_Model_DbTable_AuditLog::record('Updated shipment status - ' . $before['shipment_code'], 'shipment', [
+                'entity' => ['type' => 'shipment', 'id' => (int) $shipmentId, 'label' => $before['shipment_code']],
+                'changes' => Application_Model_DbTable_AuditLog::changes(['status' => $before['status']], ['status' => $status]),
+                'important' => $before['status'] === 'finalized',
+                'reason' => 'Moves a finalized shipment back to an earlier status',
+            ]);
+        }
         if ($noOfRows > 0) {
             return 'Status updated';
         } else {
@@ -2821,9 +2944,19 @@ class Application_Service_Evaluation
 
         $shipmentCode = (string) $db->fetchOne($db->select()->from('shipment', 'shipment_code')->where('shipment_id = ?', $row['shipment_id']));
         $uid = (string) $db->fetchOne($db->select()->from('participant', 'unique_identifier')->where('participant_id = ?', $row['participant_id']));
-        (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
+        Application_Model_DbTable_AuditLog::record(
             ($decision === 'approve' ? 'Approved' : 'Rejected') . " late submission - {$shipmentCode} / {$uid}",
-            'response'
+            'response',
+            [
+                'entity' => ['type' => 'shipment', 'id' => (int) $row['shipment_id'], 'label' => $shipmentCode],
+                'facts' => ['Lab ID' => $uid],
+                'changes' => Application_Model_DbTable_AuditLog::changes(
+                    ['response_status' => $row['response_status']],
+                    ['response_status' => $newStatus]
+                ),
+                'important' => true,
+                'reason' => 'Decides whether a late response is scored',
+            ]
         );
 
         return [
@@ -4443,7 +4576,9 @@ class Application_Service_Evaluation
                 $saved = $db->insert('queue_report_generation', $data);
                 if ($saved > 0) {
                     $db->update('shipment_participant_map', ['report_generated' => 'no'], ['shipment_id = ?' => $shipmentId]);
-                    return $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], ['shipment_id = ?' => $shipmentId]);
+                    $queued = $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], ['shipment_id = ?' => $shipmentId]);
+                    $this->auditReportQueue((int) $shipmentId, (string) $params['type'], false, $params);
+                    return $queued;
                 }
             }
         } else {
@@ -4463,8 +4598,41 @@ class Application_Service_Evaluation
                 // Reset report_generated flags so progress starts from 0%
                 $db->update('shipment_participant_map', ['report_generated' => 'no'], ['shipment_id = ?' => $shipmentId]);
                 $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], ['shipment_id = ?' => $shipmentId]);
+                $this->auditReportQueue((int) $shipmentId, (string) $params['type'], true, $params);
             }
             return $updated;
+        }
+    }
+
+    /**
+     * Log a report generation or finalization request. Finalizing and
+     * generating reports again are flagged.
+     *
+     * @param array<string, mixed> $params the request, for the approval fields
+     */
+    private function auditReportQueue(int $shipmentId, string $type, bool $again, array $params): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $code = (string) $db->fetchOne($db->select()->from('shipment', ['shipment_code'])->where('shipment_id = ?', $shipmentId));
+            $finalize = $type === 'finalized';
+            $facts = ['Generated before' => $again];
+            if ($finalize) {
+                $facts['Results approved on'] = trim((string) ($params['resultsApprovedOn'] ?? ''));
+                $facts['Results approved by'] = trim((string) ($params['resultsApprovedBy'] ?? ''));
+            }
+            Application_Model_DbTable_AuditLog::record(
+                ($finalize ? 'Queued finalization of shipment - ' : 'Queued report generation for shipment - ') . $code,
+                'shipment',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                    'facts' => $facts,
+                    'important' => $finalize || $again,
+                    'reason' => $finalize ? 'Finalizing publishes results to participants' : 'Replaces reports generated earlier',
+                ]
+            );
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('auditReportQueue failed: ' . $e->getMessage());
         }
     }
 
@@ -4904,6 +5072,12 @@ class Application_Service_Evaluation
                     @unlink($lockFile);
                 }
 
+                $code = (string) $db->fetchOne($db->select()->from('shipment', ['shipment_code'])->where('shipment_id = ?', (int) $job['shipment_id']));
+                Application_Model_DbTable_AuditLog::record('Cancelled report generation for shipment - ' . $code, 'shipment', [
+                    'entity' => ['type' => 'shipment', 'id' => (int) $job['shipment_id'], 'label' => $code],
+                    'facts' => ['Report type' => $job['report_type'] ?? '', 'Job status' => $job['status']],
+                ]);
+
                 return ['success' => true, 'message' => 'Job cancelled successfully'];
             } elseif ($queueType === 'scheduled_jobs') {
                 // Get the job details first
@@ -4942,6 +5116,10 @@ class Application_Service_Evaluation
                         'shipment_id = ' . (int) $m[1] . " AND tb_form_generated = 'queued'"
                     );
                 }
+
+                Application_Model_DbTable_AuditLog::record('Cancelled scheduled job #' . (int) $jobId, 'shipment', [
+                    'facts' => ['Job' => (string) ($job['job'] ?? ''), 'Job status' => $job['status']],
+                ]);
 
                 return ['success' => true, 'message' => 'Job cancelled successfully'];
             } else {
