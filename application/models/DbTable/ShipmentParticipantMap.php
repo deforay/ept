@@ -8,6 +8,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     /** @var array<string, string>|null table => map-id column, cached per request */
     private static $childTables = null;
 
+    /** @var string[]|null tables keyed by participant_id + shipment_id, cached per request */
+    private static $pairTables = null;
+
     /**
      * Every table that stores data for one participant in one shipment,
      * with the column that holds the shipment_participant_map id. Read from
@@ -35,6 +38,32 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     }
 
     /**
+     * Tables that hold per-shipment participant data keyed by participant_id
+     * and shipment_id instead of the map id, such as participant_testkit_map.
+     *
+     * @return string[]
+     */
+    public static function pairTables(Zend_Db_Adapter_Abstract $db): array
+    {
+        if (self::$pairTables !== null) {
+            return self::$pairTables;
+        }
+        $mapKeyed = self::childTables($db);
+        $tables = $db->fetchCol(
+            "SELECT p.TABLE_NAME FROM information_schema.COLUMNS p
+             JOIN information_schema.COLUMNS s
+               ON s.TABLE_SCHEMA = p.TABLE_SCHEMA AND s.TABLE_NAME = p.TABLE_NAME AND s.COLUMN_NAME = 'shipment_id'
+             WHERE p.TABLE_SCHEMA = DATABASE() AND p.COLUMN_NAME = 'participant_id'
+               AND p.TABLE_NAME <> 'shipment_participant_map'"
+        );
+        self::$pairTables = array_values(array_filter(
+            array_map('strval', $tables),
+            static fn (string $table) => !isset($mapKeyed[$table])
+        ));
+        return self::$pairTables;
+    }
+
+    /**
      * Remove participants from shipments: their results, corrective actions,
      * feedback answers and other per-shipment rows first, then the map rows.
      * Runs inside the caller's transaction when there is one.
@@ -48,10 +77,21 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if ($mapIds === []) {
             return 0;
         }
+        $pairs = $db->fetchAll(
+            $db->select()->from('shipment_participant_map', ['participant_id', 'shipment_id'])->where('map_id IN (?)', $mapIds)
+        );
         $db->query('SET FOREIGN_KEY_CHECKS = 0');
         try {
             foreach (self::childTables($db) as $table => $column) {
                 $db->delete($table, $db->quoteInto($db->quoteIdentifier($column) . ' IN (?)', $mapIds));
+            }
+            foreach (self::pairTables($db) as $table) {
+                foreach ($pairs as $pair) {
+                    $db->delete($table, [
+                        'participant_id = ?' => (int) $pair['participant_id'],
+                        'shipment_id = ?' => (int) $pair['shipment_id'],
+                    ]);
+                }
             }
             return (int) $db->delete('shipment_participant_map', $db->quoteInto('map_id IN (?)', $mapIds));
         } finally {

@@ -2820,8 +2820,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function deleteParticipantBId($participantId)
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        // All or nothing: a failed participant delete must not leave the
+        // participant with their results already gone.
+        $connection = $db->getConnection();
+        $ownTx = $connection instanceof PDO && !$connection->inTransaction();
         try {
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            if ($ownTx) {
+                $db->beginTransaction();
+            }
             if ($participantId > 0 && is_numeric($participantId)) {
                 $sQuery = $this->getAdapter()->select()->from(['p' => $this->_name], ['mapCount' => new Zend_Db_Expr('COUNT(pmm.dm_id)'), 'pmm.dm_id'])
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
@@ -2845,10 +2852,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog('Deleted participant - ' . $partcipant['unique_identifier'], 'participants');
                 }
+                if ($ownTx) {
+                    $db->commit();
+                }
 
                 return ($id);
             }
+            if ($ownTx) {
+                $db->commit();
+            }
         } catch (Throwable $e) {
+            if ($ownTx && $connection->inTransaction()) {
+                $db->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError($e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
