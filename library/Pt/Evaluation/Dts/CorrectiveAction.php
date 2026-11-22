@@ -37,6 +37,9 @@ enum Pt_Evaluation_Dts_CorrectiveAction: int
     case ReportRoomTemperature = 20;
     case ReportStopWatch = 21;
     case ReportActualRehydrationDate = 22;
+    case RunEveryNeededTest = 23;
+    case StopWhereAlgorithmEnds = 24;
+    case ReportAlgorithmFinalResult = 25;
 
     /** The advice, in English. Store this. Translate it with actionText() when shown. */
     public function action(): string
@@ -59,92 +62,104 @@ enum Pt_Evaluation_Dts_CorrectiveAction: int
     {
         return match ($this) {
             self::SubmitBeforeDeadline => [
-                T::markForTranslation('Submit your response before the response deadline.'),
+                T::markForTranslation('Please submit your response before the last date.'),
                 T::markForTranslation('The laboratory submitted the response after the response deadline.'),
             ],
             self::FollowNationalAlgorithm => [
-                T::markForTranslation('Review the SOP and test every sample as the National HIV Testing algorithm requires.'),
+                T::markForTranslation('Review and refer to the SOP for testing. Ensure each sample is tested as per the National HIV Testing algorithm.'),
                 T::markForTranslation('The laboratory did not follow the National HIV Testing algorithm for a sample.'),
             ],
             self::ReviewProceduresResultMismatch => [
-                T::markForTranslation('Review all testing procedures before you test client samples again. Your result does not match the expected result.'),
+                T::markForTranslation('Review all testing procedures before client testing, as the reported result does not match the expected result.'),
                 T::markForTranslation('The reported result for a sample does not match the expected result.'),
             ],
             self::TestAllSamples => [
-                T::markForTranslation('Test every sample in the PT panel.'),
+                T::markForTranslation('You are required to test all samples in the PT panel.'),
                 T::markForTranslation('The laboratory did not report a result for every sample.'),
             ],
             self::DoNotUseExpiredKits => [
-                T::markForTranslation('Do not test with expired test kits. If no valid test kits are available, contact your supervisor.'),
+                T::markForTranslation('Ensure expired test kits are not used for testing. If no valid test kits are available, please contact your supervisor.'),
                 T::markForTranslation('The laboratory tested with an expired test kit.'),
             ],
             self::ReportKitExpiryDate => [
-                T::markForTranslation('Report the expiry date of every test kit you use.'),
+                T::markForTranslation('Ensure the expiry date is reported for all performed tests.'),
                 T::markForTranslation('The laboratory did not report a test kit expiry date.'),
             ],
             self::ReportKitName => [
-                T::markForTranslation('Report the name of every test kit you use.'),
+                T::markForTranslation('Ensure test kit name is reported for all performed tests.'),
                 T::markForTranslation('The laboratory did not report a test kit name.'),
             ],
             self::UseApprovedKitsNotRepeatedForAll => [
-                T::markForTranslation('Use a different approved test kit for each test, as the SOP and the National HIV Testing algorithm require.'),
+                T::markForTranslation('Please use a different approved test kit for each test, as per the SOP and the National HIV Testing algorithm.'),
                 T::markForTranslation('The laboratory reported the same test kit for all three tests.'),
             ],
             self::UseApprovedKitsNotRepeated => [
-                T::markForTranslation('Use a different approved test kit for each test, as the SOP and the National HIV Testing algorithm require.'),
+                T::markForTranslation('Please use a different approved test kit for each test, as per the SOP and the National HIV Testing algorithm.'),
                 T::markForTranslation('The laboratory reported the same test kit for two tests.'),
             ],
             self::ReportKitLotNumber => [
-                T::markForTranslation('Report the lot number of every test kit you use.'),
+                T::markForTranslation('Ensure the lot number is reported for all performed tests.'),
                 T::markForTranslation('The laboratory did not report a test kit lot number.'),
             ],
             self::ReportSupervisorApproval => [
-                T::markForTranslation('Get supervisor approval and report the supervisor\'s name.'),
+                T::markForTranslation('Ensure the supervisor\'s approval and name are provided.'),
                 T::markForTranslation('The laboratory did not report supervisor approval.'),
             ],
             self::ReportRehydrationDate => [
-                T::markForTranslation('Report the date you rehydrated the PT panel.'),
+                T::markForTranslation('Ensure the panel rehydration date is provided.'),
                 T::markForTranslation('The laboratory did not report the rehydration date.'),
             ],
             self::ReportTestingDate => [
-                T::markForTranslation('Report the date you tested the PT panel.'),
+                T::markForTranslation('Ensure the panel testing date is provided.'),
                 T::markForTranslation('The laboratory did not report the testing date.'),
             ],
             self::TestWithinRehydrationWindow => [
-                T::markForTranslation('Test the PT panel within the time after rehydration that the SOP sets.'),
+                T::markForTranslation('Ensure DTS testing is done within the specified hours of rehydration, as per the SOP.'),
                 T::markForTranslation('The laboratory did not test within the time after rehydration that the SOP sets.'),
             ],
             self::ReviewProceduresWithSupervisor => [
-                T::markForTranslation('Review all testing procedures before you test client samples again. Contact your supervisor to plan improvements.'),
+                T::markForTranslation('Review all testing procedures before client testing, and contact your supervisor for improvement.'),
                 T::markForTranslation('The participant score is below the pass mark.'),
             ],
             self::ReportReceiptDate => [
-                T::markForTranslation('Report the date you received the PT panel.'),
+                T::markForTranslation('Ensure the panel receipt date is provided.'),
                 T::markForTranslation('The laboratory did not report the panel receipt date.'),
             ],
             self::TestWithApprovedKits => [
-                T::markForTranslation('Test with the country-approved test kits, as the National HIV Testing algorithm and the SOP require.'),
+                T::markForTranslation('Please use country-approved test kits as per the National HIV Testing algorithm. Review and refer to the SOP.'),
                 T::markForTranslation('The laboratory tested with a test kit that is not country-approved.'),
             ],
             self::ReportSampleCondition => [
-                T::markForTranslation('Report the condition of the PT samples.'),
+                T::markForTranslation('Please ensure the condition of the PT samples is reported.'),
                 T::markForTranslation('The laboratory did not report the condition of the PT samples.'),
             ],
             self::ReportRefrigerator => [
-                T::markForTranslation('Report whether a refrigerator is available.'),
+                T::markForTranslation('Please ensure refrigerator availability is reported.'),
                 T::markForTranslation('The laboratory did not report refrigerator availability.'),
             ],
             self::ReportRoomTemperature => [
-                T::markForTranslation('Report the room temperature.'),
+                T::markForTranslation('Please ensure the room temperature is reported.'),
                 T::markForTranslation('The laboratory did not report the room temperature.'),
             ],
             self::ReportStopWatch => [
-                T::markForTranslation('Report whether a stopwatch is available.'),
+                T::markForTranslation('Please ensure stopwatch availability is reported.'),
                 T::markForTranslation('The laboratory did not report stopwatch availability.'),
             ],
             self::ReportActualRehydrationDate => [
-                T::markForTranslation('Report the actual rehydration date. It cannot be earlier than the date you received the panel.'),
+                T::markForTranslation('Record the date the panel was actually rehydrated. A panel can only be rehydrated after it has been received.'),
                 T::markForTranslation('The reported rehydration date is earlier than the panel receipt date.'),
+            ],
+            self::RunEveryNeededTest => [
+                T::markForTranslation('Review and refer to the SOP. Ensure every test required by the National HIV Testing algorithm is performed.'),
+                T::markForTranslation('The laboratory did not report a test that the algorithm needs.'),
+            ],
+            self::StopWhereAlgorithmEnds => [
+                T::markForTranslation('Review and refer to the SOP. Ensure testing stops when the National HIV Testing algorithm gives a final result.'),
+                T::markForTranslation('The laboratory ran tests after the algorithm gave a final result.'),
+            ],
+            self::ReportAlgorithmFinalResult => [
+                T::markForTranslation('Review and refer to the SOP. Ensure the final result reported is the one the National HIV Testing algorithm gives.'),
+                T::markForTranslation('The reported final result is not the one the test results give.'),
             ],
         };
     }

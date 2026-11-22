@@ -896,8 +896,8 @@ if (!empty($resultArray['shipment'])) {
                 if (is_array($warnings)) {
                     foreach ($warnings as $warning) {
                         $failRes .= '<tr>';
-                        $failRes .= '<td>' . ($warning['warning'] ?? '') . '</td>';
-                        $failRes .= '<td>' . ($warning['correctiveAction'] ?? '') . '</td>';
+                        $failRes .= '<td>' . Pt_Evaluation_FailureReason::warningHtml($warning) . '</td>';
+                        $failRes .= '<td>' . Pt_Evaluation_FailureReason::correctiveActionHtml($warning) . '</td>';
                         $failRes .= '</tr>';
                     }
                 }

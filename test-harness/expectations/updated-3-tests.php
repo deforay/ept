@@ -5,7 +5,7 @@
  * (scheme_config.dts.dtsSchemeType = 'updated-3-tests', algorithm = 'dts-3-tests').
  *
  * These are declared from the algorithm spec, NOT computed from
- * Application_Model_Dts::algoUpdatedThreeTests — that's the whole point of the
+ * the updated-3-tests rules in Pt_Evaluation_Dts_Algorithm — that's the whole point of the
  * harness. If the algorithm drifts from this, the test fails.
  *
  * Sample set (FIXED, 5 samples — mirrors a real per-shipment panel):
@@ -62,7 +62,7 @@ return [
             'allowed_tiers' => ['standard'],
             'expected'      => [
                 // Final result (P) is correct, but the 3-test algorithm was not satisfied
-                // (only T1 reactive) → algoUpdatedThreeTests fails → sample Unacceptable.
+                // (only T1 reactive) → the 3-test rules fail → sample Unacceptable.
                 'standard' => [1 => 'Unacc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc'],
             ],
         ],

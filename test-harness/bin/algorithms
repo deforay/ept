@@ -1,0 +1,144 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Checks the DTS algorithms written as rules, and prints what they say about each
+ * combination of results. No database, about a second.
+ *
+ *   php test-harness/bin/algorithms
+ *   php test-harness/bin/algorithms --print sierraLeone
+ *   php test-harness/bin/algorithms --print updated-3-tests --all
+ *
+ * The check runs every combination of test results and final results through the
+ * rules in Pt_Evaluation_Dts_Algorithm. The combinations that pass must be exactly
+ * the ones listed in expectations/dts-algorithms.php. Exit 0 when every algorithm
+ * matches, 1 when one does not.
+ *
+ * --print lists each combination with its verdict and the warnings and corrective
+ * actions a laboratory would see, in English. Send it to a country programme to
+ * confirm its rules. By default it uses the results that come up in practice
+ * (not done, R, NR, I) and the finals P, N and IND. --all adds IND and WR test
+ * results and a final result that no algorithm gives.
+ *
+ * Like bin/workbook and bin/pdf-html, this loads classes from the app: the rules
+ * and the check are pure functions, so no database or shipment is needed.
+ */
+
+$root = dirname(__DIR__);
+$repoRoot = dirname($root);
+
+foreach ([
+    'library/Pt/Commons/TranslateUtility.php',
+    'library/Pt/Commons/MiscUtility.php',
+    'library/Pt/Evaluation/Dts/CorrectiveAction.php',
+    'library/Pt/Evaluation/Dts/Reason.php',
+    'library/Pt/Evaluation/Dts/Algorithm.php',
+    'library/Pt/Evaluation/Dts/AlgorithmCheck.php',
+    'library/Pt/Evaluation/FailureReason.php',
+] as $file) {
+    require_once "$repoRoot/$file";
+}
+
+$args = array_slice($_SERVER['argv'] ?? [], 1);
+$printName = null;
+$all = in_array('--all', $args, true);
+foreach ($args as $i => $arg) {
+    if ($arg === '--print') {
+        $printName = $args[$i + 1] ?? '';
+    } elseif ($arg === '--help' || $arg === '-h') {
+        fwrite(STDOUT, "Usage: php test-harness/bin/algorithms [--print <algorithm> [--all]]\n");
+        exit(0);
+    }
+}
+
+$expectations = require "$root/expectations/dts-algorithms.php";
+
+/**
+ * Every combination of results the algorithm reads, as [results by test, final].
+ *
+ * @return list<array{0: array<string, string>, 1: string}>
+ */
+function combinations(Pt_Evaluation_Dts_Algorithm $algorithm, array $testValues, array $finals): array
+{
+    $combos = [[]];
+    foreach ($algorithm->tests() as $test) {
+        $next = [];
+        foreach ($combos as $combo) {
+            foreach ($testValues as $value) {
+                $next[] = $combo + [$test => $value];
+            }
+        }
+        $combos = $next;
+    }
+    $out = [];
+    foreach ($combos as $combo) {
+        foreach ($finals as $final) {
+            $out[] = [$combo, $final];
+        }
+    }
+    return $out;
+}
+
+function key_of(array $results, string $final): string
+{
+    return implode('/', $results) . ' → ' . $final;
+}
+
+if ($printName !== null) {
+    $algorithm = Pt_Evaluation_Dts_Algorithm::tryFrom($printName);
+    if ($algorithm === null) {
+        $names = implode(', ', array_map(static fn ($a) => $a->value, Pt_Evaluation_Dts_Algorithm::cases()));
+        fwrite(STDERR, "Unknown algorithm '$printName'. Use one of: $names\n");
+        exit(2);
+    }
+    $testValues = $all ? ['-', 'R', 'NR', 'I', 'IND', 'WR'] : ['-', 'R', 'NR', 'I'];
+    $finals = $all ? ['P', 'N', 'IND', 'X'] : ['P', 'N', 'IND'];
+    $plain = static fn (string $html): string => html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $header = implode(' / ', array_map(Pt_Evaluation_Dts_Reason::testName(...), $algorithm->tests())) . ' → final';
+    fwrite(STDOUT, $algorithm->value . "\n" . $header . "\n\n");
+    foreach (combinations($algorithm, $testValues, $finals) as [$results, $final]) {
+        $feedback = Pt_Evaluation_Dts_AlgorithmCheck::feedback($algorithm, $results, $final, 'Sample');
+        fwrite(STDOUT, key_of($results, $final) . '  ' . ($feedback['pass'] ? 'PASS' : 'FAIL') . "\n");
+        foreach ($feedback['items'] as $item) {
+            fwrite(STDOUT, '    ' . $plain(Pt_Evaluation_FailureReason::warningHtml($item)) . "\n");
+            fwrite(STDOUT, '      → ' . $plain(Pt_Evaluation_FailureReason::correctiveActionHtml($item)) . "\n");
+        }
+    }
+    exit(0);
+}
+
+$failed = false;
+foreach (Pt_Evaluation_Dts_Algorithm::cases() as $algorithm) {
+    $expected = [];
+    foreach ($expectations[$algorithm->value] ?? [] as $row) {
+        $final = array_pop($row);
+        $expected[key_of(array_combine($algorithm->tests(), $row), $final)] = true;
+    }
+    $passing = [];
+    $total = 0;
+    foreach (combinations($algorithm, ['-', 'R', 'NR', 'I', 'IND', 'WR'], ['P', 'N', 'IND', 'X']) as [$results, $final]) {
+        $total++;
+        if (Pt_Evaluation_Dts_AlgorithmCheck::check($algorithm, $results, $final)['pass']) {
+            $passing[key_of($results, $final)] = true;
+        }
+    }
+    $missing = array_keys(array_diff_key($expected, $passing));
+    $extra = array_keys(array_diff_key($passing, $expected));
+    $ok = $missing === [] && $extra === [];
+    $failed = $failed || !$ok;
+    fwrite(STDOUT, sprintf("%-32s %5d combinations, %2d pass  %s\n", $algorithm->value, $total, count($passing), $ok ? 'OK' : 'DIFFERS'));
+    foreach ($missing as $combo) {
+        fwrite(STDOUT, "    expected to pass, fails: $combo\n");
+    }
+    foreach ($extra as $combo) {
+        fwrite(STDOUT, "    expected to fail, passes: $combo\n");
+    }
+    if (!isset($expectations[$algorithm->value])) {
+        fwrite(STDOUT, "    no expectations recorded for this algorithm\n");
+        $failed = true;
+    }
+}
+
+exit($failed ? 1 : 0);

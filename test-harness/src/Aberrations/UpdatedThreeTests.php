@@ -9,7 +9,7 @@ namespace EptTestHarness\Aberrations;
  * (scheme_config.dts.dtsSchemeType = 'updated-3-tests', algorithm = 'dts-3-tests').
  *
  * Unlike Vietnam, this scheme is NOT tier-aware and NOT qualitative — it is the
- * serial 3-test confirmatory algorithm (Application_Model_Dts::algoUpdatedThreeTests):
+ * serial 3-test confirmatory algorithm (the updated-3-tests rules in Pt_Evaluation_Dts_Algorithm):
  *
  *   Negative : T1 = NR, no further tests          → final N        (Pass)
  *   Positive : T1 = R, T2 = R (T3 optional)       → final P        (Pass)
@@ -86,7 +86,7 @@ final class UpdatedThreeTests
      * Correct response for the fixed 5-sample set.
      * Positives may be reported as 2-test (R,R) or 3-test (R,R,R) — both are
      * algorithm-correct. Negatives MUST be single-test (T1=NR, T2/T3 blank);
-     * a second NR would make algoUpdatedThreeTests flag the algorithm.
+     * a second NR would make the 3-test rules flag the algorithm.
      */
     private static function baseline(int $seed): array
     {
@@ -147,7 +147,7 @@ final class UpdatedThreeTests
         $r = self::baseline($seed);
         // S1 (positive): final result is correct (P) but only ONE reactive test was
         // run — the 3-test algorithm requires T2 before concluding Positive, so
-        // algoUpdatedThreeTests fails and the sample is Unacceptable despite the
+        // the 3-test rules fail and the sample is Unacceptable despite the
         // correct final call. Isolates the algorithm check from the result check.
         $r[1] = ['comment' => null, 't1' => 'R', 't2' => '-', 't3' => '-', 'final' => 'P', 'kit1' => 'reference', 'kit2' => 'reference', 'kit3' => 'reference'];
         return $r;

@@ -1,18 +1,18 @@
 <?php if (empty($this->warnings)): ?>
-    <div class="text-muted text-center p-2">No Warnings or Corrective Actions</div>
+    <div class="text-muted text-center p-2"><?= $this->htmlTranslate('No Warnings or Corrective Actions'); ?></div>
 <?php else: ?>
     <table class="table table-bordered table-striped table-compressed" style="margin-bottom:0;">
         <thead>
             <tr>
-                <th scope="col">Failure Reasons (or) Warnings</th>
-                <th scope="col">Corrective Actions (if any)</th>
+                <th scope="col"><?= $this->htmlTranslate('Failure Reasons (or) Warnings'); ?></th>
+                <th scope="col"><?= $this->htmlTranslate('Corrective Actions (if any)'); ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($this->warnings as $warning): ?>
                 <tr>
-                    <td><?= isset($warning['warning']) ? $warning['warning'] : '' ?></td>
-                    <td><?= isset($warning['correctiveAction']) ? $warning['correctiveAction'] : '' ?></td>
+                    <td><?= Pt_Evaluation_FailureReason::warningHtml($warning) ?></td>
+                    <td><?= Pt_Evaluation_FailureReason::correctiveActionHtml($warning) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

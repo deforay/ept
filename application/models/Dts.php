@@ -541,6 +541,17 @@ final class Application_Model_Dts
                 if ($algoResult === 'Fail') {
                     $anyAlgoFail = true;
                 }
+                // A sample with no final result gets "was not reported" below, and fails on
+                // that. An algorithm warning for it would only repeat the same problem, so
+                // the coded algorithm warnings are left out. Uncoded feedback, such as
+                // Vietnam's, stays.
+                if (trim((string) ($result['reported_result'] ?? '')) === '') {
+                    $uncoded = array_values(array_filter($algo['failureReason'], static fn ($r) => !isset($r['code'])));
+                    if (count($uncoded) !== count($algo['failureReason'])) {
+                        $algo['failureReason'] = $uncoded;
+                        $algo['correctiveActionList'] = [];
+                    }
+                }
                 $scorePercentageForAlgorithm = $algo['scorePct'];            // 0 or 0.5 for Myanmar
                 $sypAlgoResult = $algo['sypAlgoResult'];
                 $rtriAlgoResult = $algo['rtriAlgoResult'];
@@ -2265,7 +2276,10 @@ final class Application_Model_Dts
                 $warnings = '';
                 if (!empty($aRow['failure_reason'])) {
                     $warningsArray = Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']);
-                    $warnings = implode(', ', array_map(static fn ($w) => html_entity_decode(strip_tags((string) $w), ENT_QUOTES | ENT_HTML5, 'UTF-8'), array_column($warningsArray, 'warning')));
+                    $warnings = implode(', ', array_map(
+                        static fn ($w) => html_entity_decode(strip_tags(Pt_Evaluation_FailureReason::warningHtml($w)), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                        array_filter((array) $warningsArray, static fn ($w) => is_array($w) || is_string($w))
+                    ));
                 }
                 $totalScoreRow[] = $warnings;
 
@@ -2605,16 +2619,22 @@ final class Application_Model_Dts
         // Confirmatory / updated-3-tests
         if ((isset($dtsSchemeType) && $dtsSchemeType === 'updated-3-tests') || $isConfirmatory) {
 
-            $this->algoUpdatedThreeTests(
+            $this->checkAlgorithmRules(
+                $requireTest3 ? Pt_Evaluation_Dts_Algorithm::ThreeTestsRequireTest3 : Pt_Evaluation_Dts_Algorithm::ThreeTests,
                 $result,
-                $result1,
-                $result2,
-                $result3,
-                $repeatResult1,
-                $reportedResultCode,
-                $correctiveActions,
-                $out,
-                $requireTest3
+                [
+                    'test1' => $this->normalizeAlgoResult($result1),
+                    'test2' => $this->normalizeAlgoResult($result2),
+                    'test3' => $this->normalizeAlgoResult($result3),
+                    'repeat1' => $this->normalizeAlgoResult($repeatResult1),
+                ],
+                match (true) {
+                    $reportedResultCode === 'P' => 'P',
+                    $reportedResultCode === 'N' => 'N',
+                    $this->isIndeterminateFinalCode($reportedResultCode) => 'IND',
+                    default => (string) $reportedResultCode,
+                },
+                $out
             );
 
             // Optional RTRI check (only if enabled & sample allowed)
@@ -2638,7 +2658,18 @@ final class Application_Model_Dts
 
         // Sierra Leone
         elseif ($dtsSchemeType === 'sierraLeone' || ($attributes['algorithm'] ?? '') === 'sierraLeoneNationalDtsAlgo') {
-            $this->algoSierraLeone($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
+            $this->checkAlgorithmRules(
+                Pt_Evaluation_Dts_Algorithm::SierraLeone,
+                $result,
+                ['test1' => (string) $result1, 'test2' => (string) $result2, 'test3' => (string) $result3],
+                match ($reportedResultCode) {
+                    'P', 'R' => 'P',
+                    'N' => 'N',
+                    'I' => 'IND',
+                    default => (string) $reportedResultCode,
+                },
+                $out
+            );
             return $out;
         }
 
@@ -2708,18 +2739,47 @@ final class Application_Model_Dts
         }
 
         // Default: Fail with standard warning
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+        $this->warningForAlgo($out, $result);
         return $out;
     }
 
-    private function warningForAlgo(array &$out, array $correctiveActions, string $sampleLabel)
+    /**
+     * Fails the sample on an algorithm that is not written as rules yet. The message
+     * says only that the algorithm was not followed.
+     *
+     * @param array<string, mixed> $result the response row for the sample
+     */
+    private function warningForAlgo(array &$out, array $result): void
     {
+        $action = Pt_Evaluation_Dts_CorrectiveAction::FollowNationalAlgorithm;
         $out['algoResult'] = 'Fail';
-        $out['failureReason'][] = [
-            'warning' => 'For <strong>' . Pt_Commons_MiscUtility::escapeHtml($sampleLabel) . '</strong> National HIV Testing algorithm was not followed.',
-            'correctiveAction' => $correctiveActions[2] ?? '',
-        ];
-        $out['correctiveActionList'][] = 2;
+        $out['failureReason'][] = Pt_Evaluation_FailureReason::dts(
+            Pt_Evaluation_Dts_Reason::AlgorithmNotFollowed,
+            ['sample' => (string) ($result['sample_label'] ?? '')],
+            $action
+        );
+        $out['correctiveActionList'][] = $action->value;
+    }
+
+    /**
+     * Checks a sample against an algorithm written as rules, and records each problem
+     * with the corrective action that answers it.
+     *
+     * @param array<string, mixed> $result the response row for the sample
+     * @param array<string, string> $tests result code by test (test1, test2, test3, repeat1)
+     * @param string $final the reported final result as P, N or IND
+     */
+    private function checkAlgorithmRules(
+        Pt_Evaluation_Dts_Algorithm $algorithm,
+        array $result,
+        array $tests,
+        string $final,
+        array &$out
+    ): void {
+        $feedback = Pt_Evaluation_Dts_AlgorithmCheck::feedback($algorithm, $tests, $final, (string) ($result['sample_label'] ?? ''));
+        $out['algoResult'] = $feedback['pass'] ? 'Pass' : 'Fail';
+        array_push($out['failureReason'], ...$feedback['items']);
+        array_push($out['correctiveActionList'], ...$feedback['actions']);
     }
 
     /**
@@ -2782,73 +2842,6 @@ final class Application_Model_Dts
     private function normalizeAlgoResult(?string $result): string
     {
         return (in_array(trim(strtolower($result)), [null, '', 'x', 'n/a'], true)) ? '-' : $result;
-    }
-
-    /**
-     * Updated-3-tests / confirmatory path.
-     *
-     * With $requireTest3 (scheme_config.dts.dtsRequireTest3, Zimbabwe), Test 1 and Test 2
-     * reactive is not enough to conclude Positive: Test 3 must be run and reactive, and a
-     * non-reactive Test 3 must be reported Indeterminate/Inconclusive. Without it, Test 3
-     * is ignored once Test 1 and Test 2 agree.
-     */
-    private function algoUpdatedThreeTests(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $repeatResult1,
-        ?string $reportedResultCode,
-        array $correctiveActions,
-        array &$out,
-        bool $requireTest3 = false
-    ) {
-
-        $result1 = $this->normalizeAlgoResult($result1);
-        $result2 = $this->normalizeAlgoResult($result2);
-        $result3 = $this->normalizeAlgoResult($result3);
-        $repeatResult1 = $this->normalizeAlgoResult($repeatResult1);
-
-        if ($result1 == 'NR' && $reportedResultCode == 'N') {
-            if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
-                $out['algoResult'] = 'Pass';
-            } else {
-                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-            }
-        } elseif ($result1 == 'R') {
-            if ($requireTest3 && $result2 == 'R') {
-                $sampleLabel = $result['sample_label'] ?? '';
-                if ($result3 == '-') {
-                    $out['algoResult'] = 'Fail';
-                    $out['failureReason'][] = [
-                        'warning' => 'For <strong>' . Pt_Commons_MiscUtility::escapeHtml($sampleLabel) . '</strong> Test 3 was not reported. Test 1 and Test 2 were reactive, so Test 3 is required before a result can be concluded.',
-                        'correctiveAction' => $correctiveActions[2] ?? '',
-                    ];
-                    $out['correctiveActionList'][] = 2;
-                } elseif ($repeatResult1 == '-' && (
-                    ($result3 == 'R' && $reportedResultCode == 'P')
-                    || ($result3 == 'NR' && $this->isIndeterminateFinalCode($reportedResultCode))
-                )) {
-                    $out['algoResult'] = 'Pass';
-                } else {
-                    $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
-                }
-            } elseif ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
-                $out['algoResult'] = 'Pass';
-            } elseif ($result2 == 'NR') {
-                if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
-                    $out['algoResult'] = 'Pass';
-                } elseif ($repeatResult1 == 'R' && $this->isIndeterminateFinalCode($reportedResultCode)) {
-                    $out['algoResult'] = 'Pass';
-                } else {
-                    $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-                }
-            } else {
-                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-            }
-        } else {
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-        }
     }
 
     /**
@@ -3080,7 +3073,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3094,7 +3087,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3103,7 +3096,7 @@ final class Application_Model_Dts
             return;
         }
 
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+        $this->warningForAlgo($out, $result);
     }
 
     /** Parallel */
@@ -3121,7 +3114,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3135,7 +3128,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3144,44 +3137,7 @@ final class Application_Model_Dts
             return;
         }
 
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-    }
-
-    /** Sierra Leone */
-    private function algoSierraLeone(
-        array $result,
-        ?string $result1,
-        ?string $result2,
-        ?string $result3,
-        ?string $reportedResultCode,
-        array $correctiveActions,
-        array &$out
-    ) {
-        if ($result1 === 'NR' && $result2 === '-' && $result3 === '-' && $reportedResultCode === 'N') {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-        if ($result1 === 'R' && $result2 === 'R' && $result3 === '-' && in_array($reportedResultCode, ['P', 'R'], true)) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-        if ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR' && $reportedResultCode === 'N') {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-        if ($result1 === 'R' && $result2 === 'NR' && $result3 === 'R' && in_array($reportedResultCode, ['P', 'R'], true)) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-        if (
-            ($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && $reportedResultCode === 'I')
-            || ($result1 === 'R' && $result2 === 'R' && $result3 === 'I' && $reportedResultCode === 'I')
-        ) {
-            $out['algoResult'] = 'Pass';
-            return;
-        }
-
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+        $this->warningForAlgo($out, $result);
     }
 
     /** Cote d'Ivoire */
@@ -3205,7 +3161,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
         if ($result1 === 'R') {
@@ -3222,10 +3178,10 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $result);
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
         }
     }
 
@@ -3261,7 +3217,7 @@ final class Application_Model_Dts
             $out['scorePct'] = 0.5; // Myanmar rule
             return;
         }
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+        $this->warningForAlgo($out, $result);
     }
 
     /** Malawi */
@@ -3287,7 +3243,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3306,14 +3262,14 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $result);
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
-        $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+        $this->warningForAlgo($out, $result);
     }
 
     /** Ghana (HIV algo) */
@@ -3333,7 +3289,7 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
             return;
         }
 
@@ -3359,10 +3315,10 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $result);
                 return;
             }
-            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $result);
         }
     }
 

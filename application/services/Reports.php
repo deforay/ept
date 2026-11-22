@@ -3244,10 +3244,14 @@ class Application_Service_Reports
         }
         $txt = $note = '';
         foreach ((array) Pt_Commons_JsonUtility::safeDecode($failureReason) as $w) {
-            $txt .= $w['warning'] ?? '';
-            $note .= $w['correctiveAction'] ?? '';
+            if (!is_array($w) && !is_string($w)) {
+                continue;
+            }
+            $txt .= Pt_Evaluation_FailureReason::warningHtml($w);
+            $note .= Pt_Evaluation_FailureReason::correctiveActionHtml($w);
         }
-        return [strip_tags($txt), strip_tags($note)];
+        $plain = static fn (string $html): string => html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return [$plain($txt), $plain($note)];
     }
 
     /** The TB enrolments that match the filters and the search. */
