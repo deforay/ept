@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 16:59+0530\n"
+"POT-Creation-Date: 2026-11-22 17:27+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -149,31 +149,31 @@ msgid ""
 msgstr ""
 
 #: application/languages/audit-log-strings.php:35
-msgid "Finalizing publishes results to participants"
+msgid "Evaluation queued"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:36
-msgid "Had submitted results"
+msgid "Finalizing publishes results to participants"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:37
-msgid "Idle time limit (minutes)"
+msgid "Had submitted results"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:38
-msgid "Individual reports"
+msgid "Idle time limit (minutes)"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:39
-msgid "Inserted"
+msgid "Individual reports"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:40
-msgid "Invalid addresses skipped"
+msgid "Inserted"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:41
-msgid "Job"
+msgid "Invalid addresses skipped"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:42
@@ -181,95 +181,95 @@ msgid "Job status"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:43
-msgid "Labs emailed"
+msgid "Job"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:44
-msgid "Labs without an email address"
+msgid "Labs emailed"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:45
-msgid "Login-only address (made up at import)"
+msgid "Labs without an email address"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:46
-msgid "Mail template"
+msgid "Login-only address (made up at import)"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:47
-msgid "Mappings"
+msgid "Mail template"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:48
-msgid "Merged list"
+msgid "Mappings"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:49
-msgid "Message changed"
+msgid "Merged list"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:50
-msgid "Messages"
+msgid "Message changed"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:51
-msgid "Moves a finalized shipment back to an earlier status"
+msgid "Messages"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:52
-msgid "Must change password at next login"
+msgid "Moves a finalized shipment back to an earlier status"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:53
-msgid "New data managers"
+msgid "Must change password at next login"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:54
-msgid "No email"
+msgid "New data managers"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:55
-msgid "Not a valid email address"
+msgid "No email"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:56
-msgid "Number of controls"
+msgid "Not a valid email address"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:57
-msgid "Number of samples"
+msgid "Number of controls"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:58
-msgid "Overwrite"
+msgid "Number of samples"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:59
-msgid "Participants added"
+msgid "Overwrite"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:60
-msgid "Participants removed"
+msgid "Participants added"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:61
-msgid "Passwords reset"
+msgid "Participants removed"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:62
-msgid "Platforms removed"
+msgid "Passwords reset"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:63
-msgid "Previous name"
+msgid "Platforms removed"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:64
-msgid "PTCC logins reset"
+msgid "Previous name"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:65
-msgid "Removed"
+msgid "PTCC logins reset"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:66
@@ -285,103 +285,107 @@ msgid "Removed through"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:69
-msgid "Removes platforms from result entry"
+msgid "Removed"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:70
-msgid "Removes test kits that labs could report"
+msgid "Removes platforms from result entry"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:71
-msgid "Removes the platform from result entry"
+msgid "Removes test kits that labs could report"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:72
-msgid "Replaced the previous template"
+msgid "Removes the platform from result entry"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:73
-msgid "Replaces the scoring settings of existing custom tests."
+msgid "Replaced the previous template"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:74
-msgid "Replaces the summary report participants download"
+msgid "Replaces the scoring settings of existing custom tests."
 msgstr ""
 
 #: application/languages/audit-log-strings.php:75
-msgid "Response switch"
+msgid "Replaces the summary report participants download"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:76
-msgid "Responses received"
+msgid "Response switch"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:77
-msgid "Results approved by"
+msgid "Responses received"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:78
-msgid "Results approved on"
+msgid "Results approved by"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:79
-msgid "Retires results that shipments already use"
+msgid "Results approved on"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:80
-msgid "Rows"
+msgid "Retires results that shipments already use"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:81
-msgid "Saved as a list"
+msgid "Rows"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:82
-msgid "Shipment Evaluated"
+msgid "Saved as a list"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:83
-msgid "Shipments cancelled"
+msgid "Shipment Evaluated"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:84
-msgid "Shipments not cancelled"
+msgid "Shipments cancelled"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:85
-msgid "Shipments scored with the earlier settings"
+msgid "Shipments not cancelled"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:86
-msgid "Some shipments could not be cancelled"
+msgid "Shipments scored with the earlier settings"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:87
-msgid "Status now"
+msgid "Some shipments could not be cancelled"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:88
-msgid "Templates uploaded"
+msgid "Status now"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:89
-msgid "Test kits added (+) and removed (−)"
+msgid "Templates uploaded"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:90
-msgid "Test kits approved"
+msgid "Test kits added (+) and removed (−)"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:91
-msgid "The assay is no longer offered in result entry."
+msgid "Test kits approved"
 msgstr ""
 
 #: application/languages/audit-log-strings.php:92
+msgid "The assay is no longer offered in result entry."
+msgstr ""
+
+#: application/languages/audit-log-strings.php:93
 msgid ""
 "This PT Survey cannot be cancelled because these shipments are finalized"
 msgstr ""
 
-#: application/languages/audit-log-strings.php:93
+#: application/languages/audit-log-strings.php:94
 msgid "Updated"
 msgstr ""
 
@@ -554,7 +558,7 @@ msgstr ""
 #: application/models/DbTable/DataManagers.php:599
 #: application/models/DbTable/Distribution.php:156
 #: application/models/Dts.php:2315 application/models/Recency.php:553
-#: application/modules/admin/views/scripts/audit-log/index.phtml:950
+#: application/modules/admin/views/scripts/audit-log/index.phtml:951
 #: application/modules/admin/views/scripts/email-participants/index.phtml:464
 #: application/modules/admin/views/scripts/login/index.phtml:190
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:23
@@ -1830,7 +1834,7 @@ msgstr ""
 
 #: application/languages/help-translation-strings.php:79
 #: application/layouts/scripts/admin.phtml:506
-#: application/modules/admin/views/scripts/audit-log/index.phtml:787
+#: application/modules/admin/views/scripts/audit-log/index.phtml:788
 #: application/views/partials/spotlight.phtml:267
 msgid "Audit Log"
 msgstr ""
@@ -3436,7 +3440,7 @@ msgid ""
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:357
-#: application/modules/admin/views/scripts/audit-log/index.phtml:907
+#: application/modules/admin/views/scripts/audit-log/index.phtml:908
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:47
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-password.phtml:33
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-password.phtml:82
@@ -3745,7 +3749,7 @@ msgid "TB: All Sites' Results"
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:646
-#: application/modules/admin/views/scripts/audit-log/index.phtml:971
+#: application/modules/admin/views/scripts/audit-log/index.phtml:972
 #: application/modules/admin/views/scripts/data-managers/index.phtml:254
 #: application/modules/admin/views/scripts/data-managers/index.phtml:255
 #: application/modules/admin/views/scripts/data-managers/index.phtml:256
@@ -5252,8 +5256,8 @@ msgid "Warnings and/or Reasons for Failure"
 msgstr ""
 
 #: application/models/Eid.php:224
-#: application/modules/admin/views/scripts/audit-log/index.phtml:852
-#: application/modules/admin/views/scripts/audit-log/index.phtml:967
+#: application/modules/admin/views/scripts/audit-log/index.phtml:853
+#: application/modules/admin/views/scripts/audit-log/index.phtml:968
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:10
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:480
 #: application/modules/reports/views/scripts/certificates/index.phtml:527
@@ -6200,7 +6204,7 @@ msgid "Held (paused)"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:55
-#: application/modules/admin/views/scripts/audit-log/index.phtml:807
+#: application/modules/admin/views/scripts/audit-log/index.phtml:808
 #: application/modules/admin/views/scripts/custom-test/add.phtml:169
 #: application/modules/admin/views/scripts/custom-test/add.phtml:402
 #: application/modules/admin/views/scripts/custom-test/add.phtml:468
@@ -6495,9 +6499,9 @@ msgid "API Params"
 msgstr ""
 
 #: application/modules/admin/views/scripts/api-history/api-params.phtml:28
-#: application/modules/admin/views/scripts/audit-log/index.phtml:864
-#: application/modules/admin/views/scripts/audit-log/index.phtml:960
-#: application/modules/admin/views/scripts/audit-log/index.phtml:970
+#: application/modules/admin/views/scripts/audit-log/index.phtml:865
+#: application/modules/admin/views/scripts/audit-log/index.phtml:961
+#: application/modules/admin/views/scripts/audit-log/index.phtml:971
 msgid "Request"
 msgstr ""
 
@@ -6580,32 +6584,32 @@ msgstr ""
 msgid "Synced On"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:790
+#: application/modules/admin/views/scripts/audit-log/index.phtml:791
 msgid "Download the entries that match the current filters"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:791
+#: application/modules/admin/views/scripts/audit-log/index.phtml:792
 msgid "Export CSV"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:796
+#: application/modules/admin/views/scripts/audit-log/index.phtml:797
 msgid "History of"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:797
+#: application/modules/admin/views/scripts/audit-log/index.phtml:798
 msgid "Show all entries"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:803
+#: application/modules/admin/views/scripts/audit-log/index.phtml:804
 #: application/modules/admin/views/scripts/shipment/index.phtml:44
 msgid "Show"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:804
+#: application/modules/admin/views/scripts/audit-log/index.phtml:805
 msgid "Feed source"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:805
+#: application/modules/admin/views/scripts/audit-log/index.phtml:806
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:168
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:59
 #: application/modules/admin/views/scripts/home-config/index.phtml:571
@@ -6613,12 +6617,12 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:806
-#: application/modules/admin/views/scripts/audit-log/index.phtml:972
+#: application/modules/admin/views/scripts/audit-log/index.phtml:807
+#: application/modules/admin/views/scripts/audit-log/index.phtml:973
 msgid "Logins"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:811
+#: application/modules/admin/views/scripts/audit-log/index.phtml:812
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:126
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:89
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:50
@@ -6629,51 +6633,51 @@ msgstr ""
 msgid "Date Range"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:812
+#: application/modules/admin/views/scripts/audit-log/index.phtml:813
 msgid "Any date"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:815
-#: application/modules/admin/views/scripts/audit-log/index.phtml:949
-#: application/modules/admin/views/scripts/audit-log/index.phtml:963
+#: application/modules/admin/views/scripts/audit-log/index.phtml:816
+#: application/modules/admin/views/scripts/audit-log/index.phtml:950
+#: application/modules/admin/views/scripts/audit-log/index.phtml:964
 msgid "User"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:817
+#: application/modules/admin/views/scripts/audit-log/index.phtml:818
 msgid "All users"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:824
-#: application/modules/admin/views/scripts/audit-log/index.phtml:954
-#: application/modules/admin/views/scripts/audit-log/index.phtml:964
+#: application/modules/admin/views/scripts/audit-log/index.phtml:825
+#: application/modules/admin/views/scripts/audit-log/index.phtml:955
+#: application/modules/admin/views/scripts/audit-log/index.phtml:965
 msgid "Context"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:826
+#: application/modules/admin/views/scripts/audit-log/index.phtml:827
 msgid "All contexts"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:834
+#: application/modules/admin/views/scripts/audit-log/index.phtml:835
 msgid "Show only changes that can alter scores or results"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:835
-#: application/modules/admin/views/scripts/audit-log/index.phtml:965
+#: application/modules/admin/views/scripts/audit-log/index.phtml:836
+#: application/modules/admin/views/scripts/audit-log/index.phtml:966
 msgid "Important only"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:841
+#: application/modules/admin/views/scripts/audit-log/index.phtml:842
 #: application/modules/admin/views/scripts/enrollments/add.phtml:65
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:82
 msgid "More filters"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:848
-#: application/modules/admin/views/scripts/audit-log/index.phtml:966
+#: application/modules/admin/views/scripts/audit-log/index.phtml:849
+#: application/modules/admin/views/scripts/audit-log/index.phtml:967
 msgid "Actor email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:849
+#: application/modules/admin/views/scripts/audit-log/index.phtml:850
 #: application/modules/admin/views/scripts/global-config/index.phtml:1124
 #: application/modules/admin/views/scripts/login/index.phtml:191
 #: application/modules/admin/views/scripts/profile/index.phtml:217
@@ -6681,51 +6685,51 @@ msgstr ""
 msgid "e.g."
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:853
+#: application/modules/admin/views/scripts/audit-log/index.phtml:854
 msgid "participant unique ID"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:856
-#: application/modules/admin/views/scripts/audit-log/index.phtml:968
+#: application/modules/admin/views/scripts/audit-log/index.phtml:857
+#: application/modules/admin/views/scripts/audit-log/index.phtml:969
 msgid "View as account"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:857
+#: application/modules/admin/views/scripts/audit-log/index.phtml:858
 msgid "data manager email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:860
-#: application/modules/admin/views/scripts/audit-log/index.phtml:959
-#: application/modules/admin/views/scripts/audit-log/index.phtml:969
+#: application/modules/admin/views/scripts/audit-log/index.phtml:861
+#: application/modules/admin/views/scripts/audit-log/index.phtml:960
+#: application/modules/admin/views/scripts/audit-log/index.phtml:970
 msgid "Session"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:861
+#: application/modules/admin/views/scripts/audit-log/index.phtml:862
 msgid "16-char session hash"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:865
+#: application/modules/admin/views/scripts/audit-log/index.phtml:866
 msgid "16-char request ID"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:875
+#: application/modules/admin/views/scripts/audit-log/index.phtml:876
 msgid "Search actions, names, codes, changed values…"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:876
+#: application/modules/admin/views/scripts/audit-log/index.phtml:877
 #: application/views/partials/report-zero-state.phtml:65
 msgid "Clear search"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:884
+#: application/modules/admin/views/scripts/audit-log/index.phtml:885
 msgid "Loading audit log…"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:891
+#: application/modules/admin/views/scripts/audit-log/index.phtml:892
 msgid "Per page"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:897
+#: application/modules/admin/views/scripts/audit-log/index.phtml:898
 #: application/modules/admin/views/scripts/email-participants/index.phtml:482
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:582
 #: application/views/partials/help-drawer.phtml:121
@@ -6734,7 +6738,7 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:898
+#: application/modules/admin/views/scripts/audit-log/index.phtml:899
 #: application/modules/admin/views/scripts/email-participants/index.phtml:483
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:588
 #: application/views/partials/help-drawer.phtml:122
@@ -6744,35 +6748,35 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:911
+#: application/modules/admin/views/scripts/audit-log/index.phtml:912
 msgid "History of this item"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:912
+#: application/modules/admin/views/scripts/audit-log/index.phtml:913
 msgid "Other entries written by the same click or save"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:912
+#: application/modules/admin/views/scripts/audit-log/index.phtml:913
 msgid "Same click"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:913
+#: application/modules/admin/views/scripts/audit-log/index.phtml:914
 msgid "Same session"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:927
+#: application/modules/admin/views/scripts/audit-log/index.phtml:928
 msgid "entries"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:928
+#: application/modules/admin/views/scripts/audit-log/index.phtml:929
 msgid "important"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:929
+#: application/modules/admin/views/scripts/audit-log/index.phtml:930
 msgid "Showing"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:930
+#: application/modules/admin/views/scripts/audit-log/index.phtml:931
 #: application/modules/admin/views/scripts/index/index.phtml:1151
 #: application/modules/admin/views/scripts/index/index.phtml:1187
 #: application/modules/admin/views/scripts/index/index.phtml:1286
@@ -6783,143 +6787,143 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:931
+#: application/modules/admin/views/scripts/audit-log/index.phtml:932
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:99
 #: application/views/partials/help-drawer.phtml:56
 msgid "Loading…"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:932
+#: application/modules/admin/views/scripts/audit-log/index.phtml:933
 msgid "No audit entries match the current filters."
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:933
+#: application/modules/admin/views/scripts/audit-log/index.phtml:934
 msgid "The audit log did not load. Try again."
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:934
+#: application/modules/admin/views/scripts/audit-log/index.phtml:935
 msgid "empty"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:935
+#: application/modules/admin/views/scripts/audit-log/index.phtml:936
 msgid "more changes"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:936
+#: application/modules/admin/views/scripts/audit-log/index.phtml:937
 msgid "1 more change"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:937
+#: application/modules/admin/views/scripts/audit-log/index.phtml:938
 msgid "as"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:938
+#: application/modules/admin/views/scripts/audit-log/index.phtml:939
 msgid "Done through View as, using this account"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:939
+#: application/modules/admin/views/scripts/audit-log/index.phtml:940
 msgid "Show the history of this item"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:940
+#: application/modules/admin/views/scripts/audit-log/index.phtml:941
 msgid "Why this is flagged"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:941
+#: application/modules/admin/views/scripts/audit-log/index.phtml:942
 msgid "What changed"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:942
+#: application/modules/admin/views/scripts/audit-log/index.phtml:943
 msgid "Field"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:943
+#: application/modules/admin/views/scripts/audit-log/index.phtml:944
 msgid "Before"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:944
+#: application/modules/admin/views/scripts/audit-log/index.phtml:945
 msgid "After"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:945
+#: application/modules/admin/views/scripts/audit-log/index.phtml:946
 msgid "Details"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:946
+#: application/modules/admin/views/scripts/audit-log/index.phtml:947
 msgid "This list keeps the first 1,000 rows. Total:"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:947
+#: application/modules/admin/views/scripts/audit-log/index.phtml:948
 msgid "Who"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:948
+#: application/modules/admin/views/scripts/audit-log/index.phtml:949
 msgid "Where"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:951
+#: application/modules/admin/views/scripts/audit-log/index.phtml:952
 msgid "Role"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:952
+#: application/modules/admin/views/scripts/audit-log/index.phtml:953
 msgid "On behalf of"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:953
+#: application/modules/admin/views/scripts/audit-log/index.phtml:954
 msgid "Item"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:955
+#: application/modules/admin/views/scripts/audit-log/index.phtml:956
 msgid "IP address"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:956
+#: application/modules/admin/views/scripts/audit-log/index.phtml:957
 msgid "Browser"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:957
+#: application/modules/admin/views/scripts/audit-log/index.phtml:958
 msgid "Channel"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:958
+#: application/modules/admin/views/scripts/audit-log/index.phtml:959
 #: application/views/scripts/partial/paginate.phtml:40
 msgid "Page"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:961
+#: application/modules/admin/views/scripts/audit-log/index.phtml:962
 msgid "Repeated"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:962
+#: application/modules/admin/views/scripts/audit-log/index.phtml:963
 #: application/views/scripts/tb/assay-formats.ajax.phtml:148
 #: application/views/scripts/tb/assay-formats.ajax.phtml:265
 #: application/views/scripts/tb/assay-formats.ajax.phtml:578
 msgid "Date"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:973
+#: application/modules/admin/views/scripts/audit-log/index.phtml:974
 msgid "Actions and logins"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:974
+#: application/modules/admin/views/scripts/audit-log/index.phtml:975
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:613
 #: application/views/partials/collapsible-filters.phtml:225
 msgid "Remove filter"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:976
+#: application/modules/admin/views/scripts/audit-log/index.phtml:977
 msgid "Web"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:977
+#: application/modules/admin/views/scripts/audit-log/index.phtml:978
 msgid "API"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:978
+#: application/modules/admin/views/scripts/audit-log/index.phtml:979
 msgid "Scheduled job"
 msgstr ""
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:1406
+#: application/modules/admin/views/scripts/audit-log/index.phtml:1408
 #: application/modules/reports/views/scripts/annual/index.phtml:235
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:414
 #: application/views/partials/participant-response-report.phtml:358
@@ -26676,193 +26680,194 @@ msgstr ""
 msgid "Participant Last Name"
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:45
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:62
 msgid "Submit your response before the response deadline."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:46
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:63
+msgid "The laboratory submitted the response after the response deadline."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
 msgid ""
 "Review the SOP and test every sample as the National HIV Testing algorithm "
 "requires."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:47
-msgid ""
-"Review all testing procedures before you test client samples again. Your "
-"result does not match the expected result."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:48
-msgid "Test every sample in the PT panel."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:49
-msgid ""
-"Do not test with expired test kits. If no valid test kits are available, "
-"contact your supervisor."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:50
-msgid "Report the expiry date of every test kit you use."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:51
-msgid "Report the name of every test kit you use."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:53
-msgid ""
-"Use a different approved test kit for each test, as the SOP and the National "
-"HIV Testing algorithm require."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:54
-msgid "Report the lot number of every test kit you use."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:55
-msgid "Get supervisor approval and report the supervisor's name."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:56
-msgid "Report the date you rehydrated the PT panel."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:57
-msgid "Report the date you tested the PT panel."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:58
-msgid "Test the PT panel within the time after rehydration that the SOP sets."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:59
-msgid ""
-"Review all testing procedures before you test client samples again. Contact "
-"your supervisor to plan improvements."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:60
-msgid "Report the date you received the PT panel."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:61
-msgid ""
-"Test with the country-approved test kits, as the National HIV Testing "
-"algorithm and the SOP require."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:62
-msgid "Report the condition of the PT samples."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:63
-msgid "Report whether a refrigerator is available."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:64
-msgid "Report the room temperature."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:65
-msgid "Report whether a stopwatch is available."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
-msgid ""
-"Report the actual rehydration date. It cannot be earlier than the date you "
-"received the panel."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
-msgid "The laboratory submitted the response after the response deadline."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:75
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:67
 msgid ""
 "The laboratory did not follow the National HIV Testing algorithm for a "
 "sample."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:76
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:70
+msgid ""
+"Review all testing procedures before you test client samples again. Your "
+"result does not match the expected result."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:71
 msgid "The reported result for a sample does not match the expected result."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:77
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
+msgid "Test every sample in the PT panel."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:75
 msgid "The laboratory did not report a result for every sample."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
-msgid "The laboratory tested with an expired test kit."
+msgid ""
+"Do not test with expired test kits. If no valid test kits are available, "
+"contact your supervisor."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:79
-msgid "The laboratory did not report a test kit expiry date."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:80
-msgid "The laboratory did not report a test kit name."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:81
-msgid "The laboratory reported the same test kit for all three tests."
+msgid "The laboratory tested with an expired test kit."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
-msgid "The laboratory reported the same test kit for two tests."
+msgid "Report the expiry date of every test kit you use."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:83
-msgid "The laboratory did not report a test kit lot number."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:84
-msgid "The laboratory did not report supervisor approval."
-msgstr ""
-
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:85
-msgid "The laboratory did not report the rehydration date."
+msgid "The laboratory did not report a test kit expiry date."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
-msgid "The laboratory did not report the testing date."
+msgid "Report the name of every test kit you use."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/CorrectiveAction.php:87
+msgid "The laboratory did not report a test kit name."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
+msgid ""
+"Use a different approved test kit for each test, as the SOP and the National "
+"HIV Testing algorithm require."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:91
+msgid "The laboratory reported the same test kit for all three tests."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:95
+msgid "The laboratory reported the same test kit for two tests."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
+msgid "Report the lot number of every test kit you use."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:99
+msgid "The laboratory did not report a test kit lot number."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
+msgid "Get supervisor approval and report the supervisor's name."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:103
+msgid "The laboratory did not report supervisor approval."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
+msgid "Report the date you rehydrated the PT panel."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:107
+msgid "The laboratory did not report the rehydration date."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
+msgid "Report the date you tested the PT panel."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:111
+msgid "The laboratory did not report the testing date."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
+msgid "Test the PT panel within the time after rehydration that the SOP sets."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:115
 msgid ""
 "The laboratory did not test within the time after rehydration that the SOP "
 "sets."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:88
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
+msgid ""
+"Review all testing procedures before you test client samples again. Contact "
+"your supervisor to plan improvements."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:119
 msgid "The participant score is below the pass mark."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:89
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
+msgid "Report the date you received the PT panel."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:123
 msgid "The laboratory did not report the panel receipt date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
+msgid ""
+"Test with the country-approved test kits, as the National HIV Testing "
+"algorithm and the SOP require."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:127
 msgid "The laboratory tested with a test kit that is not country-approved."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:91
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
+msgid "Report the condition of the PT samples."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:131
 msgid "The laboratory did not report the condition of the PT samples."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:92
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
+msgid "Report whether a refrigerator is available."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:135
 msgid "The laboratory did not report refrigerator availability."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:93
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
+msgid "Report the room temperature."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:139
 msgid "The laboratory did not report the room temperature."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
+msgid "Report whether a stopwatch is available."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:143
 msgid "The laboratory did not report stopwatch availability."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:95
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
+msgid ""
+"Report the actual rehydration date. It cannot be earlier than the date you "
+"received the panel."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:147
 msgid "The reported rehydration date is earlier than the panel receipt date."
 msgstr ""
 
