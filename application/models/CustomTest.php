@@ -160,7 +160,7 @@ class Application_Model_CustomTest
                         // matching reported and low/high limits
                         if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
                             if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                             }
                             $calcResult = 'fail';
                             $zScore = null;
@@ -188,7 +188,7 @@ class Application_Model_CustomTest
                                     } elseif ($result['reported_result'] > 0) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                            $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                         }
                                         $calcResult = 'fail';
                                     }
@@ -205,14 +205,14 @@ class Application_Model_CustomTest
                                     } elseif ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                            $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                         }
                                         $calcResult = 'fail';
                                     }
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                    $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                 }
                                 $calcResult = 'fail';
                             }
@@ -234,7 +234,7 @@ class Application_Model_CustomTest
                             } else {
                                 if ($result['sample_score'] > 0) {
                                     $failureReason[] = [
-                                        'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly',
+                                        'warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly',
                                         'correctiveAction' => 'Review and refer to the ' . $schemeLabel . ' testing algorithm for result interpretation as the final result interpretation does not match the expected result.',
                                     ];
                                 }

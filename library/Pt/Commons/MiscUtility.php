@@ -1266,4 +1266,14 @@ final class Pt_Commons_MiscUtility
             'virgin islands, u.s.' => 'vir',
         ];
     }
+
+    /**
+     * Escapes a value for insertion into an HTML fragment. Use it for any stored or
+     * user-entered value (a sample label, a test kit name) placed inside HTML that the
+     * application saves and later prints without escaping, such as evaluation warnings.
+     */
+    public static function escapeHtml(mixed $value): string
+    {
+        return htmlspecialchars((string) ($value ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
 }

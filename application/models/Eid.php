@@ -80,7 +80,7 @@ class Application_Model_Eid
                         }
                     } else {
                         if ($result['sample_score'] > 0) {
-                            $failureReason[] = ['warning' => 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                            $failureReason[] = ['warning' => 'Control/Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                         }
                     }
                 }
@@ -92,10 +92,10 @@ class Application_Model_Eid
                 //if ($result['mandatory'] == 1) {
                 //    if ((!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null)) {
                 //        $mandatoryResult = 'Fail';
-                //        $failureReason[]['warning'] = "Mandatory Control/Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
+                //        $failureReason[]['warning'] = "Mandatory Control/Sample <strong>" . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong> was not reported";
                 //    } elseif (($result['reference_result'] != $result['reported_result'])) {
                 //        $mandatoryResult = 'Fail';
-                //        $failureReason[]['warning'] = "Mandatory Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                //        $failureReason[]['warning'] = "Mandatory Control/Sample <strong>" . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong> was reported wrongly";
                 //    }
                 //}
             }

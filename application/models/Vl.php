@@ -105,7 +105,7 @@ class Application_Model_Vl
                                     $calcResult = 'pass';
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                                        $failureReason[] = ['warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                     }
                                     $calcResult = 'fail';
                                 }
@@ -114,7 +114,7 @@ class Application_Model_Vl
                             // matching reported and low/high limits
                             if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                                    $failureReason[] = ['warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                 }
                                 $calcResult = 'fail';
                                 $zScore = null;
@@ -135,7 +135,7 @@ class Application_Model_Vl
                                         } elseif ($result['reported_viral_load'] > 0) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                                                $failureReason[] = ['warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                             }
                                             $calcResult = 'fail';
                                         }
@@ -152,14 +152,14 @@ class Application_Model_Vl
                                         } elseif ($absZScore > 3) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                                                $failureReason[] = ['warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                             }
                                             $calcResult = 'fail';
                                         }
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
+                                        $failureReason[] = ['warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                     }
                                     $calcResult = 'fail';
                                 }
@@ -180,7 +180,7 @@ class Application_Model_Vl
                     //if ($result['mandatory'] == 1) {
                     //	if ((!isset($result['reported_viral_load']) || $result['reported_viral_load'] == "" || $result['reported_viral_load'] == null)) {
                     //		$mandatoryResult = 'Fail';
-                    //		$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
+                    //		$failureReason[]['warning'] = "Mandatory Sample <strong>" . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong> was not reported";
                     //	}
                     //	//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
                     //	//	$mandatoryResult = 'Fail';

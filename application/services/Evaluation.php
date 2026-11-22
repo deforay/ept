@@ -578,7 +578,7 @@ class Application_Service_Evaluation
                                 $totalScore += $result['sample_score'];
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                    $failureReason[]['warning'] = 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was reported wrongly';
                                 }
                             }
                         }
@@ -588,7 +588,7 @@ class Application_Service_Evaluation
                         if ($result['mandatory'] == 1) {
                             if ((!isset($result['reported_result']) || $result['reported_result'] == '' || $result['reported_result'] == null)) {
                                 $mandatoryResult = 'Fail';
-                                $failureReason[]['warning'] = 'Mandatory Sample <strong>' . $result['sample_label'] . '</strong> was not reported';
+                                $failureReason[]['warning'] = 'Mandatory Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was not reported';
                             }
                             //else if(($result['reference_result'] != $result['reported_result'])){
                             //	$mandatoryResult = 'Fail';
@@ -644,7 +644,7 @@ class Application_Service_Evaluation
                             $difference = $testedOn->diff($expDate1);
 
                             $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 1 (<strong>' . $testKit1 . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
+                            $failureReason[]['warning'] = 'EIA 1 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
                         }
                     }
 
@@ -653,7 +653,7 @@ class Application_Service_Evaluation
                             $difference = $testedOn->diff($expDate2);
 
                             $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 2 (<strong>' . $testKit2 . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
+                            $failureReason[]['warning'] = 'EIA 2 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit2) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
                         }
                     }
 
@@ -662,25 +662,25 @@ class Application_Service_Evaluation
                             $difference = $testedOn->diff($expDate3);
 
                             $testKitExpiryResult = 'Fail';
-                            $failureReason[]['warning'] = 'EIA 3 (<strong>' . $testKit3 . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
+                            $failureReason[]['warning'] = 'EIA 3 (<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit3) . '</strong>) expired ' . $difference->format('%a') . ' days before the test date ' . $testDate;
                         }
                     }
                     //checking if testkits were repeated
                     if (($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
                         //$testKitRepeatResult = 'Fail';
-                        $failureReason[]['warning'] = "<strong>$testKit1</strong> repeated for all three EIA";
+                        $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated for all three EIA';
                     } else {
                         if (($testKit1 == $testKit2) && $testKit1 != '' && $testKit2 != '') {
                             //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = "<strong>$testKit1</strong> repeated as EIA 1 and EIA 2";
+                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated as EIA 1 and EIA 2';
                         }
                         if (($testKit2 == $testKit3) && $testKit2 != '' && $testKit3 != '') {
                             //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = "<strong>$testKit2</strong> repeated as EIA 2 and EIA 3";
+                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit2) . '</strong> repeated as EIA 2 and EIA 3';
                         }
                         if (($testKit1 == $testKit3) && $testKit1 != '' && $testKit3 != '') {
                             //$testKitRepeatResult = 'Fail';
-                            $failureReason[]['warning'] = "<strong>$testKit1</strong> repeated as EIA 1 and EIA 3";
+                            $failureReason[]['warning'] = '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKit1) . '</strong> repeated as EIA 1 and EIA 3';
                         }
                     }
 

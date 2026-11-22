@@ -318,7 +318,7 @@ final class Application_Model_Dts
                         $difference = $testedOn->diff($expDate);
                         $daysExpired = (int) $difference->format('%a');
                         $failureReason[] = [
-                            'warning' => "Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . '</strong>) expired ' . $daysExpired . ' day(s) before the test date ' . $testDate,
+                            'warning' => "Test Kit {$kitIndex} (<strong>" . Pt_Commons_MiscUtility::escapeHtml($testKitNames[$kitIndex]) . '</strong>) expired ' . $daysExpired . ' day(s) before the test date ' . $testDate,
                             'correctiveAction' => $correctiveActions[5],
                         ];
                         $correctiveActionList[] = 5;
@@ -342,11 +342,8 @@ final class Application_Model_Dts
                         // Vietnam: using a non-reference kit is normal (routes to peer-consensus),
                         // so it is not a participant-facing warning here.
                         if ($dtsSchemeType !== 'vietnam') {
-                            $warning = $kitIndex === 1
-                                ? 'For Test 1, testing is not performed with country approved test kit.--- ' . $kitIdForCheck
-                                : "For Test {$kitIndex}, testing is not performed with country approved test kit.";
                             $failureReason[] = [
-                                'warning' => $warning,
+                                'warning' => "Test {$kitIndex} used <strong>" . Pt_Commons_MiscUtility::escapeHtml($testKitNames[$kitIndex]) . '</strong>, which is not a country-approved test kit.',
                                 'correctiveAction' => $correctiveActions[17],
                             ];
                         }
@@ -375,7 +372,7 @@ final class Application_Model_Dts
             if ($dtsSchemeType != 'myanmar' && $dtsSchemeType !== 'vietnam') {
                 //$testKitRepeatResult = 'Fail';
                 $failureReason[] = [
-                    'warning' => '<strong>' . reset($nonEmptyTestKits) . '</strong> repeated for all three Test Kits',
+                    'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml(reset($nonEmptyTestKits)) . '</strong> repeated for all three Test Kits',
                     'correctiveAction' => $correctiveActions[8],
                 ];
                 $correctiveActionList[] = 8;
@@ -392,7 +389,7 @@ final class Application_Model_Dts
                     ) {
                         //$testKitRepeatResult = 'Fail';
                         $failureReason[] = [
-                            'warning' => '<strong>' . $testKitNames[$first] . "</strong> repeated as Test Kit {$first} and Test Kit {$second}",
+                            'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($testKitNames[$first]) . "</strong> repeated as Test Kit {$first} and Test Kit {$second}",
                             'correctiveAction' => $correctiveActions[9],
                         ];
                         $correctiveActionList[] = 9;
@@ -532,7 +529,7 @@ final class Application_Model_Dts
                     $vietnamNotEvaluated = true;
                     $algoResult = 'Not Evaluated';
                     $algo['failureReason'] = [[
-                        'warning' => $result['sample_label'] ?? '',
+                        'warning' => Pt_Commons_MiscUtility::escapeHtml($result['sample_label'] ?? ''),
                         'correctiveAction' => 'Not evaluated: peer-group consensus not reached for the test kit used',
                     ]];
                     $algo['correctiveActionList'] = [];
@@ -560,7 +557,7 @@ final class Application_Model_Dts
                         if (!isset($result[$fields['resultField']]) || $result[$fields['resultField']] == '') {
                             $controlTesKitFail = 'Fail';
                             $failureReason[] = [
-                                'warning' => 'For the Control <strong>' . $result['sample_label'] . "</strong>, Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . '</strong>) was not used',
+                                'warning' => 'For the Control <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong>, Test Kit {$kitIndex} (<strong>" . Pt_Commons_MiscUtility::escapeHtml($testKitNames[$kitIndex]) . '</strong>) was not used',
                                 'correctiveAction' => $correctiveActions[2],
                             ];
                             $correctiveActionList[] = 2;
@@ -589,7 +586,7 @@ final class Application_Model_Dts
                 $mandatoryResult = 'Fail';
                 $shipment['is_excluded'] = 'yes';
                 $failureReason[] = [
-                    'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was not reported. Result not evaluated.',
+                    'warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> was not reported. Result not evaluated.',
                     'correctiveAction' => $correctiveActions[4],
                 ];
                 $correctiveActionList[] = 4;
@@ -605,7 +602,7 @@ final class Application_Model_Dts
                         } else {
                             $correctSyphilisResponse = false;
                             $failureReason[] = [
-                                'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported Syphilis result does not match the expected result',
+                                'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Reported Syphilis result does not match the expected result',
                                 'correctiveAction' => 'Final interpretation not matching with the expected result. Please review the SOP and/or job aide to ensure test procedures are followed and interpretation of results are reported accurately.',
                             ];
                         }
@@ -624,7 +621,7 @@ final class Application_Model_Dts
                         } else {
                             $correctRTRIResponse = false;
                             $failureReason[] = [
-                                'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported RTRI result does not match the expected result',
+                                'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Reported RTRI result does not match the expected result',
                                 'correctiveAction' => 'Final interpretation not matching with the expected result. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately.',
                             ];
                         }
@@ -651,7 +648,7 @@ final class Application_Model_Dts
                         $screeningConsistent = $this->isTestResultConsistentWithReported($result1, $reportedResultCode);
                         if (!$screeningConsistent) {
                             $failureReason[] = [
-                                'warning' => '<strong>' . $result['sample_label'] . '</strong> - Test result inconsistent with reported interpretation (0 score)',
+                                'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Test result inconsistent with reported interpretation (0 score)',
                                 'correctiveAction' => $correctiveActions[3],
                             ];
                             $correctiveActionList[] = 3;
@@ -691,7 +688,7 @@ final class Application_Model_Dts
                             $totalScore += $scoreForSample + $scoreForAlgorithm;
                             $correctResponse = true;
                             $failureReason[] = [
-                                'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported HIV result does not match the expected result. Passed with warning.',
+                                'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Reported HIV result does not match the expected result. Passed with warning.',
                                 'correctiveAction' => $correctiveActions[3],
                             ];
                         } elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
@@ -725,7 +722,7 @@ final class Application_Model_Dts
                         $totalScore += $result['sample_score'] / 2;
                         $correctResponse = false;
                         $failureReason[] = [
-                            'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported ' . $reportedResultCode . ' for a sample expected as ' . $expectedResultCode . ' (half score awarded)',
+                            'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Reported ' . $reportedResultCode . ' for a sample expected as ' . $expectedResultCode . ' (half score awarded)',
                             'correctiveAction' => $correctiveActions[3],
                         ];
                         $correctiveActionList[] = 3;
@@ -747,7 +744,7 @@ final class Application_Model_Dts
                             }
 
                             $failureReason[] = [
-                                'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported HIV result does not match the expected result',
+                                'warning' => '<strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . '</strong> - Reported HIV result does not match the expected result',
                                 'correctiveAction' => $correctiveActions[3],
                             ];
                             $correctiveActionList[] = 3;
@@ -817,7 +814,7 @@ final class Application_Model_Dts
                             }
                             // Add failure reason for this specific sample (use same corrective action as blanket fail)
                             $failureReason[] = [
-                                'warning' => 'Sample <strong>' . $result['sample_label'] . "</strong> failed: used expired/non-recommended Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . '</strong>).',
+                                'warning' => 'Sample <strong>' . Pt_Commons_MiscUtility::escapeHtml($result['sample_label']) . "</strong> failed: used expired/non-recommended Test Kit {$kitIndex} (<strong>" . Pt_Commons_MiscUtility::escapeHtml($testKitNames[$kitIndex]) . '</strong>).',
                                 'correctiveAction' => $correctiveActions[5],
                             ];
                             $correctiveActionList[] = 5;
@@ -986,18 +983,18 @@ final class Application_Model_Dts
             } else {
                 $failureReason[] = [
                     'warning' => 'Room Temperature not reported',
-                    'correctiveAction' => $correctiveActions[20],
+                    'correctiveAction' => $correctiveActions[20] ?? '',
                 ];
-                $correctiveActionList[] = 18;
+                $correctiveActionList[] = 20;
             }
             if (!empty($attributes['stop_watch'])) {
                 $documentationScore += $documentationScorePerItem;
             } else {
                 $failureReason[] = [
                     'warning' => 'Stop Watch Availability not reported',
-                    'correctiveAction' => $correctiveActions[21],
+                    'correctiveAction' => $correctiveActions[21] ?? '',
                 ];
-                $correctiveActionList[] = 18;
+                $correctiveActionList[] = 21;
             }
         }
 
@@ -2272,7 +2269,7 @@ final class Application_Model_Dts
                 $warnings = '';
                 if (!empty($aRow['failure_reason'])) {
                     $warningsArray = Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']);
-                    $warnings = implode(', ', array_map('strip_tags', array_column($warningsArray, 'warning')));
+                    $warnings = implode(', ', array_map(static fn ($w) => html_entity_decode(strip_tags((string) $w), ENT_QUOTES | ENT_HTML5, 'UTF-8'), array_column($warningsArray, 'warning')));
                 }
                 $totalScoreRow[] = $warnings;
 
@@ -2722,7 +2719,7 @@ final class Application_Model_Dts
     {
         $out['algoResult'] = 'Fail';
         $out['failureReason'][] = [
-            'warning' => "For <strong>{$sampleLabel}</strong> National HIV Testing algorithm was not followed.",
+            'warning' => 'For <strong>' . Pt_Commons_MiscUtility::escapeHtml($sampleLabel) . '</strong> National HIV Testing algorithm was not followed.',
             'correctiveAction' => $correctiveActions[2] ?? '',
         ];
         $out['correctiveActionList'][] = 2;
@@ -2745,7 +2742,7 @@ final class Application_Model_Dts
             return;
         }
         $out['failureReason'][] = [
-            'warning' => $sampleLabel,
+            'warning' => Pt_Commons_MiscUtility::escapeHtml($sampleLabel),
             'correctiveAction' => $text,
         ];
     }
@@ -2827,7 +2824,7 @@ final class Application_Model_Dts
                 if ($result3 == '-') {
                     $out['algoResult'] = 'Fail';
                     $out['failureReason'][] = [
-                        'warning' => "For <strong>{$sampleLabel}</strong> Test 3 was not reported. Test 1 and Test 2 were reactive, so Test 3 is required before a result can be concluded.",
+                        'warning' => 'For <strong>' . Pt_Commons_MiscUtility::escapeHtml($sampleLabel) . '</strong> Test 3 was not reported. Test 1 and Test 2 were reactive, so Test 3 is required before a result can be concluded.',
                         'correctiveAction' => $correctiveActions[2] ?? '',
                     ];
                     $out['correctiveActionList'][] = 2;
