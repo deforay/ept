@@ -3,153 +3,268 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 
 <style>
-    .job-progress {
-        min-width: 120px;
-    }
-
-    .job-progress .progress {
-        margin-bottom: 0;
-        height: 20px;
-        border-radius: 3px;
-    }
-
-    .job-progress .progress-bar {
-        line-height: 20px;
-        font-size: 11px;
-    }
-
-    .job-status-pending {
-        color: #f0ad4e;
-    }
-
-    .job-status-processing {
-        color: #5bc0de;
-    }
-
-    .job-status-completed {
-        color: #5cb85c;
-    }
-
-    .job-status-cancelled {
-        color: #d9534f;
-    }
-
-    .btn-cancel-job {
-        padding: 2px 8px;
-        font-size: 11px;
-    }
-
-    .job-type-badge {
-        padding: 3px 8px;
-        border-radius: 3px;
-        font-size: 11px;
-        background: #eee;
-    }
-
-    .auto-refresh-indicator {
-        display: inline-block;
-        padding: 5px 10px;
-        background: #d9edf7;
-        border-radius: 3px;
+    /* Job Tracking: list of background jobs (evaluation, reports, emails, ...).
+       The card, header and filter band come from .data-list in admin.css. */
+    .job-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         font-size: 12px;
-        color: #31708f;
+        color: #4a5568;
     }
 
-    .auto-refresh-indicator i {
-        margin-right: 5px;
+    .job-live .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #38a169;
+        box-shadow: 0 0 0 3px rgba(56, 161, 105, .18);
+    }
+
+    .job-live.is-paused .dot {
+        background: #a0aec0;
+        box-shadow: none;
+    }
+
+    .job-live .label {
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    .job-live .updated {
+        color: #a0aec0;
+    }
+
+    /* DataTables shades the sorted column. Match the row stripes instead:
+       transparent would show DataTables' lavender row colour underneath. */
+    #jobsTable tbody tr:nth-child(odd) > td.sorting_1,
+    #jobsTable tbody tr:nth-child(odd) > td.sorting_2 {
+        background-color: #f9f9f9;
+    }
+
+    #jobsTable tbody tr:nth-child(even) > td.sorting_1,
+    #jobsTable tbody tr:nth-child(even) > td.sorting_2 {
+        background-color: #fff;
+    }
+
+    .job-status-filter {
+        display: inline-flex;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+        height: 34px;
+    }
+
+    .job-status-filter button {
+        border: 0;
+        background: transparent;
+        padding: 0 12px;
+        font-size: 13px;
+        color: #4a5568;
+        cursor: pointer;
+    }
+
+    .job-status-filter button + button {
+        border-left: 1px solid #e2e8f0;
+    }
+
+    .job-status-filter button.is-active {
+        background: #3a5a8a;
+        color: #fff;
+    }
+
+    #jobsTable td {
+        vertical-align: middle;
+    }
+
+    #jobsTable tr.job-row-failed > td:first-child {
+        box-shadow: inset 3px 0 0 #e53e3e;
+    }
+
+    #jobsTable tr.job-row-running > td:first-child {
+        box-shadow: inset 3px 0 0 #3182ce;
+    }
+
+    .job-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: #2d3748;
+        white-space: nowrap;
+    }
+
+    .job-type .tile {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #edf2f7;
+        color: #4a5568;
+        font-size: 12px;
+    }
+
+    .job-type .tile.evaluation { background: #ebf4ff; color: #2b6cb0; }
+    .job-type .tile.reports { background: #f0fff4; color: #2f855a; }
+    .job-type .tile.email { background: #e6fffa; color: #2c7a7b; }
+    .job-type .tile.certificate { background: #faf5ff; color: #6b46c1; }
+    .job-type .tile.security { background: #fffaf0; color: #c05621; }
+
+    .job-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .job-pill.is-queued { background: #fefcbf; color: #975a16; }
+    .job-pill.is-running { background: #ebf8ff; color: #2b6cb0; }
+    .job-pill.is-done { background: #f0fff4; color: #276749; }
+    .job-pill.is-failed { background: #fff5f5; color: #c53030; }
+    .job-pill.is-cancelled { background: #edf2f7; color: #4a5568; }
+
+    .job-reason {
+        display: block;
+        max-width: 260px;
+        margin-top: 4px;
+        font-size: 12px;
+        color: #c53030;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .job-time {
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .job-time small {
+        display: block;
+        color: #a0aec0;
+    }
+
+    .job-progress {
+        min-width: 130px;
+    }
+
+    .job-progress .bar {
+        height: 6px;
+        border-radius: 3px;
+        background: #edf2f7;
+        overflow: hidden;
+    }
+
+    .job-progress .bar span {
+        display: block;
+        height: 100%;
+        background: #3182ce;
+    }
+
+    .job-progress .bar span.is-done {
+        background: #38a169;
+    }
+
+    .job-progress small {
+        display: block;
+        margin-top: 3px;
+        color: #718096;
+    }
+
+    .job-muted {
+        color: #a0aec0;
     }
 </style>
 
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <i class="icon-tasks"></i> <?= $this->translate->_("Job Tracking"); ?>
-    </div>
-    <div class="pull-right" style="margin-top: 5px;">
-        <span class="auto-refresh-indicator">
-            <i class="icon-refresh icon-spin"></i>
-            <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>
-        </span>
-        <button class="btn btn-sm btn-info" onclick="refreshJobs()" style="margin-left: 10px;">
-            <i class="icon-refresh"></i>
-            <?= $this->translate->_("Refresh Now"); ?>
-        </button>
-    </div>
-</h4>
-
-<!-- Filter Controls -->
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Job Type"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Status"); ?>
-        </td>
-        <td style="width:250px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Date Range"); ?>
-        </td>
-        <td style="width:40px;text-align: center;font-weight:bold;"></td>
-    </tr>
-    <tr>
-        <td>
-            <select id="filterJobType" name="filterJobType" class="form-control input-sm" onchange="applyFilters();">
-                <option value="">-- <?= $this->translate->_("All Job Types"); ?> --</option>
-                <option value="Report Generation"><?= $this->translate->_("Report Generation"); ?></option>
-                <option value="Evaluation"><?= $this->translate->_("Evaluation"); ?></option>
-                <option value="Certificate Generation"><?= $this->translate->_("Certificate Generation"); ?></option>
-                <option value="Email Reports"><?= $this->translate->_("Email Reports"); ?></option>
-                <option value="Send Emails"><?= $this->translate->_("Send Emails"); ?></option>
-                <option value="TB Forms Generation"><?= $this->translate->_("TB Forms Generation"); ?></option>
-                <option value="Bulk Password Reset"><?= $this->translate->_("Bulk Password Reset"); ?></option>
-            </select>
-        </td>
-        <td>
-            <select id="filterStatus" name="filterStatus" class="form-control input-sm" onchange="applyFilters();">
-                <option value="">-- <?= $this->translate->_("All Statuses"); ?> --</option>
-                <option value="pending"><?= $this->translate->_("Pending"); ?></option>
-                <option value="processing"><?= $this->translate->_("Processing"); ?></option>
-                <option value="completed"><?= $this->translate->_("Completed"); ?></option>
-                <option value="failed"><?= $this->translate->_("Failed"); ?></option>
-            </select>
-        </td>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click to select date range") ?>" />
-        </td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="resetFilters()">
-                <span><?= $this->translate->_("Reset"); ?></span>
+<div class="data-list job-page">
+    <div class="data-list-head">
+        <h2><i class="icon-tasks"></i> <?= $this->translate->_("Job Tracking"); ?></h2>
+        <div class="data-list-actions">
+            <span class="job-live" id="jobLive" aria-live="polite">
+                <span class="dot"></span>
+                <span class="label"><?= $this->translate->_("Live"); ?></span>
+                <span class="updated" id="jobUpdated"></span>
+            </span>
+            <button type="button" class="btn btn-default btn-quiet" id="jobPauseBtn" onclick="toggleAutoRefresh();">
+                <i class="icon-pause"></i> <span><?= $this->translate->_("Pause updates"); ?></span>
             </button>
-        </td>
-    </tr>
-</table>
+            <button type="button" class="btn btn-default" onclick="refreshJobs();">
+                <i class="icon-refresh"></i> <?= $this->translate->_("Refresh Now"); ?>
+            </button>
+        </div>
+    </div>
+    <div class="data-list-body">
+        <div class="data-list-toolbar">
+            <div>
+                <label for="filterJobType"><?= $this->translate->_("Job Type"); ?></label>
+                <select id="filterJobType" name="filterJobType" class="form-control input-sm" onchange="applyFilters();">
+                    <option value=""><?= $this->translate->_("All Job Types"); ?></option>
+                    <option value="Report Generation"><?= $this->translate->_("Report Generation"); ?></option>
+                    <option value="Evaluation"><?= $this->translate->_("Evaluation"); ?></option>
+                    <option value="Certificate Generation"><?= $this->translate->_("Certificate Generation"); ?></option>
+                    <option value="Email Reports"><?= $this->translate->_("Email Reports"); ?></option>
+                    <option value="Send Emails"><?= $this->translate->_("Send Emails"); ?></option>
+                    <option value="TB Forms Generation"><?= $this->translate->_("TB Forms Generation"); ?></option>
+                    <option value="Bulk Password Reset"><?= $this->translate->_("Bulk Password Reset"); ?></option>
+                </select>
+            </div>
+            <div>
+                <label><?= $this->translate->_("Status"); ?></label>
+                <input type="hidden" id="filterStatus" value="" />
+                <div class="job-status-filter" id="jobStatusFilter" role="group" aria-label="<?= $this->htmlTranslate("Status"); ?>">
+                    <button type="button" class="is-active" data-status=""><?= $this->translate->_("All"); ?></button>
+                    <button type="button" data-status="processing"><?= $this->translate->_("Running"); ?></button>
+                    <button type="button" data-status="pending"><?= $this->translate->_("Queued"); ?></button>
+                    <button type="button" data-status="failed"><?= $this->translate->_("Failed"); ?></button>
+                    <button type="button" data-status="completed"><?= $this->translate->_("Done"); ?></button>
+                </div>
+            </div>
+            <div>
+                <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
+                <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                    style="background: #fff" placeholder="<?= $this->htmlTranslate("Click to select date range") ?>" />
+            </div>
+            <div class="data-list-toolbar-actions">
+                <button type="button" class="btn btn-default btn-sm" onclick="resetFilters()"><?= $this->translate->_("Reset"); ?></button>
+            </div>
+        </div>
 
-<!-- Jobs Table -->
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="jobsTable">
-    <thead>
-        <tr>
-            <th scope="col"><?= $this->translate->_("Job Type"); ?></th>
-            <th scope="col"><?= $this->translate->_("Reference"); ?></th>
-            <th scope="col"><?= $this->translate->_("Status"); ?></th>
-            <th scope="col"><?= $this->translate->_("Progress"); ?></th>
-            <th scope="col"><?= $this->translate->_("Requested By"); ?></th>
-            <th scope="col"><?= $this->translate->_("Started At"); ?></th>
-            <th scope="col"><?= $this->translate->_("Ended At"); ?></th>
-            <th scope="col"><?= $this->translate->_("Duration"); ?></th>
-            <th scope="col"><?= $this->translate->_("Actions"); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-hover" id="jobsTable">
+            <thead>
+                <tr>
+                    <th scope="col"><?= $this->translate->_("Job Type"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Reference"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Status"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Progress"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Requested By"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Started At"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Ended At"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Duration"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Actions"); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" charset="utf-8">
     var oTable = null;
     var autoRefreshInterval = null;
+    var currentRows = [];
+    var lastUpdated = null;
+    var paused = false;
     var startDate = "";
     var endDate = "";
 
@@ -157,6 +272,26 @@
         initDateRangePicker();
         initJobsTable();
         startAutoRefresh();
+
+        $('#jobStatusFilter').on('click', 'button', function () {
+            $('#jobStatusFilter button').removeClass('is-active');
+            $(this).addClass('is-active');
+            $('#filterStatus').val($(this).data('status'));
+            applyFilters();
+        });
+
+        // No point polling a tab nobody is looking at.
+        document.addEventListener('visibilitychange', function () {
+            if (paused) return;
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                refreshJobs();
+                startAutoRefresh();
+            }
+        });
+
+        setInterval(showUpdatedAgo, 1000);
     });
 
     function initDateRangePicker() {
@@ -206,16 +341,22 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-                { "sClass": "center" },
-                { "sClass": "center" },
-                { "sClass": "center" },
-                { "sClass": "center", "bSortable": false },
-                { "sClass": "center" },
-                { "sClass": "center" },
-                { "sClass": "center" },
-                { "sClass": "center", "bSortable": false },
+                null,
+                null,
+                null,
+                { "bSortable": false },
+                null,
+                null,
+                null,
+                { "bSortable": false },
                 { "sClass": "center", "bSortable": false }
             ],
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                var row = currentRows[iDisplayIndex] || {};
+                $(nRow).toggleClass('job-row-failed', row.status === 'failed')
+                    .toggleClass('job-row-running', RUNNING_STATUSES.indexOf(row.status) !== -1);
+                return nRow;
+            },
             "aaSorting": [[5, "desc"]],
             "bProcessing": true,
             "bServerSide": true,
@@ -235,14 +376,16 @@
                     "success": function (json) {
                         // Transform data for display
                         if (json.aaData) {
+                            currentRows = json.aaData;
+                            markUpdated();
                             json.aaData = json.aaData.map(function (row) {
                                 return [
                                     formatJobType(row),
                                     formatReference(row),
                                     formatStatusBadge(row),
                                     formatProgress(row),
-                                    row.requested_by_name || 'System',
-                                    formatDateTime(resolveStart(row)),
+                                    escapeHtml(row.requested_by_name) || '<?= $this->jsTranslate('System') ?>',
+                                    formatStartedAt(row),
                                     formatEndedAt(row),
                                     formatDuration(row),
                                     formatActions(row)
@@ -258,35 +401,35 @@
 
     function formatJobType(row) {
         var jobType = row.job_type;
-        var icons = {
-            'Report Generation': 'icon-file-text',
-            'Evaluation': 'icon-check',
-            'Certificate Generation': 'icon-certificate',
-            'Email Reports': 'icon-envelope',
-            'Send Emails': 'icon-envelope',
-            'TB Forms Generation': 'icon-file-text',
-            'Bulk Password Reset': 'icon-key',
-            'Scheduled Job': 'icon-cog'
+        var kinds = {
+            'Report Generation': ['reports', 'icon-file-text'],
+            'Evaluation': ['evaluation', 'icon-check'],
+            'Certificate Generation': ['certificate', 'icon-certificate'],
+            'Email Reports': ['email', 'icon-envelope'],
+            'Send Emails': ['email', 'icon-envelope'],
+            'TB Forms Generation': ['reports', 'icon-file-text'],
+            'Bulk Password Reset': ['security', 'icon-key'],
+            'Scheduled Job': ['', 'icon-cog']
         };
-        var icon = icons[jobType] || 'icon-cog';
+        var kind = kinds[jobType] || ['', 'icon-cog'];
 
-        // Build tooltip content with job details
+        // Hover shows the job details: the report type or the queued command.
         var tooltipContent = '';
         if (row.queue_type === 'report_generation') {
             tooltipContent = '<?= $this->jsTranslate('Report Generation') ?>\n';
             tooltipContent += '<?= $this->jsTranslate('Shipment: ') ?>' + (row.shipment_code || '<?= $this->jsTranslate('N/A') ?>') + '\n';
             tooltipContent += '<?= $this->jsTranslate('Type: ') ?>' + (row.report_type || '<?= $this->jsTranslate('All') ?>');
         } else if (row.job) {
-            // For scheduled jobs, show the full command/script
             tooltipContent = row.job;
         }
 
-        return '<span class="job-type-badge" title="' + escapeHtml(tooltipContent) + '" style="cursor: help;"><i class="' + icon + '"></i> ' + jobType + '</span>';
+        return '<span class="job-type" title="' + escapeHtml(tooltipContent) + '">' +
+            '<span class="tile ' + kind[0] + '"><i class="' + kind[1] + '"></i></span>' + escapeHtml(jobType) + '</span>';
     }
 
     function escapeHtml(text) {
-        if (!text) return '';
-        return text
+        if (text === null || text === undefined || text === '') return '';
+        return String(text)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
@@ -298,50 +441,49 @@
         if (row.shipment_code) {
             if (row.queue_type === 'report_generation') {
                 return '<a href="/reports/distribution/shipment/sid/' + btoa(row.shipment_id) + '">' +
-                    row.shipment_code + '</a>';
+                    escapeHtml(row.shipment_code) + '</a>';
             }
-            return row.shipment_code;
+            return escapeHtml(row.shipment_code);
         }
-        return '<span class="text-muted">-</span>';
+        return '<span class="job-muted">–</span>';
     }
 
     function formatStatusBadge(row) {
         var status = (typeof row === 'object' && row !== null) ? row.status : row;
         var statusConfig = {
-            'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: '<?= $this->jsTranslate('Pending') ?>' },
-            'generating': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Generating') ?>' },
-            'finalizing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Finalizing') ?>' },
-            'processing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Processing') ?>' },
-            'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
-            'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Finalized') ?>' },
-            'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
-            'reports generated': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Reports Generated') ?>' },
-            'failed': { cls: 'job-status-cancelled', icon: 'icon-warning-sign', label: '<?= $this->jsTranslate('Failed') ?>' },
-            'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Cancelled') ?>' }
+            'pending': { cls: 'is-queued', icon: 'icon-time', label: '<?= $this->jsTranslate('Queued') ?>' },
+            'generating': { cls: 'is-running', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Generating') ?>' },
+            'finalizing': { cls: 'is-running', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Finalizing') ?>' },
+            'processing': { cls: 'is-running', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Running') ?>' },
+            'evaluated': { cls: 'is-done', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
+            'finalized': { cls: 'is-done', icon: 'icon-ok', label: '<?= $this->jsTranslate('Finalized') ?>' },
+            'completed': { cls: 'is-done', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
+            'reports generated': { cls: 'is-done', icon: 'icon-ok', label: '<?= $this->jsTranslate('Reports Generated') ?>' },
+            'failed': { cls: 'is-failed', icon: 'icon-warning-sign', label: '<?= $this->jsTranslate('Failed') ?>' },
+            'cancelled': { cls: 'is-cancelled', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Cancelled') ?>' }
         };
+        var config = statusConfig[status] || { cls: 'is-cancelled', icon: 'icon-question-sign', label: status };
+        var html = '<span class="job-pill ' + config.cls + '"><i class="' + config.icon + '"></i> ' + escapeHtml(config.label) + '</span>';
 
-        var config = statusConfig[status] || { cls: 'job-status-pending', icon: 'icon-question', label: status };
-
-        // Surface the failure reason (from queue_report_generation.error_message) as a
-        // hover tooltip so admins can see *why* a run failed without leaving the page.
+        // Show why a run failed right in the row, not only on hover.
         var reason = (typeof row === 'object' && row !== null) ? row.error_message : '';
         if (status === 'failed' && reason) {
-            return '<span class="' + config.cls + '" title="' + escapeHtml(reason) + '" style="cursor: help;">' +
-                '<i class="' + config.icon + '"></i> ' + config.label + '</span>';
+            var shortReason = reason.length > 140 ? reason.substring(0, 140) + '…' : reason;
+            html += '<span class="job-reason" title="' + escapeHtml(reason) + '">' + escapeHtml(shortReason) + '</span>';
         }
-        return '<span class="' + config.cls + '"><i class="' + config.icon + '"></i> ' + config.label + '</span>';
+        return html;
     }
 
     function formatActions(row) {
         // Email queue jobs cannot be cancelled via this interface
         if (row.queue_type === 'email_queue') {
-            return '<span class="text-muted">-</span>';
+            return '<span class="job-muted">–</span>';
         }
 
         // Only show cancel button for cancellable statuses
         var cancellableStatuses = ['pending', 'generating', 'finalizing', 'processing'];
         if (cancellableStatuses.indexOf(row.status) === -1) {
-            return '<span class="text-muted">-</span>';
+            return '<span class="job-muted">–</span>';
         }
 
         return '<button class="btn btn-danger btn-xs btn-cancel-job" ' +
@@ -379,48 +521,38 @@
 
     function formatProgress(row) {
         if (row.progress === null || row.progress === undefined) {
-            return '<span class="text-muted"><?= $this->jsTranslate("N/A") ?></span>';
+            return '<span class="job-muted">–</span>';
         }
-
-        var percent = Math.round(row.progress);
-        var barClass = percent >= 100 ? 'progress-bar-success' : 'progress-bar-info progress-bar-striped active';
-
-        var html = '<div class="job-progress">' +
-            '<div class="progress">' +
-            '<div class="progress-bar ' + barClass + '" style="width: ' + percent + '%;">' +
-            percent + '%</div></div>';
+        var percent = Math.max(0, Math.min(100, Math.round(row.progress)));
+        var html = '<div class="job-progress"><div class="bar"><span class="' + (percent >= 100 ? 'is-done' : '') +
+            '" style="width: ' + percent + '%;"></span></div><small>' + percent + '%';
 
         if (row.progress_completed !== null && row.progress_total !== null) {
             var unit = row.job_type === 'Send Emails' ? '<?= $this->jsTranslate('emails') ?>' : '<?= $this->jsTranslate('reports') ?>';
-            html += '<small class="text-muted">' + row.progress_completed + '/' + row.progress_total + ' ' + unit + '</small>';
+            html += ' · ' + row.progress_completed + '/' + row.progress_total + ' ' + unit;
         }
+        html += '</small>';
 
-        // Add summary status if available
         if (row.summary_status) {
-            var summaryLabel;
             if (row.job_type === 'Send Emails' && row.summary_status.indexOf('failed') !== -1) {
-                // Show failed count for emails
-                summaryLabel = '<span style="color:#d9534f;"><i class="icon-warning-sign"></i> ' + row.summary_status + '</span>';
+                html += '<small style="color:#c53030;"><i class="icon-warning-sign"></i> ' + escapeHtml(row.summary_status) + '</small>';
             } else if (row.summary_status === 'completed') {
-                summaryLabel = '<span style="color:#5cb85c;"><i class="icon-ok"></i> <?= $this->jsTranslate("Summary done") ?></span>';
+                html += '<small style="color:#2f855a;"><i class="icon-ok"></i> <?= $this->jsTranslate("Summary done") ?></small>';
             } else {
-                summaryLabel = '<span class="text-muted"><i class="icon-clock"></i> <?= $this->jsTranslate("Summary pending") ?></span>';
+                html += '<small><i class="icon-time"></i> <?= $this->jsTranslate("Summary pending") ?></small>';
             }
-            html += '<br>' + summaryLabel;
         }
-
-        html += '</div>';
-        return html;
+        return html + '</div>';
     }
 
     // Terminal states — the run is over, so an end time is expected.
     var TERMINAL_STATUSES = ['reports generated', 'finalized', 'evaluated', 'completed', 'failed', 'cancelled'];
     var RUNNING_STATUSES = ['pending', 'generating', 'finalizing', 'processing'];
 
+    // Server DATETIMEs carry no zone. eptParseDbDate (date-range-presets.phtml)
+    // reads them in the database's zone, so times are right in any browser.
     function parseDbDate(dateStr) {
-        if (!dateStr) return null;
-        var d = new Date(String(dateStr).replace(' ', 'T'));
-        return isNaN(d.getTime()) ? null : d;
+        return window.eptParseDbDate(dateStr);
     }
 
     // Start of the run: durable processing_started_at, falling back to the request time
@@ -437,13 +569,25 @@
         return null;
     }
 
+    // A queued job has not started: show when it was queued, not a start time.
+    function formatStartedAt(row) {
+        if (row.status === 'pending' && !row.started_at) {
+            var queued = parseDbDate(row.requested_on);
+            return queued
+                ? '<span class="job-time job-muted"><?= $this->jsTranslate('Queued') ?><small>' + relativeTime(queued) + '</small></span>'
+                : '<span class="job-muted">–</span>';
+        }
+        return formatDateTime(resolveStart(row));
+    }
+
     function formatEndedAt(row) {
         var end = resolveEnd(row);
         if (end) return formatDateTime(end);
+        if (row.status === 'pending') return '<span class="job-muted">–</span>';
         if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
-            return '<span class="job-status-processing"><i class="icon-spinner icon-spin"></i> <?= $this->jsTranslate('running'); ?></span>';
+            return '<span class="job-pill is-running"><i class="icon-spinner icon-spin"></i> <?= $this->jsTranslate('running'); ?></span>';
         }
-        return '<span class="text-muted">-</span>';
+        return '<span class="job-muted">–</span>';
     }
 
     function humanizeDuration(secs) {
@@ -459,8 +603,9 @@
     // How long the run took. end - start is timezone-safe (both are server-time strings
     // parsed the same way), so this is reliable even if the browser clock differs.
     function formatDuration(row) {
+        if (row.status === 'pending' && !row.started_at) return '<span class="job-muted">–</span>';
         var startDate = parseDbDate(resolveStart(row));
-        if (!startDate) return '<span class="text-muted">-</span>';
+        if (!startDate) return '<span class="job-muted">–</span>';
 
         var endStr = resolveEnd(row);
         var endDate = parseDbDate(endStr);
@@ -473,32 +618,34 @@
         if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
             return '<span class="text-muted">' + human + ' &hellip;</span>';
         }
-        return '<span class="text-muted">-</span>';
+        return '<span class="job-muted">–</span>';
     }
 
     function formatDateTime(dateStr) {
-        if (!dateStr) return '<span class="text-muted">-</span>';
+        var date = parseDbDate(dateStr);
+        if (!date) return '<span class="job-muted">–</span>';
+        var m = moment(date);
+        var absolute = m.format(m.year() === moment().year() ? 'D MMM, HH:mm' : 'D MMM YYYY, HH:mm');
+        return '<span class="job-time" title="' + escapeHtml(m.format('D MMM YYYY, HH:mm:ss')) + '">' +
+            absolute + '<small>' + relativeTime(date) + '</small></span>';
+    }
 
-        var date = new Date(dateStr.replace(' ', 'T'));
-        var now = new Date();
-        var diff = Math.floor((now - date) / 1000);
+    function relativeTime(date) {
+        var diff = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+        if (diff < 60) return diff + '<?= $this->jsTranslate('s ago') ?>';
+        if (diff < 3600) return Math.floor(diff / 60) + '<?= $this->jsTranslate('m ago') ?>';
+        if (diff < 86400) return Math.floor(diff / 3600) + '<?= $this->jsTranslate('h ago') ?>';
+        return Math.floor(diff / 86400) + '<?= $this->jsTranslate('d ago') ?>';
+    }
 
-        var timeAgo = '';
-        if (diff < 60) {
-            timeAgo = diff + '<?= $this->jsTranslate('s ago') ?>';
-        } else if (diff < 3600) {
-            timeAgo = Math.floor(diff / 60) + '<?= $this->jsTranslate('m ago') ?>';
-        } else if (diff < 86400) {
-            timeAgo = Math.floor(diff / 3600) + '<?= $this->jsTranslate('h ago') ?>';
-        } else {
-            timeAgo = Math.floor(diff / 86400) + '<?= $this->jsTranslate('d ago') ?>';
-        }
+    function markUpdated() {
+        lastUpdated = new Date();
+        showUpdatedAgo();
+    }
 
-        // Format as readable date
-        var options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        var formatted = date.toLocaleDateString('en-US', options);
-
-        return '<span title="' + formatted + '">' + timeAgo + '</span>';
+    function showUpdatedAgo() {
+        if (!lastUpdated) return;
+        $('#jobUpdated').text('<?= $this->jsTranslate('Updated') ?> ' + relativeTime(lastUpdated));
     }
 
     function refreshJobs() {
@@ -516,6 +663,7 @@
     function resetFilters() {
         $('#filterJobType').val('');
         $('#filterStatus').val('');
+        $('#jobStatusFilter button').removeClass('is-active').filter('[data-status=""]').addClass('is-active');
         // Reset date range to default (last 6 months)
         var defaultStart = moment().subtract(6, 'months');
         var defaultEnd = moment();
@@ -528,9 +676,25 @@
     }
 
     function startAutoRefresh() {
+        stopAutoRefresh();
         autoRefreshInterval = setInterval(function () {
             refreshJobs();
         }, 5000); // Refresh every 5 seconds
+    }
+
+    function toggleAutoRefresh() {
+        paused = !paused;
+        if (paused) {
+            stopAutoRefresh();
+        } else {
+            refreshJobs();
+            startAutoRefresh();
+        }
+        $('#jobLive').toggleClass('is-paused', paused)
+            .find('.label').text(paused ? '<?= $this->jsTranslate('Paused') ?>' : '<?= $this->jsTranslate('Live') ?>');
+        $('#jobPauseBtn').html(paused
+            ? '<i class="icon-play"></i> <span><?= $this->jsTranslate('Resume updates') ?></span>'
+            : '<i class="icon-pause"></i> <span><?= $this->jsTranslate('Pause updates') ?></span>');
     }
 
     function stopAutoRefresh() {
