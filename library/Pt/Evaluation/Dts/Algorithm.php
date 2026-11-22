@@ -173,7 +173,11 @@ enum Pt_Evaluation_Dts_Algorithm: string
                 'test3' => ['test' => 'test3', 'R' => self::gives('P', ignore: ['repeat1', 'repeat2'])],
                 // Test 1 and Test 2 disagree: repeat both.
                 'repeat1' => ['test' => 'repeat1', 'NR' => 'repeat2AfterNonReactive', 'R' => 'repeat2AfterReactive'],
-                'repeat2AfterNonReactive' => ['test' => 'repeat2', 'NR' => self::gives('N', ignore: ['test3'])],
+                'repeat2AfterNonReactive' => [
+                    'test' => 'repeat2',
+                    'NR' => self::gives('N', ignore: ['test3']),
+                    'R' => self::gives('IND', ignore: ['test3']),
+                ],
                 'repeat2AfterReactive' => [
                     'test' => 'repeat2',
                     'R' => self::gives('P', ignore: ['test3']),

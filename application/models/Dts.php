@@ -463,6 +463,7 @@ final class Application_Model_Dts
                 }
 
                 $repeatResult1 = $this->getResultCodeFromId($result['repeat_test_result_1'] ?? '');
+                $repeatResult2 = $this->getResultCodeFromId($result['repeat_test_result_2'] ?? '');
 
                 // getting results from test_result_1 and test_result_2 : R, NR, I or -
                 $result1 = $this->getResultCodeFromId($result['test_result_1'] ?? '');
