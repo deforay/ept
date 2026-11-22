@@ -4652,28 +4652,6 @@ class Application_Service_Shipments
         $this->captureAdminEvaluation($params);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        // Updated manually overrided
-        if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-            // To get scheme config
-            $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
-
-            $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
-            $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
-            if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
-                $i = 0;
-                foreach ($params['manualCorrective'] as $warning => $correctiveAction) {
-                    $failureReason[$i]['warning'] = $warning;
-                    $failureReason[$i]['correctiveAction'] = $correctiveAction;
-                    $i++;
-                }
-            }
-            $grandTotal = number_format($shipmentScore + $docScore);
-            if ($grandTotal < $dtsPassPercentage) {
-                $finalResult = 2;
-            } else {
-                $finalResult = 1;
-            }
-        }
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
         $updateArray = [
@@ -4687,14 +4665,8 @@ class Application_Service_Shipments
         if ($params['isExcluded'] == 'yes') {
             $updateArray['final_result'] = 3;
         }
-        /* Manual result override changes */
-        if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-            $updateArray['shipment_score'] = $shipmentScore;
-            $updateArray['documentation_score'] = $docScore;
-            $updateArray['final_result'] = $finalResult;
-            if (isset($failureReason) && $failureReason != '') {
-                $updateArray['failure_reason'] = json_encode($failureReason);
-            }
+        if (($params['manualOverride'] ?? '') === 'yes') {
+            $updateArray = array_merge($updateArray, $this->manualOverrideFields($params));
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
         return $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
@@ -4777,25 +4749,65 @@ class Application_Service_Shipments
         }
     }
 
+    /**
+     * The shipment_participant_map fields that an administrator's manual override sets:
+     * the scores they entered, the result those scores give against the pass mark of the
+     * response's own scheme, and the findings they kept ticked. Unticking every finding
+     * clears them, because the form then sends no manualCorrective at all.
+     *
+     * @param array<string, mixed> $params the posted response form
+     * @return array<string, mixed>
+     */
+    private function manualOverrideFields(array $params): array
+    {
+        $shipmentScore = (isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0;
+        $docScore = (isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0;
+        $kept = [];
+        foreach ((array) ($params['manualCorrective'] ?? []) as $warning => $correctiveAction) {
+            $kept[] = ['warning' => $warning, 'correctiveAction' => $correctiveAction];
+        }
+        // The exact sum, as the evaluations compare it: 79.6 does not pass a mark of 80.
+        $grandTotal = (float) $shipmentScore + (float) $docScore;
+        return [
+            'shipment_score' => $shipmentScore,
+            'documentation_score' => $docScore,
+            'final_result' => $grandTotal < $this->overridePassMark((int) ($params['smid'] ?? 0)) ? 2 : 1,
+            'failure_reason' => json_encode($kept),
+        ];
+    }
+
+    /**
+     * The pass mark of the scheme a response belongs to: the scheme config's
+     * passPercentage for a built-in scheme, or the custom test's own passingScore,
+     * as their evaluations use. 100 when none is set.
+     */
+    private function overridePassMark(int $mapId): float
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $scheme = $db->fetchRow(
+            $db->select()
+                ->from(['sp' => 'shipment_participant_map'], [])
+                ->join(['s' => 'shipment'], 's.shipment_id = sp.shipment_id', ['scheme_type'])
+                ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['is_user_configured', 'user_test_config'])
+                ->where('sp.map_id = ?', $mapId)
+        );
+        if (!$scheme) {
+            return 100.0;
+        }
+        if (($scheme['is_user_configured'] ?? '') === 'yes') {
+            $config = json_decode((string) ($scheme['user_test_config'] ?? ''), true);
+            $passMark = $config['passingScore'] ?? null;
+        } else {
+            $passMark = Pt_Commons_SchemeConfig::get($scheme['scheme_type'] . '.passPercentage');
+        }
+        return (is_numeric($passMark) && $passMark > 0) ? (float) $passMark : 100.0;
+    }
+
     public function saveAdminData($params)
     {
         $this->captureAdminEvaluation($params);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        // To get scheme config
-        $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
-        if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-            $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
-            $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
-            if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
-                $i = 0;
-                foreach ($params['manualCorrective'] as $warning => $correctiveAction) {
-                    $failureReason[$i]['warning'] = $warning;
-                    $failureReason[$i]['correctiveAction'] = $correctiveAction;
-                    $i++;
-                }
-            }
-        }
         $params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != '') ? $params['isFollowUp'] : 'no';
         $updateArray = [
             'evaluation_comment' => $params['comment'],
@@ -4808,21 +4820,8 @@ class Application_Service_Shipments
         if ($params['isExcluded'] == 'yes') {
             $updateArray['final_result'] = 3;
         }
-        /* Manual result override changes */
-        if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-            $grandTotal = number_format($shipmentScore + $docScore);
-            if ($grandTotal < $dtsPassPercentage) {
-                $finalResult = 2;
-            } else {
-                $finalResult = 1;
-            }
-
-            $updateArray['shipment_score'] = $shipmentScore;
-            $updateArray['documentation_score'] = $docScore;
-            $updateArray['final_result'] = $finalResult;
-            if (isset($failureReason) && $failureReason != '') {
-                $updateArray['failure_reason'] = json_encode($failureReason);
-            }
+        if (($params['manualOverride'] ?? '') === 'yes') {
+            $updateArray = array_merge($updateArray, $this->manualOverrideFields($params));
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
         $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
