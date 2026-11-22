@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * A notice for an administrator viewing a response that has not been evaluated yet, so
+ * the missing results, scores and findings are not read as a result. Render it with
+ * the view's own variables: $this->render('common/response-not-evaluated.phtml').
+ * Evaluation always sets final_result (1 to 4).
+ */
+if ((int) ($this->shipment['final_result'] ?? 0) > 0) {
+    return;
+}
+?>
+<div class="response-not-evaluated" style="display:flex;align-items:center;gap:10px;margin:0 0 15px;padding:10px 14px;border:1px solid #ffe082;border-radius:4px;background-color:#fff8e1;color:#6d4c00;">
+    <i class="icon-time" style="font-size:18px;"></i>
+    <span>
+        <strong><?= $this->htmlTranslate('Not evaluated yet.'); ?></strong>
+        <?= $this->htmlTranslate('Results, scores and findings appear here after the shipment is evaluated.'); ?>
+    </span>
+</div>

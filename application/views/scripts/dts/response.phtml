@@ -92,14 +92,17 @@ $verdictBadge = function (?array $verdict, array $sample) use ($algorithmWarning
         return '';
     }
     $score = (string) $verdict['score'];
+    // Icons, not words: countries name these results differently (Pass or Satisfactory).
+    $icon = static fn (string $class, string $label): string => '<span class="sample-verdict-icon ' . $class . '" title="' . $label . '" aria-label="' . $label . '"></span>';
     if ($score === 'Pass') {
-        return '<div class="sample-verdict"><span class="badge badge-verdict-pass">' . $this->htmlTranslate('Pass') . '</span></div>';
+        return '<div class="sample-verdict">' . $icon('icon-ok-circle verdict-pass', $this->htmlTranslate('Pass')) . '</div>';
     }
     if ($score !== 'Fail') {
-        return '<div class="sample-verdict"><span class="badge badge-verdict-other">' . $this->htmlTranslate($score) . '</span></div>';
+        return '<div class="sample-verdict">' . $icon('icon-ban-circle verdict-other', $this->htmlTranslate($score)) . '</div>';
     }
+    $failIcon = $icon('icon-remove-circle verdict-fail', $this->htmlTranslate('Fail'));
     if ($verdictsOutdated) {
-        return '<div class="sample-verdict"><span class="badge badge-verdict-fail">' . $this->htmlTranslate('Fail') . '</span></div>';
+        return '<div class="sample-verdict">' . $failIcon . '</div>';
     }
     // interpretation_result is also Fail when only the algorithm failed, so the final
     // result is compared with the reference here instead.
@@ -119,7 +122,7 @@ $verdictBadge = function (?array $verdict, array $sample) use ($algorithmWarning
     if ($reasons === []) {
         $reasons[] = $this->htmlTranslate('Failed another evaluation check');
     }
-    return '<div class="sample-verdict"><span class="badge badge-verdict-fail">' . $this->htmlTranslate('Fail') . '</span>'
+    return '<div class="sample-verdict">' . $failIcon
         . '<ul class="sample-verdict-reasons"><li>' . implode('</li><li>', $reasons) . '</li></ul></div>';
 };
 
@@ -285,26 +288,25 @@ foreach ($this->allTestKits as $kit) {
         font-weight: normal;
     }
 
-    .sample-verdict .badge {
-        font-size: 11px;
-        padding: 3px 7px;
+    .sample-verdict-icon {
+        font-size: 18px;
+        line-height: 1;
     }
 
-    .badge-verdict-fail {
-        background-color: #c0392b;
-        color: #fff;
-    }
-
-    .badge-verdict-pass {
-        background-color: #e8f5e9;
+    .sample-verdict-icon.verdict-pass {
         color: #2e7d32;
-        border: 1px solid #a5d6a7;
     }
 
-    .badge-verdict-other {
-        background-color: #eceff1;
-        color: #455a64;
+    .sample-verdict-icon.verdict-fail {
+        color: #c0392b;
     }
+
+    .sample-verdict-icon.verdict-other {
+        color: #78909c;
+    }
+
+
+
 
     .sample-verdict-reasons {
         list-style: none;
@@ -391,6 +393,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                             <a class="btn btn-primary btn-sm" href="/dts/response/sid/<?= (int) $this->shipId; ?>/pid/<?= (int) $this->participantId; ?>/eid/<?= $this->escape((string) $this->eID); ?>/from/admin"><i class="icon-pencil"></i> <?= $this->htmlTranslate('Edit Response'); ?></a>
                         <?php } ?>
                     </div>
+                    <?= $this->render('common/response-not-evaluated.phtml'); ?>
                 <?php } ?>
                 <?php if ($inConfirmStep && $this->isEditable) { ?>
                     <div id="confirmResponseBanner">
@@ -791,11 +794,11 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                         <?php if ($evaluatedSampleCount > 0) { ?>
                             <?php if ($failedSampleCount > 0) { ?>
                                 <div class="sample-verdict-summary has-failures">
-                                    <?= sprintf($this->htmlTranslate('%1$d of %2$d samples failed in the last evaluation. They are marked below.'), $failedSampleCount, $evaluatedSampleCount); ?>
+                                    <?= sprintf($this->htmlTranslate('%1$d of %2$d samples had a problem in the last evaluation. They are marked below.'), $failedSampleCount, $evaluatedSampleCount); ?>
                                 </div>
                             <?php } else { ?>
                                 <div class="sample-verdict-summary all-passed">
-                                    <?= sprintf($this->htmlTranslate('All %d samples passed in the last evaluation.'), $evaluatedSampleCount); ?>
+                                    <?= sprintf($this->htmlTranslate('All %d samples were correct in the last evaluation.'), $evaluatedSampleCount); ?>
                                 </div>
                             <?php } ?>
                             <?php if ($verdictsOutdated) { ?>
@@ -1797,6 +1800,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                 echo $this->partial('common/admin-evaluation-panel.phtml', [
                     'scheme' => 'dts',
                     'shipment' => $this->shipment,
+                    'viewOnly' => $viewOnly,
                     'evalComments' => $this->evaluateData['evalComments'] ?? [],
                 ]);
             }

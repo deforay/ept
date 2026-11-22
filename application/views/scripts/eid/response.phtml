@@ -653,6 +653,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			    echo $this->partial('common/admin-evaluation-panel.phtml', [
 			        'scheme' => 'eid',
 			        'shipment' => $this->shipment,
+			        'viewOnly' => $viewOnly,
 			        'evalComments' => $this->evaluateData['evalComments'] ?? [],
 			    ]);
 			}
