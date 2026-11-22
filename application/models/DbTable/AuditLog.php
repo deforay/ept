@@ -1033,14 +1033,17 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         };
     }
 
-    /** "Affects scores or results: A, B" translates the prefix and each label. */
+    /**
+     * Reasons are stored in English. "Text: A, B" translates the text and each
+     * item separately, so the catalogs only need the fixed parts.
+     */
     private function translateReason(string $reason): string
     {
         $t = $this->translator();
-        $prefix = 'Affects scores or results: ';
-        if (str_starts_with($reason, $prefix)) {
-            $labels = array_map($t, explode(', ', substr($reason, strlen($prefix))));
-            return $t('Affects scores or results') . ': ' . implode(', ', $labels);
+        $colon = strpos($reason, ': ');
+        if ($colon !== false) {
+            $items = array_map($t, explode(', ', substr($reason, $colon + 2)));
+            return $t(substr($reason, 0, $colon)) . ': ' . implode(', ', $items);
         }
         return $t($reason);
     }

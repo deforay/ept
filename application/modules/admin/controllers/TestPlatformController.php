@@ -238,7 +238,7 @@ class Admin_TestPlatformController extends Zend_Controller_Action
         ];
         if ($removed !== []) {
             $extra['important'] = true;
-            $extra['reason'] = 'Removed platforms are no longer offered for ' . $label . ' in result entry.';
+            $extra['reason'] = 'Removes platforms from result entry: ' . $label;
             $extra['list'] = ['title' => 'Platforms removed', 'rows' => $removed];
         }
         Application_Model_DbTable_AuditLog::record('Updated test platform stage settings - ' . $label, 'config', $extra);

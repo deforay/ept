@@ -154,9 +154,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     'facts' => $facts,
                     'list' => ['title' => 'Participants removed', 'rows' => $list],
                     'important' => $withResults > 0,
-                    'reason' => $withResults > 0
-                        ? sprintf('%d of the removed participants had submitted results, which were deleted', $withResults)
-                        : '',
+                    // A fixed sentence translates. The count is in the facts.
+                    'reason' => $withResults > 0 ? 'Removed participants had submitted results, which were deleted' : '',
                 ]
             );
         }
