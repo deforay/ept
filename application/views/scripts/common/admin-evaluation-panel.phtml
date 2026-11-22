@@ -1,0 +1,352 @@
+<?php
+
+/**
+ * The evaluation section an administrator sees at the bottom of a response page opened
+ * from evaluate: the result and scores, the findings with their corrective actions, the
+ * feedback to the participant, and the two admin actions (manual override, exclude).
+ * Participants never see it.
+ *
+ * Include it inside the response form:
+ *   echo $this->partial('common/admin-evaluation-panel.phtml', [
+ *       'scheme' => 'dts',                       // reads <scheme>.passPercentage
+ *       'shipment' => $this->shipment,           // shipment_participant_map row
+ *       'evalComments' => $this->evaluateData['evalComments'],
+ *   ]);
+ *
+ * The field names and ids are the ones every response save reads. The override
+ * switch shows and hides .manualOverrideRow and .scoreReadOnlyRow itself.
+ */
+
+$shipment = $this->shipment ?? [];
+$overrideOn = ($shipment['manual_override'] ?? '') === 'yes';
+$show = $overrideOn ? '' : 'display: none;';
+$showReadOnly = $overrideOn ? 'display: none;' : '';
+$shipmentScore = (float) ($shipment['shipment_score'] ?? 0);
+$documentationScore = (float) ($shipment['documentation_score'] ?? 0);
+// Custom tests set their own pass marks, so they show none here.
+$passMark = in_array($this->scheme ?? '', ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19'], true)
+    ? Pt_Commons_SchemeConfig::get($this->scheme . '.passPercentage')
+    : null;
+// final_result: 1 Pass, 2 Fail, 3 Excluded, 4 Not Evaluated
+$resultBadge = match ((int) ($shipment['final_result'] ?? 0)) {
+    1 => ['eval-result-pass', $this->htmlTranslate('Pass')],
+    2 => ['eval-result-fail', $this->htmlTranslate('Fail')],
+    3 => ['eval-result-other', $this->htmlTranslate('Excluded')],
+    4 => ['eval-result-other', $this->htmlTranslate('Not Evaluated')],
+    default => null,
+};
+$warnings = json_decode((string) ($shipment['failure_reason'] ?? ''), true);
+$adminActionsOpen = $overrideOn || ($shipment['is_excluded'] ?? '') === 'yes';
+$evalComments = [];
+foreach ($this->evalComments ?: [] as $evl) {
+    $evalComments[$evl['comment_id']] = $evl['comment'];
+}
+$selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value) ? " selected='selected'" : '';
+?>
+<style>
+    .eval-panel {
+        margin: 20px 0 0;
+        padding: 16px 18px;
+        border: 1px solid #e3e7ec;
+        border-radius: 6px;
+        background-color: #fff;
+    }
+
+    .eval-panel-title {
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    details.eval-panel > summary.eval-panel-title {
+        margin: 0;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    details.eval-panel > summary.eval-panel-title::-webkit-details-marker {
+        display: none;
+    }
+
+    details.eval-panel > summary.eval-panel-title::before {
+        content: "\25B8";
+        display: inline-block;
+        width: 16px;
+        color: #6b7785;
+        transition: transform 0.15s;
+    }
+
+    details.eval-panel[open] > summary.eval-panel-title::before {
+        transform: rotate(90deg);
+    }
+
+    details.eval-panel[open] > summary.eval-panel-title {
+        margin-bottom: 12px;
+    }
+
+    .eval-summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .eval-result-badge {
+        align-self: center;
+        padding: 6px 14px;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
+    .eval-result-pass {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+    }
+
+    .eval-result-fail {
+        background-color: #c0392b;
+        color: #fff;
+    }
+
+    .eval-result-other {
+        background-color: #eceff1;
+        color: #455a64;
+    }
+
+    .eval-score {
+        min-width: 150px;
+        padding: 8px 14px;
+        border: 1px solid #eef0f3;
+        border-radius: 4px;
+        background-color: #fafbfc;
+    }
+
+    .eval-score-label {
+        display: block;
+        margin: 0 0 2px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7785;
+    }
+
+    .eval-score-value {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .eval-score-note {
+        display: block;
+        font-size: 12px;
+        color: #6b7785;
+    }
+
+    .eval-subtitle {
+        margin: 18px 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #3d4852;
+    }
+
+    .eval-help {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #6b7785;
+    }
+
+    .eval-findings {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .eval-findings li {
+        display: flex;
+        gap: 10px;
+        padding: 10px 0;
+        border-top: 1px solid #eef0f3;
+    }
+
+    .eval-findings li:first-child {
+        border-top: 0;
+    }
+
+    .eval-finding {
+        margin: 0;
+        font-weight: normal;
+    }
+
+    .eval-finding-warning {
+        display: block;
+        color: #a93226;
+    }
+
+    .eval-finding-action {
+        display: block;
+        margin-top: 3px;
+        padding-left: 14px;
+        border-left: 2px solid #dfe4ea;
+        color: #3d4852;
+    }
+
+    .eval-field {
+        margin-bottom: 12px;
+    }
+
+    .eval-field > label,
+    .eval-field-label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 600;
+        color: #3d4852;
+    }
+
+    .eval-field-inline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 16px;
+    }
+
+    .eval-field-inline > .eval-field-label {
+        margin: 0;
+    }
+
+    .eval-radio {
+        margin: 0;
+        font-weight: normal;
+    }
+
+    .eval-select-short {
+        width: auto;
+        min-width: 110px;
+    }
+</style>
+
+<input type="hidden" name="reqAccessFrom" value="admin" id="reqAccessFrom" />
+
+<div class="eval-panel">
+    <h3 class="eval-panel-title"><?= $this->htmlTranslate('Evaluation result'); ?></h3>
+    <div class="eval-summary">
+        <?php if ($resultBadge !== null) { ?>
+            <span class="badge eval-result-badge <?= $resultBadge[0]; ?>"><?= $resultBadge[1]; ?></span>
+        <?php } ?>
+        <div class="eval-score scoreReadOnlyRow" style="<?= $showReadOnly; ?>">
+            <span class="eval-score-label"><?= $this->htmlTranslate('Total score'); ?></span>
+            <span class="eval-score-value"><?= $this->escape((string) round($shipmentScore + $documentationScore, 2)); ?></span>
+            <?php if ($passMark !== null && $passMark !== '') { ?>
+                <span class="eval-score-note"><?= sprintf($this->htmlTranslate('Pass mark %s'), $this->escape((string) $passMark)); ?></span>
+            <?php } ?>
+        </div>
+        <div class="eval-score scoreReadOnlyRow" style="<?= $showReadOnly; ?>">
+            <span class="eval-score-label"><?= $this->htmlTranslate('Shipment Score'); ?></span>
+            <span class="eval-score-value"><?= $this->escape((string) ($shipment['shipment_score'] ?? '')); ?></span>
+        </div>
+        <div class="eval-score scoreReadOnlyRow" style="<?= $showReadOnly; ?>">
+            <span class="eval-score-label"><?= $this->htmlTranslate('Documentation Score'); ?></span>
+            <span class="eval-score-value"><?= $this->escape((string) ($shipment['documentation_score'] ?? '')); ?></span>
+        </div>
+        <div class="eval-score manualOverrideRow" style="<?= $show; ?>">
+            <label class="eval-score-label" for="shipmentScore"><?= $this->htmlTranslate('Shipment Score'); ?> <span class="mandatory">*</span></label>
+            <input type="text" value="<?= $this->escape((string) ($shipment['shipment_score'] ?? '')); ?>" name="shipmentScore"
+                id="shipmentScore" class="form-control" placeholder="<?= $this->htmlTranslate('Enter the shipment score'); ?>"
+                title="<?= $this->htmlTranslate('Please enter the shipment score'); ?>">
+        </div>
+        <div class="eval-score manualOverrideRow" style="<?= $show; ?>">
+            <label class="eval-score-label" for="documentationScore"><?= $this->htmlTranslate('Documentation Score'); ?> <span class="mandatory">*</span></label>
+            <input type="text" value="<?= $this->escape((string) ($shipment['documentation_score'] ?? '')); ?>"
+                name="documentationScore" id="documentationScore" class="form-control"
+                placeholder="<?= $this->htmlTranslate('Enter the documentation score'); ?>" title="<?= $this->htmlTranslate('Please enter the documentation score'); ?>">
+        </div>
+    </div>
+
+    <?php if (!empty($warnings) && is_array($warnings)) { ?>
+        <h4 class="eval-subtitle"><?= $this->htmlTranslate('Findings and corrective actions'); ?></h4>
+        <p class="eval-help manualOverrideRow" style="<?= $show; ?>"><?= $this->htmlTranslate('Untick a finding to leave it out of the report.'); ?></p>
+        <ul class="eval-findings">
+            <?php $i = 1;
+            foreach ($warnings as $warning) {
+                $action = Pt_Evaluation_FailureReason::correctiveActionHtml($warning); ?>
+                <li>
+                    <span class="manualOverrideRow" style="<?= $show; ?>">
+                        <input type="checkbox" id="manualCorrective<?= $i; ?>"
+                            name="manualCorrective[<?= $this->escape((string) (is_array($warning) ? ($warning['warning'] ?? '') : $warning)); ?>]"
+                            value="<?= $this->escape((string) (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '')); ?>" checked>
+                    </span>
+                    <label for="manualCorrective<?= $i; ?>" class="eval-finding">
+                        <span class="eval-finding-warning"><?= Pt_Evaluation_FailureReason::warningHtml($warning); ?></span>
+                        <?php if (trim(strip_tags($action)) !== '') { ?>
+                            <span class="eval-finding-action"><?= $action; ?></span>
+                        <?php } ?>
+                    </label>
+                </li>
+                <?php $i++;
+            } ?>
+        </ul>
+    <?php } else { ?>
+        <p class="eval-help"><?= $this->htmlTranslate('No findings for this response.'); ?></p>
+    <?php } ?>
+</div>
+
+<div class="eval-panel">
+    <h3 class="eval-panel-title"><?= $this->htmlTranslate('Feedback to the participant'); ?></h3>
+    <div class="eval-field">
+        <label for="comment"><?= $this->htmlTranslate('Evaluation Comment'); ?></label>
+        <select class="form-control" name="comment" id="comment">
+            <?php echo $this->dropdownSelection($evalComments, $shipment['evaluation_comment'] ?? '', true); ?>
+        </select>
+    </div>
+    <div class="eval-field">
+        <label for="optionalComments"><?= $this->htmlTranslate('Optional Extra Comments'); ?></label>
+        <textarea class="form-control" name="optionalComments" rows="3"
+            id="optionalComments"><?= $this->escape((string) ($shipment['optional_eval_comment'] ?? '')); ?></textarea>
+    </div>
+    <div class="eval-field eval-field-inline">
+        <span class="eval-field-label"><?= $this->htmlTranslate('Is the above a follow up comment for corrective action?'); ?></span>
+        <label class="eval-radio">
+            <input type="radio" name="isFollowUp" id="followUpYes" value="yes" <?= ($shipment['is_followup'] ?? '') === 'yes' ? "checked='checked'" : ''; ?>
+                title="<?= $this->htmlTranslate('Please choose whether this is a follow up comment or not'); ?>" />
+            <?= $this->htmlTranslate('Yes'); ?>
+        </label>
+        <label class="eval-radio">
+            <input type="radio" name="isFollowUp" id="followUpNo" value="no" <?= ($shipment['is_followup'] ?? '') === 'no' ? "checked='checked'" : ''; ?> />
+            <?= $this->htmlTranslate('No'); ?>
+        </label>
+    </div>
+</div>
+
+<details class="eval-panel" <?= $adminActionsOpen ? 'open' : ''; ?>>
+    <summary class="eval-panel-title"><?= $this->htmlTranslate('Admin actions'); ?></summary>
+    <p class="eval-help"><?= $this->htmlTranslate("Change these only to correct an evaluation. Both change the participant's result."); ?></p>
+    <div class="eval-field eval-field-inline">
+        <label for="manualOverride" class="eval-field-label"><?= $this->htmlTranslate('Manually Override Results'); ?></label>
+        <select name="manualOverride" id="manualOverride" class="form-control eval-select-short"
+            title="<?= $this->htmlTranslate('Please choose manual override yes or no'); ?>">
+            <option value="">-- <?= $this->htmlTranslate('Select'); ?> --</option>
+            <option value="no"<?= $selected('manual_override', 'no'); ?>><?= $this->htmlTranslate('No'); ?></option>
+            <option value="yes"<?= $selected('manual_override', 'yes'); ?>><?= $this->htmlTranslate('Yes'); ?></option>
+        </select>
+    </div>
+    <div class="eval-field eval-field-inline">
+        <label for="isExcluded" class="eval-field-label"><?= $this->htmlTranslate('Do you want to exclude this response from evaluation?'); ?></label>
+        <select name="isExcluded" id="isExcluded" class="form-control isRequired eval-select-short"
+            title="<?= $this->htmlTranslate('Please choose whether this response is excluded from evaluation or not'); ?>">
+            <option value="no"<?= $selected('is_excluded', 'no'); ?>><?= $this->htmlTranslate('No'); ?></option>
+            <option value="yes"<?= $selected('is_excluded', 'yes'); ?>><?= $this->htmlTranslate('Yes'); ?></option>
+        </select>
+    </div>
+</details>
+<script>
+    // Override on: the scores and the keep/drop ticks become editable.
+    $(function () {
+        $('#manualOverride').on('change', function () {
+            var on = this.value === 'yes';
+            $('.manualOverrideRow').toggle(on);
+            $('.scoreReadOnlyRow').toggle(!on);
+        });
+    });
+</script>
