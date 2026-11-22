@@ -90,20 +90,28 @@ class Application_Service_Distribution
 
         $shipmentService = new Application_Service_Shipments();
         $cancelledCount = 0;
+        $cancelledCodes = [];
         $failures = [];
         foreach ($active as $s) {
             $res = $shipmentService->cancelShipment($s['shipment_id'], $reason, $confirmToken);
             if (!empty($res['success'])) {
                 $cancelledCount++;
+                $cancelledCodes[] = $s['shipment_code'];
             } else {
                 $failures[] = $s['shipment_code'] . ': ' . $res['message'];
             }
         }
 
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog(
+        Application_Model_DbTable_AuditLog::record(
             'Cancelled PT Survey - ' . $distro['distribution_code'] . " ({$cancelledCount} shipments, reason: {$reason})",
-            'shipment'
+            'shipment',
+            [
+                'entity' => ['type' => 'distribution', 'id' => $distributionId, 'label' => $distro['distribution_code']],
+                'facts' => ['Shipments cancelled' => $cancelledCount, 'Shipments not cancelled' => count($failures)],
+                'list' => ['title' => 'Shipments cancelled', 'rows' => $cancelledCodes],
+                'important' => $cancelledCount > 0,
+                'reason' => 'Cancelling locks the shipments for good and deletes their reports',
+            ]
         );
 
         if (!empty($failures)) {
@@ -173,10 +181,16 @@ class Application_Service_Distribution
             $disrtibutionDb->updateDistributionStatus($distributionId, 'shipped');
             $db->commit();
 
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
+            $shipmentCodes = $db->fetchCol(
+                $db->select()->from('shipment', ['shipment_code'])->where('distribution_id = ?', $distributionId)->order('shipment_code')
+            );
+            Application_Model_DbTable_AuditLog::record(
                 'Shipped PT Survey - ' . ($distroCode ?: "#$distributionId") . " ({$shipmentCount} shipments)",
-                'shipment'
+                'shipment',
+                [
+                    'entity' => ['type' => 'distribution', 'id' => (int) $distributionId, 'label' => (string) $distroCode],
+                    'list' => ['title' => 'Shipments', 'rows' => $shipmentCodes],
+                ]
             );
 
             return 'PT Event shipped!';

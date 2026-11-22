@@ -208,8 +208,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         ];
         $distributionId = $this->insert($data);
         if ($distributionId > 0) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Added a new PT Survey - ' . $params['distributionCode'], 'shipment');
+            Application_Model_DbTable_AuditLog::record('Added a new PT Survey - ' . $params['distributionCode'], 'shipment', [
+                'entity' => ['type' => 'distribution', 'id' => (int) $distributionId, 'label' => $params['distributionCode']],
+                'facts' => ['PT Survey Date' => $data['distribution_date']],
+            ]);
         }
         return $distributionId;
     }
@@ -294,8 +296,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         }
         $code = $row['distribution_code'];
         $this->delete(['distribution_id = ?' => $id]);
-        $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog('Deleted PT Survey - ' . $code, 'shipment');
+        Application_Model_DbTable_AuditLog::record('Deleted PT Survey - ' . $code, 'shipment', [
+            'entity' => ['type' => 'distribution', 'id' => $id, 'label' => $code],
+            'facts' => ['PT Survey Date' => substr((string) $row['distribution_date'], 0, 10)],
+        ]);
         return 'OK';
     }
 
@@ -416,6 +420,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $distributionId = (int) base64_decode($params['distributionId']);
+        $before = $this->fetchRow(['distribution_id = ?' => $distributionId]);
 
         $data = [
             'distribution_date' => Pt_Commons_DateUtility::isoDateFormat($params['distributionDate']),
@@ -436,9 +441,22 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         }
 
         $affected = $this->update($data, ['distribution_id = ?' => $distributionId]);
-        if ($affected > 0 && isset($data['distribution_code'])) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated PT Survey - ' . $data['distribution_code'], 'shipment');
+        if ($affected > 0 && $before) {
+            $old = [
+                'distribution_code' => $before['distribution_code'],
+                'distribution_date' => substr((string) $before['distribution_date'], 0, 10),
+            ];
+            $new = [
+                'distribution_code' => $data['distribution_code'] ?? $before['distribution_code'],
+                'distribution_date' => substr((string) $data['distribution_date'], 0, 10),
+            ];
+            Application_Model_DbTable_AuditLog::record('Updated PT Survey - ' . $new['distribution_code'], 'shipment', [
+                'entity' => ['type' => 'distribution', 'id' => $distributionId, 'label' => $new['distribution_code']],
+                'changes' => Application_Model_DbTable_AuditLog::changes($old, $new, [
+                    'distribution_code' => 'PT Survey Code',
+                    'distribution_date' => 'PT Survey Date',
+                ]),
+            ]);
         }
         return $affected;
     }

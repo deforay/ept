@@ -284,10 +284,21 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
             $participantCount = is_array($params['selectedForEnrollment']) ? count($params['selectedForEnrollment']) : 0;
             $shipmentCode = $shipmentRow['shipment_code'] ?? "#{$params['shipmentId']}";
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
+            $addedIds = array_values(array_diff($params['selectedForEnrollment'], array_keys($existingMap)));
+            Application_Model_DbTable_AuditLog::record(
                 "Shipped shipment - {$shipmentCode} ({$participantCount} participants)",
-                'shipment'
+                'shipment',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => (int) $params['shipmentId'], 'label' => $shipmentRow['shipment_code'] ?? ''],
+                    'facts' => [
+                        'Participants' => $participantCount,
+                        'Added' => count($addedIds),
+                        'Removed' => count($mapIdsToRemove),
+                        'Emails queued' => count($subResult),
+                        'Saved as a list' => $saveAsList ?? '',
+                    ],
+                    'list' => ['title' => 'Participants added', 'rows' => self::labIds($db, $addedIds)],
+                ]
             );
             if ($listNameTaken) {
                 $alertMsg = new Zend_Session_Namespace('alertSpace');
@@ -407,6 +418,53 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         return !((isset($shipment['status']) && $shipment['status'] == 'finalized') || (isset($shipment['response_switch']) && $shipment['response_switch'] == 'off'));
     }
 
+    /**
+     * Lab IDs for participant ids, sorted.
+     *
+     * @param int[] $participantIds
+     * @return string[]
+     */
+    private static function labIds(Zend_Db_Adapter_Abstract $db, array $participantIds): array
+    {
+        $participantIds = array_values(array_filter(array_map('intval', $participantIds)));
+        if ($participantIds === []) {
+            return [];
+        }
+        try {
+            return $db->fetchCol(
+                $db->select()
+                    ->from('participant', ['unique_identifier'])
+                    ->where('participant_id IN (?)', $participantIds)
+                    ->order('unique_identifier')
+            );
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Log participants added to a shipment after it was set up.
+     *
+     * @param int[] $participantIds
+     */
+    private static function auditEnrolment(Zend_Db_Adapter_Abstract $db, int $shipmentId, array $participantIds): void
+    {
+        try {
+            $code = (string) $db->fetchOne($db->select()->from('shipment', ['shipment_code'])->where('shipment_id = ?', $shipmentId));
+            $labIds = self::labIds($db, $participantIds);
+            Application_Model_DbTable_AuditLog::record(
+                'Added participants to shipment - ' . ($code !== '' ? $code : "#{$shipmentId}") . ' (' . count($labIds) . ' participants)',
+                'shipment',
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                    'list' => ['title' => 'Participants added', 'rows' => $labIds],
+                ]
+            );
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('auditEnrolment failed: ' . $e->getMessage());
+        }
+    }
+
     public function addEnrollementDetails($params)
     {
         try {
@@ -423,6 +481,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 ];
                 $this->insert($data);
             }
+            self::auditEnrolment(
+                $this->getAdapter(),
+                (int) base64_decode($params['shipmentId']),
+                array_map(static fn ($id) => (int) base64_decode($id), (array) $params['participants'])
+            );
             $this->getAdapter()->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = 'Participants added successfully';
@@ -455,6 +518,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 ];
                 $insertCount = $this->insert($data);
             }
+            self::auditEnrolment(
+                $this->getAdapter(),
+                (int) $shipmentId,
+                array_map(static fn ($id) => (int) base64_decode($id), $participantId)
+            );
             $this->getAdapter()->commit();
             return $insertCount;
         } catch (Throwable $e) {
