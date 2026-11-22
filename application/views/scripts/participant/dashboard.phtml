@@ -380,12 +380,6 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 				</h3>
 				<div id="participantChartContainerDts" class="dts" style="display: none;"></div>
 			<?php }
-			if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-				<h3 class="txt text-info dbs" style=" text-align: left; margin: 3%; display: none; ">
-					<?= $this->translate->_("Participant Shipment Score for DBS Scheme"); ?>
-				</h3>
-				<div id="participantChartContainerDbs" class="dbs" style="display: none;"></div>
-			<?php }
 			if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
 				<h3 class="txt text-info recency" style=" text-align: left; margin: 3%; display: none; ">
 					<?= $this->translate->_("Participant Shipment Score for Recency Scheme"); ?>
@@ -602,21 +596,6 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 					$('#participantChartContainerDts').html(data);
 				});
 		<?php }
-		if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-			/* for shipment dbs */
-			$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-					shipmentDate: $('#dateRange').val(),
-					participants: participant,
-					type: type,
-					shipmentType: 'dbs',
-					render: 'participantChartContainerDbs',
-					format: "html"
-				},
-				function(data) {
-					$('#participantChartContainerDbs').html(data);
-				});
-		<?php }
 		if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
 			/* for shipment recency */
 			$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
@@ -652,7 +631,6 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 			vl = $("div").hasClass("vl");
 			eid = $("div").hasClass("eid");
 			dts = $("div").hasClass("dts");
-			dbs = $("div").hasClass("dbs");
 			recency = $("div").hasClass("recency");
 			covid19 = $("div").hasClass("covid19");
 
@@ -671,11 +649,6 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 					$('.dts').show();
 				<?php } ?>
 			}
-			if ($("div").hasClass("dbs")) {
-				<?php if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) { ?>
-					$('.dbs').show();
-				<?php } ?>
-			}
 			if ($("div").hasClass("recency")) {
 				<?php if (count($activeSchemes) > 0 && in_array('recency', $activeSchemes)) { ?>
 					$('.recency').show();
@@ -687,7 +660,7 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 				<?php } ?>
 			}
 
-			if (vl == true || dts == true || dbs == true || recency == true || covid19 == true || eid == true) {
+			if (vl == true || dts == true || recency == true || covid19 == true || eid == true) {
 				$('.all').show();
 			}
 		}, 1000);

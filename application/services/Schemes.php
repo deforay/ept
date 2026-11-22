@@ -336,49 +336,6 @@ class Application_Service_Schemes
         return $db->fetchAll($sql);
     }
 
-    public function getDbsSamples($sId, $pId)
-    {
-
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['ref' => 'reference_result_dbs'])
-            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
-            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
-            ->joinLeft(['res' => 'response_result_dbs'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
-                'eia_1',
-                'lot_no_1',
-                'exp_date_1',
-                'od_1',
-                'cutoff_1',
-                'eia_2',
-                'lot_no_2',
-                'exp_date_2',
-                'od_2',
-                'cutoff_2',
-                'eia_3',
-                'lot_no_3',
-                'exp_date_3',
-                'od_3',
-                'cutoff_3',
-                'wb',
-                'wb_lot',
-                'wb_exp_date',
-                'wb_160',
-                'wb_120',
-                'wb_66',
-                'wb_55',
-                'wb_51',
-                'wb_41',
-                'wb_31',
-                'wb_24',
-                'wb_17',
-                'reported_result',
-            ])
-            ->where('sp.shipment_id = ? ', $sId)
-            ->where('sp.participant_id = ? ', $pId);
-
-        return $db->fetchAll($sql);
-    }
-
     public function getEidSamples($sId, $pId)
     {
 

@@ -78,7 +78,6 @@ La colonne centrale reprend le nom affiché dans l'interface d'administration et
 | `tb` | Dried Tube Specimen - Tuberculosis | Tests moléculaires (GeneXpert) et microscopie |
 | `recency` | Rapid Test for Recent Infection (RTRI) | Tests d'infection récente |
 | `covid19` | SARS-CoV-2 | Tests PCR sur plusieurs plateformes |
-| `dbs` | Dried Blood Spot - HIV Serology | Tests EIA et Western Blot |
 | `generic` | Custom Tests | Types de tests configurables avec champs dynamiques |
 
 ## À lire ensuite {#read-next}

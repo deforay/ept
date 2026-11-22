@@ -144,7 +144,6 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         // sidebar uses; custom tests already have short ids (HBV, SYP).
         $shortLabels = [
             'dts'     => 'HIV Serology',
-            'dbs'     => 'DBS',
             'vl'      => 'VL',
             'eid'     => 'EID',
             'tb'      => 'TB',

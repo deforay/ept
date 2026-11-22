@@ -77,7 +77,6 @@ Seven built-in schemes ship in the `scheme_list` table, alongside any number of 
 | `tb` | Dried Tube Specimen - Tuberculosis | Molecular (GeneXpert) and microscopy testing |
 | `recency` | Rapid Test for Recent Infection (RTRI) | Recent infection testing |
 | `covid19` | SARS-CoV-2 | Multi-platform PCR testing |
-| `dbs` | Dried Blood Spot - HIV Serology | EIA and Western Blot testing |
 | `generic` | Custom Tests | User-configured test types with dynamic fields |
 
 ## Read next

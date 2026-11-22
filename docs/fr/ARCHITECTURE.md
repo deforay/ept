@@ -34,7 +34,7 @@ Les flèches de sauvegarde décrivent des dispositions opérationnelles requises
 - Les classes de service utilisent les modèles ZF1 `Zend_Db_Table` (`application/models/DbTable`) et d'autres modèles.
 - Les vues se trouvent dans `application/views` et dans les dossiers propres à chaque module `application/modules/*/views`. Les layouts se trouvent dans `application/layouts`.
 - Le travail en arrière-plan s'exécute par des tâches planifiées Crunz dans `scheduled-jobs/`.
-- Prise en charge de plusieurs programmes : DTS, VL, EID, TB, Recency, COVID-19 et DBS, ainsi que des tests personnalisés configurés par l'utilisateur (`generic`).
+- Prise en charge de plusieurs programmes : DTS, VL, EID, TB, Recency et COVID-19, ainsi que des tests personnalisés configurés par l'utilisateur (`generic`).
 
 ## Points d'entrée {#entry-points}
 

@@ -239,9 +239,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                 } elseif ($scheme == 'dts') {
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                } elseif ($scheme == 'dbs') {
-                    $this->view->wb = $schemeService->getDbsWb();
-                    $this->view->eia = $schemeService->getDbsEia();
                 } elseif ($scheme == 'vl') {
                     $this->view->vlRange = $vlModel->getVlRange($sid);
                     $this->view->vlAssay = $vlModel->getVlAssay();

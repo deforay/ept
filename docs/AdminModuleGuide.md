@@ -757,7 +757,6 @@ if ($this->reportType == 'malawi') {
 | **TB** | Tuberculosis | Molecular (GeneXpert) OR Microscopy |
 | **Recency** | HIV Recency | RTRI-based recent infection testing |
 | **COVID-19** | COVID-19 Testing | Added during pandemic, multi-platform PCR |
-| **DBS** | Dried Blood Spot | EIA and Western Blot testing |
 | **Custom Tests** | User-configurable | Added by popular request for organization-specific tests |
 
 ---

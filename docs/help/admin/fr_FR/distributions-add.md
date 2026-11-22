@@ -27,7 +27,7 @@ Choisissez la date de ce cycle PT dans le sélecteur de date.
 ### Code de l'enquête PT
 
 Un identifiant court et unique pour cette enquête (par exemple
-`DBS-2026-Q1`, `VL-MAY-2026`).
+`DTS-2026-Q1`, `VL-MAY-2026`).
 
 - Le code doit être **unique pour toutes les enquêtes**. Le
   formulaire recherche les doublons dès que vous quittez le champ et

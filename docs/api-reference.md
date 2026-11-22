@@ -86,7 +86,7 @@ The aggregated-insights service does not perform an `authToken` check in its rev
 method. Download actions use separate link handling. A blanket claim that every API
 route requires the same authentication is unsupported.
 
-There are no dedicated TB, DBS, recency or COVID-19 response controller actions in this
+There are no dedicated TB, recency or COVID-19 response controller actions in this
 inventory. Reference data for recency appears under the DTS reference payload.
 That does not establish a dedicated recency submission API.
 

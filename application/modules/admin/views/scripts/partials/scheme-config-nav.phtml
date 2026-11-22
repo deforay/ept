@@ -42,8 +42,8 @@ $currentScheme = (string) $request->getParam('scheme', '');
 $currentId = (string) $request->getParam('id', '');
 
 // The sidebar is built from scheme_list, not a hand-written list, so every scheme
-// the instance actually runs shows up — including DBS and user-configured custom
-// tests, which own scheme_list rows but have no hub settings partial.
+// the instance actually runs shows up, including user-configured custom tests,
+// which own scheme_list rows but have no hub settings partial.
 //
 // getAllSchemes() returns the active schemes this admin is assigned to, which is
 // the same source the session's activeSchemes came from.

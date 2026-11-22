@@ -25,7 +25,7 @@ Pick the date of this PT round from the date picker.
 
 ### PT Survey Code
 
-A short, unique identifier for this survey (e.g. `DBS-2026-Q1`,
+A short, unique identifier for this survey (e.g. `DTS-2026-Q1`,
 `VL-MAY-2026`).
 
 - Must be **unique across all surveys**. The form checks for

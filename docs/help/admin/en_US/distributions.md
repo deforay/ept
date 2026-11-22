@@ -24,7 +24,7 @@ you create, edit, and ship them.
   pop-up that shows every shipment under this survey without
   leaving the page.
 - **PT Shipment/Panel Type** — the kinds of panels (for example
-  DBS, VL, EID, DTS) on this survey. Shows *No Shipment/Panel
+  VL, EID, DTS) on this survey. Shows *No Shipment/Panel
   Added* in grey when the survey has no shipments yet.
 - **PT Survey Date** — the date of the round.
 - **PT Survey Code** — the unique code for this survey. Click

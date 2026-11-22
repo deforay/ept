@@ -182,9 +182,6 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 				} elseif ($shipmentData['shipment']['scheme_type'] == 'covid19') {
 					// COVID-19 Edit Form - Using unified partial
 					include dirname(__FILE__) . '/partials/schemes/covid19.phtml';
-				} elseif ($shipmentData['shipment']['scheme_type'] == 'dbs') {
-					// DBS Edit Form - Using unified partial
-					include dirname(__FILE__) . '/partials/schemes/dbs.phtml';
 				} elseif ($shipmentData['shipment']['scheme_type'] == 'eid') {
 					// Use unified EID partial
 					include dirname(__FILE__) . '/partials/schemes/eid.phtml';

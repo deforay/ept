@@ -1,6 +1,6 @@
 # Guide de l'architecture des programmes
 
-Ce document explique l'organisation des programmes de tests (DTS, VL, EID, TB, Recency, COVID-19, DBS, Tests personnalisés) dans le projet ePT. Utilisez-le comme référence pour maintenir les programmes existants ou en ajouter de nouveaux.
+Ce document explique l'organisation des programmes de tests (DTS, VL, EID, TB, Recency, COVID-19, Tests personnalisés) dans le projet ePT. Utilisez-le comme référence pour maintenir les programmes existants ou en ajouter de nouveaux.
 
 ---
 
@@ -94,7 +94,6 @@ application/
 │   ├── EidController.php          # EID response entry
 │   ├── RecencyController.php      # Recency response entry
 │   ├── Covid19Controller.php      # COVID-19 response entry
-│   ├── DbsController.php          # DBS response entry
 │   └── CustomTestController.php   # Custom Tests response entry
 │
 ├── views/scripts/
@@ -104,7 +103,6 @@ application/
 │   ├── eid/response.phtml         # EID response form
 │   ├── recency/response.phtml     # Recency response form
 │   ├── covid19/response.phtml     # COVID-19 response form
-│   ├── dbs/response.phtml         # DBS response form
 │   └── custom-test/response.phtml # Custom Tests response form
 │
 ├── services/
@@ -128,7 +126,6 @@ application/
             ├── eid.phtml          # EID shipment form
             ├── recency.phtml      # Recency shipment form
             ├── covid19.phtml      # COVID-19 shipment form
-            ├── dbs.phtml          # DBS shipment form
             └── generic.phtml      # Custom Tests shipment form
 ```
 
@@ -350,7 +347,6 @@ sequenceDiagram
 | EID | `response_result_eid` | `reference_result_eid` |
 | Recency | `response_result_recency` | `reference_result_recency` |
 | COVID-19 | `response_result_covid19` | `reference_result_covid19` |
-| DBS | `response_result_dbs` | `reference_result_dbs` |
 | Tests personnalisés | `response_result_generic_test` | `reference_result_generic_test` |
 
 ### Relations entre les tables {#table-relationships}
@@ -559,14 +555,6 @@ CREATE TABLE response_result_newscheme (
   - Suivi des réactifs PCR
   - Identification des types de gènes
   - Validation des plateformes
-
-### DBS (goutte de sang séché) {#dbs-dried-blood-spot}
-
-- **Complexité** : moyenne à élevée
-- **Fonctionnalités principales** :
-  - Plusieurs tests EIA (jusqu'à 3)
-  - Western Blot avec 9 bandes protéiques
-  - Valeurs OD et seuils
 
 ### Tests personnalisés {#custom-tests}
 
