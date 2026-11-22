@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 17:50+0530\n"
+"POT-Creation-Date: 2026-11-22 18:29+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -399,6 +399,7 @@ msgstr ""
 "Cette enquête PT ne peut pas être annulée car ces envois sont finalisés"
 
 #: application/languages/audit-log-strings.php:94
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:648
 msgid "Updated"
 msgstr "Mis à jour"
 
@@ -2368,7 +2369,7 @@ msgid "Email Participants"
 msgstr "Envoyer un e-mail aux participants"
 
 #: application/languages/help-translation-strings.php:227
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:531
 msgid "emails"
 msgstr "e-mails"
 
@@ -2696,7 +2697,7 @@ msgstr "tâches"
 
 #: application/languages/help-translation-strings.php:355
 #: application/layouts/scripts/admin.phtml:515
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:65
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:187
 #: application/views/partials/spotlight.phtml:291
 msgid "Job Tracking"
 msgstr "Suivi des tâches"
@@ -3089,7 +3090,7 @@ msgid "Rename a Viral Load assay / platform"
 msgstr "Renommer une technique ou une plateforme de charge virale"
 
 #: application/languages/help-translation-strings.php:507
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:531
 msgid "reports"
 msgstr "rapports"
 
@@ -3807,7 +3808,7 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:344
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:97
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:103
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:350
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:492
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:129
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:67
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:81
@@ -4932,7 +4933,7 @@ msgstr "Aucune expédition/aucun panel ajouté"
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:142
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1312
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:320
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:463
 #: application/services/Reports.php:231 application/services/Shipments.php:1024
 #: application/services/Shipments.php:1114
 msgid "Cancelled"
@@ -5352,8 +5353,8 @@ msgstr "Remplacer le rapport de synthèse"
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1313
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:112
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:224
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:462
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
 #: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:69
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
@@ -5382,8 +5383,6 @@ msgstr "Envoyé"
 #: application/modules/admin/views/scripts/alerts/email.phtml:51
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:109
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
 #: application/modules/admin/views/scripts/participants/index.phtml:173
 #: application/modules/admin/views/scripts/testkit/index.phtml:33
 msgid "Pending"
@@ -6413,8 +6412,9 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:84
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:88
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:37
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:86
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:133
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:218
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:220
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:243
 #: application/modules/admin/views/scripts/participants/add.phtml:294
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:25
 #: application/modules/admin/views/scripts/participants/edit.phtml:447
@@ -6476,7 +6476,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:350
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:33
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:43
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:144
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:254
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:19
 #: application/modules/admin/views/scripts/participants/index.phtml:235
 #: application/modules/admin/views/scripts/participants/pending.phtml:29
@@ -6557,7 +6557,8 @@ msgstr "Retenu (en pause)"
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:434
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:228
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:442
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:278
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:221
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:421
 #: application/modules/admin/views/scripts/participants/index.phtml:184
 #: application/modules/admin/views/scripts/participants/index.phtml:191
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:116
@@ -6759,7 +6760,7 @@ msgstr "Sélectionnez une ou plusieurs villes"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:87
 #: application/modules/admin/views/scripts/api-history/index.phtml:59
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:151
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:121
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:234
 #: application/modules/admin/views/scripts/participants/index.phtml:166
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:156
 #: application/modules/admin/views/scripts/shipment/index.phtml:39
@@ -6953,7 +6954,7 @@ msgstr "Source du flux"
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:168
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:59
 #: application/modules/admin/views/scripts/home-config/index.phtml:571
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:139
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:249
 msgid "Actions"
 msgstr "Actions"
 
@@ -6964,7 +6965,7 @@ msgstr "Connexions"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:812
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:126
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:89
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:229
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:50
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:293
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:262
@@ -7354,7 +7355,7 @@ msgstr "Tous les statuts"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:135
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:324
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:312
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:455
 msgid "Generating"
 msgstr "En cours de génération"
 
@@ -7389,7 +7390,7 @@ msgid "Rejected"
 msgstr "Rejeté"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:147
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:117
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:231
 msgid "Click to select date range"
 msgstr "Cliquez pour sélectionner une plage de dates"
 
@@ -7420,31 +7421,31 @@ msgstr "de plus"
 msgid "by"
 msgstr "par"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:363
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:488
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:364
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:635
 msgid "s ago"
 msgstr "s auparavant"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:365
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:490
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:366
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:636
 msgid "m ago"
 msgstr "min auparavant"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:367
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:492
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:368
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:637
 msgid "h ago"
 msgstr "h auparavant"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:369
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:494
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:370
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:638
 msgid "d ago"
 msgstr "j auparavant"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:388
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:389
 msgid "Download ZIP"
 msgstr "Télécharger le ZIP"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:389
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:390
 #: application/modules/admin/views/scripts/enrollments/index.phtml:73
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:70
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:76
@@ -7456,7 +7457,7 @@ msgstr "Télécharger le ZIP"
 msgid "Download"
 msgstr "Télécharger"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:395
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:396
 msgid "Open in Annual Certificates"
 msgstr "Ouvrir dans Certificats annuels"
 
@@ -7941,6 +7942,7 @@ msgstr "Aperçu avec un vrai participant"
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-done.phtml:25
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:48
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment.phtml:22
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:225
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:116
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:45
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:106
@@ -12011,6 +12013,7 @@ msgstr ""
 "Modèles d'e-mail."
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1308
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:694
 msgid "Paused"
 msgstr "En pause"
 
@@ -12189,7 +12192,7 @@ msgid "List saved: %1 added, %2 removed."
 msgstr "Liste enregistrée : %1 ajouté(s), %2 retiré(s)."
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:148
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:132
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:242
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:201
 msgid "Reference"
 msgstr "Référence"
@@ -12812,7 +12815,7 @@ msgid "Processing.."
 msgstr "En traitement.."
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:44
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:316
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:459
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:71
 #: application/services/Reports.php:230 application/services/Shipments.php:5440
@@ -13089,12 +13092,13 @@ msgid "All Shipments Under PT Survey"
 msgstr "Toutes les expéditions de l'enquête PT"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:85
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:223
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:454
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:577
 msgid "Queued"
 msgstr "En file d'attente"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:88
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:110
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:314
 msgid "Processing"
 msgstr "En cours"
 
@@ -13626,6 +13630,7 @@ msgstr "Appliquer à tous les échantillons"
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:348
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:383
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:433
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:387
 msgid "System"
 msgstr "Système"
 
@@ -16269,141 +16274,150 @@ msgstr "Nombre de participants"
 msgid "Number of participants responded"
 msgstr "Nombre de participants ayant répondu"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:70
-msgid "Auto-refreshing every 5 seconds"
-msgstr "Actualisation automatique toutes les 5 secondes"
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:191
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:694
+msgid "Live"
+msgstr "En direct"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:74
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:195
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:697
+msgid "Pause updates"
+msgstr "Suspendre l'actualisation"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:198
 msgid "Refresh Now"
 msgstr "Actualiser maintenant"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:83
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:131
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:205
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:241
 msgid "Job Type"
 msgstr "Type de tâche"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:96
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:207
 msgid "All Job Types"
 msgstr "Tous les types de tâches"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:97
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:208
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:419
 msgid "Report Generation"
 msgstr "Génération des rapports"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:98
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:209
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
 msgid "Evaluation"
 msgstr "Évaluation"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:99
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:210
 msgid "Certificate Generation"
 msgstr "Génération des certificats"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:100
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:211
 msgid "Email Reports"
 msgstr "Envoi des rapports par e-mail"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:101
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:212
 msgid "Send Emails"
 msgstr "Envoi des e-mails"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:102
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:213
 msgid "TB Forms Generation"
 msgstr "Génération des formulaires TB"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:103
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:214
 msgid "Bulk Password Reset"
 msgstr "Réinitialisation groupée des mots de passe"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:108
-msgid "All Statuses"
-msgstr "Tous les statuts"
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:222
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:457
+msgid "Running"
+msgstr "En cours"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:111
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
-msgid "Completed"
-msgstr "Terminé"
-
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:134
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:244
 msgid "Progress"
 msgstr "Progression"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:135
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:245
 msgid "Requested By"
 msgstr "Demandé par"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:136
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:246
 msgid "Started At"
 msgstr "Démarré le"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:137
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:247
 msgid "Ended At"
 msgstr "Terminé à"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:138
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:248
 msgid "Duration"
 msgstr "Durée"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:277
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:420
 msgid "Shipment: "
 msgstr "Expédition : "
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:277
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:382
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:420
 #: application/views/scripts/tb/response.phtml:899
 msgid "N/A"
 msgstr "N/D"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:278
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:421
 msgid "Type: "
 msgstr "Type : "
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:313
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:456
 msgid "Finalizing"
 msgstr "Finalisation en cours"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:318
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:458
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:460
+msgid "Completed"
+msgstr "Terminé"
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:461
 #: application/services/Shipments.php:5442
 msgid "Reports Generated"
 msgstr "Rapports générés"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:349
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:491
 msgid "Cancel this job"
 msgstr "Annuler cette tâche"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:354
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:496
 msgid "Are you sure you want to cancel this job?"
 msgstr "Voulez-vous vraiment annuler cette tâche ?"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:368
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:510
 msgid "Job cancelled successfully"
 msgstr "Tâche annulée avec succès"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:371
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:513
 msgid "Failed to cancel job: "
 msgstr "Échec de l'annulation de la tâche : "
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:375
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:517
 msgid "Error cancelling job. Please try again."
 msgstr "Erreur lors de l'annulation de la tâche. Veuillez réessayer."
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:405
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:540
 msgid "Summary done"
 msgstr "Rapport de synthèse terminé"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:407
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:542
 msgid "Summary pending"
 msgstr "Rapport de synthèse en attente"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:444
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:588
 msgid "running"
 msgstr "en cours"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:471
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:616
 msgid "Ended: "
 msgstr "Terminé : "
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:696
+msgid "Resume updates"
+msgstr "Reprendre l'actualisation"
 
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:68
 msgid "No log files yet"
@@ -23523,71 +23537,71 @@ msgstr ""
 "formulaire de feedback n'a encore été créé. Créez le formulaire de feedback "
 "avant de finaliser."
 
-#: application/views/partials/date-range-presets.phtml:21
+#: application/views/partials/date-range-presets.phtml:44
 msgid "Today"
 msgstr "Aujourd'hui"
 
-#: application/views/partials/date-range-presets.phtml:22
+#: application/views/partials/date-range-presets.phtml:45
 msgid "Yesterday"
 msgstr "Hier"
 
-#: application/views/partials/date-range-presets.phtml:23
+#: application/views/partials/date-range-presets.phtml:46
 msgid "Last 7 Days"
 msgstr "7 derniers jours"
 
-#: application/views/partials/date-range-presets.phtml:24
+#: application/views/partials/date-range-presets.phtml:47
 msgid "Last 30 Days"
 msgstr "30 derniers jours"
 
-#: application/views/partials/date-range-presets.phtml:25
+#: application/views/partials/date-range-presets.phtml:48
 msgid "This Month"
 msgstr "Ce mois-ci"
 
-#: application/views/partials/date-range-presets.phtml:26
+#: application/views/partials/date-range-presets.phtml:49
 msgid "Last Month"
 msgstr "Le mois dernier"
 
-#: application/views/partials/date-range-presets.phtml:27
+#: application/views/partials/date-range-presets.phtml:50
 msgid "Last 90 Days"
 msgstr "90 derniers jours"
 
-#: application/views/partials/date-range-presets.phtml:28
+#: application/views/partials/date-range-presets.phtml:51
 msgid "Last 120 Days"
 msgstr "120 derniers jours"
 
-#: application/views/partials/date-range-presets.phtml:29
+#: application/views/partials/date-range-presets.phtml:52
 msgid "Last 180 Days"
 msgstr "180 derniers jours"
 
-#: application/views/partials/date-range-presets.phtml:30
+#: application/views/partials/date-range-presets.phtml:53
 msgid "Last 12 Months"
 msgstr "12 derniers mois"
 
-#: application/views/partials/date-range-presets.phtml:31
+#: application/views/partials/date-range-presets.phtml:54
 msgid "Last 18 Months"
 msgstr "18 derniers mois"
 
-#: application/views/partials/date-range-presets.phtml:32
+#: application/views/partials/date-range-presets.phtml:55
 msgid "Last 24 Months"
 msgstr "24 derniers mois"
 
-#: application/views/partials/date-range-presets.phtml:33
+#: application/views/partials/date-range-presets.phtml:56
 msgid "Last 3 Years"
 msgstr "3 dernières années"
 
-#: application/views/partials/date-range-presets.phtml:34
+#: application/views/partials/date-range-presets.phtml:57
 msgid "Previous Year"
 msgstr "Année précédente"
 
-#: application/views/partials/date-range-presets.phtml:35
+#: application/views/partials/date-range-presets.phtml:58
 msgid "Current Year To Date"
 msgstr "Année en cours à ce jour"
 
-#: application/views/partials/date-range-presets.phtml:40
+#: application/views/partials/date-range-presets.phtml:63
 msgid "Hide presets"
 msgstr "Masquer les périodes prédéfinies"
 
-#: application/views/partials/date-range-presets.phtml:41
+#: application/views/partials/date-range-presets.phtml:64
 msgid "Show presets"
 msgstr "Afficher les périodes prédéfinies"
 
@@ -28010,7 +28024,7 @@ msgstr ""
 "Le résultat de la charge virale doit être un nombre compris entre 0,00 et "
 "7,00. Veuillez vérifier le résultat pour"
 
-#: library/Pt/Commons/DateUtility.php:447
+#: library/Pt/Commons/DateUtility.php:471
 msgid "Anywhere on Earth"
 msgstr "Partout dans le monde"
 
@@ -28645,16 +28659,16 @@ msgstr "Concordance avec RR n (%)"
 msgid "Concordance"
 msgstr "Concordance"
 
-#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:826
+#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:828
 msgid "Sample(s)"
 msgstr "Échantillon(s)"
 
-#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:849
+#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:851
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:827
 msgid "Scheme Coordinator"
 msgstr "Coordinateur du programme"
 
-#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:850
+#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:852
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:828
 msgid "Director of program"
 msgstr "Directeur de programme"
@@ -28923,6 +28937,12 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Aucun participant"
+
+#~ msgid "Auto-refreshing every 5 seconds"
+#~ msgstr "Actualisation automatique toutes les 5 secondes"
+
+#~ msgid "All Statuses"
+#~ msgstr "Tous les statuts"
 
 #~ msgid "Submit your response before the response deadline."
 #~ msgstr "Soumettez votre réponse avant la date limite de réponse."
