@@ -17,6 +17,11 @@
 #   sudo ept-update -A                   # Update all instances in /var/www
 #   sudo ept-update -A -i                # Detect instances, pick which to update
 #   sudo ept-update -A -s -b             # Non-interactive, update all instances
+#
+# MySQL admin access is found without asking when possible: the password saved
+# in root's ~/.my.cnf, socket auth, root in application.ini, or debian.cnf.
+# Otherwise the script asks once on the terminal and saves the answer. To
+# supply it up front: sudo MYSQL_ROOT_PASSWORD='...' ept-update -A
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -38,6 +43,7 @@ shared_fn_is_valid() {
     local file="$1"
     [ -s "$file" ] || return 1
     grep -q '^prepare_system()' "$file" || return 1
+    grep -q '^resolve_mysql_admin()' "$file" || return 1
     bash -n "$file" 2>/dev/null
 }
 
@@ -146,19 +152,6 @@ detect_ept_installations() {
     if [ ${#found_paths[@]} -gt 0 ]; then
         printf '%s\n' "${found_paths[@]}"
     fi
-}
-
-# Strip surrounding quotes from secrets copied from INI files.
-sanitize_ini_secret() {
-    local val="${1-}"
-    val="$(printf '%s' "$val" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    if [ "${#val}" -ge 2 ]; then
-        case "$val" in
-            \"*\") val="${val#\"}"; val="${val%\"}" ;;
-            \'*\') val="${val#\'}"; val="${val%\'}" ;;
-        esac
-    fi
-    printf '%s' "$val"
 }
 
 # Initialize flags
@@ -528,48 +521,28 @@ fi
 
 print info "Applying SET PERSIST sql_mode='' to override MySQL defaults..."
 
-# Use first instance for config extraction (for multi-instance mode)
-first_ept_path="${ept_paths[0]}"
+# Find MySQL admin access (shared-functions.sh). It asks at most once per box
+# and only when nothing on the box already grants access.
+mysql_admin_ok=false
+mysql_admin_inis=()
+for p in "${ept_paths[@]}"; do
+    mysql_admin_inis+=("${p}/application/configs/application.ini")
+done
 
-# Determine which password to use (from INI or prompt)
-if [ -n "$mysql_root_password" ]; then
-    mysql_pw="$mysql_root_password"
-    print info "Using user-provided MySQL root password"
-elif [ -f "${first_ept_path}/application/configs/application.ini" ]; then
-    mysql_pw="$(extract_mysql_password_from_config "${first_ept_path}/application/configs/application.ini" production || true)"
-    mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
-    ini_user="$(extract_mysql_user_from_config "${first_ept_path}/application/configs/application.ini" production || true)"
-    ini_user="$(sanitize_ini_secret "$ini_user")"
-    if [ "$ini_user" != "root" ]; then
-        print warning "application.ini contains DB user '${ini_user:-<empty>}', not 'root'. Prompting for MySQL root password..."
-        read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
-    elif [ -n "$mysql_pw" ]; then
-        print info "Extracted MySQL root password from application.ini"
+if resolve_mysql_admin "${mysql_admin_inis[@]}"; then
+    mysql_admin_ok=true
+    persist_result=$(mysql_admin_run mysql -e "SET PERSIST sql_mode = '';" 2>&1)
+    persist_status=$?
+    if [ $persist_status -eq 0 ]; then
+        print success "Successfully persisted sql_mode=''"
+        log_action "Applied SET PERSIST sql_mode = '';"
     else
-        print warning "Could not extract a MySQL password from application.ini. Prompting for password..."
-        read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
+        print warning "SET PERSIST failed: $persist_result"
+        log_action "SET PERSIST sql_mode failed: $persist_result"
     fi
 else
-    print error "Could not find application.ini to extract MySQL password. Please provide the MySQL root password."
-    read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
-fi
-
-# Preflight root auth; prompt if wrong
-mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
-if ! MYSQL_PWD="${mysql_pw}" mysql -u root -e "SELECT 1" >/dev/null 2>&1; then
-    print warning "Root authentication failed. Prompting for password..."
-    read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
-fi
-
-persist_result=$(MYSQL_PWD="${mysql_pw}" mysql -u root -e "SET PERSIST sql_mode = '';" 2>&1)
-persist_status=$?
-
-if [ $persist_status -eq 0 ]; then
-    print success "Successfully persisted sql_mode=''"
-    log_action "Applied SET PERSIST sql_mode = '';"
-else
-    print warning "SET PERSIST failed: $persist_result"
-    log_action "SET PERSIST sql_mode failed: $persist_result"
+    print warning "No MySQL admin access found. Skipping SET PERSIST. mysqld.cnf still sets sql_mode. Set MYSQL_ROOT_PASSWORD to enable it."
+    log_action "SET PERSIST sql_mode skipped: no MySQL admin access"
 fi
 
 chmod 644 "$MYSQL_CONFIG_FILE"
@@ -651,27 +624,27 @@ if [ "$skip_ubuntu_updates" = false ]; then
     export DEBIAN_FRONTEND=noninteractive
     export NEEDRESTART_SUSPEND=1
 
-    apt-get update --allow-releaseinfo-change
-    apt-get -o Dpkg::Options::="--force-confdef" \
-        -o Dpkg::Options::="--force-confold" \
-        upgrade -y
+    apt_noprompt=(-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
+
+    apt-get update --allow-releaseinfo-change </dev/null
+    apt-get "${apt_noprompt[@]}" upgrade -y </dev/null
 
     if ! grep -q "ondrej/apache2" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
-        add-apt-repository ppa:ondrej/apache2 -y
-        apt-get upgrade apache2 -y
+        add-apt-repository ppa:ondrej/apache2 -y </dev/null
+        apt-get "${apt_noprompt[@]}" upgrade apache2 -y </dev/null
     fi
 
     print info "Configuring any partially installed packages..."
-    dpkg --configure -a
+    dpkg --force-confdef --force-confold --configure -a </dev/null
 fi
 
 # Clean up
 export DEBIAN_FRONTEND=noninteractive
-apt-get -y autoremove
+apt-get -y autoremove </dev/null
 
 if [ "$skip_ubuntu_updates" = false ]; then
     print info "Installing basic packages..."
-    apt-get install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server mosh gettext
+    apt-get "${apt_noprompt[@]}" install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server mosh gettext </dev/null
 fi
 
 # SSH service enable/start
@@ -700,7 +673,7 @@ done
 get_databases() {
     print info "Fetching available databases..."
     local IFS=$'\n'
-    databases=($(mysql -u root -p"${mysql_root_password}" -e "SHOW DATABASES;" | sed 1d | egrep -v 'information_schema|mysql|performance_schema|sys|phpmyadmin'))
+    databases=($(mysql_admin_run mysql -e "SHOW DATABASES;" | sed 1d | egrep -v 'information_schema|mysql|performance_schema|sys|phpmyadmin'))
     local -i cnt=1
     for db in "${databases[@]}"; do
         echo "$cnt) $db"
@@ -716,8 +689,9 @@ backup_database() {
     for i in "$@"; do
         local db="${db_list[$i]}"
         print info "Backing up database: $db"
-        mysqldump -u root -p"${mysql_root_password}" "$db" | gzip >"${backup_location}/${db}_${timestamp}.sql.gz"
-        if [[ $? -eq 0 ]]; then
+        mysql_admin_run mysqldump "$db" | gzip >"${backup_location}/${db}_${timestamp}.sql.gz"
+        local dump_status=("${PIPESTATUS[@]}")
+        if [[ ${dump_status[0]} -eq 0 && ${dump_status[1]} -eq 0 ]]; then
             print success "Backup of $db completed successfully."
             log_action "Backup of $db completed successfully."
         else
@@ -728,9 +702,9 @@ backup_database() {
 }
 
 if [ "$skip_backup" = false ]; then
-    if ask_yes_no "Do you want to backup the database" "no"; then
-        echo "Please enter your MySQL root password:"
-        read -r -s mysql_root_password < /dev/tty
+    if [ "$mysql_admin_ok" != true ]; then
+        print warning "Skipping database backup: no MySQL admin access."
+    elif ask_yes_no "Do you want to backup the database" "no"; then
         read -r -p "Enter the backup location [press enter to select /var/ept-backup/db/]: " backup_location < /dev/tty
         backup_location="${backup_location:-/var/ept-backup/db/}"
         if [ ! -d "$backup_location" ]; then

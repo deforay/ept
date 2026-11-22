@@ -1039,6 +1039,171 @@ extract_mysql_user_from_config()     { ini_get_value "$1" "${2:-production}" "re
 extract_mysql_dbname_from_config()   { ini_get_value "$1" "${2:-production}" "resources.db.params.dbname"; }
 extract_mysql_password_from_config() { ini_get_value "$1" "${2:-production}" "resources.db.params.password"; }
 
+# Strip surrounding quotes from secrets copied from INI files.
+sanitize_ini_secret() {
+    local val="${1-}"
+    val="$(printf '%s' "$val" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    if [ "${#val}" -ge 2 ]; then
+        case "$val" in
+            \"*\") val="${val#\"}"; val="${val%\"}" ;;
+            \'*\') val="${val#\'}"; val="${val%\'}" ;;
+        esac
+    fi
+    printf '%s' "$val"
+}
+
+# ---------------------------------------------------------------------------
+# MySQL admin access for setup and upgrade.
+#
+# The working root password lives in root's ~/.my.cnf (mode 600, root only).
+# The mysql client reads that file natively. Scripts ask for the password
+# once, save it after MySQL accepts it, and ask again only when MySQL rejects
+# the saved one.
+# ---------------------------------------------------------------------------
+mysql_admin_args=()
+mysql_admin_pw=""
+
+mysql_root_cnf_path() {
+    local home
+    home="$(getent passwd root 2>/dev/null | cut -d: -f6)"
+    printf '%s/.my.cnf' "${home:-/root}"
+}
+
+# Run mysql or mysqldump with the access that resolve_mysql_admin found.
+mysql_admin_run() {
+    local bin="$1"
+    shift
+    if [ -n "$mysql_admin_pw" ]; then
+        MYSQL_PWD="$mysql_admin_pw" "$bin" "${mysql_admin_args[@]}" "$@"
+    else
+        env -u MYSQL_PWD "$bin" "${mysql_admin_args[@]}" "$@"
+    fi
+}
+
+# try_mysql_admin PASSWORD ARGS... keeps the access if MySQL accepts it.
+try_mysql_admin() {
+    mysql_admin_pw="$1"
+    mysql_admin_args=("${@:2}")
+    mysql_admin_run mysql -e "SELECT 1" >/dev/null 2>&1
+}
+
+# Save a verified root password to root's ~/.my.cnf. Other sections of an
+# existing file are kept. The value is quoted so '#', ';' and spaces survive.
+save_mysql_root_cnf() {
+    local pw="$1"
+    local cnf tmp escaped
+    cnf="$(mysql_root_cnf_path)"
+    escaped="$(printf '%s' "$pw" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')"
+
+    tmp="$(umask 077 && mktemp "${cnf}.XXXXXX")" || return 1
+    {
+        printf '[client]\nuser=root\npassword="%s"\n' "$escaped"
+        if [ -f "$cnf" ]; then
+            # Drop the old [client] section and keep everything else.
+            awk '/^[[:space:]]*\[/{skip=($0 ~ /^[[:space:]]*\[client\]/)} !skip' "$cnf"
+        fi
+    } >"$tmp" || { rm -f "$tmp"; return 1; }
+    chown root:root "$tmp" 2>/dev/null
+    chmod 600 "$tmp"
+    mv -f "$tmp" "$cnf"
+}
+
+# Read the root password from root's ~/.my.cnf [client] section.
+read_mysql_root_cnf_password() {
+    local cnf val
+    cnf="$(mysql_root_cnf_path)"
+    [ -r "$cnf" ] || return 1
+    val="$(awk '
+        /^[[:space:]]*\[/ { in_client = ($0 ~ /^[[:space:]]*\[client\]/); next }
+        in_client && /^[[:space:]]*password[[:space:]]*=/ {
+            sub(/^[[:space:]]*password[[:space:]]*=[[:space:]]*/, ""); print; exit
+        }' "$cnf")"
+    case "$val" in
+        \"*\") val="${val#\"}"; val="${val%\"}"
+               val="$(printf '%s' "$val" | sed -e 's/\\"/"/g' -e 's/\\\\/\\/g')" ;;
+        *) val="$(sanitize_ini_secret "$val")" ;;
+    esac
+    printf '%s' "$val"
+}
+
+# resolve_mysql_admin [application.ini ...]
+# Finds MySQL admin access without asking when it can. Order:
+#   1. MYSQL_ROOT_PASSWORD from the environment
+#   2. the password saved in root's ~/.my.cnf
+#   3. root over the local socket with no password (auth_socket)
+#   4. root credentials in any of the given application.ini files
+#   5. /etc/mysql/debian.cnf (Debian maintenance account)
+#   6. a prompt on the terminal, with a timeout, when one is attached
+# A password from 1, 4 or 6 is saved to ~/.my.cnf once MySQL accepts it.
+# Returns 1 when nothing works. mysql_admin_run then has no access.
+resolve_mysql_admin() {
+    local cnf pw ini ini_user attempt
+    cnf="$(mysql_root_cnf_path)"
+
+    # Password checks use --no-defaults. A password in ~/.my.cnf overrides
+    # MYSQL_PWD, so a stale saved one would mask the password under test.
+    pw="${MYSQL_ROOT_PASSWORD:-}"
+    if [ -n "$pw" ] && try_mysql_admin "$pw" --no-defaults -u root; then
+        print info "Using MySQL root password from MYSQL_ROOT_PASSWORD"
+        save_mysql_root_cnf "$pw"
+        return 0
+    fi
+
+    pw="$(read_mysql_root_cnf_password 2>/dev/null || true)"
+    if [ -n "$pw" ]; then
+        if try_mysql_admin "" --defaults-file="$cnf" -u root; then
+            print info "Using saved MySQL root password from ${cnf}"
+            return 0
+        fi
+        print warning "MySQL rejected the saved root password in ${cnf}."
+    fi
+
+    if try_mysql_admin "" --no-defaults -u root; then
+        print info "Using MySQL root over the local socket"
+        return 0
+    fi
+
+    for ini in "$@"; do
+        [ -f "$ini" ] || continue
+        ini_user="$(sanitize_ini_secret "$(extract_mysql_user_from_config "$ini" production 2>/dev/null || true)")"
+        [ "$ini_user" = "root" ] || continue
+        pw="$(sanitize_ini_secret "$(extract_mysql_password_from_config "$ini" production 2>/dev/null || true)")"
+        if [ -n "$pw" ] && try_mysql_admin "$pw" --no-defaults -u root; then
+            print info "Using MySQL root password from ${ini}"
+            save_mysql_root_cnf "$pw"
+            return 0
+        fi
+    done
+
+    if [ -r /etc/mysql/debian.cnf ] && try_mysql_admin "" --defaults-file=/etc/mysql/debian.cnf; then
+        print info "Using MySQL maintenance account from /etc/mysql/debian.cnf"
+        return 0
+    fi
+
+    # Ask on the terminal when there is one. Works under `curl | bash` over
+    # ssh. Cron has no terminal, so it skips straight past.
+    if (exec </dev/tty) 2>/dev/null; then
+        for attempt in 1 2; do
+            pw=""
+            if ! read -r -t 60 -s -p "MySQL root password (saved for next time, Enter to skip): " pw </dev/tty; then
+                echo
+                break
+            fi
+            echo
+            [ -n "$pw" ] || break
+            if try_mysql_admin "$pw" --no-defaults -u root; then
+                save_mysql_root_cnf "$pw" && print success "MySQL root password saved to ${cnf}"
+                return 0
+            fi
+            print warning "MySQL rejected that password."
+        done
+    fi
+
+    mysql_admin_args=()
+    mysql_admin_pw=""
+    return 1
+}
+
 # Log action to log file
 log_action() {
     local message=$1
