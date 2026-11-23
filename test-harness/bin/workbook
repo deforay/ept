@@ -47,6 +47,8 @@ foreach ($argv as $i => $a) {
 }
 
 require_once $repoRoot . '/library/Pt/Commons/MiscUtility.php';
+require_once $repoRoot . '/library/Pt/Commons/TranslateUtility.php';
+require_once $repoRoot . '/library/Pt/Evaluation/Dts/CorrectiveAction.php';
 require_once $repoRoot . '/application/models/Dts.php';
 
 $rows = require $root . '/expectations/vietnam-workbook.php';

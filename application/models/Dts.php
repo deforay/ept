@@ -2832,24 +2832,25 @@ final class Application_Model_Dts
     }
 
     /**
-     * Vietnam feedback line: attaches NIHE-specific recommendation text for one sample to
-     * $out['failureReason'] (rendered, deduped + translated, in the vietnam report layout).
-     * Sets the verdict to Fail when $fail is true; otherwise leaves it (Pass branches carry
-     * acceptable-with-note feedback). $text is the translatable English string from the workbook.
+     * Vietnam feedback line: attaches an NIHE recommendation for one sample to
+     * $out['failureReason']. The item stores the recommendation's ID, so the report shows
+     * it in the reader's language, and its English text. Sets the verdict to Fail when $fail
+     * is true; otherwise leaves it (Pass branches carry acceptable-with-note feedback).
      */
-    private function vietnamFeedback(array &$out, string $sampleLabel, string $text, bool $fail = false): void
+    private function vietnamFeedback(array &$out, string $sampleLabel, ?Pt_Evaluation_Dts_CorrectiveAction $note, bool $fail = false): void
     {
         if ($fail) {
             $out['algoResult'] = 'Fail';
         }
-        // An empty note is meaningful: the NIHE workbook leaves the Feedback column blank for
+        // No note is meaningful: the NIHE workbook leaves the Feedback column blank for
         // combinations the laboratory got right, so nothing must be printed for that sample.
-        if (trim($text) === '') {
+        if ($note === null) {
             return;
         }
         $out['failureReason'][] = [
             'warning' => Pt_Commons_MiscUtility::escapeHtml($sampleLabel),
-            'correctiveAction' => $text,
+            'correctiveAction' => $note->action(),
+            'correctiveActionId' => $note->value,
         ];
     }
 
@@ -2971,17 +2972,17 @@ final class Application_Model_Dts
         $extraTesting = $testsDone > 1 && $t1 === 'NR';
 
         // NIHE recommendation/feedback wording (workbook Feedback/Note/Recommendation columns).
-        // Stored on $out['failureReason'] and translated at render in the vietnam report layout.
-        $FOLLOW_MOH    = 'Follow MOH HIV testing strategy';
-        $T1_NOTE       = "The laboratory's final interpretation is acceptable, but the result for Test 1 is unacceptable";
-        $INTERPRET_WP  = 'Interpret weak positive results carefully';
-        $CHECK_WR      = 'Check the performance with the weak reactive result';
-        $REVIEW_KIT    = 'Review testing procedures and kit interpretation';
-        $REVIEW_SAMPLE = 'Review testing procedures and sample handling';
-        $REFER_CONF    = 'Sample should be referred to confirmation lab';
-        $SCREEN_NO_POS = 'Screening labs must not conclude "HIV Positive." Samples should be reported as "Inconclusive" and referred for confirmatory testing';
+        // The wording lives in Pt_Evaluation_Dts_CorrectiveAction.
+        $FOLLOW_MOH    = Pt_Evaluation_Dts_CorrectiveAction::FollowMohStrategy;
+        $T1_NOTE       = Pt_Evaluation_Dts_CorrectiveAction::Test1Unacceptable;
+        $INTERPRET_WP  = Pt_Evaluation_Dts_CorrectiveAction::InterpretWeakPositive;
+        $CHECK_WR      = Pt_Evaluation_Dts_CorrectiveAction::CheckWeakReactive;
+        $REVIEW_KIT    = Pt_Evaluation_Dts_CorrectiveAction::ReviewKitInterpretation;
+        $REVIEW_SAMPLE = Pt_Evaluation_Dts_CorrectiveAction::ReviewSampleHandling;
+        $REFER_CONF    = Pt_Evaluation_Dts_CorrectiveAction::ReferToConfirmationLab;
+        $SCREEN_NO_POS = Pt_Evaluation_Dts_CorrectiveAction::ScreeningMustNotConcludePositive;
 
-        $screeningMoh = $testsDone > 1 ? $FOLLOW_MOH : '';
+        $screeningMoh = $testsDone > 1 ? $FOLLOW_MOH : null;
 
         $labComment = strtolower(trim((string) ($result['lab_comment'] ?? '')));
 
@@ -3031,7 +3032,7 @@ final class Application_Model_Dts
                 $t1Flagged = in_array($t1, ['R', 'WR'], true) && $r1 !== 'NR';
                 $note = $t1Flagged
                     ? $T1_NOTE
-                    : ($extraTesting ? $FOLLOW_MOH : '');
+                    : ($extraTesting ? $FOLLOW_MOH : null);
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
@@ -3050,14 +3051,14 @@ final class Application_Model_Dts
             // positive must not be under-called as Indeterminate.
             if ($final === 'P' && $testsDone >= 3) {
                 $out['algoResult'] = 'Pass';
-                $note = $hasWeak ? $CHECK_WR : '';
+                $note = $hasWeak ? $CHECK_WR : null;
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
             // Indeterminate under-call -> check the weak-reactive, but only if one was
             // actually reported (workbook row 18 leaves it blank); else (e.g. only 2 tests) MOH.
             $note = ($final === 'I')
-                ? ($hasWeak ? $CHECK_WR : '')
+                ? ($hasWeak ? $CHECK_WR : null)
                 : $FOLLOW_MOH;
             $this->vietnamFeedback($out, $sampleLabel, $note, true);
             return;
@@ -3073,18 +3074,18 @@ final class Application_Model_Dts
                 // "Interpret weak positive results carefully" only makes sense when the lab
                 // actually reported a weak reactive; three strong reactives called Positive is
                 // simply correct and the workbook leaves the Feedback column blank.
-                $note = ($final === 'P' && $hasWeak) ? $INTERPRET_WP : '';
+                $note = ($final === 'P' && $hasWeak) ? $INTERPRET_WP : null;
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
-            $this->vietnamFeedback($out, $sampleLabel, '', true);
+            $this->vietnamFeedback($out, $sampleLabel, null, true);
             return;
         }
 
         // Fewer than three tests on a diluted positive: only Indeterminate/Inconclusive works.
         if ($final === 'I') {
             $out['algoResult'] = 'Pass';
-            $this->vietnamFeedback($out, $sampleLabel, '');
+            $this->vietnamFeedback($out, $sampleLabel, null);
             return;
         }
         $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
