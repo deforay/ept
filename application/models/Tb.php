@@ -365,8 +365,10 @@ class Application_Model_Tb
             $counter++;
         }
 
+        // Participant scores are stored as a percentage, so the shipment's maximum is 100.
+        // Summary reports compare each lab's score with it to count full scores.
         $db->update('shipment', [
-            'max_score' => $maxScore,
+            'max_score' => 100,
             'status' => 'evaluated',
         ], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;

@@ -445,7 +445,9 @@ class Application_Model_Covid19
             $averageScore = 0;
         }
 
-        $db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
+        // Participant scores are stored as a percentage, so the shipment's maximum is 100.
+        // Summary reports compare each lab's score with it to count full scores.
+        $db->update('shipment', ['max_score' => 100, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;
     }
 

@@ -853,9 +853,6 @@ class Application_Service_Evaluation
             $failureReason = [];
             /* Manual result override changes */
             if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-                $shipmentDB = new Application_Model_DbTable_Shipments();
-                $shipmentDeails = $shipmentDB->fetchRow($shipmentDB->getAdapter()->quoteInto('shipment_id = ?', $params['shipmentId']));
-                $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != '') ? $shipmentDeails['max_score'] : 0);
                 $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
                 $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
                 if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
@@ -1173,12 +1170,11 @@ class Application_Service_Evaluation
                 /* Manual result override changes */
                 if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
 
+                    // Judge the override against VL's pass mark, as the EID and DTS overrides do.
+                    // The shipment's stored maximum is not on the score's scale on older rounds.
+                    $vlPassPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
                     $grandTotal = ($shipmentScore + $docScore);
-                    if ($shipmentScore != $maxScore) {
-                        $finalResult = 2;
-                    } else {
-                        $finalResult = 1;
-                    }
+                    $finalResult = ($grandTotal < $vlPassPercentage) ? 2 : 1;
                 }
             } elseif ($params['scheme'] == 'recency') {
 

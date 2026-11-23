@@ -83,10 +83,6 @@ class Application_Model_CustomTest
     {
         $counter = 0;
         $maxScore = 0;
-        // Tracks the highest per-participant max score seen across the whole shipment,
-        // so the shipment-level 'max_score' column reflects the shipment as a whole
-        // instead of whatever the last-processed participant happened to compute.
-        $shipmentMaxScore = 0;
         $finalResult = null;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -267,12 +263,6 @@ class Application_Model_CustomTest
                 if ($maxScore > 100) {
                     $maxScore = 100;
                 }
-                // Track the largest per-participant max score seen in this shipment so we
-                // can persist a meaningful shipment-level value after the loop, instead of
-                // whichever participant happened to be processed last.
-                if ($maxScore > $shipmentMaxScore) {
-                    $shipmentMaxScore = $maxScore;
-                }
                 if ($maxScore > 0 && $totalScore > 0) {
                     $totalScore = ($totalScore / $maxScore) * 100;
                 }
@@ -373,11 +363,9 @@ class Application_Model_CustomTest
             }
             $counter++;
         }
-        // FIX: previously used `$maxScore` here, which after the loop only held the LAST
-        // processed participant's max score (it's reset to 0 at the top of every iteration).
-        // Now uses `$shipmentMaxScore`, the largest max score observed across all participants
-        // in this shipment, which is a much more meaningful shipment-level value.
-        $db->update('shipment', ['max_score' => $shipmentMaxScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
+        // Participant scores are stored as a percentage, so the shipment's maximum is 100.
+        // Summary reports compare each lab's score with it to count full scores.
+        $db->update('shipment', ['max_score' => 100, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;
     }
 
