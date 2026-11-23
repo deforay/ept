@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 21:09+0530\n"
+"POT-Creation-Date: 2026-11-23 09:50+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -628,7 +628,7 @@ msgstr ""
 "effectués."
 
 #: application/languages/db-translation-strings.php:95
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:89
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 "Veillez à indiquer le nom du kit de test pour tous les tests effectués."
@@ -688,10 +688,10 @@ msgstr "erreur"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:286
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:14
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:13
-#: application/services/Evaluation.php:2039
-#: application/services/Evaluation.php:2041
-#: application/services/Evaluation.php:2304
-#: application/services/Evaluation.php:2541
+#: application/services/Evaluation.php:2064
+#: application/services/Evaluation.php:2066
+#: application/services/Evaluation.php:2330
+#: application/services/Evaluation.php:2567
 #: application/services/Reports.php:517 application/services/Reports.php:1608
 #: application/views/partials/participant-performance-report.phtml:33
 #: application/views/partials/participant-response-report.phtml:317
@@ -711,8 +711,8 @@ msgid "excluded"
 msgstr "exclus"
 
 #: application/languages/db-translation-strings.php:125
-#: application/services/Evaluation.php:2538
-#: application/services/Evaluation.php:2634
+#: application/services/Evaluation.php:2564
+#: application/services/Evaluation.php:2659
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:30
 #: application/views/scripts/dts/response.phtml:103
@@ -1103,11 +1103,11 @@ msgstr "non détecté"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:244
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:329
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:287
-#: application/services/Evaluation.php:2035
-#: application/services/Evaluation.php:2042
-#: application/services/Evaluation.php:2298
-#: application/services/Evaluation.php:2305
-#: application/services/Evaluation.php:2572
+#: application/services/Evaluation.php:2060
+#: application/services/Evaluation.php:2067
+#: application/services/Evaluation.php:2324
+#: application/services/Evaluation.php:2331
+#: application/services/Evaluation.php:2598
 #: application/views/scripts/participant/dashboard.phtml:440
 msgid "Not Evaluated"
 msgstr "Non évalué"
@@ -1154,9 +1154,9 @@ msgstr "non déclaré"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:320
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:280
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:277
-#: application/services/Evaluation.php:2062
-#: application/services/Evaluation.php:2347
-#: application/services/Evaluation.php:2564
+#: application/services/Evaluation.php:2087
+#: application/services/Evaluation.php:2373
+#: application/services/Evaluation.php:2590
 #: application/views/scripts/participant/report.phtml:175
 msgid "Not Tested"
 msgstr "Non testé"
@@ -1222,7 +1222,7 @@ msgstr ""
 "80, alors que la note requise est de 95)"
 
 #: application/languages/db-translation-strings.php:329
-#: application/services/Evaluation.php:2535
+#: application/services/Evaluation.php:2561
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:29
 #: application/views/scripts/dts/response.phtml:98
@@ -1427,7 +1427,7 @@ msgid "recent"
 msgstr "récent"
 
 #: application/languages/db-translation-strings.php:403
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:149
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:158
 msgid ""
 "Record the date the panel was actually rehydrated. A panel can only be "
 "rehydrated after it has been received."
@@ -3865,7 +3865,7 @@ msgstr "Confirmer"
 #: application/views/scripts/participant/testeredit.phtml:201
 #: application/views/scripts/participant/testeredit.phtml:205
 #: application/views/scripts/participant/user-info.phtml:129
-#: application/views/scripts/recency/response.phtml:581
+#: application/views/scripts/recency/response.phtml:583
 #: application/views/scripts/tb/response.phtml:518
 #: application/views/scripts/vl/response.phtml:946
 msgid "Cancel"
@@ -4076,53 +4076,53 @@ msgstr "Aide"
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: application/layouts/scripts/admin.phtml:784
+#: application/layouts/scripts/admin.phtml:785
 msgid "Email is not set up, so ePT sends no email."
 msgstr "La messagerie n'est pas configurée, donc ePT n'envoie aucun e-mail."
 
-#: application/layouts/scripts/admin.phtml:788
+#: application/layouts/scripts/admin.phtml:789
 #, php-format
 msgid "ePT cannot send email. The mail server refused the login on %s."
 msgstr ""
 "ePT ne peut pas envoyer d'e-mails. Le serveur de messagerie a refusé la "
 "connexion le %s."
 
-#: application/layouts/scripts/admin.phtml:789
+#: application/layouts/scripts/admin.phtml:790
 #, php-format
 msgid "ePT cannot send email. It could not reach the mail server on %s."
 msgstr ""
 "ePT ne peut pas envoyer d'e-mails. Il n'a pas pu joindre le serveur de "
 "messagerie le %s."
 
-#: application/layouts/scripts/admin.phtml:790
+#: application/layouts/scripts/admin.phtml:791
 #, php-format
 msgid "ePT cannot send email. The saved mail settings were not usable on %s."
 msgstr ""
 "ePT ne peut pas envoyer d'e-mails. Les paramètres de messagerie enregistrés "
 "étaient inutilisables le %s."
 
-#: application/layouts/scripts/admin.phtml:791
+#: application/layouts/scripts/admin.phtml:792
 #, php-format
 msgid "ePT cannot send email. The last attempt failed on %s."
 msgstr ""
 "ePT ne peut pas envoyer d'e-mails. La dernière tentative a échoué le %s."
 
-#: application/layouts/scripts/admin.phtml:800
+#: application/layouts/scripts/admin.phtml:801
 msgid "Open Email Settings"
 msgstr "Ouvrir les paramètres de messagerie"
 
-#: application/layouts/scripts/admin.phtml:802
+#: application/layouts/scripts/admin.phtml:803
 msgid "An admin who can edit Global Config can fix this."
 msgstr ""
 "Un administrateur autorisé à modifier la configuration globale peut corriger "
 "ce problème."
 
-#: application/layouts/scripts/admin.phtml:807
+#: application/layouts/scripts/admin.phtml:808
 #, php-format
 msgid "Contact messages received since then, not emailed to anyone: %d."
 msgstr "Messages de contact reçus depuis, non transmis par e-mail : %d."
 
-#: application/layouts/scripts/admin.phtml:808
+#: application/layouts/scripts/admin.phtml:809
 #, php-format
 msgid ""
 "Contact messages received in the last %d days, not emailed to anyone: %d."
@@ -4130,20 +4130,20 @@ msgstr ""
 "Messages de contact reçus ces %d derniers jours, non transmis par e-mail : "
 "%d."
 
-#: application/layouts/scripts/admin.phtml:809
+#: application/layouts/scripts/admin.phtml:810
 msgid "Open Contact Messages"
 msgstr "Ouvrir les messages de contact"
 
-#: application/layouts/scripts/admin.phtml:812
+#: application/layouts/scripts/admin.phtml:813
 msgid "Hide until something changes"
 msgstr "Masquer jusqu'au prochain changement"
 
-#: application/layouts/scripts/admin.phtml:845
+#: application/layouts/scripts/admin.phtml:846
 #: application/layouts/scripts/layout.phtml:438
 msgid "some problem"
 msgstr "un problème"
 
-#: application/layouts/scripts/admin.phtml:856
+#: application/layouts/scripts/admin.phtml:857
 #: application/layouts/scripts/home.phtml:178
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -4154,29 +4154,29 @@ msgstr ""
 "contre le sida (PEPFAR) par l'intermédiaire des Centres américains de "
 "contrôle et de prévention des maladies (CDC)."
 
-#: application/layouts/scripts/admin.phtml:861
+#: application/layouts/scripts/admin.phtml:862
 #: application/layouts/scripts/home.phtml:181
 #: application/layouts/scripts/layout.phtml:446
 msgid "Deployed commit"
 msgstr "Commit déployé"
 
-#: application/layouts/scripts/admin.phtml:871
+#: application/layouts/scripts/admin.phtml:872
 msgid "database not fully migrated"
 msgstr "la base de données n'a pas été entièrement migrée"
 
-#: application/layouts/scripts/admin.phtml:872
+#: application/layouts/scripts/admin.phtml:873
 msgid "code older than database"
 msgstr "code plus ancien que la base de données"
 
-#: application/layouts/scripts/admin.phtml:875
+#: application/layouts/scripts/admin.phtml:876
 msgid "App version"
 msgstr "Version de l'application"
 
-#: application/layouts/scripts/admin.phtml:875
+#: application/layouts/scripts/admin.phtml:876
 msgid "DB version"
 msgstr "Version de la base de données"
 
-#: application/layouts/scripts/admin.phtml:876
+#: application/layouts/scripts/admin.phtml:877
 msgid "DB ver."
 msgstr "Version de la base de données"
 
@@ -4685,7 +4685,7 @@ msgstr "Lot du type de test n° 3"
 #: application/views/scripts/custom-test/response.phtml:589
 #: application/views/scripts/custom-test/response.phtml:626
 #: application/views/scripts/eid/response.phtml:639
-#: application/views/scripts/recency/response.phtml:546
+#: application/views/scripts/recency/response.phtml:548
 #: application/views/scripts/shipment-form/download.phtml:539
 #: application/views/scripts/shipment-form/download.phtml:604
 #: application/views/scripts/tb/response.phtml:231
@@ -4870,7 +4870,7 @@ msgstr "Modifier ce gestionnaire de données"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:61
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:70
-#: application/services/Evaluation.php:2617
+#: application/services/Evaluation.php:2642
 #: application/services/Shipments.php:1053
 msgid "Edit"
 msgstr "Modifier"
@@ -4976,7 +4976,7 @@ msgstr "Annuler l'enquête PT"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:87
 #: application/modules/admin/views/scripts/enrollments/index.phtml:441
 #: application/modules/admin/views/scripts/report-config/index.phtml:226
-#: application/services/Evaluation.php:2632
+#: application/services/Evaluation.php:2657
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -4991,7 +4991,7 @@ msgstr "Supprimer"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:117
 #: application/modules/reports/views/scripts/certificates/index.phtml:651
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:108
-#: application/services/Evaluation.php:2614
+#: application/services/Evaluation.php:2051
 msgid "View"
 msgstr "Voir"
 
@@ -5271,9 +5271,9 @@ msgstr "Exclue de l'évaluation"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:319
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:279
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:276
-#: application/services/Evaluation.php:2056
-#: application/services/Evaluation.php:2341
-#: application/services/Evaluation.php:2558
+#: application/services/Evaluation.php:2081
+#: application/services/Evaluation.php:2367
+#: application/services/Evaluation.php:2584
 #: application/views/scripts/participant/report.phtml:174
 msgid "Late Response"
 msgstr "Réponse tardive"
@@ -5288,9 +5288,9 @@ msgstr "Réponse tardive"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:335
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:357
 #: application/services/Dashboard.php:1033
-#: application/services/Evaluation.php:2054
-#: application/services/Evaluation.php:2338
-#: application/services/Evaluation.php:2556
+#: application/services/Evaluation.php:2079
+#: application/services/Evaluation.php:2364
+#: application/services/Evaluation.php:2582
 #: application/services/Participants.php:1756
 #: application/services/Reports.php:508 application/services/Reports.php:2774
 #: application/services/Reports.php:3151 application/services/Reports.php:4231
@@ -5307,9 +5307,9 @@ msgstr "Répondu"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:318
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:278
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:275
-#: application/services/Evaluation.php:2052
-#: application/services/Evaluation.php:2333
-#: application/services/Evaluation.php:2554
+#: application/services/Evaluation.php:2077
+#: application/services/Evaluation.php:2359
+#: application/services/Evaluation.php:2580
 #: application/views/partials/shipment-response-report.phtml:104
 #: application/views/scripts/participant/report.phtml:173
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:799
@@ -5321,7 +5321,6 @@ msgstr "Pas de réponse"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:404
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:83
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:87
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:390
 #: application/views/scripts/participant/all-schemes.phtml:56
 #: application/views/scripts/participant/report.phtml:211
 #: application/views/scripts/participant/summary-report.phtml:167
@@ -5340,7 +5339,7 @@ msgid "Select report"
 msgstr "Sélectionner le rapport"
 
 #: application/models/DbTable/Shipments.php:1917
-#: application/services/Evaluation.php:2328
+#: application/services/Evaluation.php:2354
 msgid "Download Report"
 msgstr "Télécharger le rapport"
 
@@ -5672,7 +5671,7 @@ msgstr "RÉSULTATS DE RÉFÉRENCE"
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:139
 #: application/views/scripts/dts/response.phtml:1643
-#: application/views/scripts/recency/response.phtml:382
+#: application/views/scripts/recency/response.phtml:384
 #: application/views/scripts/shipment-form/download.phtml:372
 #: application/views/scripts/shipment-form/download.phtml:579
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:567
@@ -5682,7 +5681,7 @@ msgstr "Ligne de contrôle"
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:140
 #: application/views/scripts/dts/response.phtml:1646
-#: application/views/scripts/recency/response.phtml:384
+#: application/views/scripts/recency/response.phtml:386
 #: application/views/scripts/shipment-form/download.phtml:373
 #: application/views/scripts/shipment-form/download.phtml:580
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:568
@@ -5763,7 +5762,7 @@ msgstr "Volume de l'échantillon"
 #: application/views/scripts/custom-test/response.phtml:616
 #: application/views/scripts/dts/response.phtml:1762
 #: application/views/scripts/eid/response.phtml:630
-#: application/views/scripts/recency/response.phtml:537
+#: application/views/scripts/recency/response.phtml:539
 #: application/views/scripts/shipment-form/download.phtml:534
 #: application/views/scripts/shipment-form/download.phtml:599
 #: application/views/scripts/tb/response.phtml:466
@@ -6077,9 +6076,9 @@ msgstr "Motif de non-utilisation"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:266
 #: application/services/Reports.php:2827
 #: application/views/partials/collapsible-filters.phtml:181
-#: application/views/scripts/common/admin-evaluation-panel.phtml:478
-#: application/views/scripts/common/admin-evaluation-panel.phtml:496
-#: application/views/scripts/common/admin-evaluation-panel.phtml:504
+#: application/views/scripts/common/admin-evaluation-panel.phtml:476
+#: application/views/scripts/common/admin-evaluation-panel.phtml:494
+#: application/views/scripts/common/admin-evaluation-panel.phtml:502
 #: application/views/scripts/covid19/response.phtml:309
 #: application/views/scripts/custom-test/response.phtml:610
 #: application/views/scripts/dts/response.phtml:689
@@ -6295,7 +6294,7 @@ msgstr "Profil mis à jour."
 #: application/modules/admin/controllers/SpotlightController.php:72
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:94
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:132
-#: application/services/Shipments.php:5465
+#: application/services/Shipments.php:5486
 msgid "Evaluate"
 msgstr "Évaluer"
 
@@ -6480,7 +6479,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:403
 #: application/modules/reports/views/scripts/finalize/index.phtml:44
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:45
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:409
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:410
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:104
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:224
 #: application/modules/reports/views/scripts/testkit/index.phtml:288
@@ -6690,10 +6689,12 @@ msgstr "État"
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:32
 #: application/modules/reports/views/scripts/distribution/index.phtml:40
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:58
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:390
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/finalize/index.phtml:32
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:33
-#: application/services/Shipments.php:5024
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:401
+#: application/services/Shipments.php:5045
 #: application/views/scripts/capa/index.phtml:69
 #: application/views/scripts/covid19/response.phtml:1213
 #: application/views/scripts/data-managers/index.phtml:28
@@ -8219,8 +8220,8 @@ msgstr "Veuillez choisir ici le pays d'adaptation"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:337
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:351
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:364
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:652
-#: application/views/scripts/common/admin-evaluation-panel.phtml:494
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:654
+#: application/views/scripts/common/admin-evaluation-panel.phtml:492
 #: application/views/scripts/contact-us/index.phtml:42
 #: application/views/scripts/covid19/response.phtml:293
 #: application/views/scripts/covid19/response.phtml:375
@@ -8279,11 +8280,11 @@ msgstr "Veuillez choisir ici le pays d'adaptation"
 #: application/views/scripts/participant/user-info.phtml:93
 #: application/views/scripts/recency/response.phtml:219
 #: application/views/scripts/recency/response.phtml:282
-#: application/views/scripts/recency/response.phtml:416
-#: application/views/scripts/recency/response.phtml:425
-#: application/views/scripts/recency/response.phtml:434
-#: application/views/scripts/recency/response.phtml:462
-#: application/views/scripts/recency/response.phtml:530
+#: application/views/scripts/recency/response.phtml:418
+#: application/views/scripts/recency/response.phtml:427
+#: application/views/scripts/recency/response.phtml:436
+#: application/views/scripts/recency/response.phtml:464
+#: application/views/scripts/recency/response.phtml:532
 #: application/views/scripts/tb/assay-formats.ajax.phtml:463
 #: application/views/scripts/tb/assay-formats.ajax.phtml:559
 #: application/views/scripts/tb/assay-formats.ajax.phtml:659
@@ -8598,9 +8599,9 @@ msgstr "Désactiver l'autre kit de test"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:310
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:268
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:264
-#: application/views/scripts/common/admin-evaluation-panel.phtml:482
-#: application/views/scripts/common/admin-evaluation-panel.phtml:495
-#: application/views/scripts/common/admin-evaluation-panel.phtml:503
+#: application/views/scripts/common/admin-evaluation-panel.phtml:480
+#: application/views/scripts/common/admin-evaluation-panel.phtml:493
+#: application/views/scripts/common/admin-evaluation-panel.phtml:501
 #: application/views/scripts/covid19/response.phtml:312
 #: application/views/scripts/custom-test/response.phtml:612
 #: application/views/scripts/dts/response.phtml:692
@@ -9868,7 +9869,7 @@ msgstr "Veuillez sélectionner le fichier de données PTCC à importer"
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:137
 #: application/modules/admin/views/scripts/report-config/index.phtml:177
 #: application/views/scripts/eid/response.phtml:605
-#: application/views/scripts/recency/response.phtml:512
+#: application/views/scripts/recency/response.phtml:514
 #: application/views/scripts/vl/response.phtml:879
 msgid "Remove"
 msgstr "Supprimer"
@@ -11958,7 +11959,7 @@ msgstr "Adresses copiées dans le presse-papiers : %s"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1275
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:748
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:712
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:714
 msgid "Press Ctrl+C / Cmd+C to copy"
 msgstr "Appuyez sur Ctrl+C / Cmd+C pour copier"
 
@@ -12776,7 +12777,7 @@ msgstr "En traitement.."
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:459
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:71
-#: application/services/Reports.php:230 application/services/Shipments.php:5455
+#: application/services/Reports.php:230 application/services/Shipments.php:5476
 #: application/views/partials/shipments-report-grid.phtml:348
 msgid "Finalized"
 msgstr "Finalisé"
@@ -13062,7 +13063,7 @@ msgstr "En cours"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:91
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:160
-#: application/services/Shipments.php:5465
+#: application/services/Shipments.php:5486
 msgid "Re-Evaluate"
 msgstr "Réévaluer"
 
@@ -13173,7 +13174,7 @@ msgstr "Remplacement manuel uniquement"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:261
-#: application/views/scripts/common/admin-evaluation-panel.phtml:493
+#: application/views/scripts/common/admin-evaluation-panel.phtml:491
 #: application/views/scripts/partials/evaluate-form.phtml:18
 msgid "Please choose manual override yes or no"
 msgstr "Veuillez indiquer « oui » ou « non » pour le remplacement manuel"
@@ -13189,16 +13190,16 @@ msgid "Response status"
 msgstr "Statut de la réponse"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:232
-#: application/services/Evaluation.php:2058
-#: application/services/Evaluation.php:2343
-#: application/services/Evaluation.php:2560
+#: application/services/Evaluation.php:2083
+#: application/services/Evaluation.php:2369
+#: application/services/Evaluation.php:2586
 msgid "Late Submission (pending approval)"
 msgstr "Soumission tardive (en attente d'approbation)"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:233
-#: application/services/Evaluation.php:2060
-#: application/services/Evaluation.php:2345
-#: application/services/Evaluation.php:2562
+#: application/services/Evaluation.php:2085
+#: application/services/Evaluation.php:2371
+#: application/services/Evaluation.php:2588
 msgid "Late Submission (rejected)"
 msgstr "Soumission tardive (rejetée)"
 
@@ -13366,7 +13367,7 @@ msgstr "Dernière modification"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:343
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:396
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:402
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:403
 msgid "Map ID"
 msgstr "ID d'association"
 
@@ -13404,13 +13405,13 @@ msgstr "Caractéristiques de l'expédition"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:456
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:673
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:466
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:433
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:434
 msgid "Select one or more response status"
 msgstr "Sélectionnez un ou plusieurs statuts de réponse"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:461
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:679
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:438
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:439
 msgid "Select one or more final results"
 msgstr "Sélectionnez un ou plusieurs résultats finaux"
 
@@ -13418,7 +13419,7 @@ msgstr "Sélectionnez un ou plusieurs résultats finaux"
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:284
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:685
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:476
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:443
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:444
 msgid "Select one or more countries"
 msgstr "Sélectionner un ou plusieurs pays"
 
@@ -13426,14 +13427,14 @@ msgstr "Sélectionner un ou plusieurs pays"
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:274
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:709
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:481
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:448
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:449
 msgid "Select one or more regions"
 msgstr "Sélectionner une ou plusieurs régions"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:476
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:694
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:486
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:453
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:454
 msgid "Select one or more states"
 msgstr "Sélectionnez un ou plusieurs États"
 
@@ -13441,7 +13442,7 @@ msgstr "Sélectionnez un ou plusieurs États"
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:279
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:703
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:491
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:458
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:459
 msgid "Select one or more districts"
 msgstr "Sélectionner un ou plusieurs districts"
 
@@ -13501,7 +13502,7 @@ msgstr "Aucune expédition à évaluer."
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:859
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:753
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:779
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:781
 msgid "Click here to go back"
 msgstr "Cliquer ici pour revenir en arrière"
 
@@ -14651,7 +14652,7 @@ msgstr "Activer les tests personnalisés"
 #: application/views/scripts/covid19/response.phtml:813
 #: application/views/scripts/dts/response.phtml:1758
 #: application/views/scripts/eid/response.phtml:625
-#: application/views/scripts/recency/response.phtml:532
+#: application/views/scripts/recency/response.phtml:534
 msgid "YES"
 msgstr "OUI"
 
@@ -14675,7 +14676,7 @@ msgstr "OUI"
 #: application/views/scripts/covid19/response.phtml:815
 #: application/views/scripts/dts/response.phtml:1760
 #: application/views/scripts/eid/response.phtml:627
-#: application/views/scripts/recency/response.phtml:534
+#: application/views/scripts/recency/response.phtml:536
 msgid "NO"
 msgstr "NON"
 
@@ -16328,7 +16329,7 @@ msgid "Completed"
 msgstr "Terminé"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:461
-#: application/services/Shipments.php:5457
+#: application/services/Shipments.php:5478
 msgid "Reports Generated"
 msgstr "Rapports générés"
 
@@ -19388,27 +19389,27 @@ msgid "Participant(s) enrolled successfully"
 msgstr "Participant(s) inscrit(s) avec succès"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:732
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:697
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:699
 msgid "No valid email addresses found for this selection"
 msgstr "Aucune adresse e-mail valide trouvée pour cette sélection"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:738
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:703
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:705
 msgid "unique email address(es) copied to clipboard"
 msgstr "adresse(s) e-mail unique(s) copiée(s) dans le presse-papiers"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:707
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:709
 msgid "participant"
 msgstr "participant"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:743
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:708
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:710
 msgid "data manager"
 msgstr "gestionnaire de données"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:754
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:718
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:720
 msgid ""
 "Unable to fetch email addresses. Please try again later or contact system "
 "admin for help"
@@ -20014,7 +20015,7 @@ msgstr "Veuillez choisir le résultat final pour cet échantillon"
 #: application/views/scripts/custom-test/response.phtml:459
 #: application/views/scripts/dts/response.phtml:1640
 #: application/views/scripts/eid/response.phtml:475
-#: application/views/scripts/recency/response.phtml:380
+#: application/views/scripts/recency/response.phtml:382
 #: application/views/scripts/shipment-form/download.phtml:371
 #: application/views/scripts/shipment-form/download.phtml:444
 #: application/views/scripts/shipment-form/download.phtml:509
@@ -20026,7 +20027,7 @@ msgstr "Contrôle/échantillon"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:141
 #: application/views/scripts/dts/response.phtml:1649
-#: application/views/scripts/recency/response.phtml:386
+#: application/views/scripts/recency/response.phtml:388
 #: application/views/scripts/shipment-form/download.phtml:374
 #: application/views/scripts/shipment-form/download.phtml:581
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:569
@@ -20044,7 +20045,7 @@ msgstr "Contrôle ?"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:264
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:447
 #: application/views/scripts/dts/response.phtml:1680
-#: application/views/scripts/recency/response.phtml:415
+#: application/views/scripts/recency/response.phtml:417
 msgid "Please choose control line"
 msgstr "Veuillez choisir la ligne de contrôle"
 
@@ -20060,9 +20061,9 @@ msgstr "Veuillez choisir la ligne de contrôle"
 #: application/views/scripts/dts/response.phtml:1682
 #: application/views/scripts/dts/response.phtml:1693
 #: application/views/scripts/dts/response.phtml:1706
-#: application/views/scripts/recency/response.phtml:417
-#: application/views/scripts/recency/response.phtml:426
-#: application/views/scripts/recency/response.phtml:435
+#: application/views/scripts/recency/response.phtml:419
+#: application/views/scripts/recency/response.phtml:428
+#: application/views/scripts/recency/response.phtml:437
 msgid "Present"
 msgstr "Présent"
 
@@ -20078,9 +20079,9 @@ msgstr "Présent"
 #: application/views/scripts/dts/response.phtml:1683
 #: application/views/scripts/dts/response.phtml:1695
 #: application/views/scripts/dts/response.phtml:1708
-#: application/views/scripts/recency/response.phtml:418
-#: application/views/scripts/recency/response.phtml:427
-#: application/views/scripts/recency/response.phtml:436
+#: application/views/scripts/recency/response.phtml:420
+#: application/views/scripts/recency/response.phtml:429
+#: application/views/scripts/recency/response.phtml:438
 msgid "Absent"
 msgstr "Absent"
 
@@ -20088,7 +20089,7 @@ msgstr "Absent"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:271
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:454
 #: application/views/scripts/dts/response.phtml:1690
-#: application/views/scripts/recency/response.phtml:424
+#: application/views/scripts/recency/response.phtml:426
 msgid "Please choose verification line"
 msgstr "Veuillez choisir une ligne de vérification"
 
@@ -20096,7 +20097,7 @@ msgstr "Veuillez choisir une ligne de vérification"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:278
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:461
 #: application/views/scripts/dts/response.phtml:1703
-#: application/views/scripts/recency/response.phtml:433
+#: application/views/scripts/recency/response.phtml:435
 msgid "Please choose Longterm line"
 msgstr "Veuillez sélectionner la ligne « Longterm »"
 
@@ -21748,7 +21749,7 @@ msgstr "Date d'échéance de l'expédition"
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:17
 #: application/services/Reports.php:1279 application/services/Reports.php:1611
 #: application/services/Reports.php:3062
-#: application/services/Shipments.php:5018
+#: application/services/Shipments.php:5039
 #: application/views/partials/participant-performance-report.phtml:34
 #: application/views/partials/tb-results-report.phtml:31
 #: application/views/scripts/capa/capa.phtml:61
@@ -22106,15 +22107,15 @@ msgstr "Rapports de synthèse téléchargés"
 msgid "Participant Report"
 msgstr "Rapport du participant"
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:524
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:525
 msgid "Loading downloads…"
 msgstr "Chargement des téléchargements…"
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:531
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:532
 msgid "Failed to load downloads. Please try again."
 msgstr "Échec du chargement des téléchargements. Veuillez réessayer."
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:777
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:779
 msgid "No Shipment data."
 msgstr "Aucune donnée relative à l'expédition."
 
@@ -23133,51 +23134,51 @@ msgstr "Ceci est un e-mail automatique envoyé par ePT."
 msgid "If the button does not work, copy this link into your browser:"
 msgstr "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
 
-#: application/services/Evaluation.php:2095
+#: application/services/Evaluation.php:2120
 msgid "Not downloaded"
 msgstr "Non téléchargé"
 
-#: application/services/Evaluation.php:2099
+#: application/services/Evaluation.php:2124
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: application/services/Evaluation.php:2106
+#: application/services/Evaluation.php:2131
 msgid "Show who downloaded this report"
 msgstr "Afficher qui a téléchargé ce rapport"
 
-#: application/services/Evaluation.php:2336
+#: application/services/Evaluation.php:2362
 msgid "PT Not Tested"
 msgstr "PT non testé"
 
-#: application/services/Evaluation.php:2582
+#: application/services/Evaluation.php:2608
 msgid "late — approved"
 msgstr "en retard — approuvé"
 
-#: application/services/Evaluation.php:2635
+#: application/services/Evaluation.php:2660
 msgid "Download Corrective Action"
 msgstr "Télécharger l'action corrective"
 
-#: application/services/Evaluation.php:2645
+#: application/services/Evaluation.php:2670
 msgid "Approve Late Submission"
 msgstr "Approuver la soumission tardive"
 
-#: application/services/Evaluation.php:2647
+#: application/services/Evaluation.php:2672
 msgid "Reject"
 msgstr "Rejeter"
 
-#: application/services/Evaluation.php:2684
+#: application/services/Evaluation.php:2709
 msgid "Invalid request."
 msgstr "Requête non valide."
 
-#: application/services/Evaluation.php:2695
+#: application/services/Evaluation.php:2720
 msgid "This response is not a pending late submission."
 msgstr "Cette réponse n'est pas une soumission tardive en attente."
 
-#: application/services/Evaluation.php:2700
+#: application/services/Evaluation.php:2725
 msgid "No change."
 msgstr "Aucun changement."
 
-#: application/services/Evaluation.php:2731
+#: application/services/Evaluation.php:2756
 msgid ""
 "Late submission approved. Its status is now Responded (kept marked as late "
 "in history)."
@@ -23185,7 +23186,7 @@ msgstr ""
 "Soumission tardive approuvée. Son statut est maintenant Répondu (toujours "
 "marquée comme tardive dans l'historique)."
 
-#: application/services/Evaluation.php:2732
+#: application/services/Evaluation.php:2757
 msgid "Late submission rejected."
 msgstr "Soumission tardive rejetée."
 
@@ -23260,7 +23261,7 @@ msgstr "Non expédié"
 msgid "Open for responses"
 msgstr "Ouvert aux réponses"
 
-#: application/services/Reports.php:228 application/services/Shipments.php:5459
+#: application/services/Reports.php:228 application/services/Shipments.php:5480
 #: application/views/partials/shipments-report-grid.phtml:346
 msgid "Evaluated"
 msgstr "Évalué"
@@ -23342,7 +23343,7 @@ msgstr "Part des réponses"
 #: application/services/Reports.php:1430
 #: application/views/scripts/covid19/response.phtml:680
 #: application/views/scripts/dts/response.phtml:1412
-#: application/views/scripts/recency/response.phtml:391
+#: application/views/scripts/recency/response.phtml:393
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:456
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:146
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:171
@@ -23477,11 +23478,11 @@ msgstr ""
 msgid "Feedback Off"
 msgstr "Feedback désactivé"
 
-#: application/services/Shipments.php:5093
+#: application/services/Shipments.php:5114
 msgid "Saved successfully"
 msgstr "Enregistré avec succès"
 
-#: application/services/Shipments.php:5537
+#: application/services/Shipments.php:5558
 msgid ""
 "This shipment collects participant feedback but no feedback form has been "
 "created yet. Create the feedback form before finalizing."
@@ -24093,46 +24094,46 @@ msgstr "Décochez un constat pour le retirer du rapport."
 msgid "General"
 msgstr "Général"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:433
+#: application/views/scripts/common/admin-evaluation-panel.phtml:431
 msgid "No findings for this response."
 msgstr "Aucun constat pour cette réponse."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:444
-#: application/views/scripts/common/admin-evaluation-panel.phtml:461
+#: application/views/scripts/common/admin-evaluation-panel.phtml:442
+#: application/views/scripts/common/admin-evaluation-panel.phtml:459
 msgid "Feedback to the participant"
 msgstr "Retour au participant"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:446
+#: application/views/scripts/common/admin-evaluation-panel.phtml:444
 msgid "No feedback was written for the participant."
 msgstr "Aucun retour n'a été rédigé pour le participant."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:455
+#: application/views/scripts/common/admin-evaluation-panel.phtml:453
 msgid "Follow-up for corrective action"
 msgstr "Suivi d'une action corrective"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:463
+#: application/views/scripts/common/admin-evaluation-panel.phtml:461
 #: application/views/scripts/partials/evaluate-form.phtml:43
 msgid "Evaluation Comment"
 msgstr "Commentaire d'évaluation"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:469
+#: application/views/scripts/common/admin-evaluation-panel.phtml:467
 #: application/views/scripts/partials/evaluate-form.phtml:52
 msgid "Optional Extra Comments"
 msgstr "Commentaires supplémentaires facultatifs"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:474
+#: application/views/scripts/common/admin-evaluation-panel.phtml:472
 msgid "Is the above a follow up comment for corrective action?"
 msgstr "S'agit-il d'un commentaire de suivi en vue d'une action corrective ?"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:477
+#: application/views/scripts/common/admin-evaluation-panel.phtml:475
 msgid "Please choose whether this is a follow up comment or not"
 msgstr "Veuillez indiquer s'il s'agit d'un commentaire de suivi ou non"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:488
+#: application/views/scripts/common/admin-evaluation-panel.phtml:486
 msgid "Admin actions"
 msgstr "Actions d'administration"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:489
+#: application/views/scripts/common/admin-evaluation-panel.phtml:487
 msgid ""
 "Change these only to correct an evaluation. Both change the participant's "
 "result."
@@ -24140,17 +24141,17 @@ msgstr ""
 "Ne modifiez ces options que pour corriger une évaluation. Elles changent "
 "toutes deux le résultat du participant."
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:491
+#: application/views/scripts/common/admin-evaluation-panel.phtml:489
 #: application/views/scripts/partials/evaluate-form.phtml:16
 msgid "Manually Override Results"
 msgstr "Remplacer manuellement les résultats"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:500
+#: application/views/scripts/common/admin-evaluation-panel.phtml:498
 #: application/views/scripts/partials/evaluate-form.phtml:5
 msgid "Do you want to exclude this response from evaluation?"
 msgstr "Souhaitez-vous exclure cette réponse de l'évaluation ?"
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:502
+#: application/views/scripts/common/admin-evaluation-panel.phtml:500
 #: application/views/scripts/partials/evaluate-form.phtml:9
 msgid "Please choose whether this response is excluded from evaluation or not"
 msgstr ""
@@ -24869,7 +24870,7 @@ msgstr "Ajouter des types de gènes"
 #: application/views/scripts/custom-test/response.phtml:291
 #: application/views/scripts/dts/response.phtml:1584
 #: application/views/scripts/eid/response.phtml:535
-#: application/views/scripts/recency/response.phtml:457
+#: application/views/scripts/recency/response.phtml:459
 #: application/views/scripts/tb/response.phtml:205
 #: application/views/scripts/vl/response.phtml:777
 msgid "Reason for not testing the PT Panel"
@@ -24878,7 +24879,7 @@ msgstr "Raison pour laquelle le panel PT n'a pas été testé"
 #: application/views/scripts/covid19/response.phtml:748
 #: application/views/scripts/dts/response.phtml:1587
 #: application/views/scripts/eid/response.phtml:538
-#: application/views/scripts/recency/response.phtml:460
+#: application/views/scripts/recency/response.phtml:462
 #: application/views/scripts/tb/response.phtml:208
 #: application/views/scripts/vl/response.phtml:780
 msgid "Please select reason"
@@ -24888,7 +24889,7 @@ msgstr "Veuillez sélectionner un motif"
 #: application/views/scripts/custom-test/response.phtml:311
 #: application/views/scripts/dts/response.phtml:1604
 #: application/views/scripts/eid/response.phtml:555
-#: application/views/scripts/recency/response.phtml:476
+#: application/views/scripts/recency/response.phtml:478
 #: application/views/scripts/tb/response.phtml:224
 #: application/views/scripts/vl/response.phtml:797
 msgid "Other (please explain in comment box below)"
@@ -24896,7 +24897,7 @@ msgstr "Autre (veuillez expliquer dans la case commentaire ci-dessous)"
 
 #: application/views/scripts/covid19/response.phtml:770
 #: application/views/scripts/eid/response.phtml:571
-#: application/views/scripts/recency/response.phtml:482
+#: application/views/scripts/recency/response.phtml:484
 #: application/views/scripts/vl/response.phtml:813
 msgid "Your comments"
 msgstr "Vos commentaires"
@@ -24907,7 +24908,7 @@ msgstr "Vos commentaires"
 #: application/views/scripts/custom-test/response.phtml:591
 #: application/views/scripts/dts/response.phtml:1614
 #: application/views/scripts/eid/response.phtml:574
-#: application/views/scripts/recency/response.phtml:485
+#: application/views/scripts/recency/response.phtml:487
 #: application/views/scripts/tb/response.phtml:235
 #: application/views/scripts/vl/response.phtml:816
 msgid "Please enter comments"
@@ -24916,7 +24917,7 @@ msgstr "Veuillez entrer vos commentaires"
 #: application/views/scripts/covid19/response.phtml:779
 #: application/views/scripts/dts/response.phtml:1620
 #: application/views/scripts/eid/response.phtml:580
-#: application/views/scripts/recency/response.phtml:491
+#: application/views/scripts/recency/response.phtml:493
 #: application/views/scripts/vl/response.phtml:822
 msgid "Do you need any support from the PT Provider?"
 msgstr "Avez-vous besoin d'un appui de la part de l'organisateur du PT ?"
@@ -24924,7 +24925,7 @@ msgstr "Avez-vous besoin d'un appui de la part de l'organisateur du PT ?"
 #: application/views/scripts/covid19/response.phtml:781
 #: application/views/scripts/dts/response.phtml:1623
 #: application/views/scripts/eid/response.phtml:582
-#: application/views/scripts/recency/response.phtml:493
+#: application/views/scripts/recency/response.phtml:495
 #: application/views/scripts/vl/response.phtml:824
 msgid "Please enter message to PT provider"
 msgstr "Veuillez saisir votre message à l'attention du prestataire PT"
@@ -24933,7 +24934,7 @@ msgstr "Veuillez saisir votre message à l'attention du prestataire PT"
 #: application/views/scripts/custom-test/response.phtml:603
 #: application/views/scripts/dts/response.phtml:1752
 #: application/views/scripts/eid/response.phtml:618
-#: application/views/scripts/recency/response.phtml:525
+#: application/views/scripts/recency/response.phtml:527
 #: application/views/scripts/shipment-form/download.phtml:532
 #: application/views/scripts/shipment-form/download.phtml:597
 #: application/views/scripts/tb/response.phtml:453
@@ -24952,7 +24953,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1051
 #: application/views/scripts/custom-test/response.phtml:708
 #: application/views/scripts/dts/response.phtml:2047
-#: application/views/scripts/recency/response.phtml:657
+#: application/views/scripts/recency/response.phtml:659
 #: application/views/scripts/tb/response.phtml:637
 #: application/views/scripts/vl/response.phtml:1065
 msgid ""
@@ -24965,7 +24966,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1098
 #: application/views/scripts/custom-test/response.phtml:730
 #: application/views/scripts/dts/response.phtml:2074
-#: application/views/scripts/recency/response.phtml:622
+#: application/views/scripts/recency/response.phtml:624
 #: application/views/scripts/tb/response.phtml:707
 #: application/views/scripts/vl/response.phtml:1108
 msgid "Incorrect password. Please try again."
@@ -24974,7 +24975,7 @@ msgstr "Mot de passe incorrect. Veuillez réessayer."
 #: application/views/scripts/covid19/response.phtml:1105
 #: application/views/scripts/custom-test/response.phtml:737
 #: application/views/scripts/dts/response.phtml:2081
-#: application/views/scripts/recency/response.phtml:629
+#: application/views/scripts/recency/response.phtml:631
 #: application/views/scripts/tb/response.phtml:714
 #: application/views/scripts/vl/response.phtml:1115
 msgid "Please enter the password to confirm"
@@ -24983,7 +24984,7 @@ msgstr "Veuillez saisir le mot de passe pour confirmer"
 #: application/views/scripts/covid19/response.phtml:1118
 #: application/views/scripts/dts/response.phtml:2094
 #: application/views/scripts/eid/response.phtml:735
-#: application/views/scripts/recency/response.phtml:643
+#: application/views/scripts/recency/response.phtml:645
 #: application/views/scripts/vl/response.phtml:1161
 msgid "The testing date cannot be before the shipment receipt date"
 msgstr ""
@@ -25621,7 +25622,7 @@ msgstr "Interprétation finale de la RTRI"
 
 #: application/views/scripts/dts/response.phtml:1715
 #: application/views/scripts/eid/response.phtml:512
-#: application/views/scripts/recency/response.phtml:442
+#: application/views/scripts/recency/response.phtml:444
 #, php-format
 msgid "Please select the result for %s"
 msgstr "Veuillez sélectionner le résultat pour %s"
@@ -25795,7 +25796,7 @@ msgid "Detection Assay Expiry Date"
 msgstr "Date d'expiration du test de détection"
 
 #: application/views/scripts/eid/response.phtml:477
-#: application/views/scripts/recency/response.phtml:388
+#: application/views/scripts/recency/response.phtml:390
 #: application/views/scripts/shipment-form/download.phtml:510
 #: application/views/scripts/shipment-form/download.phtml:582
 msgid "Your Results"
@@ -25812,13 +25813,13 @@ msgid "Please enter the IC/QS Values for %s"
 msgstr "Veuillez saisir les valeurs IC/QS pour %s"
 
 #: application/views/scripts/eid/response.phtml:589
-#: application/views/scripts/recency/response.phtml:500
+#: application/views/scripts/recency/response.phtml:502
 #: application/views/scripts/vl/response.phtml:863
 msgid "Upload File"
 msgstr "Charger le fichier"
 
 #: application/views/scripts/eid/response.phtml:690
-#: application/views/scripts/recency/response.phtml:593
+#: application/views/scripts/recency/response.phtml:595
 #: application/views/scripts/vl/response.phtml:964
 msgid "Do you really want to remove this file?"
 msgstr "Voulez-vous vraiment supprimer ce fichier ?"
@@ -28023,15 +28024,15 @@ msgstr "Prénom du participant (OU) nom du laboratoire"
 msgid "Participant Last Name"
 msgstr "Nom de famille du participant"
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:65
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
 msgid "Please submit your response before the last date."
 msgstr "Veuillez envoyer votre réponse avant la date limite."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:75
 msgid "The laboratory submitted the response after the response deadline."
 msgstr "Le laboratoire a soumis la réponse après la date limite de réponse."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:69
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
 msgid ""
 "Review and refer to the SOP for testing. Ensure each sample is tested as per "
 "the National HIV Testing algorithm."
@@ -28040,7 +28041,7 @@ msgstr ""
 "tests. Veillez à analyser chaque échantillon conformément à l'algorithme "
 "national de dépistage du VIH."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:70
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:79
 msgid ""
 "The laboratory did not follow the National HIV Testing algorithm for a "
 "sample."
@@ -28048,7 +28049,7 @@ msgstr ""
 "Le laboratoire n'a pas suivi l'algorithme national de dépistage du VIH pour "
 "un échantillon."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:73
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
 msgid ""
 "Review all testing procedures before client testing, as the reported result "
 "does not match the expected result."
@@ -28056,21 +28057,21 @@ msgstr ""
 "Vérifiez toutes les procédures de test avant de procéder aux tests chez le "
 "client, car le résultat communiqué ne correspond pas au résultat attendu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:83
 msgid "The reported result for a sample does not match the expected result."
 msgstr ""
 "Le résultat communiqué pour un échantillon ne correspond pas au résultat "
 "attendu."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:77
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
 msgid "You are required to test all samples in the PT panel."
 msgstr "Vous devez analyser tous les échantillons du panel PT."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:87
 msgid "The laboratory did not report a result for every sample."
 msgstr "Le laboratoire n'a pas communiqué de résultat pour chaque échantillon."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:81
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
 msgid ""
 "Ensure expired test kits are not used for testing. If no valid test kits are "
 "available, please contact your supervisor."
@@ -28078,24 +28079,24 @@ msgstr ""
 "Veillez à ne pas utiliser de kits de test périmés. Si vous ne disposez "
 "d'aucun kit de test valide, veuillez contacter votre superviseur."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:91
 msgid "The laboratory tested with an expired test kit."
 msgstr "Le laboratoire a utilisé un kit de test expiré."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:85
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
 msgid "Ensure the expiry date is reported for all performed tests."
 msgstr "Veillez à indiquer la date d'expiration pour tous les tests effectués."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:95
 msgid "The laboratory did not report a test kit expiry date."
 msgstr "Le laboratoire n'a pas indiqué la date d'expiration d'un kit de test."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:99
 msgid "The laboratory did not report a test kit name."
 msgstr "Le laboratoire n'a pas indiqué le nom d'un kit de test."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:93
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:97
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
 msgid ""
 "Please use a different approved test kit for each test, as per the SOP and "
 "the National HIV Testing algorithm."
@@ -28104,47 +28105,47 @@ msgstr ""
 "conformément à la procédure opérationnelle standard (SOP) et à l'algorithme "
 "national de dépistage du VIH."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:103
 msgid "The laboratory reported the same test kit for all three tests."
 msgstr "Le laboratoire a indiqué le même kit de test pour les trois tests."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:107
 msgid "The laboratory reported the same test kit for two tests."
 msgstr "Le laboratoire a indiqué le même kit de test pour deux tests."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:101
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
 msgid "Ensure the lot number is reported for all performed tests."
 msgstr "Veillez à indiquer le numéro de lot pour tous les tests effectués."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:111
 msgid "The laboratory did not report a test kit lot number."
 msgstr "Le laboratoire n'a pas indiqué le numéro de lot d'un kit de test."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:105
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
 msgid "Ensure the supervisor's approval and name are provided."
 msgstr "Veillez à fournir l'approbation et le nom du superviseur."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:115
 msgid "The laboratory did not report supervisor approval."
 msgstr "Le laboratoire n'a pas indiqué l'approbation du superviseur."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:109
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
 msgid "Ensure the panel rehydration date is provided."
 msgstr "Veillez à indiquer la date de réhydratation du panel."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:119
 msgid "The laboratory did not report the rehydration date."
 msgstr "Le laboratoire n'a pas indiqué la date de réhydratation."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:113
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
 msgid "Ensure the panel testing date is provided."
 msgstr "Veillez à indiquer la date de test du panel."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:123
 msgid "The laboratory did not report the testing date."
 msgstr "Le laboratoire n'a pas indiqué la date d'analyse."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:117
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
 msgid ""
 "Ensure DTS testing is done within the specified hours of rehydration, as per "
 "the SOP."
@@ -28152,7 +28153,7 @@ msgstr ""
 "Veillez à effectuer le test DTS dans les heures spécifiées suivant la "
 "réhydratation, conformément à la procédure standard."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:127
 msgid ""
 "The laboratory did not test within the time after rehydration that the SOP "
 "sets."
@@ -28160,7 +28161,7 @@ msgstr ""
 "Le laboratoire n'a pas effectué l'analyse dans le délai après réhydratation "
 "fixé par la SOP."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:121
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
 msgid ""
 "Review all testing procedures before client testing, and contact your "
 "supervisor for improvement."
@@ -28169,19 +28170,19 @@ msgstr ""
 "chez le client et contactez votre superviseur pour apporter des "
 "améliorations."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:131
 msgid "The participant score is below the pass mark."
 msgstr "Le score du participant est inférieur au score de réussite."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:125
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
 msgid "Ensure the panel receipt date is provided."
 msgstr "Veillez à indiquer la date de réception du panel."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:135
 msgid "The laboratory did not report the panel receipt date."
 msgstr "Le laboratoire n'a pas indiqué la date de réception du panel."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:129
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
 msgid ""
 "Please use country-approved test kits as per the National HIV Testing "
 "algorithm. Review and refer to the SOP."
@@ -28190,51 +28191,51 @@ msgstr ""
 "l'algorithme national de dépistage du VIH. Consultez la procédure "
 "opérationnelle standard (SOP)."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:139
 msgid "The laboratory tested with a test kit that is not country-approved."
 msgstr "Le laboratoire a utilisé un kit de test non agréé par le pays."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:133
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
 msgid "Please ensure the condition of the PT samples is reported."
 msgstr "Veuillez vous assurer que l'état des échantillons PT est bien indiqué."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:143
 msgid "The laboratory did not report the condition of the PT samples."
 msgstr "Le laboratoire n'a pas indiqué l'état des échantillons PT."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:137
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
 msgid "Please ensure refrigerator availability is reported."
 msgstr ""
 "Veuillez vous assurer que la disponibilité du réfrigérateur est signalée."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:147
 msgid "The laboratory did not report refrigerator availability."
 msgstr "Le laboratoire n'a pas indiqué si un réfrigérateur est disponible."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:141
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:150
 msgid "Please ensure the room temperature is reported."
 msgstr "Veuillez vous assurer que la température ambiante est indiquée."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:151
 msgid "The laboratory did not report the room temperature."
 msgstr "Le laboratoire n'a pas indiqué la température ambiante."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:145
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:154
 msgid "Please ensure stopwatch availability is reported."
 msgstr ""
 "Veuillez vous assurer que la disponibilité d'un chronomètre est signalée."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:155
 msgid "The laboratory did not report stopwatch availability."
 msgstr "Le laboratoire n'a pas indiqué si un chronomètre est disponible."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:150
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:159
 msgid "The reported rehydration date is earlier than the panel receipt date."
 msgstr ""
 "La date de réhydratation indiquée est antérieure à la date de réception du "
 "panel."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:153
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:162
 msgid ""
 "Review and refer to the SOP. Ensure every test required by the National HIV "
 "Testing algorithm is performed."
@@ -28242,11 +28243,11 @@ msgstr ""
 "Consultez la procédure opérationnelle standard (SOP). Veillez à effectuer "
 "chaque test exigé par l'algorithme national de dépistage du VIH."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:154
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:163
 msgid "The laboratory did not report a test that the algorithm needs."
 msgstr "Le laboratoire n'a pas communiqué un test exigé par l'algorithme."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:157
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:166
 msgid ""
 "Review and refer to the SOP. Ensure testing stops when the National HIV "
 "Testing algorithm gives a final result."
@@ -28255,13 +28256,13 @@ msgstr ""
 "tests dès que l'algorithme national de dépistage du VIH donne un résultat "
 "final."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:158
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:167
 msgid "The laboratory ran tests after the algorithm gave a final result."
 msgstr ""
 "Le laboratoire a effectué des tests après que l'algorithme a donné un "
 "résultat final."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:161
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:170
 msgid ""
 "Review and refer to the SOP. Ensure the final result reported is the one the "
 "National HIV Testing algorithm gives."
@@ -28269,11 +28270,82 @@ msgstr ""
 "Consultez la procédure opérationnelle standard (SOP). Veillez à communiquer "
 "le résultat final donné par l'algorithme national de dépistage du VIH."
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:162
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:171
 msgid "The reported final result is not the one the test results give."
 msgstr ""
 "Le résultat final communiqué ne correspond pas à celui que donnent les "
 "résultats des tests."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:174
+msgid "Follow MOH HIV testing strategy"
+msgstr "Suivez la stratégie de dépistage du VIH du ministère de la Santé"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:175
+msgid ""
+"The laboratory did not run the tests that the MOH HIV testing strategy sets "
+"for a sample."
+msgstr "Le laboratoire n'a pas effectué les tests que la stratégie de dépistage du VIH du ministère de la Santé prévoit pour un échantillon."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:178
+msgid ""
+"The laboratory's final interpretation is acceptable, but the result for Test "
+"1 is unacceptable"
+msgstr "L'interprétation finale du laboratoire est acceptable, mais le résultat du test 1 est inacceptable"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:179
+msgid "Test 1 was reactive on a negative sample."
+msgstr "Le test 1 était réactif sur un échantillon négatif."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:182
+msgid "Interpret weak positive results carefully"
+msgstr "Interprétez avec prudence les résultats positifs faibles"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:183
+msgid ""
+"The laboratory reported a weak reactive test on a diluted positive sample."
+msgstr "Le laboratoire a déclaré un test réactif faible sur un échantillon positif dilué."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:186
+msgid "Check the performance with the weak reactive result"
+msgstr "Vérifiez la performance avec le résultat réactif faible"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:187
+msgid "The laboratory reported a weak reactive test on a positive sample."
+msgstr "Le laboratoire a déclaré un test réactif faible sur un échantillon positif."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:190
+msgid "Review testing procedures and kit interpretation"
+msgstr "Revoyez les procédures de test et l'interprétation des kits"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:191
+msgid "The final interpretation does not match the expected result."
+msgstr "L'interprétation finale ne correspond pas au résultat attendu."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:194
+msgid "Review testing procedures and sample handling"
+msgstr "Revoyez les procédures de test et la manipulation des échantillons"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:195
+msgid "The laboratory reported a positive sample as negative."
+msgstr "Le laboratoire a déclaré négatif un échantillon positif."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:198
+msgid "Sample should be referred to confirmation lab"
+msgstr "L'échantillon doit être envoyé au laboratoire de confirmation"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:199
+msgid "An inconclusive sample was not reported as sent for confirmation."
+msgstr "Un échantillon non concluant n'a pas été déclaré comme envoyé pour confirmation."
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:202
+msgid ""
+"Screening labs must not conclude \"HIV Positive.\" Samples should be "
+"reported as \"Inconclusive\" and referred for confirmatory testing"
+msgstr "Les laboratoires de dépistage ne doivent pas conclure « VIH positif ». Les échantillons doivent être déclarés « Non concluant » et envoyés pour un test de confirmation"
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:203
+msgid "A screening laboratory concluded HIV Positive."
+msgstr "Un laboratoire de dépistage a conclu à un résultat VIH positif."
 
 #: library/Pt/Evaluation/Dts/Reason.php:37
 msgid ""

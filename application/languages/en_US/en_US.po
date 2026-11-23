@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-22 21:09+0530\n"
+"POT-Creation-Date: 2026-11-23 09:50+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -602,7 +602,7 @@ msgid "Ensure test kit lot number is reported for all performed tests."
 msgstr ""
 
 #: application/languages/db-translation-strings.php:95
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:89
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 
@@ -656,10 +656,10 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:286
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:14
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:13
-#: application/services/Evaluation.php:2039
-#: application/services/Evaluation.php:2041
-#: application/services/Evaluation.php:2304
-#: application/services/Evaluation.php:2541
+#: application/services/Evaluation.php:2064
+#: application/services/Evaluation.php:2066
+#: application/services/Evaluation.php:2330
+#: application/services/Evaluation.php:2567
 #: application/services/Reports.php:517 application/services/Reports.php:1608
 #: application/views/partials/participant-performance-report.phtml:33
 #: application/views/partials/participant-response-report.phtml:317
@@ -679,8 +679,8 @@ msgid "excluded"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:125
-#: application/services/Evaluation.php:2538
-#: application/services/Evaluation.php:2634
+#: application/services/Evaluation.php:2564
+#: application/services/Evaluation.php:2659
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:30
 #: application/views/scripts/dts/response.phtml:103
@@ -1045,11 +1045,11 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:244
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:329
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:287
-#: application/services/Evaluation.php:2035
-#: application/services/Evaluation.php:2042
-#: application/services/Evaluation.php:2298
-#: application/services/Evaluation.php:2305
-#: application/services/Evaluation.php:2572
+#: application/services/Evaluation.php:2060
+#: application/services/Evaluation.php:2067
+#: application/services/Evaluation.php:2324
+#: application/services/Evaluation.php:2331
+#: application/services/Evaluation.php:2598
 #: application/views/scripts/participant/dashboard.phtml:440
 msgid "Not Evaluated"
 msgstr ""
@@ -1092,9 +1092,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:320
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:280
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:277
-#: application/services/Evaluation.php:2062
-#: application/services/Evaluation.php:2347
-#: application/services/Evaluation.php:2564
+#: application/services/Evaluation.php:2087
+#: application/services/Evaluation.php:2373
+#: application/services/Evaluation.php:2590
 #: application/views/scripts/participant/report.phtml:175
 msgid "Not Tested"
 msgstr ""
@@ -1156,7 +1156,7 @@ msgid ""
 msgstr ""
 
 #: application/languages/db-translation-strings.php:329
-#: application/services/Evaluation.php:2535
+#: application/services/Evaluation.php:2561
 #: application/services/Reports.php:1212 application/services/Reports.php:3017
 #: application/views/partials/participant-performance-report.phtml:29
 #: application/views/scripts/dts/response.phtml:98
@@ -1344,7 +1344,7 @@ msgid "recent"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:403
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:149
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:158
 msgid ""
 "Record the date the panel was actually rehydrated. A panel can only be "
 "rehydrated after it has been received."
@@ -3576,7 +3576,7 @@ msgstr ""
 #: application/views/scripts/participant/testeredit.phtml:201
 #: application/views/scripts/participant/testeredit.phtml:205
 #: application/views/scripts/participant/user-info.phtml:129
-#: application/views/scripts/recency/response.phtml:581
+#: application/views/scripts/recency/response.phtml:583
 #: application/views/scripts/tb/response.phtml:518
 #: application/views/scripts/vl/response.phtml:946
 msgid "Cancel"
@@ -3787,63 +3787,63 @@ msgstr ""
 msgid "Sign Out"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:784
+#: application/layouts/scripts/admin.phtml:785
 msgid "Email is not set up, so ePT sends no email."
-msgstr ""
-
-#: application/layouts/scripts/admin.phtml:788
-#, php-format
-msgid "ePT cannot send email. The mail server refused the login on %s."
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:789
 #, php-format
-msgid "ePT cannot send email. It could not reach the mail server on %s."
+msgid "ePT cannot send email. The mail server refused the login on %s."
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:790
 #, php-format
-msgid "ePT cannot send email. The saved mail settings were not usable on %s."
+msgid "ePT cannot send email. It could not reach the mail server on %s."
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:791
 #, php-format
+msgid "ePT cannot send email. The saved mail settings were not usable on %s."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:792
+#, php-format
 msgid "ePT cannot send email. The last attempt failed on %s."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:800
+#: application/layouts/scripts/admin.phtml:801
 msgid "Open Email Settings"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:802
+#: application/layouts/scripts/admin.phtml:803
 msgid "An admin who can edit Global Config can fix this."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:807
+#: application/layouts/scripts/admin.phtml:808
 #, php-format
 msgid "Contact messages received since then, not emailed to anyone: %d."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:808
+#: application/layouts/scripts/admin.phtml:809
 #, php-format
 msgid ""
 "Contact messages received in the last %d days, not emailed to anyone: %d."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:809
+#: application/layouts/scripts/admin.phtml:810
 msgid "Open Contact Messages"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:812
+#: application/layouts/scripts/admin.phtml:813
 msgid "Hide until something changes"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:845
+#: application/layouts/scripts/admin.phtml:846
 #: application/layouts/scripts/layout.phtml:438
 msgid "some problem"
 msgstr "some problem"
 
-#: application/layouts/scripts/admin.phtml:856
+#: application/layouts/scripts/admin.phtml:857
 #: application/layouts/scripts/home.phtml:178
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -3851,29 +3851,29 @@ msgid ""
 "(CDC)."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:861
+#: application/layouts/scripts/admin.phtml:862
 #: application/layouts/scripts/home.phtml:181
 #: application/layouts/scripts/layout.phtml:446
 msgid "Deployed commit"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:871
+#: application/layouts/scripts/admin.phtml:872
 msgid "database not fully migrated"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:872
+#: application/layouts/scripts/admin.phtml:873
 msgid "code older than database"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:875
+#: application/layouts/scripts/admin.phtml:876
 msgid "App version"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:875
+#: application/layouts/scripts/admin.phtml:876
 msgid "DB version"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:876
+#: application/layouts/scripts/admin.phtml:877
 msgid "DB ver."
 msgstr ""
 
@@ -4381,7 +4381,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:589
 #: application/views/scripts/custom-test/response.phtml:626
 #: application/views/scripts/eid/response.phtml:639
-#: application/views/scripts/recency/response.phtml:546
+#: application/views/scripts/recency/response.phtml:548
 #: application/views/scripts/shipment-form/download.phtml:539
 #: application/views/scripts/shipment-form/download.phtml:604
 #: application/views/scripts/tb/response.phtml:231
@@ -4566,7 +4566,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/enrollments/index.phtml:61
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:70
-#: application/services/Evaluation.php:2617
+#: application/services/Evaluation.php:2642
 #: application/services/Shipments.php:1053
 msgid "Edit"
 msgstr ""
@@ -4670,7 +4670,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/enrollments/index.phtml:87
 #: application/modules/admin/views/scripts/enrollments/index.phtml:441
 #: application/modules/admin/views/scripts/report-config/index.phtml:226
-#: application/services/Evaluation.php:2632
+#: application/services/Evaluation.php:2657
 msgid "Delete"
 msgstr ""
 
@@ -4685,7 +4685,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:117
 #: application/modules/reports/views/scripts/certificates/index.phtml:651
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:108
-#: application/services/Evaluation.php:2614
+#: application/services/Evaluation.php:2051
 msgid "View"
 msgstr ""
 
@@ -4959,9 +4959,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:319
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:279
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:276
-#: application/services/Evaluation.php:2056
-#: application/services/Evaluation.php:2341
-#: application/services/Evaluation.php:2558
+#: application/services/Evaluation.php:2081
+#: application/services/Evaluation.php:2367
+#: application/services/Evaluation.php:2584
 #: application/views/scripts/participant/report.phtml:174
 msgid "Late Response"
 msgstr ""
@@ -4976,9 +4976,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:335
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:357
 #: application/services/Dashboard.php:1033
-#: application/services/Evaluation.php:2054
-#: application/services/Evaluation.php:2338
-#: application/services/Evaluation.php:2556
+#: application/services/Evaluation.php:2079
+#: application/services/Evaluation.php:2364
+#: application/services/Evaluation.php:2582
 #: application/services/Participants.php:1756
 #: application/services/Reports.php:508 application/services/Reports.php:2774
 #: application/services/Reports.php:3151 application/services/Reports.php:4231
@@ -4995,9 +4995,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:318
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:278
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:275
-#: application/services/Evaluation.php:2052
-#: application/services/Evaluation.php:2333
-#: application/services/Evaluation.php:2554
+#: application/services/Evaluation.php:2077
+#: application/services/Evaluation.php:2359
+#: application/services/Evaluation.php:2580
 #: application/views/partials/shipment-response-report.phtml:104
 #: application/views/scripts/participant/report.phtml:173
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:799
@@ -5009,7 +5009,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:404
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:83
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:87
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:390
 #: application/views/scripts/participant/all-schemes.phtml:56
 #: application/views/scripts/participant/report.phtml:211
 #: application/views/scripts/participant/summary-report.phtml:167
@@ -5028,7 +5027,7 @@ msgid "Select report"
 msgstr ""
 
 #: application/models/DbTable/Shipments.php:1917
-#: application/services/Evaluation.php:2328
+#: application/services/Evaluation.php:2354
 msgid "Download Report"
 msgstr ""
 
@@ -5360,7 +5359,7 @@ msgstr ""
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:139
 #: application/views/scripts/dts/response.phtml:1643
-#: application/views/scripts/recency/response.phtml:382
+#: application/views/scripts/recency/response.phtml:384
 #: application/views/scripts/shipment-form/download.phtml:372
 #: application/views/scripts/shipment-form/download.phtml:579
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:567
@@ -5370,7 +5369,7 @@ msgstr ""
 #: application/models/Recency.php:640
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:140
 #: application/views/scripts/dts/response.phtml:1646
-#: application/views/scripts/recency/response.phtml:384
+#: application/views/scripts/recency/response.phtml:386
 #: application/views/scripts/shipment-form/download.phtml:373
 #: application/views/scripts/shipment-form/download.phtml:580
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:568
@@ -5451,7 +5450,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:616
 #: application/views/scripts/dts/response.phtml:1762
 #: application/views/scripts/eid/response.phtml:630
-#: application/views/scripts/recency/response.phtml:537
+#: application/views/scripts/recency/response.phtml:539
 #: application/views/scripts/shipment-form/download.phtml:534
 #: application/views/scripts/shipment-form/download.phtml:599
 #: application/views/scripts/tb/response.phtml:466
@@ -5765,9 +5764,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:266
 #: application/services/Reports.php:2827
 #: application/views/partials/collapsible-filters.phtml:181
-#: application/views/scripts/common/admin-evaluation-panel.phtml:478
-#: application/views/scripts/common/admin-evaluation-panel.phtml:496
-#: application/views/scripts/common/admin-evaluation-panel.phtml:504
+#: application/views/scripts/common/admin-evaluation-panel.phtml:476
+#: application/views/scripts/common/admin-evaluation-panel.phtml:494
+#: application/views/scripts/common/admin-evaluation-panel.phtml:502
 #: application/views/scripts/covid19/response.phtml:309
 #: application/views/scripts/custom-test/response.phtml:610
 #: application/views/scripts/dts/response.phtml:689
@@ -5962,7 +5961,7 @@ msgstr ""
 #: application/modules/admin/controllers/SpotlightController.php:72
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:94
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:132
-#: application/services/Shipments.php:5465
+#: application/services/Shipments.php:5486
 msgid "Evaluate"
 msgstr ""
 
@@ -6147,7 +6146,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:403
 #: application/modules/reports/views/scripts/finalize/index.phtml:44
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:45
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:409
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:410
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:104
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:224
 #: application/modules/reports/views/scripts/testkit/index.phtml:288
@@ -6357,10 +6356,12 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:32
 #: application/modules/reports/views/scripts/distribution/index.phtml:40
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:58
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:390
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/finalize/index.phtml:32
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:33
-#: application/services/Shipments.php:5024
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:401
+#: application/services/Shipments.php:5045
 #: application/views/scripts/capa/index.phtml:69
 #: application/views/scripts/covid19/response.phtml:1213
 #: application/views/scripts/data-managers/index.phtml:28
@@ -7847,8 +7848,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:337
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:351
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:364
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:652
-#: application/views/scripts/common/admin-evaluation-panel.phtml:494
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:654
+#: application/views/scripts/common/admin-evaluation-panel.phtml:492
 #: application/views/scripts/contact-us/index.phtml:42
 #: application/views/scripts/covid19/response.phtml:293
 #: application/views/scripts/covid19/response.phtml:375
@@ -7907,11 +7908,11 @@ msgstr ""
 #: application/views/scripts/participant/user-info.phtml:93
 #: application/views/scripts/recency/response.phtml:219
 #: application/views/scripts/recency/response.phtml:282
-#: application/views/scripts/recency/response.phtml:416
-#: application/views/scripts/recency/response.phtml:425
-#: application/views/scripts/recency/response.phtml:434
-#: application/views/scripts/recency/response.phtml:462
-#: application/views/scripts/recency/response.phtml:530
+#: application/views/scripts/recency/response.phtml:418
+#: application/views/scripts/recency/response.phtml:427
+#: application/views/scripts/recency/response.phtml:436
+#: application/views/scripts/recency/response.phtml:464
+#: application/views/scripts/recency/response.phtml:532
 #: application/views/scripts/tb/assay-formats.ajax.phtml:463
 #: application/views/scripts/tb/assay-formats.ajax.phtml:559
 #: application/views/scripts/tb/assay-formats.ajax.phtml:659
@@ -8226,9 +8227,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:310
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:268
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:264
-#: application/views/scripts/common/admin-evaluation-panel.phtml:482
-#: application/views/scripts/common/admin-evaluation-panel.phtml:495
-#: application/views/scripts/common/admin-evaluation-panel.phtml:503
+#: application/views/scripts/common/admin-evaluation-panel.phtml:480
+#: application/views/scripts/common/admin-evaluation-panel.phtml:493
+#: application/views/scripts/common/admin-evaluation-panel.phtml:501
 #: application/views/scripts/covid19/response.phtml:312
 #: application/views/scripts/custom-test/response.phtml:612
 #: application/views/scripts/dts/response.phtml:692
@@ -9460,7 +9461,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:137
 #: application/modules/admin/views/scripts/report-config/index.phtml:177
 #: application/views/scripts/eid/response.phtml:605
-#: application/views/scripts/recency/response.phtml:512
+#: application/views/scripts/recency/response.phtml:514
 #: application/views/scripts/vl/response.phtml:879
 msgid "Remove"
 msgstr ""
@@ -11417,7 +11418,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1275
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:748
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:712
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:714
 msgid "Press Ctrl+C / Cmd+C to copy"
 msgstr ""
 
@@ -12160,7 +12161,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:459
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:71
-#: application/services/Reports.php:230 application/services/Shipments.php:5455
+#: application/services/Reports.php:230 application/services/Shipments.php:5476
 #: application/views/partials/shipments-report-grid.phtml:348
 msgid "Finalized"
 msgstr ""
@@ -12434,7 +12435,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:91
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:160
-#: application/services/Shipments.php:5465
+#: application/services/Shipments.php:5486
 msgid "Re-Evaluate"
 msgstr ""
 
@@ -12545,7 +12546,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:261
-#: application/views/scripts/common/admin-evaluation-panel.phtml:493
+#: application/views/scripts/common/admin-evaluation-panel.phtml:491
 #: application/views/scripts/partials/evaluate-form.phtml:18
 msgid "Please choose manual override yes or no"
 msgstr ""
@@ -12561,16 +12562,16 @@ msgid "Response status"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:232
-#: application/services/Evaluation.php:2058
-#: application/services/Evaluation.php:2343
-#: application/services/Evaluation.php:2560
+#: application/services/Evaluation.php:2083
+#: application/services/Evaluation.php:2369
+#: application/services/Evaluation.php:2586
 msgid "Late Submission (pending approval)"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:233
-#: application/services/Evaluation.php:2060
-#: application/services/Evaluation.php:2345
-#: application/services/Evaluation.php:2562
+#: application/services/Evaluation.php:2085
+#: application/services/Evaluation.php:2371
+#: application/services/Evaluation.php:2588
 msgid "Late Submission (rejected)"
 msgstr ""
 
@@ -12738,7 +12739,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:343
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:396
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:402
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:403
 msgid "Map ID"
 msgstr ""
 
@@ -12772,13 +12773,13 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:456
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:673
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:466
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:433
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:434
 msgid "Select one or more response status"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:461
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:679
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:438
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:439
 msgid "Select one or more final results"
 msgstr ""
 
@@ -12786,7 +12787,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:284
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:685
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:476
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:443
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:444
 msgid "Select one or more countries"
 msgstr ""
 
@@ -12794,14 +12795,14 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:274
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:709
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:481
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:448
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:449
 msgid "Select one or more regions"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:476
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:694
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:486
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:453
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:454
 msgid "Select one or more states"
 msgstr ""
 
@@ -12809,7 +12810,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:279
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:703
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:491
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:458
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:459
 msgid "Select one or more districts"
 msgstr ""
 
@@ -12859,7 +12860,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:859
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:753
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:779
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:781
 msgid "Click here to go back"
 msgstr ""
 
@@ -13918,7 +13919,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:813
 #: application/views/scripts/dts/response.phtml:1758
 #: application/views/scripts/eid/response.phtml:625
-#: application/views/scripts/recency/response.phtml:532
+#: application/views/scripts/recency/response.phtml:534
 msgid "YES"
 msgstr ""
 
@@ -13942,7 +13943,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:815
 #: application/views/scripts/dts/response.phtml:1760
 #: application/views/scripts/eid/response.phtml:627
-#: application/views/scripts/recency/response.phtml:534
+#: application/views/scripts/recency/response.phtml:536
 msgid "NO"
 msgstr ""
 
@@ -15516,7 +15517,7 @@ msgid "Completed"
 msgstr ""
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:461
-#: application/services/Shipments.php:5457
+#: application/services/Shipments.php:5478
 msgid "Reports Generated"
 msgstr ""
 
@@ -18417,27 +18418,27 @@ msgid "Participant(s) enrolled successfully"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:732
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:697
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:699
 msgid "No valid email addresses found for this selection"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:738
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:703
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:705
 msgid "unique email address(es) copied to clipboard"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:707
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:709
 msgid "participant"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:743
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:708
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:710
 msgid "data manager"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:754
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:718
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:720
 msgid ""
 "Unable to fetch email addresses. Please try again later or contact system "
 "admin for help"
@@ -19032,7 +19033,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:459
 #: application/views/scripts/dts/response.phtml:1640
 #: application/views/scripts/eid/response.phtml:475
-#: application/views/scripts/recency/response.phtml:380
+#: application/views/scripts/recency/response.phtml:382
 #: application/views/scripts/shipment-form/download.phtml:371
 #: application/views/scripts/shipment-form/download.phtml:444
 #: application/views/scripts/shipment-form/download.phtml:509
@@ -19044,7 +19045,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:141
 #: application/views/scripts/dts/response.phtml:1649
-#: application/views/scripts/recency/response.phtml:386
+#: application/views/scripts/recency/response.phtml:388
 #: application/views/scripts/shipment-form/download.phtml:374
 #: application/views/scripts/shipment-form/download.phtml:581
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:569
@@ -19062,7 +19063,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:264
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:447
 #: application/views/scripts/dts/response.phtml:1680
-#: application/views/scripts/recency/response.phtml:415
+#: application/views/scripts/recency/response.phtml:417
 msgid "Please choose control line"
 msgstr ""
 
@@ -19078,9 +19079,9 @@ msgstr ""
 #: application/views/scripts/dts/response.phtml:1682
 #: application/views/scripts/dts/response.phtml:1693
 #: application/views/scripts/dts/response.phtml:1706
-#: application/views/scripts/recency/response.phtml:417
-#: application/views/scripts/recency/response.phtml:426
-#: application/views/scripts/recency/response.phtml:435
+#: application/views/scripts/recency/response.phtml:419
+#: application/views/scripts/recency/response.phtml:428
+#: application/views/scripts/recency/response.phtml:437
 msgid "Present"
 msgstr ""
 
@@ -19096,9 +19097,9 @@ msgstr ""
 #: application/views/scripts/dts/response.phtml:1683
 #: application/views/scripts/dts/response.phtml:1695
 #: application/views/scripts/dts/response.phtml:1708
-#: application/views/scripts/recency/response.phtml:418
-#: application/views/scripts/recency/response.phtml:427
-#: application/views/scripts/recency/response.phtml:436
+#: application/views/scripts/recency/response.phtml:420
+#: application/views/scripts/recency/response.phtml:429
+#: application/views/scripts/recency/response.phtml:438
 msgid "Absent"
 msgstr ""
 
@@ -19106,7 +19107,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:271
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:454
 #: application/views/scripts/dts/response.phtml:1690
-#: application/views/scripts/recency/response.phtml:424
+#: application/views/scripts/recency/response.phtml:426
 msgid "Please choose verification line"
 msgstr ""
 
@@ -19114,7 +19115,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:278
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:461
 #: application/views/scripts/dts/response.phtml:1703
-#: application/views/scripts/recency/response.phtml:433
+#: application/views/scripts/recency/response.phtml:435
 msgid "Please choose Longterm line"
 msgstr ""
 
@@ -20670,7 +20671,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:17
 #: application/services/Reports.php:1279 application/services/Reports.php:1611
 #: application/services/Reports.php:3062
-#: application/services/Shipments.php:5018
+#: application/services/Shipments.php:5039
 #: application/views/partials/participant-performance-report.phtml:34
 #: application/views/partials/tb-results-report.phtml:31
 #: application/views/scripts/capa/capa.phtml:61
@@ -21002,15 +21003,15 @@ msgstr ""
 msgid "Participant Report"
 msgstr ""
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:524
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:525
 msgid "Loading downloads…"
 msgstr ""
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:531
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:532
 msgid "Failed to load downloads. Please try again."
 msgstr ""
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:777
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:779
 msgid "No Shipment data."
 msgstr ""
 
@@ -21940,57 +21941,57 @@ msgstr ""
 msgid "If the button does not work, copy this link into your browser:"
 msgstr ""
 
-#: application/services/Evaluation.php:2095
+#: application/services/Evaluation.php:2120
 msgid "Not downloaded"
 msgstr ""
 
-#: application/services/Evaluation.php:2099
+#: application/services/Evaluation.php:2124
 msgid "Downloaded"
 msgstr ""
 
-#: application/services/Evaluation.php:2106
+#: application/services/Evaluation.php:2131
 msgid "Show who downloaded this report"
 msgstr ""
 
-#: application/services/Evaluation.php:2336
+#: application/services/Evaluation.php:2362
 msgid "PT Not Tested"
 msgstr ""
 
-#: application/services/Evaluation.php:2582
+#: application/services/Evaluation.php:2608
 msgid "late — approved"
 msgstr ""
 
-#: application/services/Evaluation.php:2635
+#: application/services/Evaluation.php:2660
 msgid "Download Corrective Action"
 msgstr ""
 
-#: application/services/Evaluation.php:2645
+#: application/services/Evaluation.php:2670
 msgid "Approve Late Submission"
 msgstr ""
 
-#: application/services/Evaluation.php:2647
+#: application/services/Evaluation.php:2672
 msgid "Reject"
 msgstr ""
 
-#: application/services/Evaluation.php:2684
+#: application/services/Evaluation.php:2709
 msgid "Invalid request."
 msgstr ""
 
-#: application/services/Evaluation.php:2695
+#: application/services/Evaluation.php:2720
 msgid "This response is not a pending late submission."
 msgstr ""
 
-#: application/services/Evaluation.php:2700
+#: application/services/Evaluation.php:2725
 msgid "No change."
 msgstr ""
 
-#: application/services/Evaluation.php:2731
+#: application/services/Evaluation.php:2756
 msgid ""
 "Late submission approved. Its status is now Responded (kept marked as late "
 "in history)."
 msgstr ""
 
-#: application/services/Evaluation.php:2732
+#: application/services/Evaluation.php:2757
 msgid "Late submission rejected."
 msgstr ""
 
@@ -22065,7 +22066,7 @@ msgstr ""
 msgid "Open for responses"
 msgstr ""
 
-#: application/services/Reports.php:228 application/services/Shipments.php:5459
+#: application/services/Reports.php:228 application/services/Shipments.php:5480
 #: application/views/partials/shipments-report-grid.phtml:346
 msgid "Evaluated"
 msgstr ""
@@ -22145,7 +22146,7 @@ msgstr ""
 #: application/services/Reports.php:1430
 #: application/views/scripts/covid19/response.phtml:680
 #: application/views/scripts/dts/response.phtml:1412
-#: application/views/scripts/recency/response.phtml:391
+#: application/views/scripts/recency/response.phtml:393
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:456
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:146
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:171
@@ -22275,11 +22276,11 @@ msgstr ""
 msgid "Feedback Off"
 msgstr ""
 
-#: application/services/Shipments.php:5093
+#: application/services/Shipments.php:5114
 msgid "Saved successfully"
 msgstr ""
 
-#: application/services/Shipments.php:5537
+#: application/services/Shipments.php:5558
 msgid ""
 "This shipment collects participant feedback but no feedback form has been "
 "created yet. Create the feedback form before finalizing."
@@ -22872,62 +22873,62 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:433
+#: application/views/scripts/common/admin-evaluation-panel.phtml:431
 msgid "No findings for this response."
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:444
-#: application/views/scripts/common/admin-evaluation-panel.phtml:461
+#: application/views/scripts/common/admin-evaluation-panel.phtml:442
+#: application/views/scripts/common/admin-evaluation-panel.phtml:459
 msgid "Feedback to the participant"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:446
+#: application/views/scripts/common/admin-evaluation-panel.phtml:444
 msgid "No feedback was written for the participant."
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:455
+#: application/views/scripts/common/admin-evaluation-panel.phtml:453
 msgid "Follow-up for corrective action"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:463
+#: application/views/scripts/common/admin-evaluation-panel.phtml:461
 #: application/views/scripts/partials/evaluate-form.phtml:43
 msgid "Evaluation Comment"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:469
+#: application/views/scripts/common/admin-evaluation-panel.phtml:467
 #: application/views/scripts/partials/evaluate-form.phtml:52
 msgid "Optional Extra Comments"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:474
+#: application/views/scripts/common/admin-evaluation-panel.phtml:472
 msgid "Is the above a follow up comment for corrective action?"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:477
+#: application/views/scripts/common/admin-evaluation-panel.phtml:475
 msgid "Please choose whether this is a follow up comment or not"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:488
+#: application/views/scripts/common/admin-evaluation-panel.phtml:486
 msgid "Admin actions"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:489
+#: application/views/scripts/common/admin-evaluation-panel.phtml:487
 msgid ""
 "Change these only to correct an evaluation. Both change the participant's "
 "result."
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:491
+#: application/views/scripts/common/admin-evaluation-panel.phtml:489
 #: application/views/scripts/partials/evaluate-form.phtml:16
 msgid "Manually Override Results"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:500
+#: application/views/scripts/common/admin-evaluation-panel.phtml:498
 #: application/views/scripts/partials/evaluate-form.phtml:5
 msgid "Do you want to exclude this response from evaluation?"
 msgstr ""
 
-#: application/views/scripts/common/admin-evaluation-panel.phtml:502
+#: application/views/scripts/common/admin-evaluation-panel.phtml:500
 #: application/views/scripts/partials/evaluate-form.phtml:9
 msgid "Please choose whether this response is excluded from evaluation or not"
 msgstr ""
@@ -23627,7 +23628,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:291
 #: application/views/scripts/dts/response.phtml:1584
 #: application/views/scripts/eid/response.phtml:535
-#: application/views/scripts/recency/response.phtml:457
+#: application/views/scripts/recency/response.phtml:459
 #: application/views/scripts/tb/response.phtml:205
 #: application/views/scripts/vl/response.phtml:777
 msgid "Reason for not testing the PT Panel"
@@ -23636,7 +23637,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:748
 #: application/views/scripts/dts/response.phtml:1587
 #: application/views/scripts/eid/response.phtml:538
-#: application/views/scripts/recency/response.phtml:460
+#: application/views/scripts/recency/response.phtml:462
 #: application/views/scripts/tb/response.phtml:208
 #: application/views/scripts/vl/response.phtml:780
 msgid "Please select reason"
@@ -23646,7 +23647,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:311
 #: application/views/scripts/dts/response.phtml:1604
 #: application/views/scripts/eid/response.phtml:555
-#: application/views/scripts/recency/response.phtml:476
+#: application/views/scripts/recency/response.phtml:478
 #: application/views/scripts/tb/response.phtml:224
 #: application/views/scripts/vl/response.phtml:797
 msgid "Other (please explain in comment box below)"
@@ -23654,7 +23655,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:770
 #: application/views/scripts/eid/response.phtml:571
-#: application/views/scripts/recency/response.phtml:482
+#: application/views/scripts/recency/response.phtml:484
 #: application/views/scripts/vl/response.phtml:813
 msgid "Your comments"
 msgstr ""
@@ -23665,7 +23666,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:591
 #: application/views/scripts/dts/response.phtml:1614
 #: application/views/scripts/eid/response.phtml:574
-#: application/views/scripts/recency/response.phtml:485
+#: application/views/scripts/recency/response.phtml:487
 #: application/views/scripts/tb/response.phtml:235
 #: application/views/scripts/vl/response.phtml:816
 msgid "Please enter comments"
@@ -23674,7 +23675,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:779
 #: application/views/scripts/dts/response.phtml:1620
 #: application/views/scripts/eid/response.phtml:580
-#: application/views/scripts/recency/response.phtml:491
+#: application/views/scripts/recency/response.phtml:493
 #: application/views/scripts/vl/response.phtml:822
 msgid "Do you need any support from the PT Provider?"
 msgstr ""
@@ -23682,7 +23683,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:781
 #: application/views/scripts/dts/response.phtml:1623
 #: application/views/scripts/eid/response.phtml:582
-#: application/views/scripts/recency/response.phtml:493
+#: application/views/scripts/recency/response.phtml:495
 #: application/views/scripts/vl/response.phtml:824
 msgid "Please enter message to PT provider"
 msgstr ""
@@ -23691,7 +23692,7 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:603
 #: application/views/scripts/dts/response.phtml:1752
 #: application/views/scripts/eid/response.phtml:618
-#: application/views/scripts/recency/response.phtml:525
+#: application/views/scripts/recency/response.phtml:527
 #: application/views/scripts/shipment-form/download.phtml:532
 #: application/views/scripts/shipment-form/download.phtml:597
 #: application/views/scripts/tb/response.phtml:453
@@ -23708,7 +23709,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1051
 #: application/views/scripts/custom-test/response.phtml:708
 #: application/views/scripts/dts/response.phtml:2047
-#: application/views/scripts/recency/response.phtml:657
+#: application/views/scripts/recency/response.phtml:659
 #: application/views/scripts/tb/response.phtml:637
 #: application/views/scripts/vl/response.phtml:1065
 msgid ""
@@ -23719,7 +23720,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1098
 #: application/views/scripts/custom-test/response.phtml:730
 #: application/views/scripts/dts/response.phtml:2074
-#: application/views/scripts/recency/response.phtml:622
+#: application/views/scripts/recency/response.phtml:624
 #: application/views/scripts/tb/response.phtml:707
 #: application/views/scripts/vl/response.phtml:1108
 msgid "Incorrect password. Please try again."
@@ -23728,7 +23729,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1105
 #: application/views/scripts/custom-test/response.phtml:737
 #: application/views/scripts/dts/response.phtml:2081
-#: application/views/scripts/recency/response.phtml:629
+#: application/views/scripts/recency/response.phtml:631
 #: application/views/scripts/tb/response.phtml:714
 #: application/views/scripts/vl/response.phtml:1115
 msgid "Please enter the password to confirm"
@@ -23737,7 +23738,7 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:1118
 #: application/views/scripts/dts/response.phtml:2094
 #: application/views/scripts/eid/response.phtml:735
-#: application/views/scripts/recency/response.phtml:643
+#: application/views/scripts/recency/response.phtml:645
 #: application/views/scripts/vl/response.phtml:1161
 msgid "The testing date cannot be before the shipment receipt date"
 msgstr ""
@@ -24357,7 +24358,7 @@ msgstr ""
 
 #: application/views/scripts/dts/response.phtml:1715
 #: application/views/scripts/eid/response.phtml:512
-#: application/views/scripts/recency/response.phtml:442
+#: application/views/scripts/recency/response.phtml:444
 #, php-format
 msgid "Please select the result for %s"
 msgstr ""
@@ -24521,7 +24522,7 @@ msgid "Detection Assay Expiry Date"
 msgstr ""
 
 #: application/views/scripts/eid/response.phtml:477
-#: application/views/scripts/recency/response.phtml:388
+#: application/views/scripts/recency/response.phtml:390
 #: application/views/scripts/shipment-form/download.phtml:510
 #: application/views/scripts/shipment-form/download.phtml:582
 msgid "Your Results"
@@ -24538,13 +24539,13 @@ msgid "Please enter the IC/QS Values for %s"
 msgstr ""
 
 #: application/views/scripts/eid/response.phtml:589
-#: application/views/scripts/recency/response.phtml:500
+#: application/views/scripts/recency/response.phtml:502
 #: application/views/scripts/vl/response.phtml:863
 msgid "Upload File"
 msgstr ""
 
 #: application/views/scripts/eid/response.phtml:690
-#: application/views/scripts/recency/response.phtml:593
+#: application/views/scripts/recency/response.phtml:595
 #: application/views/scripts/vl/response.phtml:964
 msgid "Do you really want to remove this file?"
 msgstr ""
@@ -26672,217 +26673,288 @@ msgstr ""
 msgid "Participant Last Name"
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:65
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
 msgid "Please submit your response before the last date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:66
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:75
 msgid "The laboratory submitted the response after the response deadline."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:69
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
 msgid ""
 "Review and refer to the SOP for testing. Ensure each sample is tested as per "
 "the National HIV Testing algorithm."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:70
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:79
 msgid ""
 "The laboratory did not follow the National HIV Testing algorithm for a "
 "sample."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:73
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
 msgid ""
 "Review all testing procedures before client testing, as the reported result "
 "does not match the expected result."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:74
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:83
 msgid "The reported result for a sample does not match the expected result."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:77
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
 msgid "You are required to test all samples in the PT panel."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:78
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:87
 msgid "The laboratory did not report a result for every sample."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:81
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
 msgid ""
 "Ensure expired test kits are not used for testing. If no valid test kits are "
 "available, please contact your supervisor."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:82
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:91
 msgid "The laboratory tested with an expired test kit."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:85
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
 msgid "Ensure the expiry date is reported for all performed tests."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:86
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:95
 msgid "The laboratory did not report a test kit expiry date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:90
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:99
 msgid "The laboratory did not report a test kit name."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:93
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:97
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
 msgid ""
 "Please use a different approved test kit for each test, as per the SOP and "
 "the National HIV Testing algorithm."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:94
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:103
 msgid "The laboratory reported the same test kit for all three tests."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:98
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:107
 msgid "The laboratory reported the same test kit for two tests."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:101
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
 msgid "Ensure the lot number is reported for all performed tests."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:102
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:111
 msgid "The laboratory did not report a test kit lot number."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:105
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
 msgid "Ensure the supervisor's approval and name are provided."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:106
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:115
 msgid "The laboratory did not report supervisor approval."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:109
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
 msgid "Ensure the panel rehydration date is provided."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:110
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:119
 msgid "The laboratory did not report the rehydration date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:113
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
 msgid "Ensure the panel testing date is provided."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:114
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:123
 msgid "The laboratory did not report the testing date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:117
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
 msgid ""
 "Ensure DTS testing is done within the specified hours of rehydration, as per "
 "the SOP."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:118
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:127
 msgid ""
 "The laboratory did not test within the time after rehydration that the SOP "
 "sets."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:121
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
 msgid ""
 "Review all testing procedures before client testing, and contact your "
 "supervisor for improvement."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:122
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:131
 msgid "The participant score is below the pass mark."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:125
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
 msgid "Ensure the panel receipt date is provided."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:126
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:135
 msgid "The laboratory did not report the panel receipt date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:129
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
 msgid ""
 "Please use country-approved test kits as per the National HIV Testing "
 "algorithm. Review and refer to the SOP."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:130
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:139
 msgid "The laboratory tested with a test kit that is not country-approved."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:133
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
 msgid "Please ensure the condition of the PT samples is reported."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:134
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:143
 msgid "The laboratory did not report the condition of the PT samples."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:137
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
 msgid "Please ensure refrigerator availability is reported."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:138
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:147
 msgid "The laboratory did not report refrigerator availability."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:141
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:150
 msgid "Please ensure the room temperature is reported."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:142
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:151
 msgid "The laboratory did not report the room temperature."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:145
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:154
 msgid "Please ensure stopwatch availability is reported."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:146
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:155
 msgid "The laboratory did not report stopwatch availability."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:150
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:159
 msgid "The reported rehydration date is earlier than the panel receipt date."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:153
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:162
 msgid ""
 "Review and refer to the SOP. Ensure every test required by the National HIV "
 "Testing algorithm is performed."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:154
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:163
 msgid "The laboratory did not report a test that the algorithm needs."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:157
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:166
 msgid ""
 "Review and refer to the SOP. Ensure testing stops when the National HIV "
 "Testing algorithm gives a final result."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:158
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:167
 msgid "The laboratory ran tests after the algorithm gave a final result."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:161
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:170
 msgid ""
 "Review and refer to the SOP. Ensure the final result reported is the one the "
 "National HIV Testing algorithm gives."
 msgstr ""
 
-#: library/Pt/Evaluation/Dts/CorrectiveAction.php:162
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:171
 msgid "The reported final result is not the one the test results give."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:174
+msgid "Follow MOH HIV testing strategy"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:175
+msgid ""
+"The laboratory did not run the tests that the MOH HIV testing strategy sets "
+"for a sample."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:178
+msgid ""
+"The laboratory's final interpretation is acceptable, but the result for Test "
+"1 is unacceptable"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:179
+msgid "Test 1 was reactive on a negative sample."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:182
+msgid "Interpret weak positive results carefully"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:183
+msgid ""
+"The laboratory reported a weak reactive test on a diluted positive sample."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:186
+msgid "Check the performance with the weak reactive result"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:187
+msgid "The laboratory reported a weak reactive test on a positive sample."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:190
+msgid "Review testing procedures and kit interpretation"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:191
+msgid "The final interpretation does not match the expected result."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:194
+msgid "Review testing procedures and sample handling"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:195
+msgid "The laboratory reported a positive sample as negative."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:198
+msgid "Sample should be referred to confirmation lab"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:199
+msgid "An inconclusive sample was not reported as sent for confirmation."
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:202
+msgid ""
+"Screening labs must not conclude \"HIV Positive.\" Samples should be "
+"reported as \"Inconclusive\" and referred for confirmatory testing"
+msgstr ""
+
+#: library/Pt/Evaluation/Dts/CorrectiveAction.php:203
+msgid "A screening laboratory concluded HIV Positive."
 msgstr ""
 
 #: library/Pt/Evaluation/Dts/Reason.php:37

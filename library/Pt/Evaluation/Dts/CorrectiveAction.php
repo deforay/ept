@@ -40,6 +40,15 @@ enum Pt_Evaluation_Dts_CorrectiveAction: int
     case RunEveryNeededTest = 23;
     case StopWhereAlgorithmEnds = 24;
     case ReportAlgorithmFinalResult = 25;
+    // Vietnam (NIHE) recommendations, word for word from the NIHE workbook.
+    case FollowMohStrategy = 26;
+    case Test1Unacceptable = 27;
+    case InterpretWeakPositive = 28;
+    case CheckWeakReactive = 29;
+    case ReviewKitInterpretation = 30;
+    case ReviewSampleHandling = 31;
+    case ReferToConfirmationLab = 32;
+    case ScreeningMustNotConcludePositive = 33;
 
     /** The advice, in English. Store this. Translate it with actionText() when shown. */
     public function action(): string
@@ -160,6 +169,38 @@ enum Pt_Evaluation_Dts_CorrectiveAction: int
             self::ReportAlgorithmFinalResult => [
                 T::markForTranslation('Review and refer to the SOP. Ensure the final result reported is the one the National HIV Testing algorithm gives.'),
                 T::markForTranslation('The reported final result is not the one the test results give.'),
+            ],
+            self::FollowMohStrategy => [
+                T::markForTranslation('Follow MOH HIV testing strategy'),
+                T::markForTranslation('The laboratory did not run the tests that the MOH HIV testing strategy sets for a sample.'),
+            ],
+            self::Test1Unacceptable => [
+                T::markForTranslation("The laboratory's final interpretation is acceptable, but the result for Test 1 is unacceptable"),
+                T::markForTranslation('Test 1 was reactive on a negative sample.'),
+            ],
+            self::InterpretWeakPositive => [
+                T::markForTranslation('Interpret weak positive results carefully'),
+                T::markForTranslation('The laboratory reported a weak reactive test on a diluted positive sample.'),
+            ],
+            self::CheckWeakReactive => [
+                T::markForTranslation('Check the performance with the weak reactive result'),
+                T::markForTranslation('The laboratory reported a weak reactive test on a positive sample.'),
+            ],
+            self::ReviewKitInterpretation => [
+                T::markForTranslation('Review testing procedures and kit interpretation'),
+                T::markForTranslation('The final interpretation does not match the expected result.'),
+            ],
+            self::ReviewSampleHandling => [
+                T::markForTranslation('Review testing procedures and sample handling'),
+                T::markForTranslation('The laboratory reported a positive sample as negative.'),
+            ],
+            self::ReferToConfirmationLab => [
+                T::markForTranslation('Sample should be referred to confirmation lab'),
+                T::markForTranslation('An inconclusive sample was not reported as sent for confirmation.'),
+            ],
+            self::ScreeningMustNotConcludePositive => [
+                T::markForTranslation('Screening labs must not conclude "HIV Positive." Samples should be reported as "Inconclusive" and referred for confirmatory testing'),
+                T::markForTranslation('A screening laboratory concluded HIV Positive.'),
             ],
         };
     }
