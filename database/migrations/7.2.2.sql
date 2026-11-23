@@ -76,7 +76,7 @@ ALTER TABLE `enrollments` ADD `enrollment_id` VARCHAR(64) NOT NULL FIRST;
 ALTER TABLE `enrollments` ADD `list_name` VARCHAR(128) NOT NULL DEFAULT 'default' AFTER `enrollment_id`;
 ALTER TABLE `enrollments` CHANGE `scheme_id` `scheme_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE `enrollments` DROP PRIMARY KEY;
-ALTER TABLE `enrollments` ADD PRIMARY KEY(`list_name`, `participant_id`);
+ALTER TABLE `enrollments` ADD PRIMARY KEY (`list_name`, `scheme_id`, `participant_id`);
 
 -- Amit 03-Sep-2024
 INSERT INTO enrollments (enrollment_id, list_name, participant_id, enrolled_on, status)

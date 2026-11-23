@@ -56,7 +56,7 @@ foreach ($schema as $table => $columns) {
     }
 }
 $legacySchema = $schema;
-unset($legacySchema['r_testkitnames'], $legacySchema['queue_report_generation']);
+unset($legacySchema['r_testkitnames'], $legacySchema['queue_report_generation'], $legacySchema['participant_testkit_map']);
 $legacySchema['r_testkitname_dts'] = ['TestKitName_ID'];
 $legacySchema['evaluation_queue'] = ['queue_id'];
 $legacySchema['response_result_generic_test'] = ['result', 'repeat_result'];
@@ -67,6 +67,10 @@ foreach (glob(__DIR__ . '/../database/migrations/*.sql') as $file) {
 $legacyPlan = $legacyRepair->build($legacySchema, $indexes);
 foreach ($legacyPlan as $step) {
     check(!in_array($step['table'], ['r_testkitnames', 'queue_report_generation'], true), 'Do not create empty destinations before table copies or renames.');
+    if ($step['create']) {
+        check(!str_contains($step['sql'], 'REFERENCES `r_testkitnames`'),
+            'Leave foreign keys to deferred tables to the migration that creates the table.');
+    }
     if ($step['table'] === 'response_result_generic_test') {
         check(!str_contains($step['sql'], 'ADD COLUMN `result_1`') && !str_contains($step['sql'], 'ADD COLUMN `result_2`'),
             'Leave rename destinations to migrations so legacy result values survive.');

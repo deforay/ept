@@ -53,6 +53,7 @@
         "init-sql": "@php bin/dev/regenerate-init-sql.php",
         "migrate": [
             "@heal-schema",
+            "@collation",
             "@php bin/migrate.php -yq",
             "@collation"
         ],
