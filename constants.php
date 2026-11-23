@@ -1,6 +1,6 @@
 <?php
 
-const APP_VERSION = '7.7.5';
+const APP_VERSION = '7.7.6';
 
 // PHP2Shell (CVE-2026-109618, CVE-2026-109619) is fixed in 8.4.27 and 8.5.12. Composer's
 // platform check rejects anything below 8.4.27 but checks only that lowest bound, so the

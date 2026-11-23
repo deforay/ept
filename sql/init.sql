@@ -2810,7 +2810,7 @@ CREATE TABLE `system_config` (
 
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 ('api_version', '2.0', 'API Version'),
-('app_version', '7.7.5', 'App Version'),
+('app_version', '7.7.6', 'App Version'),
 ('bounce_last_uid', '0', 'Highest IMAP UID processed by bin/process-bounces.php'),
 ('bounce_uidvalidity', '0', 'UIDVALIDITY of the bounce mailbox last time it was read; reset triggers a re-scan');
 
