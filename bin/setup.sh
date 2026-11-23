@@ -808,11 +808,23 @@ declare -A mysql_settings=(
     ["innodb_strict_mode"]="0"
     ["character-set-server"]="utf8mb4"
     ["collation-server"]="utf8mb4_0900_ai_ci"
-    ["default_authentication_plugin"]="mysql_native_password"
     ["max_connect_errors"]="10000"
 )
 
-changes_needed=false
+# MySQL 8.4 (Ubuntu 26.04) removed default_authentication_plugin and refuses to start
+# with it. Set it only below 8.4. On 8.4 and later, comment out a stale entry, as upgrade.sh does.
+mysql_server_version="$(mysql -V 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1)"
+if dpkg --compare-versions "${mysql_server_version:-0}" ge "8.4"; then
+    if grep -qE "^[[:space:]]*default_authentication_plugin[[:space:]]*=" "$mysql_cnf"; then
+        sed -i "/^[[:space:]]*default_authentication_plugin[[:space:]]*=.*/s/^/#/" "$mysql_cnf"
+        print info "Commented out removed option 'default_authentication_plugin' (MySQL ${mysql_server_version})"
+        auth_option_scrubbed=true
+    fi
+else
+    mysql_settings["default_authentication_plugin"]="mysql_native_password"
+fi
+
+changes_needed="${auth_option_scrubbed:-false}"
 for setting in "${!mysql_settings[@]}"; do
     if ! grep -qE "^[[:space:]]*$setting[[:space:]]*=[[:space:]]*${mysql_settings[$setting]}" "$mysql_cnf"; then
         changes_needed=true
