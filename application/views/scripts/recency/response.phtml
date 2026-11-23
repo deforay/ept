@@ -187,7 +187,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td>
 								<input type="text" name="sampleRehydrationDate" id="sampleRehydrationDate"
 									style="width:180px;float:left;"
-									value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"
+									value="<?= $this->escape((string) $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"] ?? null)); ?>"
 									class="isRequired datepicker form-control" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
@@ -240,7 +240,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td>
 								<input type="text" id="recencyAssayExpiryDate" name="recencyAssayExpiryDate"
 									style="width:180px;float:left;" maxlength="11"
-									value="<?php echo $this->dateFormat($this->shipment['attributes']['recency_assay_expiry_date']); ?>"
+									value="<?= $this->escape((string) $this->dateFormat($this->shipment['attributes']['recency_assay_expiry_date'] ?? null)); ?>"
 									class="datepicker form-control" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
@@ -370,6 +370,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							$possibleResults[$pr['id']] = $pr['response'];
 						}
 					}
+					// Equal column widths: five columns, or six with the reference result.
+					$w = $adminAccess ? 16 : 20;
 					?>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<thead class="vlResultSection"

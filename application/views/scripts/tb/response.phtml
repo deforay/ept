@@ -308,7 +308,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							</td>
 							<td style="width:30%;">
 								<input type="text" id="assayLot" name="assayLot" style="float:left;"
-									value="<?php echo (isset($this->shipment['attributes']['assay_lot_number']) && !empty($this->shipment['attributes']['assay_lot_number'])) ? $this->shipment['attributes']['assay_lot_number'] : ""; ?>"
+									value="<?= $this->escape((string) ($this->shipment['attributes']['assay_lot_number'] ?? '')); ?>"
 									class="form-control vlResultValues isRequired"
 									placeholder="<?= $this->htmlTranslate("Enter Cartridge/Assay lot"); ?>" title="<?= $this->htmlTranslate("Please enter the Assay Lot number"); ?>" />
 							</td>
@@ -335,7 +335,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label>
 						</td>
 						<td style="width:30%;">
-						<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="<?= $this->htmlTranslate("Instrument SN"); ?>" title="<?= $this->htmlTranslate("Please enter Instrument Serial Number"); ?>" />
+						<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?= $this->escape((string) ($this->shipment['attributes']['instrument_sn'] ?? '')); ?>" class="form-control" placeholder="<?= $this->htmlTranslate("Instrument SN"); ?>" title="<?= $this->htmlTranslate("Please enter Instrument Serial Number"); ?>" />
 						</td>
 						</tr> -->
 						<?php
