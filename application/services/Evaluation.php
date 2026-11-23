@@ -3827,6 +3827,13 @@ class Application_Service_Evaluation
                     $extAssayResult[8]['belowScore'] ??= 0;
                     $extAssayResult[8]['specimen'][$val['sample_label']]['correctRes'] ??= 0;
                     if ($edata['participantCount'] <= 5) {
+                        // Key 8 is the "Other" extraction assay. When labs reported it, the
+                        // bucket already holds that assay's name as a string, and appending
+                        // to a string is fatal. Turn it into a list, keeping its own count.
+                        if (isset($extAssayResult[8]['eidAssay']) && !is_array($extAssayResult[8]['eidAssay'])) {
+                            $extAssayResult[8]['eidAssayWithCount'] = [$extAssayResult[8]['eidAssay'] . '(n=' . $extAssayResult[8]['participantCount'] . ')'];
+                            $extAssayResult[8]['eidAssay'] = [$extAssayResult[8]['eidAssay']];
+                        }
                         $extAssayResult[8]['eidAssay'][] = $edata['eidAssay'];
                         $extAssayResult[8]['eidAssayWithCount'][] = $edata['eidAssay'] . '(n=' . $edata['participantCount'] . ')';
                         $extAssayResult[8]['participantCount'] += $edata['participantCount'];
