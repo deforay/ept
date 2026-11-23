@@ -1317,7 +1317,7 @@ use_sury_repo() {
         return 0
     fi
 
-    code=$(curl -sSLI -o /dev/null --max-time 20 --retry 3 --retry-delay 2 -w '%{http_code}' \
+    code=$(curl --proto '=https' --proto-redir '=https' -sSLI -o /dev/null --max-time 20 --retry 3 --retry-delay 2 -w '%{http_code}' \
         "https://packages.sury.org/${component}/dists/${codename}/Release" 2>/dev/null) || true
     if [[ "$code" == "404" ]]; then
         print warning "packages.sury.org/${component} has no build for '${codename}'; using distro packages."
@@ -1325,7 +1325,7 @@ use_sury_repo() {
     fi
 
     if [[ ! -s "$keyring" ]]; then
-        curl -fsSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb &&
+        curl --proto '=https' --proto-redir '=https' -fsSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb &&
             dpkg -i /tmp/debsuryorg-archive-keyring.deb >/dev/null || {
             print error "Could not install the packages.sury.org signing key."
             return 1
