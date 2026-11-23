@@ -349,10 +349,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $ptValidated = ((int) $aRow['pt_provider_validated'] === 1) ? 'Yes' : 'No';
             }
             $createdDate = explode(' ', $aRow['Created_On']);
-            $row[] = ucwords($aRow['TestKit_Name']);
-            $row[] = $aRow['scheme_name'];
-            $row[] = $aRow['TestKit_Manufacturer'];
-            $row[] = $aRow['moh_approved'];
+            $row[] = self::escapeCell(ucwords($aRow['TestKit_Name']));
+            $row[] = self::escapeCell($aRow['scheme_name']);
+            $row[] = self::escapeCell($aRow['TestKit_Manufacturer']);
+            $row[] = self::escapeCell($aRow['moh_approved']);
             $row[] = $ptValidated;
             $row[] = $approved;
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
@@ -576,5 +576,14 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             return [];
         }
         return array_values(array_filter(array_map('trim', explode(',', $csv)), static fn ($v) => $v !== ''));
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

@@ -289,6 +289,15 @@ class Application_Service_Evaluation
         ], "shipment_id = {$shipmentId}");
     }
 
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
+    }
+
     public function getAllDistributions($parameters)
     {
         $translator = Zend_Registry::get('translate');
@@ -416,8 +425,8 @@ class Application_Service_Evaluation
             $row = [];
             $row['DT_RowId'] = 'dist' . $aRow['distribution_id'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['shipments'];
+            $row[] = self::escapeCell($aRow['distribution_code']);
+            $row[] = self::escapeCell($aRow['shipments']);
             $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
             $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\'' . ($aRow['distribution_id']) . '\', \'' . $aRow['is_user_configured'] . '\')"><span><i class="icon-search"></i> View</span></a>';
 
@@ -5051,7 +5060,7 @@ class Application_Service_Evaluation
             $row[] = htmlspecialchars($aRow['district'] ?? '');
             $row[] = number_format((float) ($aRow['shipment_score'] ?? 0), 2);
             $row[] = number_format((float) ($aRow['documentation_score'] ?? 0), 2);
-            $row[] = $resultText;
+            $row[] = self::escapeCell($resultText);
             $row[] = $responseStatus;
             $row[] = !empty($aRow['shipment_test_report_date']) && $aRow['shipment_test_report_date'] != '0000-00-00 00:00:00'
                 ? date('d-M-Y', strtotime($aRow['shipment_test_report_date']))

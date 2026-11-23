@@ -497,6 +497,15 @@ class Application_Service_ApiServices
         return $response;
     }
 
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
+    }
+
     public function fetchAllApiSyncDetailsByGrid($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
@@ -640,11 +649,11 @@ class Application_Service_ApiServices
         ];
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['transaction_id'];
-            $row[] = $aRow['number_of_records'];
-            $row[] = strtoupper(str_replace('-', ' ', (string) $aRow['request_type']));
-            $row[] = strtoupper((string) $aRow['test_type']);
-            $row[] = $aRow['api_url'];
+            $row[] = self::escapeCell($aRow['transaction_id']);
+            $row[] = self::escapeCell($aRow['number_of_records']);
+            $row[] = self::escapeCell(strtoupper(str_replace('-', ' ', (string) $aRow['request_type'])));
+            $row[] = self::escapeCell(strtoupper((string) $aRow['test_type']));
+            $row[] = self::escapeCell($aRow['api_url']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['requested_on'], true);
             $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="margin-right: 2px;" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Result') . '" onclick="layoutModal(\'/admin/api-history/api-params?id=' . base64_encode((string) $aRow['api_track_id']) . '\',1200,720);"> ' . Pt_Commons_TranslateUtility::htmlTranslate('Show Params') . '</a>';
 

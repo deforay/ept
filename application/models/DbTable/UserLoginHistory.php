@@ -273,14 +273,14 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['login_id'];
+            $row[] = self::escapeCell($aRow['login_id']);
             $row[] = date('Y-m-d H:i:s', strtotime($aRow['login_attempted_datetime']));
             $row[] = $this->getStatusBadge($aRow['login_status']);
-            $row[] = $aRow['ip_address'];
-            $row[] = $aRow['browser'];
-            $row[] = $aRow['operating_system'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-            $row[] = $aRow['primary_email'];
+            $row[] = self::escapeCell($aRow['ip_address']);
+            $row[] = self::escapeCell($aRow['browser']);
+            $row[] = self::escapeCell($aRow['operating_system']);
+            $row[] = self::escapeCell($aRow['first_name'] . ' ' . $aRow['last_name']);
+            $row[] = self::escapeCell($aRow['primary_email']);
             $row[] = '<a href="/admin/login-history/view/' . $aRow['history_id'] . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye"></i> View Details</a>';
 
             $output['aaData'][] = $row;
@@ -498,7 +498,16 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             case 'locked':
                 return '<span class="badge badge-warning">Banned/Locked</span>';
             default:
-                return '<span class="badge badge-secondary">' . ucfirst($status) . '</span>';
+                return '<span class="badge badge-secondary">' . self::escapeCell(ucfirst((string) $status)) . '</span>';
         }
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

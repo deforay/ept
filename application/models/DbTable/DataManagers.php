@@ -538,9 +538,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if (!$compact) {
                 $row[] = htmlspecialchars((string) $aRow['last_name'], ENT_QUOTES, 'UTF-8', false);
                 if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
-                    $row[] = $aRow['institute'];
+                    $row[] = self::escapeCell($aRow['institute']);
                 }
-                $row[] = $aRow['mobile'];
+                $row[] = self::escapeCell($aRow['mobile']);
                 // Escaped without re-encoding, since some values are stored already escaped
                 $emailCell = htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8', false);
                 $emailStatus = $aRow['primary_email_status'] ?? '';
@@ -552,9 +552,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
                 $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
                 if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-                    $row[] = ucwords((string) ($aRow['iso_name'] ?? ''));
-                    $row[] = ucwords((string) ($aRow['state'] ?? ''));
-                    $row[] = ucwords((string) ($aRow['district'] ?? ''));
+                    $row[] = self::escapeCell(ucwords((string) ($aRow['iso_name'] ?? '')));
+                    $row[] = self::escapeCell(ucwords((string) ($aRow['state'] ?? '')));
+                    $row[] = self::escapeCell(ucwords((string) ($aRow['district'] ?? '')));
                 }
                 /* Mapped Participants column — compact toggle; the list loads on demand */
                 if ($pCount === 0) {
@@ -2488,5 +2488,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
         }
         return [];
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

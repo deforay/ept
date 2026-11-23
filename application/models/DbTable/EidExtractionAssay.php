@@ -123,7 +123,7 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
         foreach ($rResult as $aRow) {
             $row = [];
             $fromSource = 'extraction';
-            $row[] = ucwords($aRow['name']);
+            $row[] = self::escapeCell(ucwords($aRow['name']));
             $row[] = '<select onchange="changeNameStatus(\'' . $fromSource . '\',' . $aRow['id'] . ',this.value);"><option value="active" ' . ($aRow['status'] == 'active' ? 'selected=selected' : '') . '>Active</option><option value="inactive" ' . ($aRow['status'] == 'inactive' ? 'selected=selected' : '') . '>Inactive</option></select>';
 
             $output['aaData'][] = $row;
@@ -140,5 +140,14 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
     public function updateEidExtractionNameStatus($params)
     {
         return $this->update(['status' => $params['switchStatus']], ['id = ?' => $params['id']]);
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

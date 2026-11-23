@@ -127,8 +127,8 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = ucwords($aRow['name']);
-            $row[] = ucwords($aRow['short_name']);
+            $row[] = self::escapeCell(ucwords($aRow['name']));
+            $row[] = self::escapeCell(ucwords($aRow['short_name']));
             $row[] = '<a href="/admin/vl-assay/edit/id/' . $aRow['id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
@@ -155,5 +155,14 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
             $this->update($data, ['id = ?' => $id]);
         }
         return $id;
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

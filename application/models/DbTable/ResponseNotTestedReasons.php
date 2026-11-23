@@ -158,8 +158,8 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
                 $chips[] = '<span class="scheme-chip" title="' . htmlspecialchars($schemeList[$r] ?? $r, ENT_QUOTES) . '">'
                     . htmlspecialchars($shortLabels[$r] ?? $r, ENT_QUOTES) . '</span>';
             }
-            $row[] = ucwords($aRow['ntr_reason']);
-            $row[] = $aRow['reason_code'];
+            $row[] = self::escapeCell(ucwords($aRow['ntr_reason']));
+            $row[] = self::escapeCell($aRow['reason_code']);
             $row[] = $chips ? '<div class="scheme-chips">' . implode('', $chips) . '</div>' : '';
             $row[] = ucwords($aRow['collect_panel_receipt_date']);
             $row[] = ucwords($aRow['ntr_status']);
@@ -195,5 +195,14 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
     public function fetchNotTestedReasonById($id)
     {
         return $this->fetchRow($this->select()->where('ntr_id=?', $id));
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

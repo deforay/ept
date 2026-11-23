@@ -235,7 +235,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = $aRow['SHIP_YEAR'];
-            $row[] = ($aRow['scheme_name']);
+            $row[] = self::escapeCell($aRow['scheme_name']);
             $row[] = $aRow['TOTALSHIPMEN'];
             $row[] = $aRow['ONTIME'];
             $row[] = $aRow['TOTALSHIPMEN'] - $aRow['reported_count'];
@@ -1122,8 +1122,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = strtoupper($aRow['scheme_name']);
-            $row[] = $aRow['shipment_code'];
+            $row[] = self::escapeCell(strtoupper($aRow['scheme_name']));
+            $row[] = self::escapeCell($aRow['shipment_code']);
 
             $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
             if (file_exists($filePath) && $aRow['status'] == 'finalized') {
@@ -1196,7 +1196,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         title="' . htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') . '"';
                 }
 
-                $report = '<a href="' . $downloadFilePath . '" style="text-decoration:underline;"'
+                $report = '<a href="' . self::escapeCell($downloadFilePath) . '" style="text-decoration:underline;"'
                     . $tooltipAttr .
                     ' target="_blank">Report</a>';
             }
@@ -1422,11 +1422,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $displayResponseStatus = $this->translator->_('Not Responded');
             }
 
-            $row[] = strtoupper($aRow['scheme_name']);
-            $row[] = $aRow['shipment_code'];
+            $row[] = self::escapeCell(strtoupper($aRow['scheme_name']));
+            $row[] = self::escapeCell($aRow['shipment_code']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['first_name'] . ' ' . $aRow['last_name']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             $row[] = $displayResponseStatus;
             $row[] = $displayResult;
@@ -1519,7 +1519,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             // }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '')) {
-                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Corrective Actions') . '</a>';
+                $corrective = '<a href="/uploads/corrective-action-files/' . self::escapeCell($aRow['corrective_action_file']) . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Corrective Actions') . '</a>';
             }
             if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['response_status'] == 'responded' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Feedback') . '</a>';
@@ -1663,14 +1663,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $corrective = '';
             $row = [];
-            $row[] = $aRow['shipment_code'];
+            $row[] = self::escapeCell($aRow['shipment_code']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = ($aRow['scheme_name']);
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+            $row[] = self::escapeCell($aRow['scheme_name']);
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['first_name'] . ' ' . $aRow['last_name']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             if (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '') {
-                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');" style="text-decoration : underline;" target="_BLANK" download>Corrective Action</a>';
+                $corrective = '<a href="/uploads/corrective-action-files/' . self::escapeCell($aRow['corrective_action_file']) . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');" style="text-decoration : underline;" target="_BLANK" download>Corrective Action</a>';
             }
             $row[] = $corrective;
 
@@ -1832,8 +1832,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = (!empty($aRow['scheme_name'])) ? ($aRow['scheme_name']) : null;
-            $row[] = $aRow['shipment_code'];
+            $row[] = (!empty($aRow['scheme_name'])) ? self::escapeCell($aRow['scheme_name']) : null;
+            $row[] = self::escapeCell($aRow['shipment_code']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf') && $aRow['status'] == 'finalized') {
                 $absPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
@@ -2035,9 +2035,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['SCHEME'];
-            $row[] = $aRow['distribution_code'];
+            $row[] = self::escapeCell($aRow['shipment_code']);
+            $row[] = self::escapeCell($aRow['SCHEME']);
+            $row[] = self::escapeCell($aRow['distribution_code']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             if ($aRow['scheme_id'] == 'tb') {
@@ -2173,9 +2173,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row = [];
             $row['DT_RowId'] = 'dist' . $aRow['distribution_id'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['shipments'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = self::escapeCell($aRow['distribution_code']);
+            $row[] = self::escapeCell($aRow['shipments']);
+            $row[] = self::escapeCell(ucwords($aRow['status']));
             $sendReportMail = '<a class="btn btn-warning btn-xs send-report-btn-' . ($aRow['shipment_id']) . '" href="javascript:void(0);" onclick="sendReportsInMail(\'' . ($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i>&nbsp; ' . Pt_Commons_TranslateUtility::htmlTranslate('Send Reports via Email') . '</span></a>';
             $view = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')" style=" margin-left: 10px; "><span><i class="icon-search"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('View') . '</span></a>';
             if (isset($privileges) && !empty($privileges) && in_array('replace-finalized-summary-report', $privileges)) {
@@ -2287,9 +2287,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+            $row[] = self::escapeCell($aRow['shipment_code']);
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['first_name'] . ' ' . $aRow['last_name']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             $row[] = $aRow['shipment_score'];
             $output['aaData'][] = $row;
@@ -5490,5 +5490,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("spm.report_generated = 'yes'")
             ->where("COALESCE(spm.report_download_metadata->>'$.report_downloaded', 'no') = 'no'");
         return $this->getAdapter()->fetchRow($sQuery);
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }
