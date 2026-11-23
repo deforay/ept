@@ -775,13 +775,31 @@ if [ -z "$mysql_root_password" ]; then
     print success "MySQL root password saved to $(mysql_root_cnf_path)."
 fi
 
+# Write <key> = "<value>" into an INI file, so any password character survives.
+# sed is unsafe here: its replacement treats & and \ as special. Unquoted INI values
+# read ! ( ) ^ & | ~ as operators. Inside double quotes, " \ and $ are escaped.
+ini_write_value() {
+    INI_FILE="$1" INI_KEY="$2" INI_VALUE="$3" php -r '
+        $file = getenv("INI_FILE");
+        $key = getenv("INI_KEY");
+        $line = $key . " = \"" . addcslashes((string) getenv("INI_VALUE"), "\"\\\$") . "\"";
+        $text = file_get_contents($file);
+        $text = preg_replace_callback("/^" . preg_quote($key, "/") . "\\s*=.*$/m", fn () => $line, $text, -1, $count);
+        if ($count === 0) {
+            fwrite(STDERR, "Key " . $key . " not found in " . $file . PHP_EOL);
+            exit(1);
+        }
+        file_put_contents($file, $text);
+    '
+}
+
 # Update application.ini with database credentials
 app_ini="${config_dir}/application.ini"
 if [ -f "$app_ini" ]; then
     # Update database settings
     sed -i "s|^resources.db.params.host\s*=.*|resources.db.params.host = 127.0.0.1|" "$app_ini"
     sed -i "s|^resources.db.params.username\s*=.*|resources.db.params.username = root|" "$app_ini"
-    sed -i "s|^resources.db.params.password\s*=.*|resources.db.params.password = ${mysql_root_password}|" "$app_ini"
+    ini_write_value "$app_ini" "resources.db.params.password" "$mysql_root_password"
     sed -i "s|^resources.db.params.dbname\s*=.*|resources.db.params.dbname = ${ept_db_name}|" "$app_ini"
 
     # Update domain

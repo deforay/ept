@@ -1008,7 +1008,7 @@ ini_get_value() {
         for ($i = 1; $i < $len; $i++) {
           $ch = $v[$i];
           if ($escaped) { $out .= $ch; $escaped = false; continue; }
-          if ($ch === "\\\\") { $escaped = true; continue; }
+          if ($q === chr(34) && $ch === chr(92)) { $escaped = true; continue; }
           if ($ch === $q) { $v = $out; break; }
           $out .= $ch;
         }
