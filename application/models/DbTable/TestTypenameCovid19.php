@@ -225,10 +225,10 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 $approved = 'Yes';
             }
             $createdDate = explode(' ', $aRow['created_on']);
-            $row[] = ucwords($aRow['test_type_name']);
-            $row[] = $aRow['scheme_name'];
-            $row[] = $aRow['test_type_manufacturer'];
-            $row[] = $aRow['test_type_approval_agency'];
+            $row[] = self::escapeCell(ucwords($aRow['test_type_name']));
+            $row[] = self::escapeCell($aRow['scheme_name']);
+            $row[] = self::escapeCell($aRow['test_type_manufacturer']);
+            $row[] = self::escapeCell($aRow['test_type_approval_agency']);
             $row[] = $approved;
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
             $row[] = '<a href="/admin/test-platform/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
@@ -318,5 +318,14 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 }
             }
         }
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

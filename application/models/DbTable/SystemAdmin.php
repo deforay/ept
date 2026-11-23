@@ -114,10 +114,10 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['first_name'];
-            $row[] = $aRow['last_name'];
-            $row[] = $aRow['primary_email'];
-            $row[] = $aRow['phone'];
+            $row[] = self::escapeCell($aRow['first_name']);
+            $row[] = self::escapeCell($aRow['last_name']);
+            $row[] = self::escapeCell($aRow['primary_email']);
+            $row[] = self::escapeCell($aRow['phone']);
             $row[] = '<a href="/admin/system-admins/edit/id/' . $aRow['admin_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
@@ -365,5 +365,14 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function fetchSystemAdminByMail($mail, $password)
     {
         return $this->fetchRow($this->select()->where('primary_email = ?', $mail));
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

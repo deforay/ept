@@ -139,10 +139,10 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['scheme_name'];
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['first_name'] . ' ' . $aRow['last_name']);
+            $row[] = self::escapeCell($aRow['iso_name']);
+            $row[] = self::escapeCell($aRow['scheme_name']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['first_enrolled_on']);
             // Lists: a button that opens the participant's lists in a row underneath.
             $lists = [];
@@ -861,5 +861,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $removed = count($plan['remove']);
         $this->auditMembership("Bulk imported enrollment list {$listName} for scheme {$schemeId}: {$added} added, {$removed} removed", $schemeId, $listName, $auditBefore);
         return ['added' => $added, 'removed' => $removed];
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

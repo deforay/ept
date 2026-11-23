@@ -22,6 +22,12 @@ class Application_Service_Reports
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
+    // Grid cells are rendered as HTML, so database text must be escaped.
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
+    }
+
     /**
      * Rows for the Shipments report grid (reports/shipments), as DataTables JSON.
      *
@@ -770,9 +776,12 @@ class Application_Service_Reports
 
             $row = [];
             $row['DT_RowId'] = 'shipment' . $aRow['shipment_id'];
-            $row[] = $aRow['scheme_name'];
+            $row[] = self::escapeCell($aRow['scheme_name']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . '"),regionDetails("' . $aRow['scheme_name'] . '","' . Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']) . '","' . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . '</a>';
+            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . (int) $aRow['shipment_id'] . '"),regionDetails('
+                . self::escapeCell(json_encode((string) $aRow['scheme_name'])) . ','
+                . self::escapeCell(json_encode((string) Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']))) . ','
+                . self::escapeCell(json_encode((string) $aRow['shipment_code'])) . ")'>" . self::escapeCell($aRow['shipment_code']) . '</a>';
             $row[] = $aRow['total_shipped'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
@@ -997,10 +1006,10 @@ class Application_Service_Reports
             if ($aRow['mandatory'] == 0) {
                 $exclamation = "&nbsp;&nbsp;&nbsp;<i class='icon-exclamation' style='color:red;'></i>";
             }
-            $row[] = $aRow['scheme_name'];
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['sample_label'] . $exclamation;
-            $row[] = $aRow['response'];
+            $row[] = self::escapeCell($aRow['scheme_name']);
+            $row[] = self::escapeCell($aRow['shipment_code']);
+            $row[] = self::escapeCell($aRow['sample_label']) . $exclamation;
+            $row[] = self::escapeCell($aRow['response']);
             $row[] = $aRow['positive_responses'];
             $row[] = $aRow['negative_responses'];
             $row[] = $aRow['invalid_responses'];

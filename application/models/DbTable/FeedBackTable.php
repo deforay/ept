@@ -569,7 +569,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $edit = '';
             $clone = '';
             foreach ($aColumns as $heading) {
-                $row[] = ucwords($aRow[$heading]);
+                $row[] = self::escapeCell(ucwords((string) $aRow[$heading]));
             }
             $file = 'edit';
             $field = 'question_id';
@@ -587,5 +587,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

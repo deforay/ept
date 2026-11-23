@@ -558,7 +558,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell($aRow['iso_name']);
             $row[] = self::escapeCell($aRow['state']);
             $row[] = self::escapeCell($aRow['district']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             $row[] = self::escapeCell(ucwords($aRow['status']));
 
             /* Data Managers column — compact button only. The actual DM list (which can
@@ -613,6 +613,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 
+    /**
+     * Several addresses can share the email field, joined by commas or semicolons
+     * without spaces. One per line lets the column wrap instead of widening the table.
+     */
+    private static function emailCell($value): string
+    {
+        $emails = preg_split('/[\s,;]+/', trim((string) $value), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        return implode('<br>', array_map(self::escapeCell(...), $emails));
+    }
+
     private function addCompactParticipantRow(array &$row, array $aRow, $translator, array $dmCounts, array $inactiveDmCounts, array $shipmentCounts, array $dmLabels): void
     {
         $participantId = (int) $aRow['participant_id'];
@@ -634,10 +644,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $places = array_unique(array_filter([trim((string) $aRow['state']), trim((string) $aRow['district'])], fn ($v) => $v !== '' && strtolower($v) !== $country));
         $row[] = $esc($aRow['iso_name']) . ($places ? '<span class="list-cell-sub">' . $esc(implode(', ', $places)) . '</span>' : '');
 
-        // Several addresses can share the field, joined by commas or semicolons without
-        // spaces. One per line lets the column wrap instead of widening the table.
-        $emails = preg_split('/[\s,;]+/', trim((string) $aRow['email']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $row[] = implode('<br>', array_map($esc, $emails));
+        $row[] = self::emailCell($aRow['email']);
 
         $dmCount = $dmCounts[$participantId] ?? 0;
         $inactiveDmCount = $inactiveDmCounts[$participantId] ?? 0;
@@ -1123,7 +1130,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell(ucwords($aRow['first_name'] . ' ' . $aRow['last_name']));
             $row[] = self::escapeCell(ucwords($aRow['iso_name']));
             $row[] = self::escapeCell($aRow['mobile']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             $row[] = self::escapeCell(ucwords($aRow['RESPONSE']));
 
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
@@ -1245,7 +1252,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell(ucwords($aRow['first_name'] . ' ' . $aRow['last_name']));
             $row[] = self::escapeCell(ucwords($aRow['iso_name']));
             $row[] = self::escapeCell($aRow['mobile']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             // $row[] = ucwords($aRow['status']);
             $row[] = 'Unenrolled';
 
@@ -1551,7 +1558,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell($aRow['mobile']);
             $row[] = self::escapeCell($aRow['phone']);
             $row[] = self::escapeCell($aRow['affiliation']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
@@ -1676,7 +1683,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell($aRow['mobile']);
             $row[] = self::escapeCell($aRow['phone']);
             $row[] = self::escapeCell($aRow['affiliation']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
@@ -1800,7 +1807,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = self::escapeCell($aRow['mobile']);
             $row[] = self::escapeCell($aRow['phone']);
             $row[] = self::escapeCell($aRow['affiliation']);
-            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::emailCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(this, \'' . base64_encode($aRow['participant_id']) . '\',\'' . base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
             $output['aaData'][] = $row;
         }

@@ -125,11 +125,11 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $shipmentCounts = $this->getShipmentStateCounts($aRow['distribution_id']);
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
-            $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>');
+            $row[] = ($aRow['scheme_name'] ? self::escapeCell($aRow['scheme_name']) : '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>');
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = '<a href="/admin/shipment/index/searchString/' . $aRow['distribution_code'] . '">' . $aRow['distribution_code'] . '</a>';
-            $row[] = $aRow['shipments'] ?: '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>';
-            $row[] = $this->getDisplayStatus($aRow['distribution_id'], $aRow['status'], $shipmentCounts);
+            $row[] = '<a href="/admin/shipment/index/searchString/' . self::escapeCell($aRow['distribution_code']) . '">' . self::escapeCell($aRow['distribution_code']) . '</a>';
+            $row[] = $aRow['shipments'] ? self::escapeCell($aRow['shipments']) : '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>';
+            $row[] = self::escapeCell($this->getDisplayStatus($aRow['distribution_id'], $aRow['status'], $shipmentCounts));
             $edit = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</span></a>';
             // A survey is cancelled when its status says so, or every shipment under it is cancelled.
             $isSurveyCancelled = (isset($aRow['status']) && $aRow['status'] == 'cancelled')
@@ -161,14 +161,18 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             // Survey-level cancel: only offered when there are active shipments and NONE is
             // finalized (a finalized shipment can never be cancelled, so neither can its survey).
             if (!$isSurveyCancelled && $shipmentCounts['active'] > 0 && $shipmentCounts['finalized'] === 0) {
-                $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
+                // JSON-encode before attribute-escaping: plain attribute escaping is undone by the
+                // browser before the onclick runs, so a quote in the code would end the JS string.
+                $codeAttr = htmlspecialchars(json_encode((string) $aRow['distribution_code']), ENT_QUOTES);
                 $jsCodes = htmlspecialchars(json_encode(array_values($this->getCancellableShipmentCodes($aRow['distribution_id']))), ENT_QUOTES);
-                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel PT Survey') . '" onclick="cancelDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\', ' . $jsCodes . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
+                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel PT Survey') . '" onclick="cancelDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', ' . $codeAttr . ', ' . $jsCodes . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
             }
             // Delete only allowed when there are no shipments under this PT survey.
             if (empty($aRow['shipments']) && (!isset($aRow['status']) || $aRow['status'] !== 'shipped')) {
-                $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
-                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="confirmDeleteDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\')"><span><i class="icon-trash"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Delete') . '</span></a>';
+                // JSON-encode before attribute-escaping: plain attribute escaping is undone by the
+                // browser before the onclick runs, so a quote in the code would end the JS string.
+                $codeAttr = htmlspecialchars(json_encode((string) $aRow['distribution_code']), ENT_QUOTES);
+                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="confirmDeleteDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', ' . $codeAttr . ')"><span><i class="icon-trash"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Delete') . '</span></a>';
             }
 
             $actionHtml = '';
@@ -603,9 +607,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row = [];
             $row['DT_RowId'] = 'dist' . $aRow['distribution_id'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['shipments'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = self::escapeCell($aRow['distribution_code']);
+            $row[] = self::escapeCell($aRow['shipments']);
+            $row[] = self::escapeCell(ucwords($aRow['status']));
             $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')"><span><i class="icon-search"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('View') . '</span></a>';
 
             $output['aaData'][] = $row;
@@ -616,5 +620,14 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     public function getAllDistributionStatusDetails()
     {
         return $this->fetchAll($this->select());
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

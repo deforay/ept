@@ -1,13 +1,12 @@
 <style>
-    /* Long or comma-separated addresses were forcing the Email column wide
-       enough to squash everything else; break them within the cell instead. */
+    /* Each address is on its own line. An address too long for the column
+       breaks inside the cell, so it doesn't push the other columns aside. */
     #respondedTable td.email-cell,
     #notRespondedTable td.email-cell,
     #notEnrolledTable td.email-cell {
         min-width: 180px;
         max-width: 220px;
         overflow-wrap: anywhere;
-        word-break: break-all;
     }
 </style>
 <div class="data-list">

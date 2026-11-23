@@ -223,9 +223,9 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $participantName = ucwords($firstName . ' ' . $lastName);
 
             $row = [];
-            $row[] = $participantName;
-            $row[] = ucwords($aRow['subject']);
-            $row[] = ucwords($aRow['message']);
+            $row[] = self::escapeCell($participantName);
+            $row[] = self::escapeCell(ucwords($aRow['subject']));
+            $row[] = self::escapeCell(ucwords($aRow['message']));
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['created_at']);
             $row[] = '<a class="btn btn-primary btn-xs" href="/admin/participant-messages/view/d8s5_8d/' . base64_encode($aRow['id']) . '"><span><i class="fa fa-eye"></i> view</span></a>';
             $output['aaData'][] = $row;
@@ -248,5 +248,14 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         }
         exit; // Ensure no additional output is sent
 
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

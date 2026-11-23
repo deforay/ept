@@ -164,8 +164,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = ucwords($aRow['scheme_name']);
-            $row[] = $aRow['scheme_id'];
+            $row[] = self::escapeCell(ucwords($aRow['scheme_name']));
+            $row[] = self::escapeCell($aRow['scheme_id']);
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/custom-test/edit/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>'
                 . '<a href="/admin/custom-test/clone/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Clone') . '</a>'
@@ -465,8 +465,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = ucwords($aRow['scheme_name']);
-            $row[] = strtoupper($aRow['scheme_id']);
+            $row[] = self::escapeCell(ucwords($aRow['scheme_name']));
+            $row[] = self::escapeCell(strtoupper($aRow['scheme_id']));
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/schemes/manage-test-results/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Test Results') . '</a>';
             $output['aaData'][] = $row;
@@ -797,5 +797,14 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         // Stored values are already r_possibleresult ids.
         return array_values(array_filter(array_map('intval', array_keys($values))));
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }

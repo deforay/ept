@@ -196,10 +196,10 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $sectionNames[$aRow['section']] ?? ucwords($aRow['section']);
-            $row[] = $aRow['link'];
-            $row[] = $aRow['text'];
-            $row[] = $aRow['icon'];
+            $row[] = $sectionNames[$aRow['section']] ?? self::escapeCell(ucwords($aRow['section']));
+            $row[] = self::escapeCell($aRow['link']);
+            $row[] = self::escapeCell($aRow['text']);
+            $row[] = self::escapeCell($aRow['icon']);
             $row[] = $aRow['display_order'];
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/home-section-links/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
@@ -247,5 +247,14 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         // Execute the query and fetch all rows as an array
         $results = $this->getAdapter()->query($sql, ['section' => $section, 'status' => $status])->fetchAll();
         return  !empty($results) && isset($results[0]['max_display_order']) ? (int)$results[0]['max_display_order'] : 0;
+    }
+
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 }
