@@ -485,7 +485,7 @@ if (!empty($resultArray['shipment'])) {
         $approveTxt = $evalRow['report_approver'] ?? '';
         $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . ($evalRow['approval_date'] ?? date('d M Y')) . '</small></span><br>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['approval_date'] ?? $evalRow['date_finalised'] ?? date('Y-m-d')) . '</small></span><br>';
         }
 
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';

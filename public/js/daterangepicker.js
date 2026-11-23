@@ -1630,7 +1630,10 @@
     }
 
     // When any daterangepicker is shown, wire up the observer for that instance
+    // jQuery also runs this for a plain 'show' event (e.g. every Bootstrap modal), which
+    // carries no picker -- skip those instead of throwing and breaking modal.show().
     $(document).on('show.daterangepicker', function (e, picker) {
+        if (!picker || !picker.container) return;
         attachChangePulse(picker);
     });
 })(jQuery);

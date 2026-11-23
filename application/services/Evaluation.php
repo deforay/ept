@@ -4207,6 +4207,81 @@ class Application_Service_Evaluation
         }
     }
 
+    /**
+     * Correct the approval date and approver on a shipment that is already finalized.
+     *
+     * Results are often approved at a meeting weeks after finalizing, so the values entered
+     * at finalize can be wrong. This saves only those two fields and does not finalize
+     * again. As in recordResultsApproval, a blank field leaves the stored value as it is.
+     *
+     * @param array<string, mixed> $params resultsApprovedOn, resultsApprovedBy
+     * @return array{status: string, message: string}
+     */
+    public function updateResultsApproval(int $shipmentId, array $params): array
+    {
+        $translator = Zend_Registry::get('translate');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $existing = $db->fetchRow(
+            $db->select()
+                ->from('shipment', ['shipment_code', 'status', 'results_approved_on', 'results_approved_by'])
+                ->where('shipment_id = ?', $shipmentId)
+        );
+        if (!$existing || ($existing['status'] ?? '') !== 'finalized') {
+            return ['status' => 'fail', 'message' => $translator->_('Only a finalized shipment can have its approval corrected.')];
+        }
+
+        $approvedOn = trim((string) ($params['resultsApprovedOn'] ?? ''));
+        $approvedBy = mb_substr(trim((string) ($params['resultsApprovedBy'] ?? '')), 0, 256);
+        $oldOn = (string) ($existing['results_approved_on'] ?? '');
+        $oldBy = (string) ($existing['results_approved_by'] ?? '');
+        $data = [];
+
+        if ($approvedOn !== '') {
+            $isoOn = Pt_Commons_DateUtility::isoDateFormat($approvedOn);
+            if (empty($isoOn)) {
+                return ['status' => 'fail', 'message' => $translator->_('Please enter a valid Date of Approval.')];
+            }
+            // The column is a DATETIME. Keep the stored time when the day is the same.
+            if (substr($oldOn, 0, 10) !== $isoOn) {
+                $data['results_approved_on'] = $isoOn;
+            }
+        }
+        if ($approvedBy !== '' && $approvedBy !== $oldBy) {
+            $data['results_approved_by'] = $approvedBy;
+        }
+
+        if ($data === []) {
+            return ['status' => 'success', 'message' => $translator->_('The approval is unchanged.')];
+        }
+
+        $db->update('shipment', $data, ['shipment_id = ?' => $shipmentId]);
+
+        $code = (string) $existing['shipment_code'];
+        $before = ['Date of Approval' => $oldOn, 'Approved By' => $oldBy];
+        $after = [
+            'Date of Approval' => $data['results_approved_on'] ?? $oldOn,
+            'Approved By' => $data['results_approved_by'] ?? $oldBy,
+        ];
+        try {
+            (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
+                'Corrected results approval for finalized shipment - ' . $code,
+                'shipment',
+                null,
+                [
+                    'entity' => ['type' => 'shipment', 'id' => $shipmentId, 'label' => $code],
+                    'changes' => Application_Model_DbTable_AuditLog::changes($before, $after),
+                    'important' => true,
+                    'reason' => 'Reports already sent keep the old approval until they are generated again',
+                ]
+            );
+        } catch (Throwable $e) {
+            // The audit log must never undo a correction that was saved.
+            Pt_Commons_LoggerUtility::logWarning('updateResultsApproval audit failed: ' . $e->getMessage());
+        }
+
+        return ['status' => 'success', 'message' => $translator->_('Approval saved.')];
+    }
+
     public function queueReportsGeneration($params)
     {
         $shipmentId = base64_decode($params['sid']);

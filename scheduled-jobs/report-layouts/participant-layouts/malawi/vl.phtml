@@ -650,7 +650,7 @@ if (!empty($resultArray['shipment'])) {
                 $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
             }
 
-            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_DateUtility::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['approval_date'] ?? $evalRow['date_finalised'] ?? date('Y-m-d')) . '</small></span>';
             $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
             $eodReportText = "End of report";
             if ($evalRow['report_type'] == 'finalized') {
