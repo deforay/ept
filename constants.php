@@ -9,8 +9,8 @@ const APP_VERSION = '7.7.5';
 // 0ubuntu1.6 (CVE-2026-109618_109619.patch), so that build passes. PHP_VERSION reports only
 // "8.5.4", so read the installed package version from the first line of its changelog,
 // for example "php8.5 (8.5.4-0ubuntu1.6) resolute-security; urgency=medium".
-$isPatchedUbuntuPhp = false;
 if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512) {
+    $isPatchedUbuntuPhp = false;
     $ubuntuChangelog = @gzopen('/usr/share/doc/php8.5-common/changelog.Debian.gz', 'rb');
     if ($ubuntuChangelog !== false) {
         $ubuntuRelease = (string) gzgets($ubuntuChangelog, 200);
@@ -18,19 +18,19 @@ if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512) {
         $isPatchedUbuntuPhp = preg_match('/^php8\.5 \(8\.5\.4-0ubuntu(\d+(?:\.\d+)*)\)/', $ubuntuRelease, $ubuntuRevision) === 1
             && version_compare($ubuntuRevision[1], '1.6', '>=');
     }
-}
-if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512 && !$isPatchedUbuntuPhp) {
-    $phpFloorMessage = 'ePT requires PHP 8.4.27 or later, or PHP 8.5.12 or later. This server runs PHP ' . PHP_VERSION . '.';
-    if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, $phpFloorMessage . PHP_EOL);
-    } else {
-        http_response_code(500);
-        header('Content-Type: text/plain; charset=utf-8');
-        echo $phpFloorMessage;
+    if (!$isPatchedUbuntuPhp) {
+        $phpFloorMessage = 'ePT requires PHP 8.4.27 or later, or PHP 8.5.12 or later. This server runs PHP ' . PHP_VERSION . '.';
+        if (PHP_SAPI === 'cli') {
+            fwrite(STDERR, $phpFloorMessage . PHP_EOL);
+        } else {
+            http_response_code(500);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo $phpFloorMessage;
+        }
+        exit(1);
     }
-    exit(1);
+    unset($isPatchedUbuntuPhp, $ubuntuChangelog, $ubuntuRelease, $ubuntuRevision);
 }
-unset($isPatchedUbuntuPhp, $ubuntuChangelog, $ubuntuRelease, $ubuntuRevision);
 
 // Shipment statuses that indicate temporary/in-progress states (not milestones)
 const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing', 'pending'];
