@@ -477,7 +477,9 @@ set_permissions "${ept_path}" "quick"
 print header "Running composer operations"
 cd "${ept_path}"
 
-sudo -u www-data composer config process-timeout 30000 --no-interaction
+# --global writes www-data's own composer config. The freshly copied tree is root-owned, so
+# a project-level write fails with "composer.json is not writable" (upgrade.sh does the same).
+sudo -u www-data composer config --global process-timeout 30000 --no-interaction
 sudo -u www-data composer clear-cache --no-interaction
 
 echo "Checking if composer dependencies need updating..."
@@ -884,6 +886,12 @@ chmod 644 "$mysql_cnf"
 #=============================================================================
 
 print header "Running database migrations and post-install tasks"
+
+# MySQL was restarted moments ago. Wait until it accepts connections before testing.
+for _ in $(seq 1 30); do
+    mysqladmin ping --silent >/dev/null 2>&1 && break
+    sleep 1
+done
 
 # Test database connectivity
 php "${ept_path}/vendor/bin/db-tools" db:test --all
