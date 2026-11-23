@@ -184,7 +184,10 @@ class Application_Model_Eid
             //$counter++;
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
+        // Participant scores are stored as a percentage, so the shipment's maximum is 100.
+        // $maxScore is the raw sum of sample scores (for example 9), and the summary report
+        // compares each lab's score with this value to count full scores.
+        $db->update('shipment', ['max_score' => 100, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
 
         return $shipmentResult;
     }
