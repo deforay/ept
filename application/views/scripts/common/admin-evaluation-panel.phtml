@@ -52,7 +52,7 @@ $warnings = json_decode((string) ($shipment['failure_reason'] ?? ''), true);
 $findingGroups = [];
 $generalFindings = [];
 $findingNo = 0;
-foreach (is_array($warnings) ? $warnings : [] as $warning) {
+foreach (is_array($warnings) ? $warnings : [] as $findingKey => $warning) {
     $findingNo++;
     $html = Pt_Evaluation_FailureReason::warningHtml($warning);
     $sample = is_array($warning) ? ($warning['params']['sample'] ?? null) : null;
@@ -61,7 +61,7 @@ foreach (is_array($warnings) ? $warnings : [] as $warning) {
     }
     $finding = [
         'no' => $findingNo,
-        'raw' => $warning,
+        'token' => Application_Service_Shipments::overrideFindingToken($findingKey, $warning),
         'html' => $html,
         'action' => Pt_Evaluation_FailureReason::correctiveActionHtml($warning),
     ];
@@ -405,7 +405,6 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
                     </div>
                     <ul class="eval-finding-list">
                         <?php foreach ($groupFindings as $finding) {
-                            $warning = $finding['raw'];
                             $i = $finding['no'];
                             // A corrective action shows once per sample.
                             $actionText = trim(strip_tags($finding['action']));
@@ -414,8 +413,7 @@ $selected = static fn ($field, $value) => (($shipment[$field] ?? '') === $value)
                             <li>
                                 <span class="manualOverrideRow" style="<?= $show; ?>">
                                     <input type="checkbox" id="manualCorrective<?= $i; ?>"
-                                        name="manualCorrective[<?= $this->escape((string) (is_array($warning) ? ($warning['warning'] ?? '') : $warning)); ?>]"
-                                        value="<?= $this->escape((string) (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '')); ?>" checked>
+                                        name="manualCorrective[]" value="<?= $this->escape($finding['token']); ?>" checked>
                                 </span>
                                 <label for="manualCorrective<?= $i; ?>" class="eval-finding">
                                     <span class="eval-finding-warning"><?= $finding['html']; ?></span>

@@ -4755,6 +4755,10 @@ class Application_Service_Shipments
      * response's own scheme, and the findings they kept ticked. Unticking every finding
      * clears them, because the form then sends no manualCorrective at all.
      *
+     * A ticked finding posts its token, not its text. The kept findings are the stored
+     * ones, so they keep their reason codes and parameters, and a crafted post cannot
+     * add a finding.
+     *
      * @param array<string, mixed> $params the posted response form
      * @return array<string, mixed>
      */
@@ -4762,9 +4766,16 @@ class Application_Service_Shipments
     {
         $shipmentScore = (isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0;
         $docScore = (isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0;
+        $ticked = array_flip(array_map('strval', (array) ($params['manualCorrective'] ?? [])));
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $stored = json_decode((string) $db->fetchOne(
+            $db->select()->from('shipment_participant_map', ['failure_reason'])->where('map_id = ?', (int) ($params['smid'] ?? 0))
+        ), true);
         $kept = [];
-        foreach ((array) ($params['manualCorrective'] ?? []) as $warning => $correctiveAction) {
-            $kept[] = ['warning' => $warning, 'correctiveAction' => $correctiveAction];
+        foreach (is_array($stored) ? $stored : [] as $key => $finding) {
+            if (isset($ticked[self::overrideFindingToken($key, $finding)])) {
+                $kept[] = $finding;
+            }
         }
         // The exact sum, as the evaluations compare it: 79.6 does not pass a mark of 80.
         $grandTotal = (float) $shipmentScore + (float) $docScore;
@@ -4774,6 +4785,16 @@ class Application_Service_Shipments
             'final_result' => $grandTotal < $this->overridePassMark((int) ($params['smid'] ?? 0)) ? 2 : 1,
             'failure_reason' => json_encode($kept),
         ];
+    }
+
+    /**
+     * Identifies one stored finding in the manual-override form: its position and a
+     * hash of its content. A finding that changed since the form loaded (the response
+     * was evaluated again) no longer matches, so it is dropped, not mixed up.
+     */
+    public static function overrideFindingToken(int|string $key, mixed $finding): string
+    {
+        return $key . ':' . md5((string) json_encode($finding));
     }
 
     /**
