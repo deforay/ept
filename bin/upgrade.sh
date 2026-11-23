@@ -566,8 +566,13 @@ php_version=$(php -v | head -n 1 | grep -oE 'PHP [0-9]+\.[0-9]+' | awk '{print $
 desired_php_version="8.4"
 # Ubuntu 26.04 has no PHP 8.4 (the PHP PPA has no 26.04 builds yet). Use Ubuntu's own 8.5,
 # whose security build carries the PHP2Shell fix (see constants.php).
-if dpkg --compare-versions "$(lsb_release -rs 2>/dev/null || echo 0)" ge "26.04"; then
+ubuntu_release="$(lsb_release -rs 2>/dev/null || echo 0)"
+if dpkg --compare-versions "$ubuntu_release" ge "26.04"; then
     desired_php_version="8.5"
+fi
+# Never downgrade. A server already on PHP 8.4 or later keeps its version.
+if [[ -n "${php_version}" ]] && dpkg --compare-versions "${php_version}" ge "8.4"; then
+    desired_php_version="${php_version}"
 fi
 
 # Download and install switch-php script
@@ -586,7 +591,13 @@ else
 fi
 
 # switch-php only checks major.minor. Bring the patch release up to the floor.
-if ! ensure_php_min_version; then
+# PHP 8.5 from the PHP PPA needs 8.5.12. Ubuntu 26.04's own 8.5.4 carries the fix and
+# keeps the default floor (see constants.php).
+php_floor="${EPT_MIN_PHP_VERSION}"
+if [[ "${desired_php_version}" == "8.5" ]] && dpkg --compare-versions "$ubuntu_release" lt "26.04"; then
+    php_floor="8.5.12"
+fi
+if ! ensure_php_min_version "$php_floor"; then
     log_action "PHP is below the minimum supported version. Upgrade aborted."
     exit 1
 fi
