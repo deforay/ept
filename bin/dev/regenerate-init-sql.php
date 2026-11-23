@@ -58,28 +58,21 @@ $host = (string) ($params['host'] ?? '127.0.0.1');
 $port = (int) ($params['port'] ?? 3306);
 $scratch = 'ept_initsql_' . getmypid();
 
-$pdo = new PDO("mysql:host=$host;port=$port;charset=utf8mb4", (string) $params['username'], (string) ($params['password'] ?? ''), [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
-
 // The mysql client reads the password from a file, so it never shows in the process list.
 $defaults = tempnam(sys_get_temp_dir(), 'ept-my');
 file_put_contents($defaults, "[client]\nhost=$host\nport=$port\nuser={$params['username']}\npassword=\"" . addcslashes((string) ($params['password'] ?? ''), '"\\') . "\"\n");
 chmod($defaults, 0600);
 
-$cleanup = static function () use ($pdo, $scratch, $keep, $defaults): void {
-    @unlink($defaults);
+$cleanup = static function () use ($scratch, $keep, $defaults): void {
     if ($keep) {
         echo "Kept the throwaway database `$scratch`.\n";
-        return;
+    } else {
+        run(['mysql', "--defaults-extra-file=$defaults", '-e', "DROP DATABASE IF EXISTS `$scratch`"], null);
     }
-    $pdo->exec("DROP DATABASE IF EXISTS `$scratch`");
+    @unlink($defaults);
 };
 
 try {
-    $pdo->exec("CREATE DATABASE `$scratch` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
-
     echo "1/3 Loading sql/init.sql into `$scratch`\n";
     $source = file_get_contents("$root/sql/init.sql");
     if ($source === false) {
@@ -91,17 +84,21 @@ try {
         ["CREATE DATABASE IF NOT EXISTS `$scratch`", "USE `$scratch`;"],
         $source
     );
-    run(['mysql', "--defaults-extra-file=$defaults", $scratch], $source);
+    run(['mysql', "--defaults-extra-file=$defaults"], $source);
 
     echo "2/3 Running the migrations\n";
     run([PHP_BINARY, "$root/bin/migrate.php", '-y', '-q'], null, ['MIGRATE_DB_NAME' => $scratch]);
-    $version = (string) $pdo->query("SELECT `value` FROM `$scratch`.system_config WHERE config = 'app_version'")->fetchColumn();
+
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$scratch;charset=utf8mb4", (string) $params['username'], (string) ($params['password'] ?? ''), [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+    $version = (string) $pdo->query("SELECT `value` FROM system_config WHERE config = 'app_version'")->fetchColumn();
     if ($version !== APP_VERSION) {
         throw new RuntimeException("The migrations stopped at $version, but APP_VERSION is " . APP_VERSION . '. Fix the failing migration first.');
     }
 
     echo "3/3 Writing $output\n";
-    $pdo->exec("USE `$scratch`");
     if (file_put_contents($output, buildDump($pdo, $scratch)) === false) {
         throw new RuntimeException("Cannot write $output.");
     }
