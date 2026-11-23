@@ -74,7 +74,7 @@ brief above names them; this table says where each one is defined.
 | Non-responders excluded from scoring | `Evaluation::excludeNonResponder()` in `application/services/Evaluation.php` |
 | Response editability | `isShipmentEditable()` in `application/models/DbTable/ShipmentParticipantMap.php` |
 | Escaping by output context | `library/Pt/Commons/TranslateUtility.php`, see [Translation](TranslationGuide.md) |
-| Schema changes are migrations | `database/migrations/`; `sql/init.sql` is a seed, never edited to effect a change |
+| Schema changes are migrations | `database/migrations/`; `sql/init.sql` is a seed that `composer init-sql` rebuilds, never edited by hand |
 | Version sync | `APP_VERSION` in `constants.php` and `system_config.app_version`, checked by `bin/check-version-sync.php` |
 | Job-queue whitelist | `ALLOWED_JOB_SCRIPTS` in `scheduled-jobs/execute-job-queue.php` |
 
@@ -85,7 +85,8 @@ existing pattern rather than adding a second one.
 
 - Keep controllers thin. Put logic in `application/services/`.
 - Reuse the helpers in `library/Pt/Commons/` and `application/services/` before writing new ones.
-- Put every schema change in `database/migrations/`. Never edit `sql/init.sql` to effect a change.
+- Put every schema change in `database/migrations/`. Never edit `sql/init.sql` by hand.
+- Rebuild `sql/init.sql` with `composer init-sql`. It loads the file into a throwaway database, runs the migrations and dumps the result.
 - Update the documentation in the same change, not afterwards.
 
 ## 4. Documentation conventions
