@@ -4794,7 +4794,7 @@ class Application_Service_Shipments
      */
     public static function overrideFindingToken(int|string $key, mixed $finding): string
     {
-        return $key . ':' . md5((string) json_encode($finding));
+        return $key . ':' . hash('sha256', (string) json_encode($finding));
     }
 
     /**
