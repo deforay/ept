@@ -76,7 +76,13 @@ final class SchemaRepairPlan
             if (!array_key_exists($table, $columns)) {
                 // Include keys, final AUTO_INCREMENT definitions and foreign keys atomically.
                 // An interrupted run must never leave a half-created table that a rerun skips.
-                $fields = array_merge(array_values($definition['columns']), $definition['keys']);
+                // Leave out foreign keys to a deferred table. The migration that creates that table
+                // adds them, and a dangling key would block it (for example with a charset mismatch).
+                $keys = array_filter(
+                    $definition['keys'],
+                    fn (CreateDefinition $key): bool => !isset($this->deferredTables[$key->references?->table->table ?? ''])
+                );
+                $fields = array_merge(array_values($definition['columns']), array_values($keys));
                 $create[] = [
                     'table' => $table,
                     'create' => true,

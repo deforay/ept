@@ -115,7 +115,7 @@ ALTER TABLE `participant_feedback_answer`
   ADD CONSTRAINT `participant_feedback_answer_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE `participant_feedback_answer`
-  ADD CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_participant_feedback_form_question_map` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE `participant_feedback_answer`
   ADD CONSTRAINT `participant_feedback_answer_ibfk_4` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
@@ -148,6 +148,9 @@ DEALLOCATE PREPARE stmt;
 -- fails with 1822 (missing index in referenced table). Add the PK first; migrate.php's
 -- ADD PRIMARY KEY handler is idempotent (skips if a PK already exists).
 ALTER TABLE `r_testkitnames` ADD PRIMARY KEY (`TestKitName_ID`);
+
+-- Very old installs copied r_testkitnames from a latin1 table. Match the utf8mb4 FK columns first.
+ALTER TABLE `r_testkitnames` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 -- Re-add FKs with correct references
 ALTER TABLE `participant_testkit_map`
