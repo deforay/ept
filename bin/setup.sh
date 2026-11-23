@@ -348,6 +348,11 @@ if [[ -n "$ept_sql_file" ]]; then
 fi
 
 PHP_VERSION=8.4
+# Ubuntu 26.04 has no PHP 8.4 (the PHP PPA has no 26.04 builds yet). Use Ubuntu's own 8.5,
+# whose security build carries the PHP2Shell fix (see constants.php).
+if dpkg --compare-versions "$(lsb_release -rs 2>/dev/null || echo 0)" ge "26.04"; then
+    PHP_VERSION=8.5
+fi
 
 #=============================================================================
 # PHASE 1: LAMP STACK SETUP
