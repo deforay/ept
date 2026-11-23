@@ -54,6 +54,7 @@ class EidController extends Zend_Controller_Action
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'eid', $uc);
+                $this->view->verdictsOutdated = (new Application_Model_Dts())->responseChangedSinceEvaluation($sID, $pID);
                 [$this->view->canEditResponse, $this->view->viewOnly] = Application_Service_Shipments::adminResponseMode($request->getParam('mode'));
                 $this->_helper->layout()->setLayout('admin');
             } else {
