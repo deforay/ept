@@ -642,13 +642,13 @@ if [ "$skip_ubuntu_updates" = false ]; then
 
     apt_noprompt=(-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
 
+    # PHP and Apache come from packages.sury.org. The ondrej Launchpad PPAs are frozen,
+    # and ondrej/apache2 has no Ubuntu 26.04 build, which breaks every apt-get update.
+    use_sury_repo php
+    use_sury_repo apache2
+
     apt-get update --allow-releaseinfo-change </dev/null
     apt-get "${apt_noprompt[@]}" upgrade -y </dev/null
-
-    if ! grep -q "ondrej/apache2" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
-        add-apt-repository ppa:ondrej/apache2 -y </dev/null
-        apt-get "${apt_noprompt[@]}" upgrade apache2 -y </dev/null
-    fi
 
     print info "Configuring any partially installed packages..."
     dpkg --force-confdef --force-confold --configure -a </dev/null
