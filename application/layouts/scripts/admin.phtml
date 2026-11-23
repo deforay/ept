@@ -769,9 +769,10 @@ $helpPageKey = "$controllerName/$actionName";
 	$isWideShell = in_array($controllerName, $wideShellControllers)
 		|| in_array($controllerName . '/' . $actionName, $wideShellPages)
 		|| ($controllerName === 'schemes' && $actionName === 'manage-test-results');
+	// .admin-shell: a grid wider than the shell widens it further (main.js.php).
 	$contentShell = $isWideShell
-		? 'container container-wide'
-		: 'container';
+		? 'container container-wide admin-shell'
+		: 'container admin-shell';
 	?>
 	<div class="<?php echo $contentShell; ?>">
 		<?php
