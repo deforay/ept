@@ -163,7 +163,7 @@ if (!empty($this->shipment)) {
         } else {
             $reportTitle = $this->htmlTranslate('Generate Participant Reports');
         }
-        if (!$reportInProgress && $this->shipment[0]['report_generated'] == 'yes') {
+        if (!$reportInProgress && ($this->shipment[0]['report_generated'] ?? '') === 'yes') {
             $reportTitle = $this->htmlTranslate('Generate Reports');
         }
         // Allow report generation once the shipment is evaluated. Previously
@@ -386,8 +386,8 @@ if (!empty($this->shipment)) {
                     </th>
                     <th scope="col"><?= $this->htmlTranslate("Response Status"); ?></th>
                     <th scope="col"><?= $this->htmlTranslate("Responded On"); ?></th>
-                    <th scope="col">
-                        <?= $this->htmlTranslate("Report"); ?>
+                    <th scope="col" style="text-align: center;">
+                        <?= $this->htmlTranslate("Action"); ?>
                     </th>
                     <th scope="col" style="text-align: center;">
                         <?= $this->htmlTranslate("Last Modified"); ?>

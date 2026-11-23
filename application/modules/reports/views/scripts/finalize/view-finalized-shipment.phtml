@@ -398,6 +398,7 @@ if (!empty($this->shipment)) {
                     <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participant Report"); ?></th>
                     <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Summary Report"); ?></th>
                     <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Last Modified"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Action"); ?></th>
                     <th scope="col" style="display:none;">
                         <?= $this->htmlTranslate("Map ID"); ?>
                     </th>
@@ -405,7 +406,7 @@ if (!empty($this->shipment)) {
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="12" class="dataTables_empty" style="text-align:center;">
+                    <td colspan="13" class="dataTables_empty" style="text-align:center;">
                         <?= $this->htmlTranslate("Loading data from server"); ?>
                     </td>
                 </tr>
@@ -628,6 +629,7 @@ if (!empty($this->shipment)) {
                         { "sClass": "center", "bSortable": false },
                         { "sClass": "center", "bSortable": false },
                         { "sClass": "center" },
+                        { "sClass": "center", "bSearchable": false, "bSortable": false },
                         { "bSearchable": false, "bVisible": false }
                     ],
                     "aaSorting": [
@@ -751,7 +753,7 @@ if (!empty($this->shipment)) {
             function fnFormatDetails(oTable, nTr) {
                 var aData = oTable.fnGetData(nTr);
                 // map_id is in the hidden last column (index 12).
-                var mapId = aData[12];
+                var mapId = aData[13];
                 // Fill the child row when the response arrives. If the row closed first, there is no slot to fill.
                 $.ajax({
                     url: '/common/get-corrective-actions/mid/' + mapId,

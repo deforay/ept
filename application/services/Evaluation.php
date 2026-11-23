@@ -1884,7 +1884,7 @@ class Application_Service_Evaluation
             ->from(['sp' => 'shipment_participant_map'])
             ->join(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id')
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['first_name', 'last_name', 'lab_name', 'unique_identifier', 'country', 'state', 'district'])
             ->join(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
             ->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result')
@@ -2026,6 +2026,31 @@ class Application_Service_Evaluation
 
     // Builds the row array for the finalized-shipment participant DataTable.
     // Markup mirrors what the view used to render server-side.
+    // The response page URL that admins open for one participant row.
+    private function adminResponseUrl(array $shipment): string
+    {
+        $schemeType = (($shipment['is_user_configured'] ?? '') === 'yes') ? 'custom-test' : (string) ($shipment['scheme_type'] ?? '');
+        if ($schemeType === '') {
+            return '';
+        }
+        return '/' . rawurlencode($schemeType) . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id']
+            . '/eid/' . rawurlencode((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
+    }
+
+    // A View button that opens the response read-only. It needs no edit privilege.
+    // Only these schemes have a read-only mode on their response page.
+    private function responseViewButton(array $shipment): string
+    {
+        $url = $this->adminResponseUrl($shipment);
+        $schemeType = explode('/', $url)[1] ?? '';
+        if ($url === '' || !in_array($schemeType, ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19', 'custom-test'], true)) {
+            return '';
+        }
+        $translator = Zend_Registry::get('translate');
+        return '<a class="btn btn-default btn-xs" href="' . htmlspecialchars($url . '/mode/view', ENT_QUOTES, 'UTF-8') . '"><span><i class="icon-eye-open"></i> '
+            . htmlspecialchars($translator->_('View'), ENT_QUOTES, 'UTF-8') . '</span></a>';
+    }
+
     private function renderFinalizedShipmentRow($shipment)
     {
         $translator = Zend_Registry::get('translate');
@@ -2163,6 +2188,7 @@ class Application_Service_Evaluation
             $participantReport,
             $summaryReport,
             $lastModified,
+            '<div style="text-align:center;">' . $this->responseViewButton($shipment) . '</div>',
             (int) $shipment['map_id'],
         ];
     }
@@ -2196,7 +2222,7 @@ class Application_Service_Evaluation
             ->from(['sp' => 'shipment_participant_map'])
             ->join(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id')
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['first_name', 'last_name', 'lab_name', 'unique_identifier', 'country', 'state', 'district'])
             ->join(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
             ->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result')
@@ -2387,7 +2413,7 @@ class Application_Service_Evaluation
             $resultCell,
             $responseStatusCell,
             $respondedOn,
-            $individualReports,
+            $this->responseViewButton($shipment) . ($individualReports !== '' ? '<br>' . $individualReports : ''),
             $lastModified,
             (int) $shipment['map_id'],
         ];
@@ -2608,13 +2634,12 @@ class Application_Service_Evaluation
 
         // Action cell.
         $actionParts = [];
-        $responseUrl = '/' . $rowSchemeType . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id'] . '/eid/' . htmlspecialchars((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
-        // The response pages of these schemes have a read-only mode. It needs no edit privilege.
-        if (in_array($rowSchemeType, ['dts', 'vl', 'eid', 'tb', 'recency', 'covid19', 'custom-test'], true)) {
-            $actionParts[] = '<a class="btn btn-default btn-xs" href="' . $responseUrl . '/mode/view"><span><i class="icon-eye-open"></i> ' . $translator->_('View') . '</span></a>';
+        $viewButton = $this->responseViewButton($shipment);
+        if ($viewButton !== '') {
+            $actionParts[] = $viewButton;
         }
         if ($canEdit && $rowSchemeType !== '') {
-            $actionParts[] = '<a class="btn btn-primary btn-xs" href="' . $responseUrl . '"><span><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</span></a>';
+            $actionParts[] = '<a class="btn btn-primary btn-xs" href="' . htmlspecialchars($this->adminResponseUrl($shipment), ENT_QUOTES, 'UTF-8') . '"><span><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</span></a>';
         }
 
         $shipmentStatus = $shipment['shipment_status'] ?? '';
