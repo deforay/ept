@@ -8596,15 +8596,44 @@ td.center {
 	padding-top: 12px;
 }
 
-/* Below desktop width the shell cannot widen any further, so the grid scrolls
-   sideways inside its own box (main.js.php wraps it on DataTables init). On
-   desktop a grid that does not fit is fixed by widening the shell, not by
-   scrolling. */
-@media(max-width:991px) {
-	.data-list .data-list-scroll {
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-	}
+/* A grid wider than the page first widens the page (main.js.php, fitAdminShell).
+   Past the browser window it scrolls sideways inside this box, and a shadow
+   marks the edge that has more columns. */
+.grid-scroll {
+	position: relative;
+}
+
+.grid-scroll-inner {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.grid-scroll::before,
+.grid-scroll::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 14px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .15s;
+	z-index: 2;
+}
+
+.grid-scroll::before {
+	left: 0;
+	background: linear-gradient(to right, rgba(15, 23, 42, .14), rgba(15, 23, 42, 0));
+}
+
+.grid-scroll::after {
+	right: 0;
+	background: linear-gradient(to left, rgba(15, 23, 42, .14), rgba(15, 23, 42, 0));
+}
+
+.grid-scroll.has-more-left::before,
+.grid-scroll.has-more-right::after {
+	opacity: 1;
 }
 
 /* Table: same header band as the config cards, quiet hairline rows. */

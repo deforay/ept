@@ -223,16 +223,85 @@
             "pageLength": 10
         });
 
-        // Give each .data-list grid its own scroll box. The card clips overflow,
-        // so on a narrow screen the right-hand columns were cut off with no way
-        // to reach them. Wrapping only the table keeps the search box and pager
-        // in place. admin.css turns the scrolling on below desktop width.
-        $(document).on('init.dt', function (e, settings) {
-            var $table = $(settings.nTable);
-            if (!$table.closest('.data-list').length || $table.parent().hasClass('data-list-scroll')) {
+        // Keep every admin grid inside the page.
+        // 1. Cells wrap first (admin.css), so most grids fit as they are.
+        // 2. If a grid is still wider than the page, the page widens just enough
+        //    to fit it, up to the browser window less a 16px margin each side.
+        // 3. If it still does not fit, the grid scrolls sideways inside its own
+        //    box. A shadow marks the edge that has more columns.
+        // Only the admin content shell (.admin-shell in admin.phtml) widens.
+        var GRID_GUTTER = 16;
+
+        function gridScrollBox($table) {
+            var $box = $table.parent('.grid-scroll-inner');
+            if (!$box.length) {
+                $table.wrap('<div class="grid-scroll"><div class="grid-scroll-inner"></div></div>');
+                $box = $table.parent();
+                $box.on('scroll', function () {
+                    updateGridShadows(this);
+                });
+            }
+            return $box;
+        }
+
+        function updateGridShadows(box) {
+            var more = box.scrollWidth - box.clientWidth;
+            $(box).parent()
+                .toggleClass('has-more-left', more > 1 && box.scrollLeft > 1)
+                .toggleClass('has-more-right', more > 1 && box.scrollLeft < more - 1);
+        }
+
+        function fitAdminShell() {
+            var shell = document.querySelector('.admin-shell');
+            if (!shell) {
                 return;
             }
-            $table.wrap('<div class="data-list-scroll"></div>');
+            var boxes = $(shell).find('.grid-scroll-inner').filter(function () {
+                return $(this).is(':visible') && !$(this).closest('.modal').length;
+            });
+            // Measure from the shell's own width, so a grid that got narrower
+            // (a filter, a resize) lets the page shrink back.
+            shell.style.width = '';
+            shell.style.maxWidth = '';
+            var overflow = 0;
+            boxes.each(function () {
+                overflow = Math.max(overflow, this.scrollWidth - this.clientWidth);
+            });
+            if (overflow > 0) {
+                var current = shell.getBoundingClientRect().width;
+                var limit = document.documentElement.clientWidth - 2 * GRID_GUTTER;
+                var target = Math.min(Math.ceil(current + overflow), limit);
+                if (target > current) {
+                    shell.style.width = target + 'px';
+                    shell.style.maxWidth = target + 'px';
+                }
+            }
+            boxes.each(function () {
+                updateGridShadows(this);
+            });
+        }
+
+        var fitTimer = null;
+        function scheduleFit() {
+            clearTimeout(fitTimer);
+            fitTimer = setTimeout(fitAdminShell, 50);
+        }
+
+        $(document).on('init.dt', function (e, settings) {
+            var $table = $(settings.nTable);
+            // Grids with DataTables' own scrolling (scrollX) already have a box.
+            if ($table.closest('.dataTables_scroll').length) {
+                return;
+            }
+            if (!$table.closest('.admin-shell, .data-list').length) {
+                return;
+            }
+            gridScrollBox($table);
+            scheduleFit();
         });
+        $(document).on('draw.dt column-visibility.dt shown.bs.tab', scheduleFit);
+        // Child rows (row details) open without a DataTables event.
+        $(document).on('click', '.admin-shell table.dataTable tbody', scheduleFit);
+        $(window).on('resize', scheduleFit);
     }
 </script>
