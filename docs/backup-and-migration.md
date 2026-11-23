@@ -32,9 +32,9 @@ ept backup list
 ept backup verify backups/<archive>.sql.zst.gpg --db-password='<database password>'
 ```
 
-`ept backup` runs as the account that owns the installation, so the archives stay readable by the app. Archives are written to `<ept>/backups` with a 15-archive retention by default.
+Archives are written to `<ept>/backups` with a 15-archive retention by default.
 
-> **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) unless you pass `--no-encrypt`. The encryption password is built from the database password in `application.ini` and the random part of the archive's filename. `ept restore` on the same server works it out by itself. `ept backup verify` needs the database password passed as `--db-password`. To restore on a *different* server, you need the old server's database password, or an unencrypted archive made with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine)).
+> **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) unless you pass `--no-encrypt`. The encryption password is built from the database password in `application.ini` and the random part of the archive's filename. `ept restore` on the same server works it out by itself. `ept backup verify` needs the database password passed as `--db-password`. To restore on a *different* server, pass `--encryption-password` set to the old server's database password followed by the 32-character random part of the archive's filename. An unencrypted archive made with `--no-encrypt` needs no password (see [Migrating](#migrating-to-a-new-machine)).
 
 ### Direct db-tools usage
 
@@ -52,7 +52,7 @@ php vendor/bin/db-tools backup --no-encrypt
 
 # List existing archives / check integrity
 php vendor/bin/db-tools show
-php vendor/bin/db-tools verify
+php vendor/bin/db-tools verify backups/<archive> --db-password='<database password>'
 ```
 
 The active profile (host, database, output dir, retention, encryption) is shown with:
@@ -152,7 +152,7 @@ Have all of these ready before you start.
 2. Note the database name, user and password:
 
    ```bash
-   grep '^resources.db.params' OLD/application/configs/application.ini
+   sudo grep '^resources.db.params' OLD/application/configs/application.ini
    ```
 
 ### Step 2. Pack everything on the old server
@@ -167,7 +167,10 @@ Have all of these ready before you start.
 
    ```bash
    sudo mkdir -p /var/ept-move
+   sudo chmod 700 /var/ept-move
    ```
+
+   The folder holds passwords and the whole database, so only root can read it.
 
 3. Back up the database into that folder. If `OLD/vendor/bin/db-tools` exists, run:
 
@@ -176,10 +179,10 @@ Have all of these ready before you start.
    sudo php vendor/bin/db-tools backup --no-encrypt --compression=gzip --output-dir=/var/ept-move
    ```
 
-   Older installs have no `db-tools`. Run `mysqldump` with the database user from Step 1 instead, and enter its password when asked:
+   Older installs have no `db-tools`, and some older `db-tools` versions reject these options. In either case, run `mysqldump` with the database user from Step 1 instead, and enter its password when asked:
 
    ```bash
-   mysqldump -u DB_USER -p --single-transaction --no-tablespaces DB_NAME | gzip | sudo tee /var/ept-move/ept-database.sql.gz >/dev/null
+   mysqldump -u DB_USER -p --single-transaction --no-tablespaces --default-character-set=utf8mb4 DB_NAME | gzip | sudo tee /var/ept-move/ept-database.sql.gz >/dev/null
    ```
 
 4. Pack the settings, uploads, reports and certificate templates:
@@ -192,10 +195,12 @@ Have all of these ready before you start.
      application/configs/config.ini \
      public/uploads \
      downloads \
-     scheduled-jobs/certificate-templates
+     scheduled-jobs/certificate-templates \
+     scheduled-jobs/certificate \
+     scheduled-jobs/certificates
    ```
 
-   Some of these files do not exist on every install. `tar` skips the missing ones.
+   Some of these files do not exist on every install. `tar` skips the missing ones. Older installs keep certificates in `scheduled-jobs/certificate` or `scheduled-jobs/certificates`.
 
 Run `ls -lh /var/ept-move`. The folder holds a database backup ending in `.sql.gz` and `ept-files.tar.gz`.
 
@@ -206,7 +211,7 @@ In these commands, replace `NEW` with the new server's IP address.
 1. On the old server, let it log in to the new server. Enter the new server's password when asked:
 
    ```bash
-   sudo ssh-keygen -t ed25519 -N "" -f /root/.ssh/id_ed25519   # only if the file does not exist yet
+   sudo test -f /root/.ssh/id_ed25519 || sudo ssh-keygen -t ed25519 -N "" -f /root/.ssh/id_ed25519
    sudo ssh-copy-id -i /root/.ssh/id_ed25519.pub root@NEW
    ```
 
@@ -215,10 +220,10 @@ In these commands, replace `NEW` with the new server's IP address.
 2. Copy the folder:
 
    ```bash
-   sudo scp -r /var/ept-move root@NEW:/tmp/
+   sudo scp -rp /var/ept-move root@NEW:/root/
    ```
 
-If the old server cannot reach the new one, copy the folder through your own computer, or use a USB drive. Put it at `/tmp/ept-move` on the new server.
+If the old server cannot reach the new one, copy the folder through your own computer, or use a USB drive. Put it at `/root/ept-move` on the new server. Do not use `/tmp`, because the server clears it when it restarts.
 
 ### Step 4. Install ePT on the new server
 
@@ -241,6 +246,7 @@ Run these commands on the new server.
    | MySQL root password | Choose a new strong password. Write it down. It also encrypts this server's backups. |
    | Domain name | Enter the domain the old server used. |
    | SSL (HTTPS) with Let's Encrypt | Answer no. Step 8 sets up HTTPS. |
+   | First admin account: name, email and password | Enter any details. This account is temporary. The old database replaces it in Step 7. |
 
 3. Confirm the new server works before you bring any data across:
 
@@ -250,7 +256,7 @@ Run these commands on the new server.
    ept check
    ```
 
-   Expect PHP 8.4.27 or later, or PHP 8.5, and `active` twice. If any check fails, stop here. The old server is unchanged, so you can turn it back on with `sudo systemctl enable --now apache2 cron`.
+   Expect PHP 8.4.27 or later, or 8.5.12 or later, and `active` twice. Ubuntu 26.04's own PHP 8.5.4 also passes, because Ubuntu patched it. `ept check` warns that no database backups exist. That warning is expected until Step 9. If any other check fails, stop here. The old server is unchanged, so you can turn it back on with `sudo systemctl enable --now apache2 cron`.
 
 ### Step 5. Restore the files
 
@@ -264,17 +270,17 @@ Run these commands on the new server.
 
    ```bash
    cd /var/www/ept
-   sudo tar -xzf /tmp/ept-move/ept-files.tar.gz -C /var/www/ept --exclude=application/configs/application.ini
-   sudo tar -xzf /tmp/ept-move/ept-files.tar.gz -C /tmp/ept-move application/configs/application.ini
+   sudo tar -xzf /root/ept-move/ept-files.tar.gz -C /var/www/ept --exclude=application/configs/application.ini
+   sudo tar -xzf /root/ept-move/ept-files.tar.gz -C /root/ept-move application/configs/application.ini
    ```
 
-3. Reset the ownership and permissions. Old servers sometimes have files open to everyone (777), and `tar` keeps those modes.
+3. Remove write access for everyone else. Old servers sometimes have files open to everyone (777), and `tar` keeps those modes.
 
    ```bash
-   sudo chown -R www-data:www-data application/configs public/uploads downloads scheduled-jobs
-   sudo find public/uploads downloads scheduled-jobs -type d -exec chmod 755 {} +
-   sudo find public/uploads downloads scheduled-jobs -type f -exec chmod 644 {} +
+   sudo chmod -R o-w application/configs public/uploads downloads scheduled-jobs
    ```
+
+   Do not reset the files to 755 or 644. Setup grants access through ACLs, and a full `chmod` would take write access away from the app and from sudo users.
 
 ### Step 6. Copy the server's own settings
 
@@ -283,7 +289,7 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
 1. Show the old settings to carry across:
 
    ```bash
-   sudo grep -E '^(email\.|security\.salt)' /tmp/ept-move/application/configs/application.ini
+   sudo grep -E '^(email\.|security\.salt|timezone|whatsapp\.)' /root/ept-move/application/configs/application.ini
    ```
 
 2. Open the new settings file:
@@ -292,9 +298,11 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
    sudo nano /var/www/ept/application/configs/application.ini
    ```
 
-3. Set each `email.` line to its old value. This covers the mail server, login, password and sender. Older settings files have no `email.fromEmail` line. If the new `email.fromEmail` is empty, set it to the mail login address. ePT cannot send mail without a sender, and most mail servers, Microsoft 365 among them, accept only the login address as sender.
+3. Set each `email.` line to its old value. This covers the mail server, login, password and sender. Older settings files have no `email.fromEmail` line. If the new `email.fromEmail` is empty, set it to the mail login address. Most mail servers, Microsoft 365 among them, accept only the login address as sender.
 4. If the old file has a `security.salt` line with a value, set the new `security.salt` line to that value. Without the old salt, temporary passwords and download links that ePT already sent stop working.
-5. Leave the `resources.db.params` lines as setup wrote them.
+5. Set `timezone` to the old value. ePT uses it for timestamps, deadlines and the schedule of its jobs. Setup writes `UTC`.
+6. If the old file has `whatsapp.` lines with values, copy them too.
+7. Leave the `resources.db.params` lines as setup wrote them.
 
 ### Step 7. Load the old database
 
@@ -303,7 +311,7 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
    ```bash
    DB=$(grep -m1 '^resources.db.params.dbname' /var/www/ept/application/configs/application.ini | sed 's/.*= *//')
    sudo mysql -e "DROP DATABASE \`$DB\`; CREATE DATABASE \`$DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"
-   gunzip -c /tmp/ept-move/*.sql.gz | sudo mysql "$DB"
+   gunzip -c /root/ept-move/*.sql.gz | sudo mysql "$DB"
    ```
 
 2. Upgrade the database to the current version:
@@ -321,20 +329,28 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
    sudo mysql "$DB" -e "SELECT subject, COUNT(*) FROM temp_mail WHERE status = 'pending' GROUP BY subject"
    ```
 
-   The new server sends every `pending` message as soon as scheduled jobs start. If the queue holds old messages, such as stale password resets, cancel them:
+   When scheduled jobs start, the new server sends `pending` messages that are less than seven days old. On an install upgraded from an older version, the upgrade dates every queued message to the day of the move, so old messages count as new. If the queue holds old messages, such as stale password resets, cancel them:
 
    ```bash
    sudo mysql "$DB" -e "UPDATE temp_mail SET status = 'cancelled' WHERE status = 'pending'"
    ```
 
-4. Start scheduled jobs, and check the server:
+4. Check for participant emails that were scheduled to go out during the move. Scheduled jobs send each one whose time has passed:
+
+   ```bash
+   sudo mysql "$DB" -e "SELECT id, subject, scheduled_at FROM email_participants WHERE status = 'scheduled'"
+   ```
+
+   Pause or reschedule any you do not want sent, from the admin pages, after the move.
+
+5. Start scheduled jobs, and check the server:
 
    ```bash
    sudo systemctl start cron
    ept check
    ```
 
-   Fix each problem `ept check` lists before you continue.
+   Fix each problem `ept check` lists before you continue. The warning about missing backups is expected until Step 9.
 
 ### Step 8. Point the domain to the new server
 
@@ -343,9 +359,11 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
 2. Check the domain's own name servers. They answer with the new address within minutes:
 
    ```bash
-   dig +short NS your-domain.org
+   dig +short NS example.org
    dig +short your-domain.org @NAME-SERVER
    ```
+
+   In the first command, use the domain that holds the DNS records. For `ept.example.org`, that is `example.org`. Replace `NAME-SERVER` with one of the names it returns.
 
    Other resolvers keep the old address until the record's TTL runs out, usually up to an hour. If your own computer still reaches the old server, clear its DNS cache.
 
@@ -357,7 +375,7 @@ Do not copy the old `application.ini` over the new one. An older file lacks sett
 
    Let's Encrypt asks the domain's own name servers, so this works before every resolver has the new address. Skip this step if the old server did not use HTTPS.
 
-4. In `/var/www/ept/application/configs/application.ini`, set the `domain` line to the address users open, for example `domain = https://your-domain.org/`.
+4. In `/var/www/ept/application/configs/application.ini`, set every `domain` line to the address users open, for example `domain = https://your-domain.org/`. The file has one in each section.
 
 If users reach ePT by IP address, give them the new address instead.
 
@@ -367,11 +385,11 @@ If users reach ePT by IP address, give them the new address instead.
 2. Open the participant list and a shipment. Confirm the data matches the old server.
 3. Open a report that was finalized on the old server.
 4. Generate one new report.
-5. Send yourself a password reset email. Confirm it arrives. If it does not, read the reason the mail server gave:
+5. On the participant login page, use **Forgot password** for a data manager account whose mailbox you can read. Confirm the email arrives. If it does not, read the reason the mail server gave:
 
    ```bash
    DB=$(grep -m1 '^resources.db.params.dbname' /var/www/ept/application/configs/application.ini | sed 's/.*= *//')
-   sudo mysql "$DB" -e "SELECT subject, failure_reason FROM temp_mail WHERE status = 'failed' ORDER BY temp_id DESC LIMIT 3"
+   sudo mysql "$DB" -e "SELECT subject, failure_reason FROM temp_mail WHERE status IN ('failed', 'skipped') ORDER BY temp_id DESC LIMIT 3"
    ```
 
    An empty sender points back to Step 6. A Microsoft 365 reply of `535 5.7.139` means the mailbox is not allowed to sign in over SMTP. The mail administrator must turn on Authenticated SMTP for that mailbox.
@@ -389,7 +407,7 @@ If the move fails, run `sudo systemctl enable --now apache2 cron` on the old ser
 ### After the move
 
 1. Keep the old server as it is for two weeks.
-2. Then delete `/var/ept-move` on the old server and `/tmp/ept-move` on the new server, because they hold passwords.
+2. Then delete `/var/ept-move` on the old server and `/root/ept-move` on the new server, because they hold passwords.
 3. On the new server, remove the old server's key from `/root/.ssh/authorized_keys`.
 
 ---
