@@ -1356,7 +1356,7 @@ ensure_composer() {
     echo "Composer not on PATH. Using switch-php to install it…"
     ensure_switch_php
 
-    TARGET_PHP="${TARGET_PHP:-8.4}"
+    TARGET_PHP="${TARGET_PHP:-${desired_php_version:-${PHP_VERSION:-8.4}}}"
     switch-php "$TARGET_PHP"
 
     # Re-check PATH; some cron envs miss /usr/local/bin, so add a safety symlink

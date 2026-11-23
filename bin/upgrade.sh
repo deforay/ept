@@ -564,6 +564,11 @@ fi
 # Check for PHP version 8.4.x
 php_version=$(php -v | head -n 1 | grep -oE 'PHP [0-9]+\.[0-9]+' | awk '{print $2}')
 desired_php_version="8.4"
+# Ubuntu 26.04 has no PHP 8.4 (the PHP PPA has no 26.04 builds yet). Use Ubuntu's own 8.5,
+# whose security build carries the PHP2Shell fix (see constants.php).
+if dpkg --compare-versions "$(lsb_release -rs 2>/dev/null || echo 0)" ge "26.04"; then
+    desired_php_version="8.5"
+fi
 
 # Download and install switch-php script
 download_file "/usr/local/bin/switch-php" "https://raw.githubusercontent.com/deforay/utility-scripts/master/php/switch-php"

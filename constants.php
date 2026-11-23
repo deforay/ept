@@ -5,7 +5,12 @@ const APP_VERSION = '7.7.5';
 // PHP2Shell (CVE-2026-109618, CVE-2026-109619) is fixed in 8.4.27 and 8.5.12. Composer's
 // platform check rejects anything below 8.4.27 but checks only that lowest bound, so the
 // 8.5 floor is enforced here. Keep in step with "php" in composer.json.
-if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512) {
+// Ubuntu 26.04 ships PHP 8.5.4 with the PHP2Shell patches backported from package revision
+// 0ubuntu1.6 (CVE-2026-109618_109619.patch), so that build passes. Its PHP_VERSION carries the
+// revision, for example "8.5.4-0ubuntu1.6".
+$isPatchedUbuntuPhp = preg_match('/^8\.5\.4-0ubuntu(\d+(?:\.\d+)*)$/', PHP_VERSION, $ubuntuRevision) === 1
+    && version_compare($ubuntuRevision[1], '1.6', '>=');
+if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512 && !$isPatchedUbuntuPhp) {
     $phpFloorMessage = 'ePT requires PHP 8.4.27 or later, or PHP 8.5.12 or later. This server runs PHP ' . PHP_VERSION . '.';
     if (PHP_SAPI === 'cli') {
         fwrite(STDERR, $phpFloorMessage . PHP_EOL);
@@ -16,6 +21,7 @@ if (PHP_VERSION_ID >= 80500 && PHP_VERSION_ID < 80512) {
     }
     exit(1);
 }
+unset($isPatchedUbuntuPhp, $ubuntuRevision);
 
 // Shipment statuses that indicate temporary/in-progress states (not milestones)
 const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing', 'pending'];
