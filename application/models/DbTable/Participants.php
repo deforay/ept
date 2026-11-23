@@ -553,13 +553,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $output['aaData'][] = $row;
                 continue;
             }
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['participantName'];
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['state'];
-            $row[] = $aRow['district'];
-            $row[] = $aRow['email'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['participantName']);
+            $row[] = self::escapeCell($aRow['iso_name']);
+            $row[] = self::escapeCell($aRow['state']);
+            $row[] = self::escapeCell($aRow['district']);
+            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::escapeCell(ucwords($aRow['status']));
 
             /* Data Managers column — compact button only. The actual DM list (which can
                be large — up to ~100 per participant) is loaded on demand via AJAX and
@@ -604,14 +604,26 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
      * Cells for the compact admin Participants list. The data managers and
      * shipments chips open the same child rows as the legacy View buttons.
      */
+    /**
+     * Escape a plain-text value for a DataTables cell, which the grid renders as HTML.
+     * Values already escaped when stored are not escaped twice.
+     */
+    private static function escapeCell($value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
+    }
+
     private function addCompactParticipantRow(array &$row, array $aRow, $translator, array $dmCounts, array $inactiveDmCounts, array $shipmentCounts, array $dmLabels): void
     {
         $participantId = (int) $aRow['participant_id'];
         $isActive = strtolower($aRow['status'] ?? '') === 'active';
+        // The grid renders these cells as HTML. Escape without re-encoding, since some
+        // values are stored already escaped (as the data manager names below are).
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
 
-        $row[] = '<span class="is-numeric">' . $aRow['unique_identifier'] . '</span>';
+        $row[] = '<span class="is-numeric">' . $esc($aRow['unique_identifier']) . '</span>';
 
-        $nameCell = (string) $aRow['participantName'];
+        $nameCell = $esc($aRow['participantName']);
         if (!$isActive) {
             $nameCell .= ' <span class="list-status-badge">' . $translator->_(ucwords((string) $aRow['status'])) . '</span>';
         }
@@ -620,9 +632,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         // Some imports store the country again as the state or district
         $country = strtolower(trim((string) $aRow['iso_name']));
         $places = array_unique(array_filter([trim((string) $aRow['state']), trim((string) $aRow['district'])], fn ($v) => $v !== '' && strtolower($v) !== $country));
-        $row[] = $aRow['iso_name'] . ($places ? '<span class="list-cell-sub">' . implode(', ', $places) . '</span>' : '');
+        $row[] = $esc($aRow['iso_name']) . ($places ? '<span class="list-cell-sub">' . $esc(implode(', ', $places)) . '</span>' : '');
 
-        $row[] = $aRow['email'];
+        // Several addresses can share the field, joined by commas or semicolons without
+        // spaces. One per line lets the column wrap instead of widening the table.
+        $emails = preg_split('/[\s,;]+/', trim((string) $aRow['email']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $row[] = implode('<br>', array_map($esc, $emails));
 
         $dmCount = $dmCounts[$participantId] ?? 0;
         $inactiveDmCount = $inactiveDmCounts[$participantId] ?? 0;
@@ -1105,11 +1120,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = ucwords($aRow['first_name'] . ' ' . $aRow['last_name']);
-            $row[] = ucwords($aRow['iso_name']);
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['email'];
-            $row[] = ucwords($aRow['RESPONSE']);
+            $row[] = self::escapeCell(ucwords($aRow['first_name'] . ' ' . $aRow['last_name']));
+            $row[] = self::escapeCell(ucwords($aRow['iso_name']));
+            $row[] = self::escapeCell($aRow['mobile']);
+            $row[] = self::escapeCell($aRow['email']);
+            $row[] = self::escapeCell(ucwords($aRow['RESPONSE']));
 
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             if (trim($aRow['created_on_user']) == '' && trim($aRow['final_result']) == '' && $aRow['shipmentStatus'] != 'finalized') {
@@ -1227,10 +1242,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = '<input type="checkbox" class="isRequired" name="participants[]" id="' . $aRow['participant_id'] . '" value="' . base64_encode($aRow['participant_id']) . '" onclick="checkParticipantName(' . $aRow['participant_id'] . ',this)" title="Select atleast one participant">';
-            $row[] = ucwords($aRow['first_name'] . ' ' . $aRow['last_name']);
-            $row[] = ucwords($aRow['iso_name']);
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['email'];
+            $row[] = self::escapeCell(ucwords($aRow['first_name'] . ' ' . $aRow['last_name']));
+            $row[] = self::escapeCell(ucwords($aRow['iso_name']));
+            $row[] = self::escapeCell($aRow['mobile']);
+            $row[] = self::escapeCell($aRow['email']);
             // $row[] = ucwords($aRow['status']);
             $row[] = 'Unenrolled';
 
@@ -1527,16 +1542,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['participantName'];
-            $row[] = $aRow['institute_name'];
-            $row[] = $aRow['state'];
-            $row[] = $aRow['district'];
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['phone'];
-            $row[] = $aRow['affiliation'];
-            $row[] = $aRow['email'];
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['participantName']);
+            $row[] = self::escapeCell($aRow['institute_name']);
+            $row[] = self::escapeCell($aRow['state']);
+            $row[] = self::escapeCell($aRow['district']);
+            $row[] = self::escapeCell($aRow['iso_name']);
+            $row[] = self::escapeCell($aRow['mobile']);
+            $row[] = self::escapeCell($aRow['phone']);
+            $row[] = self::escapeCell($aRow['affiliation']);
+            $row[] = self::escapeCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
@@ -1652,16 +1667,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['participantName'];
-            $row[] = $aRow['institute_name'];
-            $row[] = $aRow['state'];
-            $row[] = $aRow['district'];
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['phone'];
-            $row[] = $aRow['affiliation'];
-            $row[] = $aRow['email'];
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['participantName']);
+            $row[] = self::escapeCell($aRow['institute_name']);
+            $row[] = self::escapeCell($aRow['state']);
+            $row[] = self::escapeCell($aRow['district']);
+            $row[] = self::escapeCell($aRow['iso_name']);
+            $row[] = self::escapeCell($aRow['mobile']);
+            $row[] = self::escapeCell($aRow['phone']);
+            $row[] = self::escapeCell($aRow['affiliation']);
+            $row[] = self::escapeCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
@@ -1776,16 +1791,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row = [];
 
             $row[] = '<input type="checkbox" class="checkParticipants" id="chk' . base64_encode($aRow['participant_id']) . '"  value="' . base64_encode($aRow['participant_id']) . '" onclick="toggleSelect(this);"  />';
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['participantName'];
-            $row[] = $aRow['institute_name'];
-            $row[] = $aRow['state'];
-            $row[] = $aRow['district'];
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['phone'];
-            $row[] = $aRow['affiliation'];
-            $row[] = $aRow['email'];
+            $row[] = self::escapeCell($aRow['unique_identifier']);
+            $row[] = self::escapeCell($aRow['participantName']);
+            $row[] = self::escapeCell($aRow['institute_name']);
+            $row[] = self::escapeCell($aRow['state']);
+            $row[] = self::escapeCell($aRow['district']);
+            $row[] = self::escapeCell($aRow['iso_name']);
+            $row[] = self::escapeCell($aRow['mobile']);
+            $row[] = self::escapeCell($aRow['phone']);
+            $row[] = self::escapeCell($aRow['affiliation']);
+            $row[] = self::escapeCell($aRow['email']);
             $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(this, \'' . base64_encode($aRow['participant_id']) . '\',\'' . base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
             $output['aaData'][] = $row;
         }
