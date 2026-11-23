@@ -243,7 +243,9 @@ class Application_Model_Recency
             $averageScore = 0;
         }
 
-        $this->db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
+        // Participant scores are stored as a percentage, so the shipment's maximum is 100.
+        // Summary reports compare each lab's score with it to count full scores.
+        $this->db->update('shipment', ['max_score' => 100, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
 
         return $shipmentResult;
     }
