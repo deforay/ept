@@ -1298,6 +1298,46 @@ EPT_MIN_PHP_VERSION="8.4.27"
 # than EPT_MIN_PHP_VERSION. switch-php only checks major.minor, so a box on
 # 8.4.x below the floor otherwise stays there.
 # Usage: ensure_php_min_version [min_version]
+# Use packages.sury.org/<component> (php or apache2) for this Ubuntu release, and
+# retire the frozen ondrej/<component> Launchpad PPA as its notice says. Installed
+# packages stay and get their next updates from sury. Only a 404 from sury means
+# "no build for this release", and then the distro packages are used.
+use_sury_repo() {
+    local component="$1" codename code f
+    local keyring=/usr/share/keyrings/debsuryorg-archive-keyring.gpg
+    codename=$(lsb_release -cs)
+
+    for f in /etc/apt/sources.list.d/ondrej-ubuntu-"${component}"-*; do
+        [[ -e "$f" ]] || continue
+        rm -f "$f"
+        print info "Removed frozen PPA source $(basename "$f")"
+    done
+
+    if grep -rqs "packages\.sury\.org/${component}" /etc/apt/sources.list /etc/apt/sources.list.d/; then
+        return 0
+    fi
+
+    code=$(curl -sSLI -o /dev/null --max-time 20 --retry 3 --retry-delay 2 -w '%{http_code}' \
+        "https://packages.sury.org/${component}/dists/${codename}/Release" 2>/dev/null) || true
+    if [[ "$code" == "404" ]]; then
+        print warning "packages.sury.org/${component} has no build for '${codename}'; using distro packages."
+        return 0
+    fi
+
+    if [[ ! -s "$keyring" ]]; then
+        curl -fsSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb &&
+            dpkg -i /tmp/debsuryorg-archive-keyring.deb >/dev/null || {
+            print error "Could not install the packages.sury.org signing key."
+            return 1
+        }
+        rm -f /tmp/debsuryorg-archive-keyring.deb
+    fi
+
+    print info "Adding packages.sury.org/${component} for '${codename}'"
+    echo "deb [signed-by=${keyring}] https://packages.sury.org/${component}/ ${codename} main" \
+        >"/etc/apt/sources.list.d/sury-${component}.list"
+}
+
 ensure_php_min_version() {
     local min="${1:-$EPT_MIN_PHP_VERSION}"
     local branch="${min%.*}"
@@ -1329,7 +1369,7 @@ ensure_php_min_version() {
     current="$(php -r 'echo PHP_VERSION;' 2>/dev/null)"
     if ! dpkg --compare-versions "${current:-0}" ge "$min"; then
         print error "PHP is still ${current:-unknown} after the upgrade. ePT needs ${min} or later."
-        print error "Check that the ppa:ondrej/php repository is enabled, then run this script again."
+        print error "Check that packages.sury.org/php is configured (/etc/apt/sources.list.d/sury-php.list), then run this script again."
         log_action "PHP upgrade stopped at ${current:-unknown}, below ${min}"
         return 1
     fi
