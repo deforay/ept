@@ -53,7 +53,6 @@ const DEFAULT_OUTPUT_FILE = APPLICATION_PATH . '/languages/db-translation-string
 $tablesToTranslate = [
     'r_control' => ['control_name'],
     'r_covid19_corrective_actions' => ['corrective_action', 'description'],
-    'r_dts_corrective_actions' => ['corrective_action', 'description'],
     'r_evaluation_comments' => ['comment'],
     'r_feedback_questions' => ['question_text'],
     'r_modes_of_receipt' => ['mode_name'],
