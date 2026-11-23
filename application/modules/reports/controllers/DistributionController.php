@@ -154,6 +154,30 @@ class Reports_DistributionController extends Zend_Controller_Action
         }
     }
 
+    /**
+     * Correct the approval date and approver on a finalized shipment. Saves only those
+     * two fields and does not finalize again. Access is checked in init(), the same as
+     * finalize.
+     */
+    public function saveResultsApprovalAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost() || !$this->hasParam('sid')) {
+            $this->getResponse()->setHttpResponseCode(400);
+            $this->_helper->json(['status' => 'fail', 'message' => 'Bad request']);
+            return;
+        }
+        $shipmentId = (int) base64_decode((string) $this->getParam('sid'));
+        $evalService = new Application_Service_Evaluation();
+        $this->_helper->json($evalService->updateResultsApproval($shipmentId, [
+            'resultsApprovedOn' => (string) $this->getParam('resultsApprovedOn', ''),
+            'resultsApprovedBy' => (string) $this->getParam('resultsApprovedBy', ''),
+        ]));
+    }
+
     public function getJobProgressAction()
     {
         $this->_helper->layout()->disableLayout();

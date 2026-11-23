@@ -485,7 +485,7 @@ if ($resultArray['shipment'] != "") {
             }
             if (!empty($approveTxt)) {
                 // Approver on the left, month and year of approval on the right, as on the CDC forms
-                $approvalDate = date('F Y', strtotime($evalRow['date_finalised'] ?? 'now') ?: time());
+                $approvalDate = date('F Y', strtotime($evalRow['approval_date'] ?? $evalRow['date_finalised'] ?? 'now') ?: time());
                 $html .= '<table style="width:100%;font-size:10px;"><tr><td style="width:65%;text-align:left;">Report approved by ' . $approveTxt . '</td><td style="width:35%;text-align:right;">Date of approval: ' . $approvalDate . '</td></tr></table>';
             }
         }

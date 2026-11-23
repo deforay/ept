@@ -192,9 +192,13 @@ if (!empty($this->shipment)) {
         // current time, which is what the report used to show anyway.
         $approvedOn = trim((string) ($this->shipment[0]['results_approved_on'] ?? ''));
         $approvedBy = trim((string) ($this->shipment[0]['results_approved_by'] ?? ''));
+        // Shown as-is in the confirmation before a finalized shipment's approval is corrected.
+        $storedApprovedOn = ($approvedOn !== '') ? (string) $this->dateFormat($approvedOn) : '';
+        $storedApprovedBy = $approvedBy;
         // Nothing recorded yet: offer the standing approver from /admin/report-config, so the
-        // usual round is a glance rather than retyping the same name every time.
-        if ($approvedBy === '') {
+        // usual round is a glance rather than retyping the same name every time. A finalized
+        // shipment shows what is stored, so the fields match what the reports print.
+        if ($approvedBy === '' && $canFinalize) {
             $approvedBy = trim((string) ((new Application_Service_Reports())->getReportConfigValue('report-approver-name') ?? ''));
         }
         ?>
@@ -217,14 +221,15 @@ if (!empty($this->shipment)) {
                     <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
                         id="shipmentId">
                 </div>
-                <?php if ($canFinalize) { ?>
+                <?php // Shown after finalizing too: approval is often agreed at a meeting weeks later. ?>
                     <div class="shipment-panel-grid">
                         <div class="shipment-panel-field">
                             <label for="resultsApprovedOn"><?= $this->translate->_("Date of Approval"); ?></label>
                             <input type="text" id="resultsApprovedOn" name="resultsApprovedOn"
                                 class="form-control datepicker" readonly="readonly" autocomplete="off"
-                                value="<?= ($approvedOn !== '') ? $this->escape($this->dateFormat($approvedOn)) : ''; ?>"
-                                placeholder="<?= $this->htmlTranslate("Defaults to today"); ?>"
+                                value="<?= $this->escape($storedApprovedOn); ?>"
+                                data-stored="<?= $this->escape($storedApprovedOn); ?>"
+                                placeholder="<?= $canFinalize ? $this->htmlTranslate("Defaults to today") : $this->htmlTranslate("Unchanged if left blank"); ?>"
                                 title="<?= $this->translate->_("Date the results were approved"); ?>" />
                         </div>
                         <div class="shipment-panel-field">
@@ -232,11 +237,11 @@ if (!empty($this->shipment)) {
                             <input type="text" id="resultsApprovedBy" name="resultsApprovedBy"
                                 class="form-control" maxlength="256" autocomplete="off"
                                 value="<?= $this->escape($approvedBy); ?>"
-                                placeholder="<?= $this->htmlTranslate("Defaults to you"); ?>"
+                                data-stored="<?= $this->escape($storedApprovedBy); ?>"
+                                placeholder="<?= $canFinalize ? $this->htmlTranslate("Defaults to you") : $this->htmlTranslate("Unchanged if left blank"); ?>"
                                 title="<?= $this->translate->_("Name of the person approving these results"); ?>" />
                         </div>
                     </div>
-                <?php } ?>
             </div>
             <?php if ($canFinalize && !empty($btnStates['awaitingFeedbackForm'])) { ?>
                 <div class="shipment-panel-alert">
@@ -257,6 +262,10 @@ if (!empty($this->shipment)) {
                     <p class="shipment-panel-note">
                         <?= $this->translate->_("The approval is recorded when you finalize. Leave both fields blank to record you, as of now."); ?>
                     </p>
+                <?php } else { ?>
+                    <p class="shipment-panel-note">
+                        <?= $this->translate->_("Save Approval changes only the Date of Approval and Approved By. It does not finalize the shipment again."); ?>
+                    </p>
                 <?php } ?>
                 <div class="shipment-panel-actions">
                     <?php if (!$canFinalize) { ?>
@@ -266,6 +275,8 @@ if (!empty($this->shipment)) {
                              only that is one more thing to forget to press. -->
                         <button class="btn btn-default"
                             onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
+                        <button type="button" class="btn btn-primary" id="saveApprovalBtn"
+                            onclick="confirmSaveApproval();return false;"><i class="icon-ok"></i>&nbsp;&nbsp;<?= $this->translate->_("Save Approval"); ?></button>
                     <?php } else { ?>
                         <a href="javascript:void(0)" class="btn generate-btn btn-info <?php echo $reportQueue; ?>"
                             onclick="finalizeShipment('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>')"><i
@@ -274,6 +285,55 @@ if (!empty($this->shipment)) {
                 </div>
             </div>
         </div>
+
+        <?php if (!$canFinalize) { ?>
+            <style>
+                #saveApprovalConfirmModal { z-index: 10600; }
+                #saveApprovalConfirmModal .approval-compare th,
+                #saveApprovalConfirmModal .approval-compare td { vertical-align: middle; }
+            </style>
+            <div class="modal fade" id="saveApprovalConfirmModal" tabindex="-1" role="dialog"
+                aria-labelledby="saveApprovalConfirmLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="<?= $this->htmlTranslate('Cancel'); ?>"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="saveApprovalConfirmLabel">
+                                <i class="icon-warning-sign text-warning"></i>
+                                <?= $this->htmlTranslate('Change the approval on this finalized shipment?'); ?>
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-bordered approval-compare">
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"><?= $this->htmlTranslate('Current'); ?></th>
+                                    <th scope="col"><?= $this->htmlTranslate('New'); ?></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?= $this->htmlTranslate('Date of Approval'); ?></th>
+                                    <td id="approvalOldOn"></td>
+                                    <td id="approvalNewOn"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?= $this->htmlTranslate('Approved By'); ?></th>
+                                    <td id="approvalOldBy"></td>
+                                    <td id="approvalNewBy"></td>
+                                </tr>
+                            </table>
+                            <div class="alert alert-warning" style="margin-bottom:0;">
+                                <?= $this->htmlTranslate('Reports already sent to participants keep the old values until the reports are generated again.'); ?>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->htmlTranslate('Cancel'); ?></button>
+                            <button type="button" class="btn btn-primary" id="saveApprovalContinueBtn"><?= $this->htmlTranslate('Continue'); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
         <?php if ($reportQueue != 'disabled') { ?>
             <div class="summaryDivTop row" align="center">
 
@@ -878,6 +938,50 @@ if (!empty($this->shipment)) {
                 generateReports(sid, checkReportDate, surveyDate, 'finalized');
             });
         }
+
+        // Correcting the approval on a finalized shipment. Show the old and new values and
+        // let the admin back out; only Continue sends anything. A blank field keeps the
+        // stored value, so the confirmation shows it that way too.
+        function confirmSaveApproval() {
+            var $on = $('#resultsApprovedOn'), $by = $('#resultsApprovedBy');
+            var oldOn = String($on.data('stored') || ''), oldBy = String($by.data('stored') || '');
+            var newOn = String($on.val() || '').trim() || oldOn;
+            var newBy = String($by.val() || '').trim() || oldBy;
+            if (newOn === oldOn && newBy === oldBy) {
+                alert("<?= $this->jsTranslate("The approval is unchanged."); ?>");
+                return;
+            }
+            var none = "<?= $this->jsTranslate("Not recorded"); ?>";
+            $('#approvalOldOn').text(oldOn || none);
+            $('#approvalNewOn').text(newOn || none).css('font-weight', newOn !== oldOn ? 600 : '');
+            $('#approvalOldBy').text(oldBy || none);
+            $('#approvalNewBy').text(newBy || none).css('font-weight', newBy !== oldBy ? 600 : '');
+            var $modal = $('#saveApprovalConfirmModal');
+            if ($modal.parent().get(0) !== document.body) {
+                $modal.appendTo('body');
+            }
+            $modal.modal('show');
+        }
+
+        $(document).on('click', '#saveApprovalContinueBtn', function () {
+            var $modal = $('#saveApprovalConfirmModal');
+            $modal.modal('hide');
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'save-results-approval'), 'default', true); ?>", {
+                sid: $('#shipmentId').val(),
+                resultsApprovedOn: $('#resultsApprovedOn').val() || '',
+                resultsApprovedBy: String($('#resultsApprovedBy').val() || '').trim()
+            }).done(function (data) {
+                $.unblockUI();
+                alert((data && data.message) ? data.message : "<?= $this->jsTranslate("Approval saved."); ?>");
+                if (data && data.status === 'success') {
+                    location.reload();
+                }
+            }).fail(function () {
+                $.unblockUI();
+                alert("<?= $this->jsTranslate("Unable to save the approval. Please try again."); ?>");
+            });
+        });
 
         function updateComment(sid) {
             $.blockUI();

@@ -28992,6 +28992,64 @@ msgstr ""
 msgid "No participants"
 msgstr "Aucun participant"
 
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Unchanged if left blank"
+msgstr "Inchangé si laissé vide"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid ""
+"Save Approval changes only the Date of Approval and Approved By. It does not "
+"finalize the shipment again."
+msgstr ""
+"Enregistrer l'approbation modifie uniquement la date d'approbation et le nom "
+"de l'approbateur. L'expédition n'est pas finalisée à nouveau."
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Save Approval"
+msgstr "Enregistrer l'approbation"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Change the approval on this finalized shipment?"
+msgstr "Modifier l'approbation de cette expédition finalisée ?"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Current"
+msgstr "Actuel"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid ""
+"Reports already sent to participants keep the old values until the reports "
+"are generated again."
+msgstr ""
+"Les rapports déjà envoyés aux participants conservent les anciennes valeurs "
+"jusqu'à ce que les rapports soient générés à nouveau."
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+#: application/services/Evaluation.php
+msgid "The approval is unchanged."
+msgstr "L'approbation n'a pas changé."
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Not recorded"
+msgstr "Non enregistré"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+#: application/services/Evaluation.php
+msgid "Approval saved."
+msgstr "Approbation enregistrée."
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+msgid "Unable to save the approval. Please try again."
+msgstr "Impossible d'enregistrer l'approbation. Veuillez réessayer."
+
+#: application/services/Evaluation.php
+msgid "Only a finalized shipment can have its approval corrected."
+msgstr "Seule l'approbation d'une expédition finalisée peut être corrigée."
+
+#: application/services/Evaluation.php
+msgid "Please enter a valid Date of Approval."
+msgstr "Veuillez saisir une date d'approbation valide."
+
 #~ msgid "Follow-up comment"
 #~ msgstr "Commentaire de suivi"
 
