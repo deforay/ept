@@ -9009,6 +9009,29 @@ td.center {
 	grid-template-columns: repeat(auto-fill, minmax(190px, 260px));
 }
 
+/* A button in a filter cell (Participants' "Show only Pending Participants") wraps
+   inside its cell. A longer translation otherwise runs under the next filter. */
+.data-list-filters > div > .btn {
+	max-width: 100%;
+	white-space: normal;
+	text-align: left;
+}
+
+/* Email cells hold addresses with no spaces to break at. Break a single address
+   only when it cannot fit on its own line. */
+.data-list table.dataTable td.list-col-email {
+	overflow-wrap: break-word;
+}
+
+/* Below the wide shell's full width, count chips may wrap too. Long translations
+   such as "2 gestionnaires de données" otherwise push the Action column off the card. */
+@media (max-width: 1199px) {
+	.data-list table.dataTable td.list-col-chip,
+	.data-list table.dataTable td.list-col-chip .map-chip {
+		white-space: normal;
+	}
+}
+
 /* Child panels listing a record's mapped data managers or participants. Every
    row shows: no inner scrollbar. Rows past the first ten fold behind a
    "Show all" link until it is clicked or the panel filter is used. */
