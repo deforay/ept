@@ -11,7 +11,8 @@
 //   php bin/migrate.php -v 7.4.1     replay inclusively from a specific version (ignores DB version)
 //   php bin/migrate.php --status     show current version + pending files, then exit
 //
-// Env: MIG_VERBOSE=1 traces idempotent routing; MIG_REPLACE_PK=1 forces PK replacement.
+// Env: MIG_VERBOSE=1 traces idempotent routing. MIG_REPLACE_PK=1 forces PK replacement.
+// MIGRATE_DB_NAME=<name> migrates that database instead of the one in application.ini.
 
 // only run from command line
 if (php_sapi_name() !== 'cli') {
@@ -50,8 +51,16 @@ if (!file_exists($logsDir)) {
     $canLog = is_readable($logsDir) && is_writable($logsDir);
 }
 
+// MIGRATE_DB_NAME migrates another database on the same server. bin/dev/regenerate-init-sql.php
+// uses it to build a throwaway database without editing application.ini.
+$dbConfig = $conf->resources->db->toArray();
+$dbOverride = getenv('MIGRATE_DB_NAME');
+if (is_string($dbOverride) && $dbOverride !== '') {
+    $dbConfig['params']['dbname'] = $dbOverride;
+}
+
 try {
-    $db = Zend_Db::factory($conf->resources->db);
+    $db = Zend_Db::factory($dbConfig['adapter'], $dbConfig['params']);
     // The adapter connects lazily. Connect now so a refused connection lands in this catch.
     $db->getConnection();
     Zend_Db_Table::setDefaultAdapter($db);

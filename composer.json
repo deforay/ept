@@ -50,6 +50,7 @@
         "tasks": "@php vendor/bin/crunz schedule:run",
         "collation": "@php vendor/bin/db-tools collation",
         "heal-schema": "@php bin/heal-schema.php --apply",
+        "init-sql": "@php bin/dev/regenerate-init-sql.php",
         "migrate": [
             "@heal-schema",
             "@php bin/migrate.php -yq",
