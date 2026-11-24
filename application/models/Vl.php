@@ -515,11 +515,12 @@ class Application_Model_Vl
             ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
             ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id = spm.pt_not_tested_reason', ['ntTestedReason' => 'ntr.ntr_reason'])
             ->where('s.shipment_id = ?', $shipmentId);
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        // Admin pages see every lab; a data manager sees only their own labs.
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if ($scopedDmId !== null) {
             $queryOverAll = $queryOverAll
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -748,11 +749,12 @@ class Application_Model_Vl
                 ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                 ->where('sp.final_result = 1 OR sp.final_result = 2')
                 ->group('refVl.sample_id');
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (!empty($authNameSpace->dm_id)) {
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
+            if ($scopedDmId !== null) {
                 $vlQuery = $vlQuery
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
-                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                    ->where('pmm.dm_id = ?', $scopedDmId);
             }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
@@ -761,11 +763,14 @@ class Application_Model_Vl
                     ->where("sp.is_excluded not like 'yes'")
                     ->where('sp.attributes->>"$.vl_assay" = 6')
                     ->where('sp.shipment_id = ? ', $shipmentId);
-                $authNameSpace = new Zend_Session_Namespace('datamanagers');
-                if (!empty($authNameSpace->dm_id)) {
-                    $vlQuery = $vlQuery
-                        ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
-                        ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                // Admin pages see every lab; a data manager sees only their own labs.
+                // This scopes $cQuery; it used to join onto $vlQuery a second time,
+                // which threw and left the "Other" assay list unscoped.
+                $scopedDmId = Application_Service_Common::getScopedDmId();
+                if ($scopedDmId !== null) {
+                    $cQuery = $cQuery
+                        ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
+                        ->where('pmm.dm_id = ?', $scopedDmId);
                 }
                 $cResult = $db->fetchAll($cQuery);
 

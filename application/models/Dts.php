@@ -2478,7 +2478,8 @@ final class Application_Model_Dts
     private function getShipmentResult($shipmentId)
     {
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        // Admin pages see every lab; a data manager sees only their own labs.
+        $scopedDmId = Application_Service_Common::getScopedDmId();
 
         $sql = $this->db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.is_pt_test_not_performed', 'sp.pt_test_not_performed_comments'])
@@ -2491,9 +2492,9 @@ final class Application_Model_Dts
             ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
             ->where('s.shipment_id = ?', $shipmentId)
             ->group(['sp.map_id']);
-        if (!empty($authNameSpace->dm_id)) {
+        if ($scopedDmId !== null) {
             $sql = $sql
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         return $this->db->fetchAll($sql);
     }

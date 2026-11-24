@@ -543,11 +543,12 @@ class Application_Model_Tb
                 ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'spm.pt_not_tested_reason = ntr.ntr_id', ['ntTestedReason' => 'ntr_reason'])
                 ->where('s.shipment_id = ?', $shipmentId)
                 ->group(['spm.map_id']);
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (!empty($authNameSpace->dm_id)) {
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
+            if ($scopedDmId !== null) {
                 $sql = $sql
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
-                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                    ->where('pmm.dm_id = ?', $scopedDmId);
             }
             $shipmentResult = $db->fetchAll($sql);
             $currentRow = 1;
@@ -1770,7 +1771,8 @@ class Application_Model_Tb
             $excel = new Spreadsheet();
 
             /* Panel Statistics */
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
             $panelStatisticsQuery = 'SELECT COUNT(spm.map_id) AS participating_sites,
                 SUM(CASE WHEN ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . " THEN 1 ELSE 0 END) AS response_received,
                 SUM(CASE WHEN spm.is_excluded = 'yes' THEN 1 ELSE 0 END) AS excluded,
@@ -1779,12 +1781,12 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
             $panelStatisticsQuery .= ' JOIN participant AS p ON p.participant_id = spm.participant_id';
-            if (!empty($authNameSpace->dm_id)) {
+            if ($scopedDmId !== null) {
                 $panelStatisticsQuery .= ' JOIN participant_manager_map AS pmm ON pmm.participant_id = p.participant_id';
             }
             $panelStatisticsQuery .= ' WHERE spm.shipment_id = ' . (int) $params['shipmentId'];
-            if (!empty($authNameSpace->dm_id)) {
-                $panelStatisticsQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
+            if ($scopedDmId !== null) {
+                $panelStatisticsQuery .= " AND pmm.dm_id IN({$scopedDmId}) ";
             }
             $panelStatisticsQuery .= ';';
             $panelStatistics = $db->fetchRow($panelStatisticsQuery);
@@ -1836,7 +1838,8 @@ class Application_Model_Tb
             $columnIndex = 1;
 
             /* Non participant country */
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
             $nonParticipatingCountriesQuery = "SELECT countries.iso_name AS country_name,
                 CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes' THEN IFNULL(rntr.ntr_reason, 'Unknown') ELSE NULL END AS not_tested_reason,
                 SUM(CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes' THEN 1 ELSE 0 END) AS is_pt_test_not_performed,
@@ -1844,13 +1847,13 @@ class Application_Model_Tb
                 FROM shipment_participant_map AS spm
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 JOIN countries ON countries.id = p.country ";
-            if (!empty($authNameSpace->dm_id)) {
+            if ($scopedDmId !== null) {
                 $nonParticipatingCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $nonParticipatingCountriesQuery .= ' LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.pt_not_tested_reason
                 WHERE spm.shipment_id = ?';
-            if (!empty($authNameSpace->dm_id)) {
-                $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
+            if ($scopedDmId !== null) {
+                $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN({$scopedDmId}) ";
             }
             $nonParticipatingCountriesQuery .= ' GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;';
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, [$params['shipmentId']])->fetchAll();
@@ -1917,18 +1920,19 @@ class Application_Model_Tb
                 $columnIndex = 1;
             }
             /* Error code */
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
             $errorCodesQuery = 'SELECT res.error_code, COUNT(*) AS number_of_occurrences
                 FROM shipment_participant_map AS spm
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
                 JOIN participant AS p ON p.participant_id = spm.participant_id ';
-            if (!empty($authNameSpace->dm_id)) {
+            if ($scopedDmId !== null) {
                 $errorCodesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $errorCodesQuery .= " WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
-            if (!empty($authNameSpace->dm_id)) {
-                $errorCodesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
+            if ($scopedDmId !== null) {
+                $errorCodesQuery .= " AND pmm.dm_id IN({$scopedDmId}) ";
             }
             $errorCodesQuery .= ' GROUP BY res.error_code ORDER BY error_code ASC;';
             $errorCodes = $db->query($errorCodesQuery, [$params['shipmentId']])->fetchAll();
@@ -1947,7 +1951,8 @@ class Application_Model_Tb
                 $columnIndex = 1;
             }
 
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
             $discordantResultsInnerQuery = "FROM (
                 SELECT p.unique_identifier,
                     p.lab_name,
@@ -1971,15 +1976,15 @@ class Application_Model_Tb
                     JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
                                                     AND ref.sample_id = res.sample_id
                     LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-            if (!empty($authNameSpace->dm_id)) {
+            if ($scopedDmId !== null) {
                 $discordantResultsInnerQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $discordantResultsInnerQuery .= ' WHERE spm.shipment_id = ?
                     AND ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . "
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
-            if (!empty($authNameSpace->dm_id)) {
-                $discordantResultsInnerQuery .= ' AND pmm.dm_id IN(' . $authNameSpace->dm_id . ') ';
+            if ($scopedDmId !== null) {
+                $discordantResultsInnerQuery .= ' AND pmm.dm_id IN(' . $scopedDmId . ') ';
             }
             $discordantResultsInnerQuery .= ' ) AS rifDetect';
             $discordantResultsQuery = "SELECT rifDetect.sample_label,
@@ -2034,7 +2039,8 @@ class Application_Model_Tb
             $columnIndex++;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode((string) $falseResistanceTotal, ENT_QUOTES, 'UTF-8'));
 
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Admin pages see every lab; a data manager sees only their own labs.
+            $scopedDmId = Application_Service_Common::getScopedDmId();
             $discordantCountriesQuery = "SELECT rifDetect.country_name,
                 SUM(CASE WHEN (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1) OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1) OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1) THEN 1 ELSE 0 END) AS discordant,
                 COUNT(rifDetect.country_id) AS total_results
@@ -2055,14 +2061,14 @@ class Application_Model_Tb
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
                 JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id AND ref.sample_id = res.sample_id
                 LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-            if (!empty($authNameSpace->dm_id)) {
+            if ($scopedDmId !== null) {
                 $discordantCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $discordantCountriesQuery .= ' WHERE spm.shipment_id = ?
                 AND ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . "
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
-            if (!empty($authNameSpace->dm_id)) {
-                $discordantCountriesQuery .= ' AND pmm.dm_id IN(' . $authNameSpace->dm_id . ') ';
+            if ($scopedDmId !== null) {
+                $discordantCountriesQuery .= ' AND pmm.dm_id IN(' . $scopedDmId . ') ';
             }
             $discordantCountriesQuery .= ' ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;';
             $discordantCountries = $db->query($discordantCountriesQuery, [$params['shipmentId']])->fetchAll();
