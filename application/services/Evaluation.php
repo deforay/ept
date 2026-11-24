@@ -4528,9 +4528,15 @@ class Application_Service_Evaluation
         );
 
         if (!$queueRow) {
+            // No report job yet (for example a first evaluation). shipment_status still
+            // has to come back: shipment-run-status.js refreshes a row once the shipment
+            // leaves queued/processing, and would refresh in a loop without it.
             return [
                 'status' => 'idle',
                 'in_progress' => false,
+                'shipment_status' => (string) ($db->fetchOne(
+                    $db->select()->from('shipment', 'status')->where('shipment_id = ?', $shipmentId)
+                ) ?: 'unknown'),
                 'participant_reports' => ['total' => 0, 'completed' => 0, 'percentage' => 0],
                 'summary_report' => ['status' => 'not_started'],
             ];
