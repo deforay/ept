@@ -690,6 +690,13 @@ class ReportGenerator
     // -------------------------------------------------------------------------
 
     /**
+     * Printed by a worker as its very last step. The parent accepts a worker only if
+     * it exited 0 and printed this: TCPDF's Error() calls die(), which ends the
+     * process with exit code 0 part-way through, and that must count as a failure.
+     */
+    public const WORKER_DONE_MARKER = 'REPORT_WORKER_DONE';
+
+    /**
      * Subprocess entry point: Generate participant PDFs for a specific chunk.
      * Called automatically by participantReports() when --procs > 1.
      */
@@ -732,6 +739,7 @@ class ReportGenerator
         // Get participant counts
         $totParticipantsRes = $this->fetchParticipantCounts($shipmentId);
         if (!is_array($totParticipantsRes)) {
+            echo PHP_EOL . self::WORKER_DONE_MARKER . PHP_EOL;
             exit(0);
         }
 
@@ -749,6 +757,7 @@ class ReportGenerator
             );
         }
 
+        echo PHP_EOL . self::WORKER_DONE_MARKER . PHP_EOL;
         exit(0);
     }
 
@@ -842,10 +851,10 @@ class ReportGenerator
         $chunkSize = 500;
         $progressBar = $this->startParticipantProgressBar($reportedCount);
 
-        if ($this->opts->procs <= 1) {
+        // The parallel path returns false when it could not start a single worker;
+        // fall back to generating in this process rather than finishing with no reports.
+        if ($this->opts->procs <= 1 || !$this->generateParticipantReportsParallel($evalRow, $reportedCount, $resultStatus, $progressBar)) {
             $this->generateParticipantReportsSequential($evalRow, $totParticipantsRes, $allGeneTypes, $reportedCount, $resultStatus, $chunkSize, $progressBar);
-        } else {
-            $this->generateParticipantReportsParallel($evalRow, $reportedCount, $resultStatus, $progressBar);
         }
 
         if ($progressBar) {
@@ -948,77 +957,115 @@ class ReportGenerator
 
     /**
      * Generate participant reports in parallel using worker subprocesses.
+     *
+     * Returns false when no worker could be started, so the caller generates in
+     * this process instead. A worker that fails is retried once on its own; if it
+     * fails again the run throws, and the main loop marks the shipment failed with
+     * the reason. Finishing would package and publish a set with reports missing.
      */
     private function generateParticipantReportsParallel(
         array $evalRow,
         int $reportedCount,
         string $resultStatus,
         $progressBar
-    ): void {
+    ): bool {
         $batchSize = (int) ceil($reportedCount / $this->opts->procs);
         if ($batchSize < 1) {
             $batchSize = 1;
         }
 
-        $phpBinary = defined('PHP_BINARY') && is_string(PHP_BINARY) && PHP_BINARY !== '' ? PHP_BINARY : 'php';
         $processes = [];
-
-        // Start worker processes
+        $notStarted = [];
         for ($offset = 0; $offset <= $reportedCount; $offset += $batchSize) {
-            try {
-                $cmd = [
-                    $phpBinary,
-                    __FILE__,
-                    '--worker',
-                    '--shipment',
-                    $evalRow['shipment_id'],
-                    '--offset',
-                    $offset,
-                    '--limit',
-                    $batchSize,
-                    '--reportType',
-                    $resultStatus,
-                ];
-
-                $process = new Process($cmd);
-                $process->setTimeout(null);
-                $process->start();
-
+            $process = $this->startWorker($evalRow, $offset, $batchSize, $resultStatus);
+            if ($process !== null) {
                 $processes[] = ['process' => $process, 'offset' => $offset];
-            } catch (Throwable $t) {
-                self::log("Failed to start worker for offset {$offset}: " . $t->getMessage(), $this->opts->isCli);
+            } else {
+                $notStarted[] = $offset;
             }
         }
 
         if (empty($processes)) {
-            self::error('Failed to start any worker processes; falling back to sequential generation.', $this->opts->isCli);
-            // Note: Caller should handle fallback
-            return;
+            self::error('Failed to start any worker processes; generating in this process instead.', $this->opts->isCli);
+            return false;
         }
 
-        // Monitor workers and update progress
-        $this->monitorWorkerProcesses($processes, $evalRow, $progressBar);
+        // Monitor workers and update progress. A share whose worker never started
+        // is a failure too, or its participants would silently get no report.
+        $failedOffsets = array_merge($notStarted, $this->monitorWorkerProcesses($processes, $evalRow, $progressBar));
+
+        // Retry each failed share once, one at a time. Most failures are transient
+        // (a memory spike, a chart renderer hiccup) and pass the second time.
+        $stillFailed = [];
+        foreach ($failedOffsets as $offset) {
+            self::warn("Retrying the worker for offset {$offset}.", $this->opts->isCli);
+            $process = $this->startWorker($evalRow, $offset, $batchSize, $resultStatus);
+            if ($process === null) {
+                $stillFailed[] = $offset;
+                continue;
+            }
+            $retry = [['process' => $process, 'offset' => $offset]];
+            if (!empty($this->monitorWorkerProcesses($retry, $evalRow, $progressBar))) {
+                $stillFailed[] = $offset;
+            }
+        }
+
+        if (!empty($stillFailed)) {
+            $batches = count($stillFailed);
+            throw new RuntimeException(
+                "Participant reports could not be generated for {$batches} batch(es) of up to {$batchSize} participants"
+                . ' (offsets ' . implode(', ', $stillFailed) . '), even after a retry. The run was stopped so an'
+                . ' incomplete set of reports is not published. Check the error log, then generate again.'
+            );
+        }
 
         // Verify PDFs were created
         $participantPdfs = glob($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
         if (empty($participantPdfs)) {
-            $msg = 'Parallel generation produced no participant PDFs. Retrying sequentially.';
-            if ($this->opts->isCli && $progressBar) {
-                Pt_Commons_MiscUtility::spinnerPausePrint($progressBar, static function () use ($msg): void {
-                    Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<comment>WARNING:</comment> {$msg}");
-                });
-            } else {
-                self::warn($msg, $this->opts->isCli);
-            }
-            // Fallback to sequential - caller should handle this
+            self::warn('Parallel generation finished without errors but produced no participant PDFs.', $this->opts->isCli);
+        }
+
+        return true;
+    }
+
+    /**
+     * Start one worker subprocess for a share of the participants. Null if it could
+     * not be started.
+     */
+    private function startWorker(array $evalRow, int $offset, int $batchSize, string $resultStatus): ?Process
+    {
+        $phpBinary = defined('PHP_BINARY') && is_string(PHP_BINARY) && PHP_BINARY !== '' ? PHP_BINARY : 'php';
+        try {
+            $process = new Process([
+                $phpBinary,
+                __FILE__,
+                '--worker',
+                '--shipment',
+                $evalRow['shipment_id'],
+                '--offset',
+                $offset,
+                '--limit',
+                $batchSize,
+                '--reportType',
+                $resultStatus,
+            ]);
+            $process->setTimeout(null);
+            $process->start();
+
+            return $process;
+        } catch (Throwable $t) {
+            self::error("Failed to start worker for offset {$offset}: " . $t->getMessage(), $this->opts->isCli);
+
+            return null;
         }
     }
 
     /**
      * Monitor running worker processes and update progress bar.
      */
-    private function monitorWorkerProcesses(array &$processes, array $evalRow, $progressBar): void
+    private function monitorWorkerProcesses(array &$processes, array $evalRow, $progressBar): array
     {
+        $failedOffsets = [];
         $lastCount = $this->getPdfCount($evalRow['shipment_code']);
         $lastProgressRedrawAt = microtime(true);
 
@@ -1028,7 +1075,9 @@ class ReportGenerator
                 $offset = $procData['offset'];
 
                 if (!$process->isRunning()) {
-                    $this->handleWorkerCompletion($process, $offset, $progressBar);
+                    if (!$this->handleWorkerCompletion($process, $offset, $progressBar)) {
+                        $failedOffsets[] = $offset;
+                    }
                     unset($processes[$key]);
                 }
             }
@@ -1055,17 +1104,25 @@ class ReportGenerator
 
             usleep(150000);
         }
+
+        return $failedOffsets;
     }
 
     /**
      * Handle completion of a worker process.
      */
-    private function handleWorkerCompletion(Process $process, int $offset, $progressBar): void
+    private function handleWorkerCompletion(Process $process, int $offset, $progressBar): bool
     {
         try {
-            if (!$process->isSuccessful()) {
+            $out = (string) $process->getOutput();
+            $finished = str_contains($out, self::WORKER_DONE_MARKER);
+            if (!$process->isSuccessful() || !$finished) {
                 $exitCode = $process->getExitCode();
                 $err = trim((string) $process->getErrorOutput());
+                if ($err === '' && !$finished) {
+                    // die() prints its message to stdout, for example "TCPDF ERROR: ...".
+                    $err = 'stopped before finishing: ' . trim(strip_tags($out));
+                }
                 $msg = "Worker failed (offset {$offset}" . ($exitCode !== null ? ", exit {$exitCode}" : '') . ')';
                 if ($err !== '') {
                     $msg .= ': ' . preg_replace('/\\s+/', ' ', $err);
@@ -1078,14 +1135,20 @@ class ReportGenerator
                 } else {
                     self::error($msg, $this->opts->isCli);
                 }
-            } else {
-                $out = trim($process->getOutput());
-                if ($out !== '') {
-                    self::log("Worker completed (offset {$offset}) output: " . $out, $this->opts->isCli);
-                }
+
+                return false;
             }
+
+            $out = trim(str_replace(self::WORKER_DONE_MARKER, '', $out));
+            if ($out !== '') {
+                self::log("Worker completed (offset {$offset}) output: " . $out, $this->opts->isCli);
+            }
+
+            return true;
         } catch (Throwable $t) {
-            self::log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage(), $this->opts->isCli);
+            self::error("Worker crashed while waiting (offset {$offset}): " . $t->getMessage(), $this->opts->isCli);
+
+            return false;
         }
     }
 
@@ -1836,7 +1899,16 @@ try {
     //
     if ($cliOpts->isSubProcess) {
         Pt_Reports_ChartService::initialize();
-        $reportGenerator->runAsSubProcess();
+        try {
+            $reportGenerator->runAsSubProcess();
+        } catch (Throwable $workerError) {
+            // Exit non-zero so the parent sees the failure. Falling through to the
+            // script-level catch only logged it and ended with exit code 0, so a
+            // worker that stopped halfway counted as a success.
+            ReportGenerator::error("Worker failed: {$workerError->getFile()}:{$workerError->getLine()} : {$workerError->getMessage()}", $cliOpts->isCli);
+            Pt_Reports_ChartService::shutdown();
+            exit(1);
+        }
         exit(0);
     }
 
@@ -1883,6 +1955,10 @@ try {
     $isCli = php_sapi_name() === 'cli';
     ReportGenerator::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
     ReportGenerator::log("<fg=gray>{$e->getTraceAsString()}</>", $isCli);
+    // Exit non-zero (below, after cleanup). A worker that failed while starting
+    // up, before its own handler, used to end here with exit code 0, so the parent
+    // took its missing share of reports for a success.
+    $scriptFailed = true;
 } finally {
     Pt_Reports_ChartService::shutdown();
     // Always release lock, even on exception
@@ -1890,4 +1966,8 @@ try {
         unset($reportGenerator);
     }
     $GLOBALS['_reportGenerator'] = null;
+}
+
+if (!empty($scriptFailed)) {
+    exit(1);
 }
