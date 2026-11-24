@@ -91,6 +91,10 @@ foreach ($savedSettings as $key => $savedValue) {
 }
 ?>
 
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <?php if (!$isEditMode && !empty($this->isMalawiInstance)): ?>
     <!-- Malawi-specific fields (ADD mode only) -->
     <div class="form-group">
@@ -124,6 +128,8 @@ foreach ($savedSettings as $key => $savedValue) {
             title="Please select the report effective date" class="form-control input-sm datepicker"
             value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
+</div>
+</div>
 </div>
 <!-- Generic Sample Table -->
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"

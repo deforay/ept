@@ -114,6 +114,10 @@ foreach ($savedSettings as $key => $savedValue) {
     }
 </style>
 
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <?php if (!empty($this->isMalawiInstance)): ?>
     <div class="form-group">
         <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
@@ -150,6 +154,8 @@ foreach ($savedSettings as $key => $savedValue) {
             title="<?= $this->htmlTranslate("Please select the report effective date") ?>" class="form-control input-sm datepicker"
             value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
+</div>
+</div>
 </div>
 <!-- COVID-19 Sample Table -->
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"

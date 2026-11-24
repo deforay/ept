@@ -9276,3 +9276,161 @@ td.center {
 	font-weight: normal;
 	white-space: nowrap;
 }
+
+/* Shipment add/edit: the settings every scheme shares, as one card with the
+   labels above the inputs. Matches the TB sample cards further down the page. */
+.shipment-meta {
+	background: #fff;
+	border: 1px solid #e2e6ee;
+	border-radius: 6px;
+	box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+	padding: 16px 18px 6px;
+	margin: 4px 0 22px;
+	max-width: 1320px;
+}
+
+/* Read-only facts above the shipment settings card (PT Survey, scheme). */
+.shipment-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 32px;
+	margin: 0 0 14px;
+	max-width: 1320px;
+}
+
+.shipment-facts dt {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .02em;
+	text-transform: uppercase;
+	color: #6b7280;
+	margin-bottom: 2px;
+}
+
+.shipment-facts dd {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #2c3e50;
+}
+
+.shipment-meta-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0 20px;
+}
+
+.shipment-meta .meta-field {
+	min-width: 0;
+	margin-bottom: 14px;
+}
+
+.shipment-meta .meta-field-wide {
+	grid-column: span 2;
+}
+
+/* Spans the whole card width, e.g. the Generic Test block on the Add form. */
+.shipment-meta .meta-field-full {
+	grid-column: 1 / -1;
+}
+
+/* A field with no label of its own, such as the feedback form status next to
+   Collect Feedback, drops by one label height so it lines up with the inputs. */
+.shipment-meta .meta-field-nolabel {
+	padding-top: 19px;
+}
+
+.shipment-meta .meta-field-nolabel .feedback-form-status {
+	margin: 0;
+}
+
+.shipment-meta .meta-field > label {
+	display: block;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .02em;
+	text-transform: uppercase;
+	color: #6b7280;
+	margin-bottom: 4px;
+	text-align: left;
+}
+
+.shipment-meta .meta-field .form-control {
+	width: 100%;
+}
+
+.shipment-meta .meta-field .form-control[disabled] {
+	background: #f4f6f9;
+	color: #334155;
+}
+
+.shipment-meta .meta-help {
+	display: block;
+	margin-top: 4px;
+	font-size: 11.5px;
+	line-height: 1.35;
+	color: #64748b;
+}
+
+/* Scheme partials keep their Bootstrap label-left rows (.form-group with a
+   col-lg-3 label and a col-lg-5 input), and scripts show and hide those rows.
+   Inside .shipment-meta-rows each row becomes one grid cell with the label on
+   top, so the markup and its scripts stay as they are. Cells line up on the
+   bottom edge because some labels carry a second hint line. */
+.shipment-meta-rows {
+	align-items: end;
+}
+
+.form-horizontal .shipment-meta-rows > .form-group {
+	margin: 0 0 14px;
+	min-width: 0;
+}
+
+.form-horizontal .shipment-meta-rows > .form-group > .control-label {
+	float: none;
+	width: auto;
+	display: block;
+	padding: 0;
+	margin-bottom: 4px;
+	text-align: left;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .02em;
+	text-transform: uppercase;
+	color: #6b7280;
+}
+
+.form-horizontal .shipment-meta-rows > .form-group > .control-label small {
+	display: block;
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: normal;
+	color: #64748b;
+}
+
+.form-horizontal .shipment-meta-rows > .form-group > .control-label br {
+	display: none;
+}
+
+.form-horizontal .shipment-meta-rows > .form-group > [class*="col-lg-"] {
+	float: none;
+	width: auto;
+	padding: 0;
+	margin: 0;
+}
+
+@media (max-width: 991px) {
+	.shipment-meta-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.shipment-meta-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.shipment-meta .meta-field-wide {
+		grid-column: auto;
+	}
+}

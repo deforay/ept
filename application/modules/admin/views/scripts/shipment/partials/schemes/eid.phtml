@@ -63,12 +63,16 @@ $eidConfig = $this->config;
 $reportVersion = isset($eidConfig['reportVersion']) ? $eidConfig['reportVersion'] : '';
 $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'] : '';
 ?>
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <div class="form-group">
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="<?= $this->htmlTranslate("Enter the report version") ?>"
             title="<?= $this->htmlTranslate("Please enter the report version") ?>" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars((string) ($shipmentAttribute['reportVersion'] ?? $reportVersion), ENT_QUOTES); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -77,8 +81,10 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="<?= $this->htmlTranslate("Select the report effective date") ?>"
             title="<?= $this->htmlTranslate("Please select the report effective date") ?>" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars((string) ($shipmentAttribute['effectiveDate'] ?? $effectiveDate), ENT_QUOTES); ?>" />
     </div>
+</div>
+</div>
 </div>
 <!-- EID Sample Table -->
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"
