@@ -580,11 +580,12 @@ class Application_Model_Covid19
             ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
             ->where('s.shipment_id = ?', $shipmentId)
             ->group(['sp.map_id']);
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        // Admin pages see every lab; a data manager sees only their own labs.
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if ($scopedDmId !== null) {
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
 
         $shipmentResult = $db->fetchAll($sql);
