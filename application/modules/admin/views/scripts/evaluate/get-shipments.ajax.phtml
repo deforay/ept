@@ -118,7 +118,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 						<td style="text-align: center;"><?= $responsePercentage; ?>%</td>
 						<td style="text-align: center;"><?= (int) $passed; ?></td>
 						<td style="text-align: center;">
-							<?= ucfirst($shipment['shipment_status']); ?>
+							<?= Application_Service_Shipments::statusCellHtml($shipment, ucfirst((string) $shipment['shipment_status'])); ?>
 							<?php if (!empty($this->needsReEval[(int) $shipment['shipment_id']])): ?>
 								<br>
 								<span title="<?= $this->translate->_('New responses arrived after this shipment was last evaluated'); ?>"

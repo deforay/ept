@@ -5472,6 +5472,38 @@ class Application_Service_Shipments
      *   - evaluateButtonText: string - "Evaluate" or "Re-Evaluate"
      *   - viewEnabled, evaluateEnabled, generateReportsEnabled, finalizeEnabled: bool button flags
      */
+    /**
+     * The Shipment Status cell on the Evaluate, Distribution and Finalize listings.
+     *
+     * A shipment that is queued or being processed gets a hook for
+     * public/js/shipment-run-status.js, which polls the report job and shows live
+     * progress ("Generating · 37% (480/1,309)"), then refreshes the row when the run
+     * ends. The labels travel as data attributes so the script needs no page setup.
+     */
+    public static function statusCellHtml(array $shipment, string $label): string
+    {
+        $status = (string) ($shipment['shipment_status'] ?? $shipment['status'] ?? '');
+        $escapedLabel = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
+        if (!in_array($status, ['queued', 'processing'], true) || empty($shipment['shipment_id'])) {
+            return $escapedLabel;
+        }
+
+        $translator = Zend_Registry::get('translate');
+        $attrs = [
+            'class' => 'shipment-run-status',
+            'data-run-sid' => base64_encode((string) $shipment['shipment_id']),
+            'data-label-queued' => $translator->_('Queued'),
+            'data-label-generating' => $translator->_('Generating'),
+            'data-label-finalizing' => $translator->_('Finalizing'),
+        ];
+        $html = '<span';
+        foreach ($attrs as $name => $value) {
+            $html .= ' ' . $name . '="' . htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') . '"';
+        }
+
+        return $html . '>' . $escapedLabel . '</span>';
+    }
+
     public static function getShipmentButtonStates(array $shipment): array
     {
         // Determine milestone states from timestamps
