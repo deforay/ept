@@ -4145,6 +4145,8 @@ class Application_Service_Shipments
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->where('s.distribution_id = ?', $distributionId)
+            // Cancelling is the shipment soft-delete: no reports to generate or finalize.
+            ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id');
 
         if (isset($shipmentId) && !empty($shipmentId) && $shipmentId > 0) {
