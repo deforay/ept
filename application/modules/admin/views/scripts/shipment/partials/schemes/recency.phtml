@@ -115,6 +115,10 @@ foreach ($savedSettings as $key => $savedValue) {
         : ($savedValue ?? $configValue ?? null);
 }
 ?>
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <div class="form-group">
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
@@ -128,6 +132,8 @@ foreach ($savedSettings as $key => $savedValue) {
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="<?= $this->htmlTranslate("Select the report effective date") ?>"
             title="<?= $this->htmlTranslate("Please select the report effective date") ?>" class="form-control input-sm datepicker" value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
+</div>
+</div>
 </div>
 <!-- Recency Sample Table -->
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">

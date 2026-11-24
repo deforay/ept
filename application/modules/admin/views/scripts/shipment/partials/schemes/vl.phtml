@@ -93,12 +93,16 @@ foreach ($savedSettings as $key => $savedValue) {
         max-height: 100%;
     }
 </style>
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <div class="form-group">
     <label class="col-lg-3 control-label" for="methodOfEvaluation"><?= $this->translate->_("Method of Evaluation"); ?>
         <span class='mandatory'>*</span></label>
     <div class="col-lg-5">
         <select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control input-sm"
-            title="Please select a Method of Evaluation" style="margin-bottom: 15px;">
+            title="Please select a Method of Evaluation">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
             <option value="iso17043" <?= ($effectiveSettings['methodOfEvaluation'] ?? '') === "iso17043" ? 'selected="selected"' : ''; ?>>
                 <?= $this->translate->_("ISO/IEC 17043"); ?>
@@ -125,6 +129,8 @@ foreach ($savedSettings as $key => $savedValue) {
             title="Please select the report effective date" class="form-control input-sm datepicker"
             value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
+</div>
+</div>
 </div>
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"
     id="vlSampleTable">

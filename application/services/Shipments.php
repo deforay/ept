@@ -862,8 +862,14 @@ class Application_Service_Shipments
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', '', '', 's.status'];
-        $orderColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', 'distribution_date', 'response_deadline', 'number_of_samples', 'total_participants', '', 's.status'];
+        // Grid columns: 0 Shipment (code + scheme), 1 PT Survey (code + date), 2 Due Date,
+        // 3 Samples, 4 Participants, 5 Status (with the response switch), 6 Action.
+        // $aColumns drives the per-column header filters, $searchColumns the global
+        // search box, which still matches the scheme name and PT survey date shown
+        // under each code.
+        $aColumns = ['shipment_code', 'distribution_code', "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', '', 's.status'];
+        $searchColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', 's.status'];
+        $orderColumns = ['shipment_code', 'distribution_date', 'response_deadline', 'number_of_samples', 'total_participants', 's.status'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -879,11 +885,9 @@ class Application_Service_Shipments
                 if (!isset($orderColumns[$colIdx])) {
                     continue;
                 }
-                if (!empty($orderColumns[$colIdx])) {
-                    if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                        $sOrder .= $orderColumns[$colIdx] . '
-                            ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                    }
+                if ($parameters['bSortable_' . $colIdx] == 'true') {
+                    $sOrder .= $orderColumns[$colIdx] . ' '
+                        . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -900,25 +904,18 @@ class Application_Service_Shipments
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $colSize = count($aColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
-                        if ($i < $colSize - 1) {
-                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                        } else {
-                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                        }
-                    }
+                $likes = [];
+                foreach ($searchColumns as $column) {
+                    $likes[] = $column . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search);
                 }
-                $sWhereSub .= ')';
+                $sWhereSub .= implode(' OR ', $likes) . ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
+            if (!empty($aColumns[$i])) {
                 if (isset($parameters["bSearchable_$i"]) && $parameters["bSearchable_$i"] == 'true' && $parameters["sSearch_$i"] != '') {
                     if ($sWhere == '') {
                         $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
@@ -1013,19 +1010,21 @@ class Application_Service_Shipments
                 $mailedOn = Pt_Commons_DateUtility::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
             }
             if (!$isCancelled && $aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
-                $responseSwitch = "<select onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
+                $responseSwitch = "<select aria-label='" . Pt_Commons_TranslateUtility::htmlTranslate('Response') . "' onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
                 $responseSwitch .= "<option value='on'" . (isset($aRow['response_switch']) && $aRow['response_switch'] == 'on' ? " selected='selected' " : '') . '>On</option>';
                 $responseSwitch .= "<option value='off'" . (isset($aRow['response_switch']) && $aRow['response_switch'] == 'off' ? " selected='selected' " : '') . '>Off</option>';
                 $responseSwitch .= '</select>';
             } else {
-                $responseSwitch = '-';
+                $responseSwitch = '';
             }
 
             //$row[] = $aRow['shipment_code'];
-            $row[] = htmlspecialchars((string) $aRow['shipment_code'], ENT_QUOTES, 'UTF-8');
-            $row[] = htmlspecialchars((string) $aRow['SCHEME'], ENT_QUOTES, 'UTF-8');
-            $row[] = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES, 'UTF-8');
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
+            // Each code sits over the detail that identifies it: the scheme under the
+            // shipment code, the PT survey date under the PT survey code.
+            $row[] = '<strong>' . htmlspecialchars((string) $aRow['shipment_code'], ENT_QUOTES, 'UTF-8') . '</strong>'
+                . '<small class="text-muted cell-sub">' . htmlspecialchars((string) $aRow['SCHEME'], ENT_QUOTES, 'UTF-8') . '</small>';
+            $row[] = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES, 'UTF-8')
+                . '<small class="text-muted cell-sub">' . Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']) . '</small>';
             // The deadline is judged in the programme's cutoff timezone, not the reader's,
             // so name that zone under the date — an admin abroad otherwise reads the time
             // as their own local clock.
@@ -1035,10 +1034,14 @@ class Application_Service_Shipments
                 : $dueDate . '<br /><small class="text-muted">' . htmlspecialchars(Pt_Commons_DateUtility::cutoffTimezoneLabel($aRow['response_deadline']), ENT_QUOTES) . '</small>';
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
-            $row[] = $responseSwitch;
-            $row[] = $isCancelled
+            // The response switch only applies while a shipment is live, so it sits under
+            // the status instead of filling a column that reads "-" on most rows.
+            $row[] = ($isCancelled
                 ? '<span class="label label-danger">' . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span>'
-                : ucfirst($aRow['status']);
+                : htmlspecialchars(ucfirst((string) $aRow['status']), ENT_QUOTES, 'UTF-8'))
+                . ($responseSwitch === ''
+                    ? ''
+                    : '<span class="cell-sub response-switch"><small class="text-muted">' . Pt_Commons_TranslateUtility::htmlTranslate('Response') . '</small> ' . $responseSwitch . '</span>');
             //             $row[] = $mailedOn;
             //             $row[] = $aRow['new_shipment_mail_count'];
             $edit = '';
@@ -1080,12 +1083,19 @@ class Application_Service_Shipments
                     // what actually kills the pointer.
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs disabled" href="javascript:void(0);"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generating TB Forms...') . ' </span></a>';
                 } elseif ($tbFormPath !== null) {
-                    $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
+                    $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-default btn-xs" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
                 } elseif ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\', this);"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
                 }
             }
-            if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
+            // A reminder only makes sense while participants can still respond: the
+            // response switch is on, and either the due date (in the cutoff timezone)
+            // has not passed or the shipment keeps accepting late responses.
+            $cutoff = Pt_Commons_DateUtility::shipmentCutoff($aRow['response_deadline'] ?? null);
+            $deadlinePassed = $cutoff !== null && new DateTimeImmutable('now', new DateTimeZone('UTC')) > $cutoff;
+            $acceptsLateResponses = ($aRow['auto_close_at_deadline'] ?? 'yes') === 'no';
+            $stillAcceptingResponses = ($aRow['response_switch'] ?? '') === 'on' && (!$deadlinePassed || $acceptsLateResponses);
+            if ($stillAcceptingResponses && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
                 $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Remind') . '</span></a>';
             }
             $testkitbtn = '';
@@ -1113,7 +1123,7 @@ class Application_Service_Shipments
                 } elseif ($collectsFeedback) {
                     $feedbackBtn = '<a class="btn btn-default btn-xs" href="' . $feedbackUrl . '" title="'
                         . $this->translator->_('Feedback form is configured for this shipment') . '"><span><i class="icon-comments"></i> '
-                        . sprintf($this->translator->_('Feedback Form (%d)'), $feedbackQuestions) . '</span></a>';
+                        . $this->translator->_('Feedback') . '</span></a>';
                 } elseif ($feedbackQuestions > 0) {
                     // The other half of the mismatch: a form nobody will ever be shown.
                     $feedbackBtn = '<a class="btn btn-warning btn-xs" href="' . $feedbackUrl . '" title="'
@@ -1137,24 +1147,29 @@ class Application_Service_Shipments
                     $jsCode = htmlspecialchars(json_encode((string) $aRow['shipment_code']), ENT_QUOTES);
                     $cancel = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelShipment(' . $jsId . ', ' . $jsCode . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
                 }
-                // Grouped by what the action does rather than emitted one per line:
-                // the record itself, then participant handling, then the things that
-                // send mail or produce a file, then the destructive one on its own.
-                // Each line is nowrap so a group never breaks mid-way.
+                // Grouped by purpose, one line per group:
+                //   record    - edit or copy the shipment itself
+                //   setup     - configure what participants get (enrollment, feedback
+                //               form, test kits)
+                //   output    - send mail or download a file
+                //   danger    - the destructive action, on its own line
+                // The setup and output lines may hold three buttons, so they wrap
+                // rather than widen the Action column.
                 $actionLines = [
-                    [$edit, $clone],
-                    [$enrolled, $manageEnroll, $testkitbtn],
-                    [$feedbackBtn],
-                    [$announcementMail, $informMail, $downloadAllTBForms],
-                    [$cancel],
+                    'record' => [$edit, $clone],
+                    'setup' => [$enrolled, $manageEnroll, $feedbackBtn, $testkitbtn],
+                    'output' => [$announcementMail, $informMail, $downloadAllTBForms],
+                    'danger' => [$cancel],
                 ];
+                $wrappingLines = ['setup', 'output'];
                 $actions = '';
-                foreach ($actionLines as $line) {
+                foreach ($actionLines as $group => $line) {
                     $line = array_filter($line);
                     if (empty($line)) {
                         continue;
                     }
-                    $actions .= '<div class="row-action-line">' . implode('', $line) . '</div>';
+                    $class = in_array($group, $wrappingLines, true) ? 'row-action-line is-wrapping' : 'row-action-line';
+                    $actions .= '<div class="' . $class . '">' . implode('', $line) . '</div>';
                 }
                 $row[] = '<div class="row-action-lines">' . $actions . '</div>';
             }

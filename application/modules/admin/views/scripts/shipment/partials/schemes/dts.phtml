@@ -295,6 +295,10 @@ $showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType);
 ?>
 <input type="hidden" name="dtsSchemeType" id="dtsSchemeType" value="<?php echo $this->escape($dtsSchemeType); ?>" />
 
+<!-- Scheme settings: the rows below are laid out as a card grid by the
+     .shipment-meta-rows styles in admin.css, like the shared fields above. -->
+<div class="shipment-meta">
+<div class="shipment-meta-grid shipment-meta-rows">
 <?php
 
 // ============================================================================
@@ -477,7 +481,7 @@ if ($renderTestPanelTypeSection) { ?>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="<?= $this->htmlTranslate("Enter the report version") ?>"
             title="<?= $this->htmlTranslate("Please enter the report version") ?>" class="form-control input-sm"
-            value="<?php echo $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars((string) $reportVersion, ENT_QUOTES); ?>" />
     </div>
 </div>
 <div class="form-group dts-setting-row" data-setting-key="effectiveDate">
@@ -486,8 +490,10 @@ if ($renderTestPanelTypeSection) { ?>
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="<?= $this->htmlTranslate("Select the report effective date") ?>"
             title="<?= $this->htmlTranslate("Please select the report effective date") ?>" class="form-control input-sm datepicker"
-            value="<?php echo $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars((string) $effectiveDate, ENT_QUOTES); ?>" />
     </div>
+</div>
+</div>
 </div>
 <!-- ============================================================================ -->
 <!-- SAMPLE TABLE -->
