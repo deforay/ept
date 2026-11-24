@@ -1388,7 +1388,7 @@ remove_frozen_ppa_without_build() {
 # the PPA stays while it still has a build for this release, since it serves its
 # last packages and removing it would leave only the distro's.
 use_sury_repo() {
-    local component="$1" codename code
+    local component="$1" codename code keydeb
     local keyring=/usr/share/keyrings/debsuryorg-archive-keyring.gpg
     codename=$(lsb_release -cs)
 
@@ -1402,13 +1402,17 @@ use_sury_repo() {
         fi
 
         if [[ ! -s "$keyring" ]]; then
-            curl --proto '=https' --proto-redir '=https' -fsSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb &&
-                dpkg -i /tmp/debsuryorg-archive-keyring.deb >/dev/null || {
+            # A fresh temp file rather than a fixed /tmp name, which another
+            # local account could plant as a symlink before root writes to it.
+            keydeb=$(mktemp --suffix=.deb) || return 1
+            if ! curl --proto '=https' --proto-redir '=https' -fsSLo "$keydeb" https://packages.sury.org/debsuryorg-archive-keyring.deb ||
+                ! dpkg -i "$keydeb" >/dev/null; then
+                rm -f "$keydeb"
                 print error "Could not install the packages.sury.org signing key."
                 remove_frozen_ppa_without_build "$component" "$codename" || true
                 return 1
-            }
-            rm -f /tmp/debsuryorg-archive-keyring.deb
+            fi
+            rm -f "$keydeb"
         fi
 
         print info "Adding packages.sury.org/${component} for '${codename}'"
