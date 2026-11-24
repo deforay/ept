@@ -328,7 +328,7 @@ class Application_Service_ApiServices
                 if (isset($param['responseDate']) && trim($param['responseDate']) != '') {
                     $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($param['responseDate'], true);
                 } else {
-                    $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
                 }
 
                 if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {

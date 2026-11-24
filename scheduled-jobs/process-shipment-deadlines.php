@@ -1,4 +1,5 @@
 <?php
+
 // process-shipment-deadlines.php
 //
 // Auto-flip shipment.response_switch from 'on' to 'off' once the response
@@ -42,14 +43,11 @@ try {
         return;
     }
 
-    $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     $expiredIds = [];
     $expiredRows = [];
 
     foreach ($candidates as $row) {
-        $cutoff = Pt_Commons_DateUtility::shipmentCutoff($row['response_deadline']);
-        // Strictly after the cutoff instant => the deadline day is over.
-        if ($cutoff !== null && $now > $cutoff) {
+        if (Pt_Commons_DateUtility::deadlinePassed($row['response_deadline'])) {
             $expiredIds[] = (int) $row['shipment_id'];
             $expiredRows[(int) $row['shipment_id']] = $row;
         }
@@ -98,6 +96,6 @@ try {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),
         'file' => $e->getFile(),
-        'trace' => $e->getTraceAsString()
+        'trace' => $e->getTraceAsString(),
     ]);
 }

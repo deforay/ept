@@ -210,15 +210,14 @@ if ($inConfirmStep) {
 				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 				<input type="hidden" id="customTestName" name="customTestName"
 					value="<?= $this->escape((string) ($this->shipment['scheme_type'])); ?>" />
-				<?php $date = (new DateTime())->setTime(0, 0, 0);
-				$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0); ?>
+				<?php $deadlinePassed = Pt_Commons_DateUtility::deadlinePassed($this->shipment['response_deadline'] ?? null); ?>
 				<div id="view-content">
 					<?php if ($this->isEditable) {
-						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') { ?>
+						if ($deadlinePassed && $this->shipment['status'] == 'finalized') { ?>
 							<h4 align="CENTER" style="color:red">
 								<?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?>
 							</h4>
-						<?php } elseif (($date > $lastDate)) { ?>
+						<?php } elseif ($deadlinePassed) { ?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
 						<?php } elseif ($this->shipment['status'] == 'finalized') { ?>
 							<h4 align="CENTER" style="color:red">

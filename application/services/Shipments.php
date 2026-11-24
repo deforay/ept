@@ -137,7 +137,8 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->update(
             'shipment_participant_map',
-            ['started_at' => new Zend_Db_Expr('now()')],
+            // PHP clock, not MySQL now(): responseInstant() reads it in the app timezone.
+            ['started_at' => Pt_Commons_DateUtility::getCurrentDateTime()],
             $db->quoteInto('shipment_id = ?', $shipmentId)
                 . ' AND ' . $db->quoteInto('participant_id = ?', $participantId)
                 . ' AND started_at IS NULL'
@@ -256,13 +257,13 @@ class Application_Service_Shipments
             ? $db->fetchRow(
                 $db->select()
                     ->from('shipment_participant_map', ['started_at'])
-                    ->columns(['db_now' => new Zend_Db_Expr('NOW()')])
                     ->where('map_id = ?', $mapId)
             )
             : null;
 
         $startedAt = $row['started_at'] ?? null;
-        $dbNow = $row['db_now'] ?? null;
+        // The submit moment on the same clock started_at was written with.
+        $submittedNow = Pt_Commons_DateUtility::getCurrentDateTime();
 
         if (empty($startedAt) || strncmp((string) $startedAt, '0000', 4) === 0) {
             // No recorded start (participant reached the POST without opening the form) -
@@ -279,7 +280,7 @@ class Application_Service_Shipments
 
         $cutoff = Pt_Commons_DateUtility::shipmentCutoff($deadline);
         $startInstant = Pt_Commons_DateUtility::responseInstant($startedAt);
-        $submitInstant = Pt_Commons_DateUtility::responseInstant($dbNow);
+        $submitInstant = Pt_Commons_DateUtility::responseInstant($submittedNow);
 
         $isLateSubmit = $cutoff && $startInstant && $submitInstant
             && $startInstant <= $cutoff && $submitInstant > $cutoff;
@@ -1321,7 +1322,7 @@ class Application_Service_Shipments
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             $data['is_pt_test_not_performed'] = null;
@@ -1499,7 +1500,7 @@ class Application_Service_Shipments
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             $data['is_pt_test_not_performed'] = null;
@@ -1631,7 +1632,7 @@ class Application_Service_Shipments
             if (isset($testResponseDate) && !empty($testResponseDate)) {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($testResponseDate, true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -1786,7 +1787,7 @@ class Application_Service_Shipments
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -2336,7 +2337,7 @@ class Application_Service_Shipments
                 'shipment_receipt_date' => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']) : '',
                 'shipment_test_date' => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['shipmentTestDate']) : '',
                 'attributes' => $attributes,
-                'shipment_test_report_date' => new Zend_Db_Expr('now()'),
+                'shipment_test_report_date' => Pt_Commons_DateUtility::getCurrentDateTime(),
                 'supervisor_approval' => $params['supervisorApproval'],
                 'participant_supervisor' => $params['participantSupervisor'],
                 'user_comment' => $params['userComments'],
@@ -2368,7 +2369,7 @@ class Application_Service_Shipments
             if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['responseDate'], true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             if ($responseStatus === 'draft') {
@@ -2522,7 +2523,7 @@ class Application_Service_Shipments
             if (!empty($responseDate) && trim($responseDate) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($responseDate, true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
             if (isset($params['customField1']) && trim($params['customField1']) != '') {
                 $data['custom_field_1'] = $params['customField1'];
@@ -2670,7 +2671,7 @@ class Application_Service_Shipments
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
                 $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             $data['is_pt_test_not_performed'] = null;
@@ -4612,7 +4613,7 @@ class Application_Service_Shipments
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file', 'status'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr('CASE WHEN ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . " THEN 'View' ELSE 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
         $sQuery = $sQuery->where('s.shipment_id = ?', $shipmentId);

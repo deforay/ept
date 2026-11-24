@@ -127,15 +127,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 				<input type="hidden" id="isDraft" name="isDraft" value="no" />
 				<div id="view-content">
 					<?php
-					$date = (new DateTime())->setTime(0, 0, 0);
-					$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0);
+					$deadlinePassed = Pt_Commons_DateUtility::deadlinePassed($this->shipment['response_deadline'] ?? null);
 					$message = "";
 
 					if (!$this->isEditable && !$isLoggedInAsAdmin) {
 						$message = "Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.";
 					} elseif ($this->shipment['status'] == 'finalized' && !$isLoggedInAsAdmin) {
 						$message = "This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.";
-					} elseif ($date > $lastDate && !$isLoggedInAsAdmin) {
+					} elseif ($deadlinePassed && !$isLoggedInAsAdmin) {
 						$message = "Your response is late.";
 					}
 

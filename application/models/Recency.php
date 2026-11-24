@@ -45,12 +45,7 @@ class Application_Model_Recency
                 $shipment['is_excluded'] = 'yes';
             }
 
-            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-                ?? new DateTimeImmutable('1970-01-01');
-
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-
-            if ($createdOn <= $lastDate) {
+            if (!Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
 
                 $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
                 $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);

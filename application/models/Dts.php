@@ -187,9 +187,6 @@ final class Application_Model_Dts
         $shipment['is_followup'] = 'no';
         $mapWhere = $this->db->quoteInto('map_id = ?', $shipment['map_id']);
 
-        $shipmentTestReportDate = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-            ?? new DateTimeImmutable('1970-01-01');
-
         $totalScore = 0;
         $maxScore = 0;
         $mandatoryResult = '';
@@ -212,9 +209,12 @@ final class Application_Model_Dts
         $isScreening = ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
         $isConfirmatory = (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'confirmatory') ? true : false;
 
+        // A response an earlier evaluation stamped 'late' goes back to 'responded' when
+        // it is on time now, e.g. after the deadline was extended (shared rule).
+        Application_Service_Evaluation::restoreOnTimeResponse($this->db, $shipment);
+
         //Response was submitted after the last response date.
-        $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-        if ($shipmentTestReportDate > $lastDate) {
+        if (Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
             $lastDateResult = 'Fail';
             $failureReason[] = [
                 'warning' => 'Response was submitted after the last response date.',

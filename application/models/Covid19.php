@@ -26,9 +26,6 @@ class Application_Model_Covid19
 
             //$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-                ?? new DateTimeImmutable('1970-01-01');
-
             $results = $schemeService->getCovid19Samples($shipmentId, $shipment['participant_id']);
 
             // A participant who did not respond (or could not test) is EXCLUDED, never failed.
@@ -55,8 +52,7 @@ class Application_Model_Covid19
             $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
             //Response was submitted after the last response date.
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-            if ($createdOn > $lastDate) {
+            if (Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
                 $lastDateResult = 'Fail';
                 $failureReason[] = [
                     'warning' => 'Response was submitted after the last response date.',

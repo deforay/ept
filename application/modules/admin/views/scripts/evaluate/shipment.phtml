@@ -187,7 +187,7 @@ if ($shipmentAttributesRaw !== '') {
 				<textarea rows="3" cols="20" class="form-control"
 					placeholder="<?= $this->htmlTranslate("Comment for all Participants of this shipment") ?>"
 					title="<?= $this->htmlTranslate("Comment for all Participants of this shipment") ?>" name="comment"
-					id="comment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+					id="comment"><?php echo $this->escape($this->shipment[0]['shipment_comment'] ?? ''); ?></textarea>
 				<br>
 				<input type="hidden" value="evaluate" name="from">
 				<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="sid"
