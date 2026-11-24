@@ -382,7 +382,17 @@ if (!empty($resultArray['shipment'])) {
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . str_replace('.pdf', '-tmp.pdf', $fileName);
         $pdf->Output($tempFilePath, "F");
-        Application_Service_Common::flattenPdf($tempFilePath, $filePath);
+        try {
+            Application_Service_Common::flattenPdf($tempFilePath, $filePath);
+        } catch (RuntimeException $e) {
+            // One lab's failed flatten must not stop the rest of this batch, and the lab
+            // must not end up with no report. Keep the unflattened PDF (same content) as
+            // its report and log the failure so it can be flattened again.
+            Pt_Commons_LoggerUtility::logError('TB report flatten failed for ' . $fileName . ': ' . $e->getMessage());
+            if (is_file($tempFilePath)) {
+                @rename($tempFilePath, $filePath);
+            }
+        }
         if (file_exists($tempFilePath)) {
             @unlink($tempFilePath);
         }

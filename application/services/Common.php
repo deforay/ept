@@ -2406,22 +2406,21 @@ class Application_Service_Common
     }
     public static function flattenPdf($inputFilePath, $outputFilePath, $deleteOriginal = true)
     {
-        // Escape shell arguments to handle spaces and special characters
-        $inputFilePath = escapeshellarg($inputFilePath);
-        $outputFilePath = escapeshellarg($outputFilePath);
+        $command = 'pdftk ' . escapeshellarg($inputFilePath) . ' output ' . escapeshellarg($outputFilePath) . ' flatten 2>&1';
 
-        // Construct the pdftk command
-        $command = "pdftk {$inputFilePath} output {$outputFilePath} flatten";
-
-        // Execute the command and capture the output and return code
-        $output = shell_exec($command);
-        $returnCode = shell_exec('echo $?');
-
-        // Check if the command was successful
-        if (intval($returnCode) !== 0) {
-            throw new RuntimeException("pdftk error: $output");
+        // exec() returns pdftk's own exit status. The old code ran `echo $?` in a fresh
+        // shell, which is always 0, so a failed flatten went unnoticed and the report
+        // was left missing or unflattened.
+        $output = [];
+        $returnCode = 0;
+        exec($command, $output, $returnCode);
+        if ($returnCode !== 0 || !is_file($outputFilePath)) {
+            throw new RuntimeException('pdftk error (exit ' . $returnCode . '): ' . implode("\n", $output));
         }
-        if ($deleteOriginal && file_exists($inputFilePath)) {
+
+        // Check the unescaped path: the escaped one has quotes in it and never exists,
+        // so the temporary file was never removed here.
+        if ($deleteOriginal && is_file($inputFilePath)) {
             unlink($inputFilePath);
         }
     }

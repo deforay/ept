@@ -30500,3 +30500,6 @@ msgstr "Probe A (Validation) là giá trị trung bình khi thẩm định panel
 
 msgid "For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."
 msgstr "Khi thẩm định, nhập giá trị trung bình của từng đầu dò rpoB hoặc chỉ giá trị thấp nhất. Báo cáo dùng giá trị thấp nhất. Để trống ô độ ổn định nếu không kiểm tra độ ổn định."
+
+msgid "Reports for this shipment are being generated right now. Wait until they finish, then generate again if you changed anything."
+msgstr "Báo cáo của vòng ngoại kiểm này đang được tạo. Hãy đợi đến khi hoàn tất, rồi tạo lại nếu bạn đã thay đổi điều gì."

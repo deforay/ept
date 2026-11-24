@@ -587,7 +587,8 @@ if (!empty($this->shipment)) {
             cannotFinalize: <?php echo !empty($btnStates['awaitingFeedbackForm'])
                                 ? '"' . $this->jsTranslate("This shipment collects participant feedback but no feedback form has been created yet.") . '\n\n' . $this->jsTranslate("Create the feedback form before finalizing.") . '"'
                                 : '"' . $this->jsTranslate("This shipment cannot be finalized yet.") . '\n\n' . $this->jsTranslate("Please generate the reports first, review them, and then finalize the shipment.") . '"'; ?>,
-            queueFailed: "<?= $this->jsTranslate("Failed to queue report generation. Please try again."); ?>"
+            queueFailed: "<?= $this->jsTranslate("Failed to queue report generation. Please try again."); ?>",
+            alreadyRunning: "<?= $this->jsTranslate("Reports for this shipment are being generated right now. Wait until they finish, then generate again if you changed anything."); ?>"
         };
     </script>
     <script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
