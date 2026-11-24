@@ -3375,13 +3375,11 @@ class Application_Service_Evaluation
         // NOTE: report_generated is now updated in generate-shipment-reports.php
         // AFTER the actual PDF files are created, not here during data fetch.
 
-        // Update shipment status once (was previously executed per participant).
-        $db->update('shipment', [
-            'status' => 'evaluated',
-            'processing_started_at' => null,
-            'previous_status' => null,
-            'last_heartbeat' => null,
-        ], 'shipment_id = ' . (int) $shipmentId);
+        // No status write here. This only reads data, and it also runs when an admin
+        // opens the Distribution or Finalize page. It used to set the shipment to
+        // 'evaluated', so viewing a shipment mid-run flipped it out of 'processing'
+        // and offered Regenerate and Finalize on a half-written report set. The
+        // generator sets the status when a run starts and when it ends.
 
         $result = [
             'shipment' => $shipmentResult,
@@ -3404,12 +3402,8 @@ class Application_Service_Evaluation
             ->where('s.shipment_id = ?', $shipmentId);
         $shipmentResult = $db->fetchRow($sql);
         if (!empty($shipmentResult)) {
-            $db->update('shipment', [
-                'status' => 'evaluated',
-                'processing_started_at' => null,
-                'previous_status' => null,
-                'last_heartbeat' => null,
-            ], "shipment_id = {$shipmentId}");
+            // No status write: see getShipmentToEvaluateReports(). The generator sets
+            // the final status after the summary is written.
 
             if ($shipmentResult['scheme_type'] == 'dts') {
                 $pass = $dtsPasspercentage ?? 100;
@@ -4456,6 +4450,11 @@ class Application_Service_Evaluation
                 'last_heartbeat' => new Zend_Db_Expr('NOW()'),
                 'date_finalised' => new Zend_Db_Expr('NOW()'),
                 'status' => 'pending',
+                // This row is reused for every run of the shipment. Clear what the
+                // previous run left, or the job page shows its end time and error
+                // against the new run.
+                'completed_at' => null,
+                'error_message' => null,
             ];
             $updated = $db->update('queue_report_generation', $data, ['id = ?' => $existData['id']]);
             if ($updated > 0) {
