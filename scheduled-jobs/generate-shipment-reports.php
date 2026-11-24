@@ -1,4 +1,5 @@
 <?php
+
 // scheduled-jobs/generate-shipment-reports.php
 //
 // Generates PDF reports for shipments (participant + summary reports).
@@ -244,7 +245,7 @@ class ReportJobOptions
     public static function parseCliOptions(): self
     {
         $opts = new self();
-        $options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:", "force", "lockTtl:", "debug"]);
+        $options = getopt('sp', ['worker', 'shipment:', 'offset:', 'limit:', 'procs:', 'reportType:', 'force', 'lockTtl:', 'debug']);
 
         $opts->isCli = php_sapi_name() === 'cli';
         $opts->isSubProcess = isset($options['worker']);
@@ -279,7 +280,7 @@ class ReportJobOptions
         // Debug mode forces sequential processing
         if (!$opts->isSubProcess && $opts->debug) {
             $opts->procs = 1;
-            ReportGenerator::log("Debug mode enabled: forcing --procs=1 for verbose output.", $opts->isCli);
+            ReportGenerator::log('Debug mode enabled: forcing --procs=1 for verbose output.', $opts->isCli);
         }
 
         // Check if proc_open is available for parallel processing
@@ -287,7 +288,7 @@ class ReportJobOptions
             $disabled = array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions'))));
             $procOpenAvailable = function_exists('proc_open') && !in_array('proc_open', $disabled, true);
             if (!$procOpenAvailable) {
-                ReportGenerator::warn("Parallel processing disabled: PHP function `proc_open` is not available. Falling back to 1 process.", $opts->isCli);
+                ReportGenerator::warn('Parallel processing disabled: PHP function `proc_open` is not available. Falling back to 1 process.', $opts->isCli);
                 $opts->procs = 1;
             }
         }
@@ -449,7 +450,7 @@ class ReportGenerator
         if (!is_file($file)) {
             throw new RuntimeException("Template not found: {$file}");
         }
-        (static function () use ($file, $context): void{
+        (static function () use ($file, $context): void {
             extract($context, EXTR_OVERWRITE);
             require $file;
         })();
@@ -542,7 +543,7 @@ class ReportGenerator
 
         if ($this->opts->skipParticipantReports) {
             if ($this->opts->isCli) {
-                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (-s flag)");
+                Pt_Commons_MiscUtility::console()->writeln('  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (-s flag)');
             }
             return;
         }
@@ -566,7 +567,7 @@ class ReportGenerator
 
         if ($this->opts->skipSummaryReport) {
             if ($this->opts->isCli) {
-                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Summary report: <comment>skipped</comment> (-p flag)");
+                Pt_Commons_MiscUtility::console()->writeln('  <fg=yellow>-</> Summary report: <comment>skipped</comment> (-p flag)');
             }
             return;
         }
@@ -695,7 +696,7 @@ class ReportGenerator
     public function runAsSubProcess(): void
     {
         if (empty($this->opts->shipmentId) || $this->opts->workerLimit < 1) {
-            self::log("Subprocess mode requires --shipment and --limit arguments", $this->opts->isCli);
+            self::log('Subprocess mode requires --shipment and --limit arguments', $this->opts->isCli);
             exit(1);
         }
 
@@ -712,7 +713,7 @@ class ReportGenerator
         $evalRow = [
             ...$shipmentRow,
             'shipment_id' => $shipmentId,
-            'report_type' => $resultStatus
+            'report_type' => $resultStatus,
         ];
         $evalRow['report_approver'] = $this->resolveReportApprover($evalRow);
 
@@ -776,7 +777,7 @@ class ReportGenerator
         $tFetchStart = microtime(true);
         $resultArray = $this->config->evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
         self::debugLog(
-            "Worker fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []),
+            'Worker fetched in ' . round((microtime(true) - $tFetchStart) * 1000) . ' ms; rows=' . count($resultArray['shipment'] ?? []),
             $this->opts->isCli,
             $this->opts->debug
         );
@@ -794,7 +795,7 @@ class ReportGenerator
             $participantLayoutFile = $this->resolveLayoutFile('participant', $totParticipantsRes['scheme_type']);
 
             self::debugLog(
-                "Worker rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . "...",
+                "Worker rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . '...',
                 $this->opts->isCli,
                 $this->opts->debug
             );
@@ -807,7 +808,7 @@ class ReportGenerator
 
             self::includeWithContext($participantLayoutFile, $context);
             self::debugLog(
-                "Worker rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms",
+                'Worker rendered PDFs in ' . round((microtime(true) - $tRenderStart) * 1000) . ' ms',
                 $this->opts->isCli,
                 $this->opts->debug
             );
@@ -833,7 +834,7 @@ class ReportGenerator
     ): void {
         if ($reportedCount <= 0) {
             if ($this->opts->isCli) {
-                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (no participants reported)");
+                Pt_Commons_MiscUtility::console()->writeln('  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (no participants reported)');
             }
             return;
         }
@@ -893,7 +894,9 @@ class ReportGenerator
         // rows (skipped participants, soft-deletes). Keep paging until a batch
         // comes back empty rather than trusting the count.
         for ($offset = 0; ; $offset += $chunkSize) {
-            Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
+            // Every batch: a batch of TB reports can take several minutes, and the
+            // stale-job cleaner treats 5 minutes without a heartbeat as a crash.
+            Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id'], 1);
 
             self::debugLog(
                 "Fetching participants for shipment {$evalRow['shipment_id']} (offset {$offset}, limit {$chunkSize})...",
@@ -905,7 +908,7 @@ class ReportGenerator
             $resultArray = $this->config->evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $chunkSize, $offset);
             $fetchedRows = count($resultArray['shipment'] ?? []);
             self::debugLog(
-                "Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows={$fetchedRows}",
+                'Fetched in ' . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows={$fetchedRows}",
                 $this->opts->isCli,
                 $this->opts->debug
             );
@@ -927,7 +930,7 @@ class ReportGenerator
             $tRenderStart = microtime(true);
             self::includeWithContext($participantLayoutFile, $context);
             self::debugLog(
-                "Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms",
+                'Rendered PDFs in ' . round((microtime(true) - $tRenderStart) * 1000) . ' ms',
                 $this->opts->isCli,
                 $this->opts->debug
             );
@@ -966,15 +969,15 @@ class ReportGenerator
                 $cmd = [
                     $phpBinary,
                     __FILE__,
-                    "--worker",
-                    "--shipment",
+                    '--worker',
+                    '--shipment',
                     $evalRow['shipment_id'],
-                    "--offset",
+                    '--offset',
                     $offset,
-                    "--limit",
+                    '--limit',
                     $batchSize,
-                    "--reportType",
-                    $resultStatus
+                    '--reportType',
+                    $resultStatus,
                 ];
 
                 $process = new Process($cmd);
@@ -988,7 +991,7 @@ class ReportGenerator
         }
 
         if (empty($processes)) {
-            self::error("Failed to start any worker processes; falling back to sequential generation.", $this->opts->isCli);
+            self::error('Failed to start any worker processes; falling back to sequential generation.', $this->opts->isCli);
             // Note: Caller should handle fallback
             return;
         }
@@ -999,7 +1002,7 @@ class ReportGenerator
         // Verify PDFs were created
         $participantPdfs = glob($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
         if (empty($participantPdfs)) {
-            $msg = "Parallel generation produced no participant PDFs. Retrying sequentially.";
+            $msg = 'Parallel generation produced no participant PDFs. Retrying sequentially.';
             if ($this->opts->isCli && $progressBar) {
                 Pt_Commons_MiscUtility::spinnerPausePrint($progressBar, static function () use ($msg): void {
                     Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<comment>WARNING:</comment> {$msg}");
@@ -1043,6 +1046,13 @@ class ReportGenerator
                 $lastProgressRedrawAt = microtime(true);
             }
 
+            // Keep the queue row alive while the workers run. Without this the row's
+            // heartbeat stood still for the whole parallel run, and reset-stale-jobs
+            // treats 5 minutes without one as a crashed run. About every 15 seconds.
+            if (!empty($evalRow['id'])) {
+                Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'id', $evalRow['id'], 100);
+            }
+
             usleep(150000);
         }
     }
@@ -1056,9 +1066,9 @@ class ReportGenerator
             if (!$process->isSuccessful()) {
                 $exitCode = $process->getExitCode();
                 $err = trim((string) $process->getErrorOutput());
-                $msg = "Worker failed (offset {$offset}" . ($exitCode !== null ? ", exit {$exitCode}" : "") . ")";
+                $msg = "Worker failed (offset {$offset}" . ($exitCode !== null ? ", exit {$exitCode}" : '') . ')';
                 if ($err !== '') {
-                    $msg .= ": " . preg_replace('/\\s+/', ' ', $err);
+                    $msg .= ': ' . preg_replace('/\\s+/', ' ', $err);
                 }
 
                 if ($this->opts->isCli && $progressBar) {
@@ -1089,7 +1099,7 @@ class ReportGenerator
     private function generateSummaryReport(array $evalRow, array $totParticipantsRes, string $resultStatus): void
     {
         if ($this->opts->isCli) {
-            Pt_Commons_MiscUtility::console()->writeln("  Generating summary report...");
+            Pt_Commons_MiscUtility::console()->writeln('  Generating summary report...');
         }
 
         // Get distribution shipments for the Zimbabwe instance
@@ -1114,7 +1124,7 @@ class ReportGenerator
         }
 
         if ($this->opts->isCli) {
-            Pt_Commons_MiscUtility::console()->writeln("  <fg=green>✓</> Summary report generated");
+            Pt_Commons_MiscUtility::console()->writeln('  <fg=green>✓</> Summary report generated');
         }
     }
 
@@ -1296,12 +1306,12 @@ class ReportGenerator
                         // the report-generation timestamp for shipments finalized before there
                         // was anywhere to record one, so old reports keep the date they had.
                         'approval_date' => new Zend_Db_Expr('COALESCE(s.results_approved_on, qrg.date_finalised)'),
-                        'distribution_id'
+                        'distribution_id',
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
                 ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id AND ' . $this->db->quoteInto('qrg.report_type = ?', $reportType), ['date_finalised'])
-                ->where("s.shipment_id = ?", $shipmentId)
+                ->where('s.shipment_id = ?', $shipmentId)
         );
     }
 
@@ -1326,13 +1336,13 @@ class ReportGenerator
                     'custom_field_1',
                     'custom_field_2',
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                    'reported_count' => new Zend_Db_Expr($reportedCountExpr)
+                    'reported_count' => new Zend_Db_Expr($reportedCountExpr),
                 ]
             )
                 ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['scheme_type', 'distribution_id'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['is_user_configured'])
-                ->where("spm.shipment_id = ?", $shipmentId)
+                ->where('spm.shipment_id = ?', $shipmentId)
                 ->group('spm.shipment_id')
         );
     }
@@ -1358,12 +1368,12 @@ class ReportGenerator
                         // the report-generation timestamp for shipments finalized before there
                         // was anywhere to record one, so old reports keep the date they had.
                         'approval_date' => new Zend_Db_Expr('COALESCE(s.results_approved_on, qrg.date_finalised)'),
-                        'distribution_id'
+                        'distribution_id',
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
                 ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id AND ' . $this->db->quoteInto('qrg.report_type = ?', $manualReportType), ['date_finalised'])
-                ->where("s.shipment_id = ?", $this->opts->shipmentId);
+                ->where('s.shipment_id = ?', $this->opts->shipmentId);
 
             $evalRow = $this->db->fetchRow($shipmentRow);
             if (empty($evalRow)) {
@@ -1401,7 +1411,7 @@ class ReportGenerator
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
-                ->where("eq.status=?", 'pending')
+                ->where('eq.status=?', 'pending')
                 ->limit($queueLimit)
         );
     }
@@ -1442,7 +1452,7 @@ class ReportGenerator
             }
             self::warn(
                 "Shipment {$shipmentId} appears locked (lock file: {$info['path']}). " .
-                "Proceeding due to --force. This can corrupt output if another job is actually running.",
+                'Proceeding due to --force. This can corrupt output if another job is actually running.',
                 $this->opts->isCli
             );
             return null;
@@ -1450,7 +1460,7 @@ class ReportGenerator
 
         $details = "lock file: {$info['path']}";
         if ($info['pid']) {
-            $details .= ", pid: {$info['pid']}" . ($running ? " (running)" : " (not running)");
+            $details .= ", pid: {$info['pid']}" . ($running ? ' (running)' : ' (not running)');
         }
         if ($ageMinutes !== null) {
             $details .= ", age: {$ageMinutes}m";
@@ -1465,7 +1475,7 @@ class ReportGenerator
      */
     private function evaluateShipmentIfNeeded(array $evalRow, array &$evaluatedShipments): void
     {
-        if (($evalRow['report_type'] != 'finalized' && $evalRow['report_type'] != 'generateReport') || $this->config->evaluateOnFinalized != "yes") {
+        if (($evalRow['report_type'] != 'finalized' && $evalRow['report_type'] != 'generateReport') || $this->config->evaluateOnFinalized != 'yes') {
             return;
         }
 
@@ -1482,27 +1492,27 @@ class ReportGenerator
             $executionTime = ($timeEnd - $timeStart) / 60;
             $evaluatedShipments[$shipmentId] = [
                 'shipmentResult' => $shipmentResult,
-                'executionTime' => $executionTime
+                'executionTime' => $executionTime,
             ];
         } else {
             $shipmentResult = $evaluatedShipments[$shipmentId]['shipmentResult'];
             $executionTime = $evaluatedShipments[$shipmentId]['executionTime'];
         }
 
-        $link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
+        $link = '/admin/evaluate/shipment/sid/' . base64_encode($shipmentResult[0]['shipment_id']);
         $this->db->insert('notify', [
             'title' => 'Shipment Evaluated',
             'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins',
-            'link' => $link
+            'link' => $link,
         ]);
 
         if (
             isset($this->config->jobCompletionAlertStatus)
-            && $this->config->jobCompletionAlertStatus == "yes"
+            && $this->config->jobCompletionAlertStatus == 'yes'
             && isset($this->config->jobCompletionAlertMails)
             && !empty($this->config->jobCompletionAlertMails)
         ) {
-            $emailSubject = "ePT | Shipment Evaluated";
+            $emailSubject = 'ePT | Shipment Evaluated';
             $emailContent = Application_Service_EmailLayout::notice(null, [
                 'Shipment <b>' . Application_Service_EmailLayout::e($shipmentResult[0]['shipment_code']) . '</b> has been evaluated.',
             ], $link, 'Open evaluation');
@@ -1516,7 +1526,7 @@ class ReportGenerator
     private function prepareShipmentOutputDirectory(array $evalRow): void
     {
         if ($this->opts->isCli) {
-            Pt_Commons_MiscUtility::console()->writeln("");
+            Pt_Commons_MiscUtility::console()->writeln('');
             Pt_Commons_MiscUtility::console()->writeln("<info>Processing shipment:</info> <comment>{$evalRow['shipment_code']}</comment> (ID: {$evalRow['shipment_id']})");
         }
 
@@ -1525,8 +1535,8 @@ class ReportGenerator
             Pt_Commons_General::rmdirRecursive($shipmentCodePath);
             mkdir($shipmentCodePath, 0777, true);
         }
-        if (file_exists($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {
-            unlink($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+        if (file_exists($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . '.zip')) {
+            unlink($this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . '.zip');
         }
     }
 
@@ -1546,7 +1556,7 @@ class ReportGenerator
             $this->db->update('queue_report_generation', [
                 'status' => $reportTypeStatus,
                 'last_updated_on' => new Zend_Db_Expr('now()'),
-                'processing_started_at' => new Zend_Db_Expr('now()')
+                'processing_started_at' => new Zend_Db_Expr('now()'),
             ], 'id=' . $evalRow['id']);
         }
 
@@ -1554,7 +1564,7 @@ class ReportGenerator
         if (!empty($evalRow['shipment_id'])) {
             $this->db->update('shipment', [
                 'status' => 'processing',
-                'updated_on_admin' => new Zend_Db_Expr('now()')
+                'updated_on_admin' => new Zend_Db_Expr('now()'),
             ], 'shipment_id=' . $evalRow['shipment_id']);
         }
     }
@@ -1568,7 +1578,7 @@ class ReportGenerator
             return;
         }
 
-        $mapIds = array_map(fn($row) => (int) $row['map_id'], $resultArray['shipment']);
+        $mapIds = array_map(fn ($row) => (int) $row['map_id'], $resultArray['shipment']);
         $mapIds = array_values(array_unique(array_filter($mapIds)));
 
         if (!empty($mapIds)) {
@@ -1582,11 +1592,11 @@ class ReportGenerator
     private function createZipArchive(array $evalRow): void
     {
         if ($this->opts->isCli) {
-            Pt_Commons_MiscUtility::console()->writeln("  Creating ZIP archive...");
+            Pt_Commons_MiscUtility::console()->writeln('  Creating ZIP archive...');
         }
 
         $shipmentCodePath = $this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
-        $this->config->generalModel->zipFolder($shipmentCodePath, $this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+        $this->config->generalModel->zipFolder($shipmentCodePath, $this->config->reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . '.zip');
 
         if ($this->opts->isCli) {
             Pt_Commons_MiscUtility::console()->writeln("  <fg=green>✓</> ZIP created: <comment>{$evalRow['shipment_code']}.zip</comment>");
@@ -1613,11 +1623,11 @@ class ReportGenerator
         // Send completion alert email
         if (
             isset($this->config->jobCompletionAlertStatus)
-            && $this->config->jobCompletionAlertStatus == "yes"
+            && $this->config->jobCompletionAlertStatus == 'yes'
             && isset($this->config->jobCompletionAlertMails)
             && !empty($this->config->jobCompletionAlertMails)
         ) {
-            $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
+            $emailSubject = 'ePT | Reports for ' . $evalRow['shipment_code'];
             $emailContent = Application_Service_EmailLayout::notice(null, [
                 'Reports for shipment <b>' . Application_Service_EmailLayout::e($evalRow['shipment_code']) . '</b> have been generated.',
             ], $link, 'Open reports');
@@ -1631,7 +1641,7 @@ class ReportGenerator
             'last_updated_on' => new Zend_Db_Expr('now()'),
             'completed_at' => new Zend_Db_Expr('now()'),
             'last_heartbeat' => null,
-            'previous_status' => null
+            'previous_status' => null,
         ];
         if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
             $update['date_finalised'] = new Zend_Db_Expr('now()');
@@ -1648,7 +1658,7 @@ class ReportGenerator
             'updated_on_admin' => new Zend_Db_Expr('now()'),
             'previous_status' => null,
             'processing_started_at' => null,
-            'last_heartbeat' => null
+            'last_heartbeat' => null,
         ];
 
         // Set milestone timestamps based on report type
@@ -1666,15 +1676,22 @@ class ReportGenerator
             $this->auditCompletedRun($evalRow, $totParticipantsRes, $reportCompletedStatus === 'finalized');
         }
 
-        // Update queue record
+        // Update queue record, unless it has been queued again ('pending') since this
+        // run started: the request code refuses to re-queue a running job, and this
+        // keeps such a request from being marked done by the run before it. A row the
+        // stale-job cleaner marked 'failed' while this run was still going is set to
+        // its real result.
         if (!empty($evalRow['id'])) {
-            $this->db->update('queue_report_generation', $update, ['id = ?' => $evalRow['id']]);
+            $this->db->update('queue_report_generation', $update, [
+                'id = ?' => $evalRow['id'],
+                "status <> 'pending'",
+            ]);
         }
 
         // Send admin reminder email
         if ($this->config->enabledAdminEmailReminder == 'yes' && !empty($evalRow['initated_by'])) {
             $adminDetails = $this->config->adminService->getSystemAdminDetails($evalRow['initated_by']);
-            if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
+            if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != '') {
                 $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
                 $message = Application_Service_EmailLayout::notice($adminDetails['first_name'], [
                     'Reports for shipment <b>' . Application_Service_EmailLayout::e($evalRow['shipment_code']) . '</b> have been generated.',
@@ -1749,7 +1766,7 @@ class ReportGenerator
             ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
             ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
             ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
-            ->where("s.shipment_id=?", $evalRow['shipment_id'])
+            ->where('s.shipment_id=?', $evalRow['shipment_id'])
             ->group('dm.dm_id');
 
         $subResult = $this->db->fetchAll($subQuery);

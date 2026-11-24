@@ -31578,3 +31578,6 @@ msgstr "Probe A (Validation) est la moyenne de la validation du panel, avant l'e
 
 msgid "For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."
 msgstr "Pour la validation, saisissez la moyenne de chaque sonde rpoB ou seulement la plus basse. Le rapport utilise la plus basse. Laissez le champ de stabilité vide si le test de stabilité n'a pas été effectué."
+
+msgid "Reports for this shipment are being generated right now. Wait until they finish, then generate again if you changed anything."
+msgstr "Les rapports de cette expédition sont en cours de génération. Attendez la fin, puis relancez la génération si vous avez modifié quelque chose."

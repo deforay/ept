@@ -19,8 +19,15 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
         }
 
         $.post("/reports/distribution/queue-reports-generation", payload)
-            .done(function () {
+            .done(function (result) {
                 $.unblockUI();
+
+                // -1 = a run for this shipment is already in progress
+                // (Application_Service_Evaluation::QUEUE_ALREADY_RUNNING). Nothing was queued.
+                if (String(result).trim() === '-1') {
+                    alert(i18n.alreadyRunning || "Reports for this shipment are being generated right now. Wait until they finish, then generate again if you changed anything.");
+                    return;
+                }
 
                 // Re-run whichever AJAX table loader the host page defines so the
                 // row's status flips to "Queued" immediately. Single-shipment

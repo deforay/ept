@@ -16,6 +16,31 @@ class Application_Service_Evaluation
     private const SQL_DID_NOT_RESPOND = "SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))";
 
     /**
+     * SQL condition: the participant gets an individual report. Report generation and
+     * the job-tracking progress total both use it, so the two always agree.
+     *
+     * Default (flag OFF / absent): only those whose response_status = 'responded' and
+     * whose submission survived evaluation. An excluded submission still carries
+     * response_status 'responded', so is_excluded has to be checked too.
+     *
+     * Flag ON ('generate_reports_for_excluded' = 'yes'): every participant who actually
+     * submitted something -- responded, late, entered a test date, or marked the PT test
+     * as not performed -- even if it was later excluded from evaluation. Bare
+     * non-responders (excluded with no submission of their own) still get no report.
+     */
+    public static function sqlGetsIndividualReport(string $mapAlias = 'sp'): string
+    {
+        $includeExcluded = strtolower((string) Application_Service_Common::getSetting('generate_reports_for_excluded', 'report')) === 'yes';
+        if ($includeExcluded) {
+            return "($mapAlias.response_status LIKE 'responded' OR $mapAlias.response_status LIKE 'late'"
+                . " OR $mapAlias.shipment_test_date > '1970-01-01' OR IFNULL($mapAlias.is_pt_test_not_performed, 'no') = 'yes')";
+        }
+
+        return "($mapAlias.response_status IS NOT NULL AND $mapAlias.response_status LIKE 'responded'"
+            . " AND IFNULL($mapAlias.is_excluded, 'no') = 'no')";
+    }
+
+    /**
      * SQL condition: the participant has submitted a response, whatever became of it
      * (on time, late, could not test, or a late submission awaiting approval). A draft
      * is not a submission. This is what "View" rather than "Enter Result" means in the
@@ -2918,27 +2943,7 @@ class Application_Service_Evaluation
             ->joinLeft(['ec' => 'r_evaluation_comments'], 'ec.comment_id=sp.evaluation_comment', ['evaluationComments' => 'comment'])
             ->where('s.shipment_id = ?', $shipmentId);
 
-        // Which participants get an individual report.
-        //
-        // Default (flag OFF / absent): only those whose response_status = 'responded'.
-        // Excluded submissions (is_excluded = 'yes', final_result = 3) are left out.
-        //
-        // Flag ON ('generate_reports_for_excluded' = 'yes'): report on every participant
-        // who actually submitted something — responded, late, entered a test date, or
-        // marked the PT test as not performed — even if their submission was later
-        // excluded from evaluation. Bare non-responders (excluded by excludeNonResponder
-        // with no submission of their own) still get no report.
-        $includeExcluded = strtolower((string) Application_Service_Common::getSetting('generate_reports_for_excluded', 'report')) === 'yes';
-        if ($includeExcluded) {
-            $sql->where("(sp.response_status LIKE 'responded' OR sp.response_status LIKE 'late' OR sp.shipment_test_date > '1970-01-01' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes')");
-        } else {
-            $sql->where("sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded'");
-            // Responding is not enough — the submission must also have survived evaluation.
-            // Without this the flag does nothing: an excluded submission still carries
-            // response_status 'responded', so every excluded participant got a report
-            // regardless of the setting.
-            $sql->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
-        }
+        $sql->where(new Zend_Db_Expr(self::sqlGetsIndividualReport('sp')));
 
         // Workers each fetch one page at the same time. Without a fixed order,
         // MySQL can return rows in a different order to each query, so pages
@@ -4375,6 +4380,9 @@ class Application_Service_Evaluation
         return ['status' => 'success', 'message' => $translator->_('Approval saved.')];
     }
 
+    /** queueReportsGeneration(): reports for this shipment are being generated right now. */
+    public const QUEUE_ALREADY_RUNNING = -1;
+
     public function queueReportsGeneration($params)
     {
         $shipmentId = base64_decode($params['sid']);
@@ -4387,14 +4395,24 @@ class Application_Service_Evaluation
             return 0;
         }
 
+        $existData = $db->fetchRow($db->select()->from('queue_report_generation')
+            ->where('shipment_id = ?', $shipmentId)
+            ->where('report_type = ?', $params['type']));
+
+        // A run in progress reuses this same row. Re-queueing now would reset it to
+        // 'pending' under the running workers, and the run would then mark the row
+        // done, so the new request was silently lost. Refuse instead, before anything
+        // is written; the admin generates again once the run has finished.
+        if ($existData && in_array($existData['status'], ['generating', 'finalizing'], true)) {
+            return self::QUEUE_ALREADY_RUNNING;
+        }
+
         // Finalizing is where the results are signed off, so it is where the approval gets
         // recorded. Reports read it from here instead of the report-generation timestamp.
         if (($params['type'] ?? '') === 'finalized') {
             $this->recordResultsApproval((int) $shipmentId, $params);
         }
-        $existData = $db->fetchRow($db->select()->from('queue_report_generation')
-            ->where('shipment_id = ?', $shipmentId)
-            ->where('report_type = ?', $params['type']));
+
         if (!$existData) {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $sql = $db->select()->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status'])
@@ -4519,19 +4537,19 @@ class Application_Service_Evaluation
             ];
         }
 
-        // Get participant progress (only count participants who are not excluded and have final_result in 1,2)
+        // Participants who get a report, by the same rule report generation uses.
+        $gets = self::sqlGetsIndividualReport('sp');
         $progressRow = $db->fetchRow(
             $db->select()
-                ->from('shipment_participant_map', [
-                    'total' => new Zend_Db_Expr("SUM(CASE WHEN IFNULL(is_excluded, 'no') != 'yes' AND final_result IN (1, 2) THEN 1 ELSE 0 END)"),
-                    'completed' => new Zend_Db_Expr("SUM(CASE WHEN report_generated = 'yes' AND IFNULL(is_excluded, 'no') != 'yes' AND final_result IN (1, 2) THEN 1 ELSE 0 END)"),
+                ->from(['sp' => 'shipment_participant_map'], [
+                    'total' => new Zend_Db_Expr("SUM(CASE WHEN $gets THEN 1 ELSE 0 END)"),
+                    'completed' => new Zend_Db_Expr("SUM(CASE WHEN sp.report_generated = 'yes' AND $gets THEN 1 ELSE 0 END)"),
                 ])
-                ->where('shipment_id = ?', $shipmentId)
+                ->where('sp.shipment_id = ?', $shipmentId)
         );
 
         $total = (int) ($progressRow['total'] ?? 0);
         $completed = (int) ($progressRow['completed'] ?? 0);
-        $percentage = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
 
         // Determine overall status
         $inProgress = in_array($queueRow['status'], ['pending', 'generating', 'finalizing']);
@@ -4542,6 +4560,25 @@ class Application_Service_Evaluation
                 ->from('shipment', ['status', 'shipment_code'])
                 ->where('shipment_id = ?', $shipmentId)
         );
+
+        // Workers set report_generated only when their whole share is done, so a
+        // running job read 0% until the end. The output folder is emptied when a run
+        // starts, so the participant PDFs already in it are the live count.
+        if (in_array($queueRow['status'], ['generating', 'finalizing'], true) && !empty($shipmentRow['shipment_code'])) {
+            // Every PDF in the folder, by name pattern only for what is NOT a participant
+            // report: the summary files (<code>-summary.pdf, -screening-summary.pdf,
+            // -confirmatory-summary.pdf) and the temporary <name>-tmp.pdf a layout writes
+            // before flattening. File names are normalised (repeated hyphens collapse), so
+            // matching on the shipment code would miss reports.
+            $written = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR
+                . $shipmentRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf') ?: [];
+            $participantPdfs = count(array_filter(
+                $written,
+                static fn ($file) => !str_ends_with(basename($file), 'summary.pdf') && !str_ends_with($file, '-tmp.pdf')
+            ));
+            $completed = max($completed, min($participantPdfs, $total));
+        }
+        $percentage = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
 
         // Check if summary report exists
         $summaryStatus = 'pending';
