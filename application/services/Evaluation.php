@@ -690,6 +690,9 @@ class Application_Service_Evaluation
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->where('s.distribution_id = ?', $distributionId)
+            // Cancelling is the shipment soft-delete: a cancelled shipment has nothing
+            // to evaluate, so it is hidden here as it is everywhere else.
+            ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id');
 
         return $db->fetchAll($sql);
