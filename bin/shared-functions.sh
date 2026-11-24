@@ -1294,10 +1294,51 @@ ensure_switch_php() {
 # and the 8.5 PHP_VERSION_ID check in constants.php.
 EPT_MIN_PHP_VERSION="8.4.27"
 
-# Upgrade the installed PHP packages in place when the running PHP is older
-# than EPT_MIN_PHP_VERSION. switch-php only checks major.minor, so a box on
-# 8.4.x below the floor otherwise stays there.
-# Usage: ensure_php_min_version [min_version]
+# True when apt uses a packages.sury.org/<component> source: sury_source_active php|apache2.
+#
+# Only what apt reads counts. do-release-upgrade comments out third-party
+# sources and leaves .distUpgrade and .save copies behind, and a deb822 source
+# can say "Enabled: no". Counting any of those as present would leave the
+# source off after a release upgrade, with PHP or Apache quietly back on
+# Ubuntu's packages. A deb822 stanza is treated as enabled unless it says no.
+# The apt sources directory can be overridden with SURY_APT_DIR, for testing.
+sury_source_active() {
+    local component="$1" dir="${SURY_APT_DIR:-/etc/apt}" f
+    local url="packages\\.sury\\.org/${component}([/[:space:]]|$)"
+
+    for f in "$dir/sources.list" "$dir"/sources.list.d/*.list; do
+        [ -f "$f" ] || continue
+        grep -Eqs "^[[:space:]]*deb[[:space:]].*${url}" "$f" && return 0
+    done
+
+    for f in "$dir"/sources.list.d/*.sources; do
+        [ -f "$f" ] || continue
+        awk -v url="$url" '
+            BEGIN { RS = "" }
+            {
+                enabled = 1; found = 0; field = ""
+                n = split($0, lines, "\n")
+                for (i = 1; i <= n; i++) {
+                    line = lines[i]
+                    if (line ~ /^[[:space:]]*#/) continue
+                    # A line starting with whitespace continues the field above it,
+                    # so URIs can sit on the lines after "URIs:".
+                    if (line !~ /^[[:space:]]/) {
+                        field = tolower(line)
+                        sub(/:.*/, "", field)
+                        if (tolower(line) ~ /^enabled:[[:space:]]*no[[:space:]]*$/) enabled = 0
+                    }
+                    if (field == "uris" && line ~ url) found = 1
+                }
+                if (enabled && found) { hit = 1; exit }
+            }
+            END { exit hit ? 0 : 1 }
+        ' "$f" && return 0
+    done
+
+    return 1
+}
+
 # Use packages.sury.org/<component> (php or apache2) for this Ubuntu release, and
 # retire the frozen ondrej/<component> Launchpad PPA as its notice says. Installed
 # packages stay and get their next updates from sury. Only a 404 from sury means
@@ -1313,7 +1354,7 @@ use_sury_repo() {
         print info "Removed frozen PPA source $(basename "$f")"
     done
 
-    if grep -rqs "packages\.sury\.org/${component}" /etc/apt/sources.list /etc/apt/sources.list.d/; then
+    if sury_source_active "$component"; then
         return 0
     fi
 
@@ -1338,6 +1379,10 @@ use_sury_repo() {
         >"/etc/apt/sources.list.d/sury-${component}.list"
 }
 
+# Upgrade the installed PHP packages in place when the running PHP is older
+# than EPT_MIN_PHP_VERSION. switch-php only checks major.minor, so a box on
+# 8.4.x below the floor otherwise stays there.
+# Usage: ensure_php_min_version [min_version]
 ensure_php_min_version() {
     local min="${1:-$EPT_MIN_PHP_VERSION}"
     local branch="${min%.*}"
