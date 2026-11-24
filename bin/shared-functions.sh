@@ -1308,7 +1308,7 @@ EPT_MIN_PHP_VERSION="8.4.27"
 # utility-scripts' switch-php and lamp-setup.sh.
 sury_source_active() {
     local component="$1" codename="$2" dir="${SURY_APT_DIR:-/etc/apt}" f
-    local url="packages\\.sury\\.org/${component}([/[:space:]]|$)"
+    local url="packages[.]sury[.]org/${component}([/[:space:]]|$)"
 
     for f in "$dir/sources.list" "$dir"/sources.list.d/*.list; do
         [ -f "$f" ] || continue
