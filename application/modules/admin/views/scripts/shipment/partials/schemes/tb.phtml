@@ -144,7 +144,8 @@ $tbCountFilled = function (array $ref, array $keys): int {
        Molecular sample cards — replaces the old wide, horizontally
        scrolling MTB/Rif + MTB Ultra table. One card per sample:
        header meta, a single interpreted result, and two collapsible
-       raw-value panels that auto-open when they hold data.
+       raw-value panels. The raw values are optional, so the panels
+       start collapsed and the header badge shows how many are filled.
        ================================================================== */
     #molecular.tb-molecular-cards { max-width: 1320px; }
 
@@ -243,7 +244,11 @@ $tbCountFilled = function (array $ref, array $keys): int {
     .tb-add-hint { margin-left: auto; font-size: 11px; font-weight: 500; color: #94a3b8; }
     .tb-raw-body { display: none; padding: 4px 18px 16px; }
     .tb-raw-panel.open .tb-raw-body { display: block; }
-    .tb-raw-grid { display: flex; flex-wrap: wrap; gap: 10px 14px; }
+    /* Cells sit on a common bottom edge so the inputs stay in line when a longer
+       label such as "Probe A Mean (Stability)" wraps to two lines. */
+    .tb-raw-grid { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
+    .tb-raw-note { margin-top: 10px; font-size: 11.5px; color: #64748b; }
+    .tb-raw-note i { color: #94a3b8; }
     /* Let the raw-value inputs grow to fill the panel width instead of
        clustering at the left. Both rows hold 7 cells, so they spread evenly;
        .wide keeps a larger basis for the longer-labelled fields. */
@@ -604,7 +609,7 @@ $tbCountFilled = function (array $ref, array $keys): int {
                 </div>
                 <div class="tb-result-note"><i class="icon-info-sign"></i> <?= $this->translate->_("Saved for both MTB/Rif and MTB Ultra — enter it once."); ?></div>
 
-                <div class="tb-raw-panel<?php echo $rifFilled > 0 ? ' open' : ''; ?>">
+                <div class="tb-raw-panel">
                     <button type="button" class="tb-raw-toggle rif" onclick="tbTogglePanel(this)">
                         <span class="chev">&#9654;</span> <?= $this->translate->_("Raw values"); ?> <span class="tb-assay-tag">MTB/Rif</span>
                         <?php if ($rifFilled > 0): ?>
@@ -625,15 +630,16 @@ $tbCountFilled = function (array $ref, array $keys): int {
                                 <input type="text" value="<?php echo htmlspecialchars($reference['probe_b'] ?? ''); ?>" id="probeB<?php echo $rowNo; ?>" name="probeB[<?php echo htmlspecialchars($sampleId); ?>]" class="form-control input-sm oneDecimal probe1" title="<?= $this->htmlTranslate("Please enter the Probe B") ?>" placeholder="<?= $this->htmlTranslate("B") ?>" /></div>
                             <div class="tb-cell"><label class="tb-field-label">SPC Xpert</label>
                                 <input type="text" value="<?php echo htmlspecialchars($reference['spc_xpert'] ?? ''); ?>" id="spcXpert<?php echo $rowNo; ?>" name="spcXpert[<?php echo htmlspecialchars($sampleId); ?>]" class="form-control input-sm oneDecimal" title="<?= $this->htmlTranslate("Please enter the SPC Xpert") ?>" placeholder="<?= $this->htmlTranslate("SPC") ?>" /></div>
-                            <div class="tb-cell"><label class="tb-field-label">Probe A</label>
+                            <div class="tb-cell"><label class="tb-field-label">Probe A (Validation)</label>
                                 <input type="text" value="<?php echo htmlspecialchars($reference['probe_a'] ?? ''); ?>" id="probeA<?php echo $rowNo; ?>" name="probeA[<?php echo htmlspecialchars($sampleId); ?>]" class="form-control input-sm oneDecimal input-probeA<?php echo $rowNo; ?>" title="<?= $this->htmlTranslate("Please enter the Probe A") ?>" placeholder="<?= $this->htmlTranslate("A") ?>" /></div>
-                            <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean</label>
+                            <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean (Stability)</label>
                                 <input type="text" value="<?php echo htmlspecialchars($reference['mtbrif_probe_a_mean_stability_ct'] ?? ''); ?>" name="probeAMean[<?php echo htmlspecialchars($sampleId); ?>]" id="probeAMean<?php echo $rowNo; ?>" class="form-control input-sm oneDecimal input-probeAMean<?php echo $rowNo; ?>" title="<?= $this->htmlTranslate("Please enter the Probe A Mean") ?>" placeholder="<?= $this->htmlTranslate("A Mean") ?>" /></div>
                         </div>
+                        <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->translate->_("Probe A (Validation) is the mean from panel validation, before shipping. Probe A Mean (Stability) is the mean from stability testing, after the deadline."); ?></div>
                     </div>
                 </div>
 
-                <div class="tb-raw-panel<?php echo $ultraFilled > 0 ? ' open' : ''; ?>">
+                <div class="tb-raw-panel">
                     <button type="button" class="tb-raw-toggle ultra" onclick="tbTogglePanel(this)">
                         <span class="chev">&#9654;</span> <?= $this->translate->_("Raw values"); ?> <span class="tb-assay-tag">MTB Ultra</span>
                         <?php if ($ultraFilled > 0): ?>
@@ -656,9 +662,10 @@ $tbCountFilled = function (array $ref, array $keys): int {
                                 <input type="number" step="0.01" value="<?php echo htmlspecialchars($reference['rpo_b4'] ?? ''); ?>" id="rpoB4<?php echo $rowNo; ?>" name="rpoB4[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="<?= $this->htmlTranslate("Please enter the B4") ?>" /></div>
                             <div class="tb-cell wide"><label class="tb-field-label">SPC Ultra</label>
                                 <input type="text" value="<?php echo htmlspecialchars($reference['spc_xpert_ultra'] ?? ''); ?>" id="spcXpertUltra<?php echo $rowNo; ?>" name="spcXpertUltra[<?php echo htmlspecialchars($sampleId); ?>]" class="form-control input-sm oneDecimal" title="<?= $this->htmlTranslate("Please enter the SPC Xpert Ultra") ?>" placeholder="<?= $this->htmlTranslate("SPC Ultra") ?>" /></div>
-                            <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean</label>
+                            <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean (Stability)</label>
                                 <input type="text" value="<?php echo htmlspecialchars($reference['mtbultra_lowest_rpo_b_probe_mean_stability_ct'] ?? ''); ?>" name="LowerstrpoBMean[<?php echo htmlspecialchars($sampleId); ?>]" id="LowerstrpoBMean<?php echo $rowNo; ?>" class="form-control input-sm oneDecimal input-LowerstrpoBMean<?php echo $rowNo; ?>" title="<?= $this->htmlTranslate("Please enter the Lowest rpoB Mean") ?>" placeholder="<?= $this->htmlTranslate("Lowest rpoB") ?>" /></div>
                         </div>
+                        <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->translate->_("For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."); ?></div>
                     </div>
                 </div>
 
@@ -751,9 +758,10 @@ $tbCountFilled = function (array $ref, array $keys): int {
                         <div class="tb-cell"><label class="tb-field-label">Probe E</label><input type="text" name="probeE[1]" id="probeE1" class="form-control input-sm oneDecimal probe1" title="<?= $this->htmlTranslate("Please enter the Probe E") ?>" placeholder="<?= $this->htmlTranslate("E") ?>" /></div>
                         <div class="tb-cell"><label class="tb-field-label">Probe B</label><input type="text" name="probeB[1]" id="probeB1" class="form-control input-sm oneDecimal probe1" title="<?= $this->htmlTranslate("Please enter the Probe B") ?>" placeholder="<?= $this->htmlTranslate("B") ?>" /></div>
                         <div class="tb-cell"><label class="tb-field-label">SPC Xpert</label><input type="text" name="spcXpert[1]" id="spcXpert1" class="form-control input-sm oneDecimal" title="<?= $this->htmlTranslate("Please enter the SPC Xpert") ?>" placeholder="<?= $this->htmlTranslate("SPC") ?>" /></div>
-                        <div class="tb-cell"><label class="tb-field-label">Probe A</label><input type="text" name="probeA[1]" id="probeA1" class="form-control input-sm oneDecimal input-probeA1" title="<?= $this->htmlTranslate("Please enter the Probe A") ?>" placeholder="<?= $this->htmlTranslate("A") ?>" /></div>
-                        <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean</label><input type="text" name="probeAMean[1]" id="probeAMean1" class="form-control input-sm oneDecimal input-probeAMean1" title="<?= $this->htmlTranslate("Please enter the Probe A Mean") ?>" placeholder="<?= $this->htmlTranslate("A Mean") ?>" /></div>
+                        <div class="tb-cell"><label class="tb-field-label">Probe A (Validation)</label><input type="text" name="probeA[1]" id="probeA1" class="form-control input-sm oneDecimal input-probeA1" title="<?= $this->htmlTranslate("Please enter the Probe A") ?>" placeholder="<?= $this->htmlTranslate("A") ?>" /></div>
+                        <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean (Stability)</label><input type="text" name="probeAMean[1]" id="probeAMean1" class="form-control input-sm oneDecimal input-probeAMean1" title="<?= $this->htmlTranslate("Please enter the Probe A Mean") ?>" placeholder="<?= $this->htmlTranslate("A Mean") ?>" /></div>
                     </div>
+                        <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->translate->_("Probe A (Validation) is the mean from panel validation, before shipping. Probe A Mean (Stability) is the mean from stability testing, after the deadline."); ?></div>
                 </div>
             </div>
 
@@ -770,8 +778,9 @@ $tbCountFilled = function (array $ref, array $keys): int {
                         <div class="tb-cell"><label class="tb-field-label">rpoB3</label><input type="number" step="0.01" name="rpoB3[1]" id="rpoB31" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="<?= $this->htmlTranslate("Please enter the B3") ?>" /></div>
                         <div class="tb-cell"><label class="tb-field-label">rpoB4</label><input type="number" step="0.01" name="rpoB4[1]" id="rpoB41" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="<?= $this->htmlTranslate("Please enter the B4") ?>" /></div>
                         <div class="tb-cell wide"><label class="tb-field-label">SPC Ultra</label><input type="text" name="spcXpertUltra[1]" id="spcXpertUltra1" class="form-control input-sm oneDecimal" title="<?= $this->htmlTranslate("Please enter the SPC Xpert Ultra") ?>" placeholder="<?= $this->htmlTranslate("SPC Ultra") ?>" /></div>
-                        <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean</label><input type="text" name="LowerstrpoBMean[1]" id="LowerstrpoBMean1" class="form-control input-sm oneDecimal input-LowerstrpoBMean1" title="<?= $this->htmlTranslate("Please enter the Lowest rpoB Mean") ?>" placeholder="<?= $this->htmlTranslate("Lowest rpoB") ?>" /></div>
+                        <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean (Stability)</label><input type="text" name="LowerstrpoBMean[1]" id="LowerstrpoBMean1" class="form-control input-sm oneDecimal input-LowerstrpoBMean1" title="<?= $this->htmlTranslate("Please enter the Lowest rpoB Mean") ?>" placeholder="<?= $this->htmlTranslate("Lowest rpoB") ?>" /></div>
                     </div>
+                        <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->translate->_("For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."); ?></div>
                 </div>
             </div>
 
@@ -945,9 +954,10 @@ $tbCountFilled = function (array $ref, array $keys): int {
                     <div class="tb-cell"><label class="tb-field-label">Probe E</label><input type="text" name="probeE[' + sampleCounter + ']" id="probeE' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="<?= $this->jsTranslate("Please enter the Probe E") ?>" placeholder="<?= $this->jsTranslate("E") ?>" /></div>\
                     <div class="tb-cell"><label class="tb-field-label">Probe B</label><input type="text" name="probeB[' + sampleCounter + ']" id="probeB' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="<?= $this->jsTranslate("Please enter the Probe B") ?>" placeholder="<?= $this->jsTranslate("B") ?>" /></div>\
                     <div class="tb-cell"><label class="tb-field-label">SPC Xpert</label><input type="text" name="spcXpert[' + sampleCounter + ']" id="spcXpert' + sampleCounter + '" class="form-control input-sm oneDecimal" title="<?= $this->jsTranslate("Please enter the SPC Xpert") ?>" placeholder="<?= $this->jsTranslate("SPC") ?>" /></div>\
-                    <div class="tb-cell"><label class="tb-field-label">Probe A</label><input type="text" name="probeA[' + sampleCounter + ']" id="probeA' + sampleCounter + '" class="form-control input-sm oneDecimal input-probeA' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Probe A") ?>" placeholder="<?= $this->jsTranslate("A") ?>" /></div>\
-                    <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean</label><input type="text" name="probeAMean[' + sampleCounter + ']" id="probeAMean' + sampleCounter + '" class="form-control input-sm oneDecimal input-probeAMean' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Probe A Mean") ?>" placeholder="<?= $this->jsTranslate("A Mean") ?>" /></div>\
+                    <div class="tb-cell"><label class="tb-field-label">Probe A (Validation)</label><input type="text" name="probeA[' + sampleCounter + ']" id="probeA' + sampleCounter + '" class="form-control input-sm oneDecimal input-probeA' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Probe A") ?>" placeholder="<?= $this->jsTranslate("A") ?>" /></div>\
+                    <div class="tb-cell wide"><label class="tb-field-label">Probe A Mean (Stability)</label><input type="text" name="probeAMean[' + sampleCounter + ']" id="probeAMean' + sampleCounter + '" class="form-control input-sm oneDecimal input-probeAMean' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Probe A Mean") ?>" placeholder="<?= $this->jsTranslate("A Mean") ?>" /></div>\
                 </div>\
+                    <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->jsTranslate("Probe A (Validation) is the mean from panel validation, before shipping. Probe A Mean (Stability) is the mean from stability testing, after the deadline."); ?></div>\
             </div>\
         </div>\
         <div class="tb-raw-panel">\
@@ -963,8 +973,9 @@ $tbCountFilled = function (array $ref, array $keys): int {
                     <div class="tb-cell"><label class="tb-field-label">rpoB3</label><input type="number" step="0.01" name="rpoB3[' + sampleCounter + ']" id="rpoB3' + sampleCounter + '" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="<?= $this->jsTranslate("Please enter the B3") ?>" /></div>\
                     <div class="tb-cell"><label class="tb-field-label">rpoB4</label><input type="number" step="0.01" name="rpoB4[' + sampleCounter + ']" id="rpoB4' + sampleCounter + '" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="<?= $this->jsTranslate("Please enter the B4") ?>" /></div>\
                     <div class="tb-cell wide"><label class="tb-field-label">SPC Ultra</label><input type="text" name="spcXpertUltra[' + sampleCounter + ']" id="spcXpertUltra' + sampleCounter + '" class="form-control input-sm oneDecimal" title="<?= $this->jsTranslate("Please enter the SPC Xpert Ultra") ?>" placeholder="<?= $this->jsTranslate("SPC Ultra") ?>" /></div>\
-                    <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean</label><input type="text" name="LowerstrpoBMean[' + sampleCounter + ']" id="LowerstrpoBMean' + sampleCounter + '" class="form-control input-sm oneDecimal input-LowerstrpoBMean' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Lowest rpoB Mean") ?>" placeholder="<?= $this->jsTranslate("Lowest rpoB") ?>" /></div>\
+                    <div class="tb-cell wide"><label class="tb-field-label">Lowest rpoB Mean (Stability)</label><input type="text" name="LowerstrpoBMean[' + sampleCounter + ']" id="LowerstrpoBMean' + sampleCounter + '" class="form-control input-sm oneDecimal input-LowerstrpoBMean' + sampleCounter + '" title="<?= $this->jsTranslate("Please enter the Lowest rpoB Mean") ?>" placeholder="<?= $this->jsTranslate("Lowest rpoB") ?>" /></div>\
                 </div>\
+                    <div class="tb-raw-note"><i class="icon-info-sign"></i> <?= $this->jsTranslate("For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."); ?></div>\
             </div>\
         </div>\
         <div class="tb-card-actions">\

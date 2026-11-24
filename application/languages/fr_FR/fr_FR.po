@@ -31572,3 +31572,9 @@ msgstr "Veuillez saisir une date d'approbation valide."
 #, php-format
 #~ msgid "To reset your password, contact %s."
 #~ msgstr "Pour réinitialiser votre mot de passe, contactez %s."
+
+msgid "Probe A (Validation) is the mean from panel validation, before shipping. Probe A Mean (Stability) is the mean from stability testing, after the deadline."
+msgstr "Probe A (Validation) est la moyenne de la validation du panel, avant l'expédition. Probe A Mean (Stability) est la moyenne des tests de stabilité, après la date limite."
+
+msgid "For validation, enter each rpoB probe mean or only the lowest one. The report uses the lowest. Leave the stability field empty if stability testing was not done."
+msgstr "Pour la validation, saisissez la moyenne de chaque sonde rpoB ou seulement la plus basse. Le rapport utilise la plus basse. Laissez le champ de stabilité vide si le test de stabilité n'a pas été effectué."

@@ -267,8 +267,8 @@ $open = $this->openShipments ?? ['rows' => [], 'total' => 0];
 				<ul class="dash-list">
 					<?php foreach ($open['rows'] as $r) {
 						$labs = (int) $r['labs'];
-						$deadline = strtotime((string) $r['response_deadline']);
-						$dueSoon = $deadline !== false && $deadline - time() < 3 * 86400;
+						$cutoff = Pt_Commons_DateUtility::shipmentCutoff($r['response_deadline'] ?? null);
+						$dueSoon = $cutoff !== null && $cutoff->getTimestamp() - time() < 3 * 86400;
 						if ($labs === 1) {
 							$schemeType = ($r['is_user_configured'] ?? 'no') === 'yes' ? 'custom-test' : $r['scheme_type'];
 							$url = '/' . rawurlencode($schemeType) . '/response/sid/' . (int) $r['shipment_id'] . '/pid/' . (int) $r['participant_id']

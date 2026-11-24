@@ -407,6 +407,129 @@ final class Pt_Commons_DateUtility
         }
     }
 
+    // SQL for a shipment deadline column expressed on the application clock, so it
+    // compares directly with shipment_test_report_date (written on that clock, see
+    // responseInstant()). The deadline itself is a wall clock in the cutoff
+    // timezone. Comparing the two raw columns treated a UTC submission as if it
+    // were Anywhere on Earth time and moved the boundary by up to 12 hours.
+    //
+    // MySQL's CONVERT_TZ() needs time zone tables that are usually not loaded, so
+    // the shift is built here instead. PHP knows every offset change of both zones,
+    // so each deadline gets the shift that applied on its own date: a single
+    // DATE_ADD for zones without daylight saving, a CASE over the changes otherwise.
+    private static function sqlDeadlineOnAppClock(string $column = 's.response_deadline'): string
+    {
+        $cutoffZone = self::cutoffTimezone();
+        $appZone = new DateTimeZone(date_default_timezone_get());
+        if ($cutoffZone->getName() === $appZone->getName()) {
+            return $column;
+        }
+
+        $from = (new DateTimeImmutable('2000-01-01 00:00:00', new DateTimeZone('UTC')))->getTimestamp();
+        $to = (new DateTimeImmutable('2050-01-01 00:00:00', new DateTimeZone('UTC')))->getTimestamp();
+
+        // Every moment either zone changes offset, as UTC timestamps.
+        $changes = [];
+        foreach ([$cutoffZone, $appZone] as $zone) {
+            foreach (array_slice($zone->getTransitions($from, $to) ?: [], 1) as $transition) {
+                $changes[] = (int) $transition['ts'];
+            }
+        }
+        $changes = array_values(array_unique($changes));
+        sort($changes);
+
+        // Seconds to add to a cutoff wall clock to read it on the app clock, at $ts.
+        $shiftAt = static function (int $ts) use ($cutoffZone, $appZone): int {
+            $moment = (new DateTimeImmutable('@' . $ts));
+            return $appZone->getOffset($moment) - $cutoffZone->getOffset($moment);
+        };
+
+        // [cutoff wall clock where a shift starts => shift], merged when unchanged.
+        $segments = [];
+        $current = $shiftAt($from);
+        foreach ($changes as $ts) {
+            $next = $shiftAt($ts);
+            if ($next !== $current) {
+                // Where the change falls on the cutoff wall clock. Around a change
+                // some wall clock times are repeated (clocks go back) or skipped
+                // (clocks go forward). Ask PHP how it reads a time inside that window,
+                // so the SQL resolves it exactly as shipmentCutoff() does.
+                $before = $cutoffZone->getOffset(new DateTimeImmutable('@' . ($ts - 1)));
+                $after = $cutoffZone->getOffset(new DateTimeImmutable('@' . $ts));
+                $windowStart = $ts + min($before, $after);
+                $windowEnd = $ts + max($before, $after);
+                $wallClock = gmdate('Y-m-d H:i:s', $windowEnd);
+                if ($windowEnd > $windowStart) {
+                    // The offset PHP applied is the wall clock minus the instant it
+                    // produced. getOffset() would not do: for a skipped time PHP moves
+                    // the clock forward and reports the new offset.
+                    $insideWall = intdiv($windowStart + $windowEnd, 2);
+                    $instant = (new DateTimeImmutable(gmdate('Y-m-d H:i:s', $insideWall), $cutoffZone))->getTimestamp();
+                    if ($insideWall - $instant !== $before) {
+                        $wallClock = gmdate('Y-m-d H:i:s', $windowStart);
+                    }
+                }
+                $segments[] = [$wallClock, $current];
+                $current = $next;
+            }
+        }
+
+        $shifted = static fn (int $seconds): string => $seconds === 0
+            ? $column
+            : "DATE_ADD($column, INTERVAL $seconds SECOND)";
+
+        if ($segments === []) {
+            return $shifted($current);
+        }
+
+        $sql = 'CASE';
+        foreach ($segments as [$until, $seconds]) {
+            $sql .= " WHEN $column < '$until' THEN " . $shifted($seconds);
+        }
+
+        return $sql . ' ELSE ' . $shifted($current) . ' END';
+    }
+
+    // ---- Deadline checks -------------------------------------------------------
+    // The one place that decides "has the deadline passed?" and "was this response
+    // late?". The deadline is a wall clock in the cutoff timezone, a response time
+    // a wall clock on the application clock; call these rather than comparing the
+    // raw values or using MySQL NOW(), whose timezone is the database server's.
+
+    // Whether a shipment's response deadline has passed. An empty or invalid
+    // deadline has not passed.
+    public static function deadlinePassed(?string $dueDate): bool
+    {
+        $cutoff = self::shipmentCutoff($dueDate);
+
+        return $cutoff !== null && $cutoff < new DateTimeImmutable('now', new DateTimeZone('UTC'));
+    }
+
+    // Whether a response was submitted after the deadline. False when either value
+    // is empty or invalid.
+    public static function submittedAfterDeadline(?string $responseDate, ?string $dueDate): bool
+    {
+        $respondedAt = self::responseInstant($responseDate);
+        $cutoff = self::shipmentCutoff($dueDate);
+
+        return $respondedAt !== null && $cutoff !== null && $respondedAt > $cutoff;
+    }
+
+    // SQL condition: the deadline in $deadlineColumn has passed.
+    public static function sqlDeadlinePassed(string $deadlineColumn = 's.response_deadline'): string
+    {
+        return '(' . self::sqlDeadlineOnAppClock($deadlineColumn) . " < '" . self::getCurrentDateTime() . "')";
+    }
+
+    // SQL condition: the response in $responseColumn was submitted after the
+    // deadline in $deadlineColumn. NULL when the response time is NULL.
+    public static function sqlSubmittedAfterDeadline(
+        string $responseColumn = 'sp.shipment_test_report_date',
+        string $deadlineColumn = 's.response_deadline'
+    ): string {
+        return "($responseColumn > " . self::sqlDeadlineOnAppClock($deadlineColumn) . ')';
+    }
+
     // Returns the moment a participant's response was submitted, as an absolute
     // instant, so it can be compared against shipmentCutoff().
     //
@@ -415,9 +538,16 @@ final class Pt_Commons_DateUtility
     // A legacy date-only value (or one saved before the form carried a time) has
     // no time component; it defaults to 00:00:00 so such a response is read as
     // on time for the whole of that day rather than being back-dated to a moment
-    // that could fall the wrong side of an afternoon cut-off. The wall clock is
-    // interpreted in the same cutoff timezone the deadline is, then converted to
-    // UTC — both sides of the late test are then the same kind of instant.
+    // that could fall the wrong side of an afternoon cut-off.
+    //
+    // The wall clock is interpreted in the application timezone (application.ini
+    // `timezone`), because that is the clock it was written with: the response
+    // forms prefill the time with PHP date(), and every save path that fills in a
+    // missing time uses getCurrentDateTime(), never MySQL now(), whose timezone
+    // can differ from PHP's. It is NOT the cutoff timezone. Reading a UTC-written time as Anywhere on
+    // Earth (UTC-12) moved every response 12 hours later, so a lab that submitted
+    // in the last 12 hours before the deadline was marked late and excluded.
+    // The result is converted to UTC so it compares directly with shipmentCutoff().
     public static function responseInstant(?string $responseDate): ?DateTimeImmutable
     {
         $value = trim((string) ($responseDate ?? ''));
@@ -430,7 +560,7 @@ final class Pt_Commons_DateUtility
         $time = (isset($parts[1]) && trim($parts[1]) !== '') ? trim($parts[1]) : '00:00:00';
 
         try {
-            return (new DateTimeImmutable($dateOnly . ' ' . $time, self::cutoffTimezone()))
+            return (new DateTimeImmutable($dateOnly . ' ' . $time, new DateTimeZone(date_default_timezone_get())))
                 ->setTimezone(new DateTimeZone('UTC'));
         } catch (Throwable $e) {
             return null;

@@ -164,13 +164,15 @@ class Application_Service_Dashboard
         ";
 
         $rows = $this->db->fetchAll($sql);
-        $now = new DateTime();
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         $out = [];
 
         foreach ($rows as $row) {
-            $deadline = new DateTime($row['response_deadline']);
+            // The real cut-off moment (deadline in the cutoff timezone), so the day
+            // count agrees with deadlinePassed() below.
+            $deadline = Pt_Commons_DateUtility::shipmentCutoff($row['response_deadline']) ?? $now;
             $diffDays = (int) $now->diff($deadline)->format('%r%a'); // signed days, future positive
-            $deadlinePassed = $deadline < $now;
+            $deadlinePassed = Pt_Commons_DateUtility::deadlinePassed($row['response_deadline']);
             $switchOn = strtolower((string) $row['response_switch']) === 'on';
             $isOpen = $switchOn && !$deadlinePassed;
 
@@ -426,7 +428,7 @@ class Application_Service_Dashboard
             WHERE s.status != 'finalized'
               AND s.cancelled_at IS NULL
               AND LOWER(s.response_switch) = 'on'
-              AND s.response_deadline >= NOW()"
+              AND NOT " . Pt_Commons_DateUtility::sqlDeadlinePassed()
         );
 
         return [

@@ -187,7 +187,7 @@ if (!empty($this->shipment)) {
                         placeholder="<?= $this->htmlTranslate("Optional. Appears on every participant's report for this shipment."); ?>"
                         title="<?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?>"
                         name="shipmentComment"
-                        id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+                        id="shipmentComment"><?php echo $this->escape($this->shipment[0]['shipment_comment'] ?? ''); ?></textarea>
                     <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>"
                         name="shipmentId" id="shipmentId">
                 </div>

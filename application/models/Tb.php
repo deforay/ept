@@ -59,11 +59,6 @@ class Application_Model_Tb
             $scoreResult = '';
             $failureReason = $results = [];
 
-            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-                ?? new DateTimeImmutable('1970-01-01');
-
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
             // No response / could not test / late → EXCLUDED, never failed (shared rule).
@@ -71,7 +66,7 @@ class Application_Model_Tb
                 $shipment['is_excluded'] = 'yes';
             }
 
-            if ($createdOn > $lastDate) {
+            if (Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
                 $failureReason[] = [
                     'warning' => 'Response was submitted after the last response date.',
                 ];
@@ -1350,7 +1345,10 @@ class Application_Model_Tb
                 'ref.shipment_id = spm.shipment_id',
                 [
                     'sample_label' => 'ref.sample_label',
-                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END"),
+                    // The validation value is the lowest rpoB probe mean. The PT provider
+                    // often supplies only that one value, so empty or zero probes are
+                    // skipped: MySQL's LEAST() returns NULL as soon as one argument is NULL.
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN NULLIF(LEAST(COALESCE(NULLIF(ref.rpo_b1, 0), 1e9), COALESCE(NULLIF(ref.rpo_b2, 0), 1e9), COALESCE(NULLIF(ref.rpo_b3, 0), 1e9), COALESCE(NULLIF(ref.rpo_b4, 0), 1e9)), 1e9) ELSE 0 END"),
                     'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbultra_lowest_rpo_b_probe_mean_stability_ct ELSE 0 END"),
                 ]
             )
@@ -1773,8 +1771,8 @@ class Application_Model_Tb
 
             /* Panel Statistics */
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $panelStatisticsQuery = "SELECT COUNT(spm.map_id) AS participating_sites,
-                SUM(CASE WHEN SUBSTRING(spm.evaluation_status, 3, 1) = '1' THEN 1 ELSE 0 END) AS response_received,
+            $panelStatisticsQuery = 'SELECT COUNT(spm.map_id) AS participating_sites,
+                SUM(CASE WHEN ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . " THEN 1 ELSE 0 END) AS response_received,
                 SUM(CASE WHEN spm.is_excluded = 'yes' THEN 1 ELSE 0 END) AS excluded,
                 SUM(CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'no' THEN 1 ELSE 0 END) AS able_to_submit,
                 SUM(CASE WHEN spm.shipment_score >= 80 THEN 1 ELSE 0 END) AS scored_higher_than_80,
@@ -1976,8 +1974,8 @@ class Application_Model_Tb
             if (!empty($authNameSpace->dm_id)) {
                 $discordantResultsInnerQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
-            $discordantResultsInnerQuery .= " WHERE spm.shipment_id = ?
-                    AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
+            $discordantResultsInnerQuery .= ' WHERE spm.shipment_id = ?
+                    AND ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . "
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
             if (!empty($authNameSpace->dm_id)) {
@@ -2060,8 +2058,8 @@ class Application_Model_Tb
             if (!empty($authNameSpace->dm_id)) {
                 $discordantCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
-            $discordantCountriesQuery .= " WHERE spm.shipment_id = ?
-                AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
+            $discordantCountriesQuery .= ' WHERE spm.shipment_id = ?
+                AND ' . Application_Service_Evaluation::sqlResponseSubmitted('spm') . "
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
             if (!empty($authNameSpace->dm_id)) {
                 $discordantCountriesQuery .= ' AND pmm.dm_id IN(' . $authNameSpace->dm_id . ') ';

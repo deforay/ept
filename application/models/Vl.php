@@ -68,11 +68,7 @@ class Application_Model_Vl
 
             $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
-            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null);
-
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
-
-            if (!empty($createdOn) && $createdOn <= $lastDate) {
+            if (!Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
                 $shipment['is_response_late'] = 'no';
 
                 $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
@@ -262,9 +258,6 @@ class Application_Model_Vl
                             'shipment_score' => $shipmentOverall['shipment_score'],
                             'final_result' => $shipmentOverall['final_result'],
                         ];
-                        if ($shipment['is_response_late'] == 'yes') {
-                            $overrideUpdateData['response_status'] = 'late';
-                        }
                         $db->update('shipment_participant_map', $overrideUpdateData, ['map_id = ?' => $shipment['map_id']]);
                     }
                 } else {
@@ -275,9 +268,6 @@ class Application_Model_Vl
                         'failure_reason' => json_encode($failureReason),
                         'is_response_late' => $shipment['is_response_late'],
                     ];
-                    if ($shipment['is_response_late'] == 'yes') {
-                        $normalUpdateData['response_status'] = 'late';
-                    }
                     $db->update('shipment_participant_map', $normalUpdateData, ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
@@ -1748,7 +1738,7 @@ class Application_Model_Vl
                 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"'),
                 'other_assay' => new Zend_Db_Expr('sp.attributes->>"$.other_assay"'),
                 'is_pt_test_not_performed',
-                'on_time' => new Zend_Db_Expr('sp.shipment_test_report_date <= s.response_deadline'),
+                'on_time' => new Zend_Db_Expr('NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline()),
             ])
             ->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', ['unique_identifier', 'lab_name'])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id AND res.sample_id = ref.sample_id', ['reported_viral_load', 'is_result_invalid'])
@@ -1917,7 +1907,7 @@ class Application_Model_Vl
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('sp.shipment_test_report_date <= s.response_deadline')
+            ->where('NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline())
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 

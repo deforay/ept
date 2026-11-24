@@ -109,17 +109,16 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 
 				<div id="view-content">
 					<?php
-					$date = (new DateTime())->setTime(0, 0, 0);
-					$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0);
+					$deadlinePassed = Pt_Commons_DateUtility::deadlinePassed($this->shipment['response_deadline'] ?? null);
 
 					if ($this->isEditable || !$adminAccess) {
-						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
+						if ($deadlinePassed && $this->shipment['status'] == 'finalized') {
 							?>
 							<h4 align="CENTER" style="color:red">
 								<?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?>
 							</h4>
 							<?php
-						} elseif ($date > $lastDate) {
+						} elseif ($deadlinePassed) {
 							?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
 							<?php

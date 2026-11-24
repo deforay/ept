@@ -10,7 +10,7 @@ $result = $this->result;
                 <label class="col-lg-3 control-label" for="subject"><?= $this->translate->_("Subject"); ?></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="subject" name="subject" size="50" class="isRequired form-control" readonly value="<?php echo $this->result['subject']; ?>" />
+                    <input type="text" id="subject" name="subject" size="50" class="isRequired form-control" readonly value="<?php echo $this->escape($this->result['subject'] ?? ''); ?>" />
                 </div>
             </div>
 
@@ -18,7 +18,7 @@ $result = $this->result;
                 <label class="col-lg-3 control-label" for="message"><?= $this->translate->_("Message"); ?></label>
 
                 <div class="col-lg-6">
-                    <textarea name="message" readonly class="form-control" id="message"><?php echo $this->result['message']; ?></textarea>
+                    <textarea name="message" readonly class="form-control" id="message"><?php echo $this->escape($this->result['message'] ?? ''); ?></textarea>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@ $result = $this->result;
                     <?php
                     if (isset($result['attached_file']) && trim($result['attached_file']) != '' && file_exists(realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'mail-attachments' . DIRECTORY_SEPARATOR . $result['attached_file'])) {
                     ?>
-                        <img src="/uploads/mail-attachments/<?php echo $result['attached_file']; ?>" style="width: 200px; height: 200px;" alt="<?= $this->htmlTranslate("No image") ?>" />
+                        <img src="/uploads/mail-attachments/<?php echo $this->escape(rawurlencode((string) $result['attached_file'])); ?>" style="width: 200px; height: 200px;" alt="<?= $this->htmlTranslate("No image") ?>" />
                     <?php } else { ?>
                         <img src="/images/loading.gif" alt="<?= $this->htmlTranslate("NO file attaced") ?>" />
                     <?php } ?>

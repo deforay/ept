@@ -112,8 +112,8 @@ class Application_Service_Reports
         // Needs attention: open past its due date but not evaluated, or evaluated
         // but not finalized yet.
         if (($parameters['needsAttention'] ?? '') === 'yes') {
-            $query->where('(' . self::SHIPMENT_STAGE_SQL . " = 'shipped' AND s.response_deadline < NOW())
-                OR " . self::SHIPMENT_STAGE_SQL . " IN ('evaluated','reports')");
+            $query->where('(' . self::SHIPMENT_STAGE_SQL . " = 'shipped' AND " . Pt_Commons_DateUtility::sqlDeadlinePassed() . ')
+                OR ' . self::SHIPMENT_STAGE_SQL . " IN ('evaluated','reports')");
         }
         if (!empty($parameters['sSearch'])) {
             foreach (preg_split('/\s+/', trim($parameters['sSearch'])) as $term) {
@@ -237,7 +237,7 @@ class Application_Service_Reports
             'cancelled' => $t->_('Cancelled'),
         ];
         $status = '<span class="stage-pill stage-' . $esc($stage) . '">' . $esc($stageLabels[$stage] ?? $stage) . '</span>';
-        if ($stage === 'shipped' && !empty($aRow['response_deadline']) && strtotime($aRow['response_deadline']) < time()) {
+        if ($stage === 'shipped' && Pt_Commons_DateUtility::deadlinePassed($aRow['response_deadline'] ?? null)) {
             $status .= '<span class="cell-sub is-warning">' . $esc($t->_('Past due date')) . '</span>';
         }
         // Once reports exist, the status links to the shipment's reports page,
@@ -4143,9 +4143,10 @@ class Application_Service_Reports
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $responded = "IFNULL(sp.response_status, '') IN ('responded','late','nottested')";
+        $submittedLate = Pt_Commons_DateUtility::sqlSubmittedAfterDeadline();
         $late = "(IFNULL(sp.response_status, '') = 'late'
                     OR IFNULL(sp.is_response_late, '') = 'yes'
-                    OR IFNULL(sp.shipment_test_report_date > s.response_deadline, 0))";
+                    OR IFNULL({$submittedLate}, 0))";
         $passed = 'IFNULL(sp.final_result, 0) = 1';
         $failed = "IFNULL(sp.final_result, 0) = 2 AND IFNULL(sp.response_status, '') IN ('responded','late')";
         $score = 'IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)';
@@ -4387,9 +4388,9 @@ class Application_Service_Reports
                     // "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
                     'total_responses' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
                     'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
-                    'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
+                    'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 2 AND NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ') THEN 1 ELSE 0 END)'),
                     'score' => new Zend_Db_Expr('(SUM(sp.shipment_score) + SUM(sp.documentation_score))'),
-                    'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
+                    'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 1 AND NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ') THEN 1 ELSE 0 END)'),
                 ]
             )
             ->where('s.shipment_id = ?', $shipmentId);

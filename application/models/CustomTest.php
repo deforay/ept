@@ -110,10 +110,6 @@ class Application_Model_CustomTest
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
-                ?? new DateTimeImmutable('1970-01-01');
-
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
             // No response / could not test / late → EXCLUDED, never failed (shared rule).
@@ -130,7 +126,7 @@ class Application_Model_CustomTest
             $failureReason = [];
             $scoreResult = '';
             $jsonConfig['minNumberOfResponses'] = $jsonConfig['minNumberOfResponses'] ?? 5;
-            if (!empty($createdOn) && $createdOn <= $lastDate) {
+            if (!Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
                 $shipment['is_response_late'] = 'no';
                 if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
                     $zScore = null;
@@ -330,9 +326,6 @@ class Application_Model_CustomTest
                             'documentation_score' => $shipmentOverall['documentation_score'],
                             'final_result' => $shipmentOverall['final_result'],
                         ];
-                        if ($shipment['is_response_late'] == 'yes') {
-                            $overrideUpdateData['response_status'] = 'late';
-                        }
                         $db->update('shipment_participant_map', $overrideUpdateData, ['map_id = ?' => $shipment['map_id']]);
                     }
                 } else {
@@ -343,9 +336,6 @@ class Application_Model_CustomTest
                         'failure_reason' => $failureReason,
                         'is_response_late' => $shipment['is_response_late'],
                     ];
-                    if ($shipment['is_response_late'] == 'yes') {
-                        $normalUpdateData['response_status'] = 'late';
-                    }
                     $db->update('shipment_participant_map', $normalUpdateData, ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
@@ -989,7 +979,7 @@ class Application_Model_CustomTest
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id'])
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('sp.shipment_test_report_date <= s.response_deadline')
+            ->where('NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline())
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
         $response = $db->fetchAll($sql);
@@ -1173,7 +1163,7 @@ class Application_Model_CustomTest
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'kit_name' => new Zend_Db_Expr('sp.attributes->>"$.kit_name"')])
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('sp.shipment_test_report_date <= s.response_deadline')
+            ->where('NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline())
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 

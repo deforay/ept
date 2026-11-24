@@ -429,15 +429,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                     <input type="hidden" id="retest_test_kit_other_name_update_3" name="retest_test_kit_other_name_update_3"
                         value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
                 <?php }
-                $date = (new DateTime())->setTime(0, 0, 0);
-                $lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0); ?>
+                $deadlinePassed = Pt_Commons_DateUtility::deadlinePassed($this->shipment['response_deadline'] ?? null); ?>
                 <div>
                     <?php if ($this->isEditable && !$adminAccess) {
-                        if (($date > $lastDate) && $this->shipment['status'] == 'finalized') { ?>
+                        if ($deadlinePassed && $this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red">
                                 <?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?>
                             </h4>
-                        <?php } elseif (($date > $lastDate)) { ?>
+                        <?php } elseif ($deadlinePassed) { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
                         <?php } elseif ($this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red">

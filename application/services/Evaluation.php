@@ -16,6 +16,34 @@ class Application_Service_Evaluation
     private const SQL_DID_NOT_RESPOND = "SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))";
 
     /**
+     * SQL condition: the participant has submitted a response, whatever became of it
+     * (on time, late, could not test, or a late submission awaiting approval). A draft
+     * is not a submission. This is what "View" rather than "Enter Result" means in the
+     * participant listings, and "response received" in reports.
+     *
+     * It replaces the third character of shipment_participant_map.evaluation_status,
+     * which is no longer read. That code counted saved drafts as responses.
+     */
+    public static function sqlResponseSubmitted(string $mapAlias = 'sp'): string
+    {
+        return "(IFNULL($mapAlias.response_status, 'noresponse') NOT IN ('noresponse', 'draft', ''))";
+    }
+
+    /**
+     * SQL condition: the participant submitted, after the shipment deadline. Judged
+     * from the submission time, so it holds before the shipment is evaluated too.
+     */
+    public static function sqlResponseSubmittedLate(string $mapAlias = 'sp', string $shipmentAlias = 's'): string
+    {
+        $afterDeadline = Pt_Commons_DateUtility::sqlSubmittedAfterDeadline(
+            "$mapAlias.shipment_test_report_date",
+            "$shipmentAlias.response_deadline"
+        );
+
+        return '(' . self::sqlResponseSubmitted($mapAlias) . " AND IFNULL($afterDeadline, 0))";
+    }
+
+    /**
      * Fields that participants and data managers can type into, which report
      * layouts place in PDF HTML. Results, scores and unique_identifier stay
      * out: layouts compare results as numbers ("<20" would break), and the
@@ -128,8 +156,14 @@ class Application_Service_Evaluation
      *                                            them yet (then only response_status decides)
      * @return bool true if the participant was excluded (caller should treat as excluded)
      */
-    public static function excludeNonResponder($db, array $shipment, ?array $results = null): bool
+    public static function excludeNonResponder($db, array &$shipment, ?array $results = null): bool
     {
+        // A response stamped 'late' by an earlier evaluation goes back to 'responded'
+        // when it is on time now, e.g. after the deadline was extended. Evaluation is
+        // the only writer of 'late', and the schemes score only 'responded' rows, so
+        // without this a lab stays excluded however often the shipment is re-evaluated.
+        self::restoreOnTimeResponse($db, $shipment);
+
         $responseStatus = strtolower(trim((string) ($shipment['response_status'] ?? '')));
         $notTested = strtolower(trim((string) ($shipment['is_pt_test_not_performed'] ?? ''))) === 'yes';
 
@@ -142,15 +176,7 @@ class Application_Service_Evaluation
 
         // Late response = submitted after the cut-off. Excluded just like a non-response,
         // unless the response window is explicitly switched on for this shipment.
-        $isLate = false;
-        $responseSwitchOn = strtolower(trim((string) ($shipment['response_switch'] ?? ''))) === 'on';
-        if (!$didNotParticipate && !$notTested && !$responseSwitchOn) {
-            $respondedAt = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null);
-            $cutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
-            if ($respondedAt !== null && $cutoff !== null && $respondedAt > $cutoff) {
-                $isLate = true;
-            }
-        }
+        $isLate = !$didNotParticipate && !$notTested && self::isLateResponse($shipment);
 
         if (!$didNotParticipate && !$notTested && !$isLate) {
             return false;
@@ -175,6 +201,61 @@ class Application_Service_Evaluation
         }
 
         return true;
+    }
+
+    /**
+     * Whether a response counts as late: submitted after the shipment cut-off while
+     * the response window is not switched on.
+     *
+     * @param array $shipment one shipment_participant_map row joined to its shipment
+     */
+    public static function isLateResponse(array $shipment): bool
+    {
+        if (strtolower(trim((string) ($shipment['response_switch'] ?? ''))) === 'on') {
+            return false;
+        }
+
+        return Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null);
+    }
+
+    /**
+     * Put a response that an earlier evaluation stamped 'late' back to 'responded'
+     * when it is no longer late, in the database and in $shipment.
+     *
+     * Only the plain 'late' status is touched. 'late_submitted' and 'late_rejected'
+     * belong to the late-submission capture flow and keep their meaning.
+     *
+     * The exclusion is cleared too. The late stamp set it, and EID, COVID-19, Recency
+     * and custom tests do not reset is_excluded before evaluating, so without this the
+     * lab stays excluded and gets no report. The scheme's evaluation then applies any
+     * exclusion that still holds. A manual exclusion an admin added to a response that
+     * was also stamped late is cleared with it; TB, DTS and VL already clear manual
+     * exclusions on every re-evaluation.
+     *
+     * @param Zend_Db_Adapter_Abstract $db
+     * @param array                    $shipment one shipment_participant_map row, updated in place
+     */
+    public static function restoreOnTimeResponse($db, array &$shipment): void
+    {
+        if (strtolower(trim((string) ($shipment['response_status'] ?? ''))) !== 'late') {
+            return;
+        }
+        // Dates only, not the response switch: the schemes' own late checks ignore the
+        // switch, so a response restored on the switch alone would be neither scored
+        // nor excluded and would keep its old result.
+        if (Pt_Commons_DateUtility::submittedAfterDeadline($shipment['shipment_test_report_date'] ?? null, $shipment['response_deadline'] ?? null)) {
+            return;
+        }
+
+        $restored = ['response_status' => 'responded', 'is_response_late' => 'no', 'is_excluded' => 'no'];
+        $shipment = array_merge($shipment, $restored);
+        if (!empty($shipment['map_id'])) {
+            $db->update(
+                'shipment_participant_map',
+                $restored,
+                $db->quoteInto('map_id = ?', $shipment['map_id'])
+            );
+        }
     }
 
     /**
@@ -941,7 +1022,7 @@ class Application_Service_Evaluation
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
                     $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
-                    $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
                 }
 
                 if (isset($params['customField1']) && trim($params['customField1']) != '') {
@@ -1137,7 +1218,7 @@ class Application_Service_Evaluation
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
                     $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
-                    $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
                 }
 
                 if (isset($params['customField1']) && trim($params['customField1']) != '') {
@@ -1342,7 +1423,7 @@ class Application_Service_Evaluation
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
                     $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
-                    $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
                 }
 
                 if (isset($params['customField1']) && trim($params['customField1']) != '') {
@@ -1411,7 +1492,7 @@ class Application_Service_Evaluation
                 if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                     $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
                 } else {
-                    $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::getCurrentDateTime();
                 }
                 if (isset($params['customField1']) && trim($params['customField1']) != '') {
                     $data['custom_field_1'] = $params['customField1'];
@@ -3557,8 +3638,8 @@ class Application_Service_Evaluation
                             'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp. final_result is not null AND sp. final_result != 2 AND sp. is_excluded is not null AND sp. is_excluded not like '' AND sp. is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                             'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
                             'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
-                            'beforeDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
-                            'afterDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (sp.shipment_test_report_date > s.response_deadline) THEN 1 ELSE 0 END)'),
+                            'beforeDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ') THEN 1 ELSE 0 END)'),
+                            'afterDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ') THEN 1 ELSE 0 END)'),
                             'pass_percentage' => new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
                         ]
                     )->where('s.shipment_id = ?', $shipmentId);
@@ -3605,8 +3686,8 @@ class Application_Service_Evaluation
                             'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status is not null and sp.response_status = 'responded') THEN 1 ELSE 0 END)"),
                             'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
                             'departmentCount' => new Zend_Db_Expr('count("p.department_name")'),
-                            'beforeDueDate' => new Zend_Db_Expr('SUM(sp.shipment_test_report_date <= s.response_deadline)'),
-                            'afterDueDate' => new Zend_Db_Expr('SUM(sp.shipment_test_report_date > s.response_deadline)'),
+                            'beforeDueDate' => new Zend_Db_Expr('SUM(NOT ' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ')'),
+                            'afterDueDate' => new Zend_Db_Expr('SUM(' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ')'),
                             'fail_percentage' => new Zend_Db_Expr('((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100'),
                         ]
                     )
@@ -4116,7 +4197,7 @@ class Application_Service_Evaluation
                     'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_late' => new Zend_Db_Expr(
-                        'SUM(CASE WHEN (sp.shipment_test_report_date > s.response_deadline) THEN 1 ELSE 0 END)'
+                        'SUM(CASE WHEN (' . Pt_Commons_DateUtility::sqlSubmittedAfterDeadline() . ') THEN 1 ELSE 0 END)'
                     ),
                     // Five disjoint buckets for the participation pie -- see
                     // self::participationSlices(). Every participant matches exactly one, so the
