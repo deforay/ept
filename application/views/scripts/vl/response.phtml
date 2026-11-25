@@ -20,6 +20,8 @@ if ($this->reqFrom == "admin") {
 }
 // Admin view-only mode: the same page with every field locked and no Submit.
 $viewOnly = !empty($adminAccess) && !empty($this->viewOnly);
+// An evaluated response has a final result; only then do the sample scores mean anything.
+$evaluated = (int) ($this->shipment['final_result'] ?? 0) > 0;
 $span = 4;
 if ($adminAccess) {
 	$shipmentAttributes = json_decode($this->evaluateData['shipment']['shipment_attributes'], true);
@@ -663,6 +665,17 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<td style="text-align:left;font-size:1.1em;font-weight:bold;">
 									<?php echo $this->escape($sample['sample_label']); ?>
 									<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
+									<?php
+									// Admin only: the z-score this sample earned, coloured by its result.
+									$sampleScore = (string) ($sample['calculated_score'] ?? '');
+									if ($adminAccess && $evaluated && $sampleScore !== '') {
+										if ($sampleScore === 'excluded') { ?>
+											<br><span class="sample-score" style="color:#777;"><?= $this->htmlTranslate("Excluded"); ?></span>
+										<?php } elseif (($sample['z_score'] ?? '') !== '' && $sample['z_score'] !== null) {
+											$scoreColour = ['pass' => '#3c763d', 'warn' => '#c77c02', 'fail' => '#a94442'][$sampleScore] ?? '#777'; ?>
+											<br><span class="sample-score" style="color:<?= $scoreColour; ?>;"><?= $this->htmlTranslate("z ="); ?> <?= number_format((float) $sample['z_score'], 2); ?></span>
+										<?php }
+									} ?>
 									<input type="hidden" id="sample<?php echo $count; ?>" class="sampleIds"
 										name="sampleId[<?php echo $keyc; ?>]" value="<?php echo $sample['sample_id']; ?>" />
 									<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
