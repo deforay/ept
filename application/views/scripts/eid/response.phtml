@@ -37,6 +37,44 @@ $viewOnly = !empty($adminAccess) && !empty($this->viewOnly);
 	.hideOtherAssay {
 		display: none;
 	}
+
+	.sample-verdict {
+		margin-top: 6px;
+		white-space: normal;
+		font-weight: normal;
+	}
+
+	.sample-verdict-icon {
+		font-size: 18px;
+		line-height: 1;
+	}
+
+	.sample-verdict-icon.verdict-pass {
+		color: #2e7d32;
+	}
+
+	.sample-verdict-icon.verdict-fail {
+		color: #c0392b;
+	}
+
+	.sample-verdict-reasons {
+		list-style: none;
+		margin: 4px 0 0;
+		padding: 0;
+		font-size: 12px;
+		color: #8e2b20;
+		text-align: left;
+	}
+
+	.sample-verdict-summary.outdated {
+		margin: 10px auto 0;
+		padding: 8px 12px;
+		border-radius: 4px;
+		font-size: 14px;
+		background-color: #fff8e1;
+		border: 1px solid #ffe082;
+		color: #6d4c00;
+	}
 </style>
 <?php $inConfirmStep = isset($_SESSION['confirmForm']) && $_SESSION['confirmForm'] === 'yes';
 if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
@@ -465,7 +503,40 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							$possibleResults[$pr['id']] = $pr['response'];
 						}
 					}
+
+					// Whether each sample is right, for the admin only: a participant never sees
+					// it. The EID evaluation saves no per-sample score, so this makes the same
+					// comparison it does (Application_Model_Eid). A sample with a score of 0
+					// counts for nothing, so it gets no mark.
+					$evaluated = (int) ($this->shipment['final_result'] ?? 0) > 0;
+					// The reason comes from the current answers, which may differ from the
+					// ones evaluated if the response changed since.
+					$verdictsOutdated = $adminAccess && $evaluated && !empty($this->verdictsOutdated);
+					$verdictBadge = function (array $sample) use ($possibleResults, $verdictsOutdated): string {
+						// Icons, not words: countries name these results differently (Pass or Satisfactory).
+						$icon = static fn (string $class, string $label): string => '<span class="sample-verdict-icon ' . $class . '" title="' . $label . '" aria-label="' . $label . '"></span>';
+						$failIcon = $icon('icon-remove-circle verdict-fail', $this->htmlTranslate('Fail'));
+						if (!empty($sample['reported_result']) && (string) $sample['reported_result'] === (string) $sample['reference_result']) {
+							return '<div class="sample-verdict">' . $icon('icon-ok-circle verdict-pass', $this->htmlTranslate('Pass')) . '</div>';
+						}
+						if ($verdictsOutdated) {
+							return '<div class="sample-verdict">' . $failIcon . '</div>';
+						}
+						if (empty($sample['reported_result'])) {
+							$reason = $this->htmlTranslate('No result reported');
+						} else {
+							$resultName = fn ($id): string => $this->htmlTranslate((string) ($possibleResults[$id] ?? $id));
+							$reason = sprintf($this->htmlTranslate('Reported %s, expected %s'), $resultName($sample['reported_result']), $resultName($sample['reference_result']));
+						}
+						return '<div class="sample-verdict">' . $failIcon
+							. '<ul class="sample-verdict-reasons"><li>' . $reason . '</li></ul></div>';
+					};
 					?>
+					<?php if ($verdictsOutdated) { ?>
+						<div class="sample-verdict-summary outdated">
+							<?= $this->htmlTranslate('The response changed after the last evaluation. Evaluate the shipment again to update these verdicts.'); ?>
+						</div>
+					<?php } ?>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<thead class="vlResultSection"
 							style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
@@ -504,6 +575,9 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
 									<input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
 										value="<?php echo $sample['sample_id']; ?>" />
+									<?php if ($adminAccess && $evaluated && (float) ($sample['sample_score'] ?? 0) > 0) {
+										echo $verdictBadge($sample);
+									} ?>
 								</th>
 								<td class="dark">
 									<select name="result[]" id="result<?php echo $count; ?>" style="width: 200px"
