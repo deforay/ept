@@ -356,7 +356,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from(['ref' => 'reference_result_recency'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
-            ->joinLeft(['res' => 'response_result_recency'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'control_line', 'diagnosis_line', 'longterm_line'])
+            ->joinLeft(['res' => 'response_result_recency'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'control_line', 'diagnosis_line', 'longterm_line', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
