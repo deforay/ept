@@ -419,6 +419,7 @@ class Application_Model_Tb
                     'test_date',
                     'tester_name',
                     'error_code',
+                    'calculated_score',
                     'responseDate' => 'res.created_on',
                     'response_attributes',
                 ]
