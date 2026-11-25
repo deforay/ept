@@ -28,8 +28,8 @@ class Application_Model_Recency
 
         $possibleResultsArray = $schemeService->getPossibleResults('recency');
         $possibleResults = [];
-        foreach ($possibleResultsArray as $possibleResults) {
-            $possibleResults['result_code'] = $possibleResults['id'];
+        foreach ($possibleResultsArray as $row) {
+            $possibleResults[$row['result_code']] = $row['id'];
         }
 
         $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore') ?? 10;
@@ -100,7 +100,7 @@ class Application_Model_Recency
                     // }
 
                     // if final result was expected as Negative
-                    if ($result['reference_result'] == $possibleResults['N']) {
+                    if (isset($possibleResults['N']) && $result['reference_result'] == $possibleResults['N']) {
                         if ($controlLine == 'present' && $verificationLine == 'absent' && $longtermLine == 'absent') {
                         } else {
                             $isAlgoWrong = true;
@@ -108,7 +108,7 @@ class Application_Model_Recency
                     }
 
                     // if final result was expected as Recent
-                    if ($result['reference_result'] == $possibleResults['R']) {
+                    if (isset($possibleResults['R']) && $result['reference_result'] == $possibleResults['R']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
                         } else {
                             $isAlgoWrong = true;
@@ -116,7 +116,7 @@ class Application_Model_Recency
                     }
 
                     // if final result was expected as Long term
-                    if ($result['reference_result'] == $possibleResults['LT']) {
+                    if (isset($possibleResults['LT']) && $result['reference_result'] == $possibleResults['LT']) {
                         if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
                         } else {
                             $isAlgoWrong = true;
