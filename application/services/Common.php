@@ -1465,6 +1465,18 @@ class Application_Service_Common
 
     public function getOptionsByValue($params)
     {
+        // Table and column names arrive from the browser, and this endpoint answers
+        // without a login. Only the participant location cascade is allowed.
+        $locationColumns = ['country', 'region', 'state', 'district'];
+        if (
+            ($params['table'] ?? '') !== 'participant' ||
+            !in_array($params['returnfield'] ?? '', $locationColumns, true) ||
+            !in_array($params['searchfield'] ?? '', $locationColumns, true) ||
+            !isset($params['searchvalue'])
+        ) {
+            return [];
+        }
+
         // Cascading location filters may send one parent value or several
         // (multi-select country/region/state), as an array or a comma-joined
         // string depending on how jQuery serialised it.
@@ -2833,26 +2845,39 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        // Table and column names arrive from the browser. Only the lookups the
+        // admin pages use are allowed: table => columns.
+        $allowedLookups = [
+            'participant' => ['institute_name', 'region', 'state', 'district', 'city', 'network_tier', 'affiliation'],
+            'countries' => ['id', 'iso_name'],
+            'r_site_type' => ['r_stid', 'site_type'],
+            'r_enrolled_programs' => ['r_epid', 'enrolled_programs'],
+        ];
+        $allowedColumns = $allowedLookups[$params['tableName'] ?? ''] ?? [];
+        if (!in_array($params['returnId'] ?? '', $allowedColumns, true)) {
+            return [];
+        }
+
         if (isset($params['concat'])) {
             $params['concat'] = $this->maybeDecodeJson($params['concat']);
         }
         if (isset($params['fieldNames'])) {
             $params['fieldNames'] = $this->maybeDecodeJson($params['fieldNames']);
         }
+        $params['fieldNames'] = array_values(array_intersect((array) ($params['fieldNames'] ?? []), $allowedColumns));
 
         // Handle concat fields properly
         $concat = [];
-        $concatFields = is_array($params['concat']) ? $params['concat'] : [$params['concat']];
+        $concatFields = is_array($params['concat'] ?? null) ? $params['concat'] : [$params['concat'] ?? ''];
         foreach ($concatFields as $field) {
-            $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
-            if ($field === '') {
+            if (!in_array($field, $allowedColumns, true)) {
                 continue;
             }
             $concat[] = "COALESCE(`$field`,'')";
         }
 
         if (empty($concat)) {
-            throw new Zend_Exception('No valid concat fields supplied for dropdown query.');
+            return [];
         }
 
         // Build the SQL query
@@ -2866,18 +2891,13 @@ class Application_Service_Common
             // Escape the search term to prevent SQL injection
             $searchTerm = $db->quote('%' . $params['search'] . '%');
 
-            if (is_array($params['fieldNames'])) {
-                // Create OR conditions for searching across multiple fields
-                $searchConditions = [];
-                foreach ($params['fieldNames'] as $field) {
-                    // Sanitize field name
-                    $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
-                    $searchConditions[] = "`$field` LIKE $searchTerm";
-                }
+            // Search across the allowed fields
+            $searchConditions = [];
+            foreach ($params['fieldNames'] as $field) {
+                $searchConditions[] = "`$field` LIKE $searchTerm";
+            }
+            if (!empty($searchConditions)) {
                 $sql = $sql->where('(' . implode(' OR ', $searchConditions) . ')');
-            } else {
-                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['fieldNames']);
-                $sql = $sql->where("`$field` LIKE $searchTerm");
             }
         }
 
