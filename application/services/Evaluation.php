@@ -986,24 +986,21 @@ class Application_Service_Evaluation
 
                 $eidPassPercentage = Pt_Commons_SchemeConfig::get('eid.passPercentage') ?? 100;
 
-                if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != '') {
+                $extractionAssayOther = trim((string) ($params['extractionAssayOther'] ?? ''));
+                if ($extractionAssayOther !== '') {
                     $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-                    $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name LIKE ?', $params['extractionAssayOther'] . '%'));
-                    if ($ifExist && $ifExist['name'] != '') {
-                        $dbAdapter->update(
-                            'r_eid_extraction_assay',
-                            [
-                                'name' => $params['extractionAssayOther'],
-                                'status' => 'active',
-                            ],
-                            'id = ' . $ifExist['id']
-                        );
+                    // Exact (case-insensitive by collation) match only; never rename a shared assay.
+                    $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name = ?', $extractionAssayOther));
+                    if ($ifExist) {
+                        if (($ifExist['status'] ?? '') !== 'active') {
+                            $dbAdapter->update('r_eid_extraction_assay', ['status' => 'active'], ['id = ?' => $ifExist['id']]);
+                        }
                         $lastInsertAssayId = $ifExist['id'];
                     } else {
                         $dbAdapter->insert(
                             'r_eid_extraction_assay',
                             [
-                                'name' => $params['extractionAssayOther'],
+                                'name' => $extractionAssayOther,
                                 'status' => 'active',
                             ]
                         );
