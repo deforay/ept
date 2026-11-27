@@ -189,17 +189,17 @@
 			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant" style="display:none;">
 				<?php if (isset($this->previouslySelected) && $this->previouslySelected != null) {
 					foreach ($this->previouslySelected as $participant) { ?>
-						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $this->escape($participant['first_name'] . " " . $participant['last_name']); ?>(<?php echo $this->escape($participant['unique_identifier']); ?>)</option>
 					<?php }
 					foreach ($this->previouslyUnSelected as $participant) { ?>
-						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $this->escape($participant['first_name'] . " " . $participant['last_name']); ?>(<?php echo $this->escape($participant['unique_identifier']); ?>)</option>
 					<?php }
 				} else {
 					foreach ($this->enrolledParticipants as $participant) { ?>
-						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $this->escape($participant['first_name'] . " " . $participant['last_name']); ?>(<?php echo $this->escape($participant['unique_identifier']); ?>)</option>
 					<?php }
 					foreach ($this->unEnrolledParticipants as $participant) { ?>
-						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $this->escape($participant['first_name'] . " " . $participant['last_name']); ?>(<?php echo $this->escape($participant['unique_identifier']); ?>)</option>
 				<?php }
 				} ?>
 			</select>

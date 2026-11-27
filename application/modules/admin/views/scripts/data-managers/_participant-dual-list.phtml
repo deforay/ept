@@ -91,7 +91,7 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
                 <select class="pdl-select2" name="pdl_institute" id="pdl_institute" onchange="pdlLoad();">
                     <option value=""></option>
                     <?php if (isset($this->institutes)) { foreach ($this->institutes as $i) { ?>
-                        <option value="<?php echo $i['institute_name']; ?>"><?php echo $i['institute_name']; ?></option>
+                        <option value="<?php echo $this->escape($i['institute_name']); ?>"><?php echo $this->escape($i['institute_name']); ?></option>
                     <?php }
                     } ?>
                 </select>

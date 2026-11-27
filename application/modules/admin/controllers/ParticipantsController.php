@@ -223,10 +223,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function viewParticipantsAction()
     {
-        $this->_helper->layout()->setLayout('modal');
         $participantService = new Application_Service_Participants();
-        if ($this->hasParam('id')) {
-            $dmId = (int) $this->_getParam('id');
+        $this->view->participant = [];
+        $dmId = (int) $this->_getParam('id');
+        if ($dmId > 0) {
+            $userService = new Application_Service_DataManagers();
+            $this->view->rsUser = $userService->getUserInfoBySystemId($dmId);
             $this->view->participant = $participantService->getAllParticipantDetails($dmId);
         }
     }

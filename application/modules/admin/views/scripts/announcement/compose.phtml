@@ -80,7 +80,7 @@
 					<td>
 						<select style="width:100%" name="city[]" id="city" multiple="multiple" title="<?= $this->htmlTranslate("Select one or more City") ?>" data-selected-text-format="count>3">
 							<?php foreach ($this->participantCity as $partCity) { ?>
-								<option value="<?php echo $partCity['city']; ?>"><?php echo $partCity['city']; ?> </option>
+								<option value="<?php echo $this->escape($partCity['city']); ?>"><?php echo $this->escape($partCity['city']); ?> </option>
 							<?php } ?>
 						</select>
 					</td>
@@ -98,7 +98,7 @@
 			<br />
 			<select id="participants" name="participants[]" class="isRequired" multiple="multiple" title="<?= $this->htmlTranslate("Please select at least one participant") ?>">
 				<?php foreach ($this->participants as $participant) { ?>
-					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $this->escape($participant['first_name'] . " " . $participant['last_name']); ?>(<?php echo $this->escape($participant['unique_identifier']); ?>)</option>
 				<?php } ?>
 			</select>
 		</div>
