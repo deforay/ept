@@ -537,12 +537,12 @@ if (!empty($this->shipment)) {
                         data-responded-on="<?= $this->escape($rowRespondedOn); ?>">
                         <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"
                                 data-btn-class="<?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
-                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $this->escape($shipment['unique_identifier']) ?></td>
                         <td style="text-align:center;vertical-align:middle;">
-                            <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?>
+                            <?php echo $this->escape($shipment['first_name'] . " " . $shipment['last_name']) ?>
                         </td>
-                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
-                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $this->escape($shipment['state']) ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $this->escape($shipment['district']) ?></td>
                         <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                         <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                         <td style="text-align:center;vertical-align:middle;">

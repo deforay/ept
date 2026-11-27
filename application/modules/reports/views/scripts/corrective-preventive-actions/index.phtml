@@ -64,7 +64,7 @@
 				<option value=""> -- <?= $this->translate->_("Select Participant"); ?> --</option>
 				<?php foreach ($this->participants as $row) { ?>
 					<option value="<?php echo $row['participant_id']; ?>">
-						<?php echo $row['first_name'] . $row['last_name'] . '(' . $row['unique_identifier'] . ')'; ?>
+						<?php echo $this->escape($row['first_name'] . $row['last_name'] . '(' . $row['unique_identifier'] . ')'); ?>
 					</option>
 				<?php } ?>
 			</select>
